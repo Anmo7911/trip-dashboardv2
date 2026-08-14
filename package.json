@@ -1,17 +1,8 @@
 {
-  "name": "squad-goals-vercel-supabase",
-  "private": true,
+  "name": "trip-dashboard",
   "version": "1.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
+  "private": true,
   "dependencies": {
-    "@supabase/supabase-js": "^2.57.0"
-  },
-  "devDependencies": {
-    "vite": "^7.1.2"
+    "@supabase/supabase-js": "^2.0.0"
   }
 }
