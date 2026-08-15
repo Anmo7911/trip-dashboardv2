@@ -791,127 +791,111 @@
 
   <!-- =========================================
        PREMIUM MINIMALIST eID MODAL
-       This modal acts as a digital ID card for squad members.
        ========================================= -->
   <div id="eid-modal"
-    class="hidden fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans transition-opacity duration-300">
+    class="hidden fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 font-sans transition-opacity duration-300">
 
-    <!-- FLOATING CLOSE BUTTON (Closes ID modal) -->
+    <!-- FLOATING CLOSE BUTTON -->
     <button type="button" onclick="closeEID()" class="absolute top-6 right-6 z-50 flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md text-white transition active:scale-95 outline-none border border-white/20 shadow-lg">
-      <i data-lucide="x" class="w-6 h-6"></i>
+      <i data-lucide="x" class="w-5 h-5"></i>
     </button>
 
-    <!-- The actual ID Card Container -->
+    <!-- ID Card Container -->
     <div id="eid-card-surface"
-      class="w-full max-w-[320px] bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.4)] relative flex flex-col rounded-sm border border-slate-200 overflow-visible">
+      class="w-full max-w-[340px] bg-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] relative flex flex-col rounded-2xl border border-slate-200 overflow-hidden">
 
-      <!-- PITCH BLACK SCANNER CURTAIN (Slides up to reveal ID) -->
+      <!-- PITCH BLACK SCANNER CURTAIN -->
       <div id="eid-scan-curtain"
-        class="absolute bottom-0 left-0 right-0 h-full bg-slate-900 z-[100] flex items-center justify-center pointer-events-none rounded-sm">
-        <div
-          class="absolute top-0 left-0 w-full h-[3px] bg-indigo-500 shadow-[0_0_20px_rgba(99,102,241,1),0_10px_20px_rgba(99,102,241,0.5)]">
-        </div>
+        class="absolute inset-0 bg-slate-950 z-[100] flex items-center justify-center pointer-events-none">
+        <div class="absolute top-0 left-0 w-full h-[3px] bg-indigo-500 shadow-[0_0_20px_rgba(99,102,241,1)]"></div>
         <div id="eid-qr-scanner" class="flex flex-col items-center gap-3">
-          <div
-            class="relative w-16 h-16 flex items-center justify-center bg-slate-800 rounded-xl border border-slate-700 shadow-inner overflow-hidden">
-            <i data-lucide="qr-code" class="w-10 h-10 text-indigo-400"></i>
-            <!-- Bouncing laser line effect -->
-            <div
-              class="absolute left-0 w-full h-[2px] bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)] qr-laser-scan">
-            </div>
+          <div class="relative w-14 h-14 flex items-center justify-center bg-slate-900 rounded-xl border border-slate-800 shadow-inner overflow-hidden">
+            <i data-lucide="qr-code" class="w-8 h-8 text-indigo-400"></i>
+            <div class="absolute left-0 w-full h-[2px] bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)] qr-laser-scan"></div>
           </div>
-          <span class="text-[9px] font-black tracking-[0.2em] uppercase text-emerald-400 animate-pulse">Scanning Pass...</span>
+          <span class="text-[9px] font-black tracking-[0.2em] uppercase text-emerald-400 animate-pulse">Authenticating Pass...</span>
         </div>
       </div>
 
-      <!-- Main split layout of the ID Card -->
-      <div class="flex flex-row w-full h-full bg-white rounded-sm overflow-hidden">
+      <!-- Main Split Card Layout -->
+      <div class="flex flex-row w-full bg-white relative">
 
-        <!-- LEFT VERTICAL STATUS BAR (Shows Verification Status) -->
+        <!-- LEFT VERTICAL STATUS BAR -->
         <div id="eid-left-bar"
-          class="w-[50px] bg-indigo-600 flex flex-col justify-between items-center pt-4 pb-4 text-white shrink-0 transition-colors duration-500">
+          class="w-[46px] bg-indigo-600 flex flex-col justify-between items-center py-4 text-white shrink-0 transition-colors duration-500 select-none">
           <div style="writing-mode: vertical-rl; transform: rotate(180deg);"
-            class="text-[11px] font-bold tracking-[0.15em] uppercase flex-1 flex items-center justify-end whitespace-nowrap opacity-90">
+            class="text-[10px] font-black tracking-[0.25em] uppercase opacity-80">
             E-ID
           </div>
-          <div class="w-[1.5px] h-12 bg-white/50 my-4"></div>
-          <!-- Dynamically populated VERIFIED/UNVERIFIED text -->
+          <div class="w-[1px] h-10 bg-white/30 my-2"></div>
           <div id="eid-vertical-status" style="writing-mode: vertical-rl; transform: rotate(180deg);"
-            class="text-[34px] font-black tracking-wider uppercase flex-1 flex items-center justify-start">
+            class="text-[20px] font-black tracking-widest uppercase">
             VERIFIED
           </div>
         </div>
 
-        <!-- RIGHT CONTENT AREA (Member Details) -->
-        <div class="flex-1 flex flex-col relative pt-2">
+        <!-- RIGHT CONTENT AREA -->
+        <div class="flex-1 flex flex-col pt-3 pb-3 px-3.5 min-w-0">
 
-          <!-- Header Area: App Title / Subtitle -->
-          <div class="h-16 flex flex-col justify-center items-center px-4 relative text-center">
+          <!-- Header Area -->
+          <div class="flex flex-col justify-center items-center text-center px-1 mb-2">
             <h1 id="eid-title"
-              class="text-[22px] font-black tracking-tighter uppercase text-indigo-700 leading-none transition-colors duration-500 w-full truncate">
-              Zantar Mantar, Dilli</h1>
+              class="text-base font-black tracking-wide uppercase text-indigo-700 leading-tight w-full truncate transition-colors duration-500">
+              VALLEY OF FLOWERS
+            </h1>
             <p id="eid-subtitle"
-              class="text-[8px] font-bold tracking-[0.2em] text-slate-400 uppercase mt-1 truncate w-full"></p>
+              class="text-[8px] font-bold tracking-[0.2em] text-slate-400 uppercase mt-0.5 truncate w-full hidden"></p>
           </div>
 
           <!-- Photo Section -->
           <div id="eid-photo-container"
-            class="h-[190px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 overflow-hidden transition-colors duration-500">
-            <img id="eid-photo" class="w-full h-full object-cover object-top scale-[1.15] -translate-y-[8px] grayscale contrast-125">
-            <!-- Overlay Stamp if available -->
+            class="h-[180px] w-full border-y-[2.5px] border-indigo-600 relative bg-slate-100 overflow-hidden rounded-md transition-colors duration-500">
+            <img id="eid-photo" src="" class="w-full h-full object-cover object-top grayscale contrast-125">
+            <!-- Overlay Stamp -->
             <div id="eid-stamp-container"
-              class="absolute bottom-1 right-1 w-[80px] h-[80px] pointer-events-none hidden transition-all duration-500 opacity-[0.85] z-50 mix-blend-multiply -rotate-12">
-              <img id="eid-stamp-img" src="" class="w-full h-full object-contain filter contrast-110 drop-shadow-sm">
+              class="absolute bottom-1 right-1 w-[70px] h-[70px] pointer-events-none hidden transition-all duration-500 opacity-90 z-30 mix-blend-multiply -rotate-12">
+              <img id="eid-stamp-img" src="" class="w-full h-full object-contain filter contrast-125">
             </div>
           </div>
 
-          <!-- Member Details Grid -->
-          <div class="flex-1 p-4 pb-3 flex flex-col relative">
+          <!-- Member Details -->
+          <div class="pt-3 flex flex-col flex-1">
             <p id="eid-name"
-              class="font-black text-lg text-slate-800 leading-none tracking-tight uppercase truncate mb-3 border-b border-slate-100 pb-2">
+              class="font-black text-base text-slate-900 leading-tight tracking-tight uppercase truncate mb-2 pb-1.5 border-b border-slate-100">
             </p>
 
-            <div
-              class="grid grid-cols-[65px_auto] gap-y-1.5 gap-x-2 text-[8.5px] font-bold text-slate-800 uppercase tracking-wide mb-2 w-full">
-              <!-- Position Info -->
-              <span class="text-slate-500">Position</span>
-              <div class="flex gap-1.5"><span class="text-slate-400 shrink-0">:</span>
-                <span id="eid-designation" class="leading-tight"></span>
-              </div>
+            <div class="grid grid-cols-[55px_auto] gap-y-1.5 gap-x-2 text-[9px] font-bold text-slate-800 uppercase tracking-wide mb-3">
+              <span class="text-slate-400">Position</span>
+              <div class="flex gap-1.5"><span class="text-slate-300 shrink-0">:</span><span id="eid-designation" class="leading-tight truncate"></span></div>
 
-              <!-- Role Info -->
-              <span class="text-slate-500">Role</span>
-              <div class="flex gap-1.5"><span class="text-slate-400 shrink-0">:</span>
-                <span id="eid-role" class="leading-tight break-words"></span>
-              </div>
+              <span class="text-slate-400">Role</span>
+              <div class="flex gap-1.5"><span class="text-slate-300 shrink-0">:</span><span id="eid-role" class="leading-tight break-words"></span></div>
 
-              <!-- Mobile Info -->
-              <span class="text-slate-500">Mobile</span>
-              <div class="flex gap-1.5"><span class="text-slate-400 shrink-0">:</span>
-                <span id="eid-mobile" class="leading-tight"></span>
-              </div>
+              <span class="text-slate-400">Mobile</span>
+              <div class="flex gap-1.5"><span class="text-slate-300 shrink-0">:</span><span id="eid-mobile" class="leading-tight"></span></div>
 
-              <!-- Email Info -->
-              <span class="text-slate-500">Email</span>
-              <div class="flex gap-1.5"><span class="text-slate-400 shrink-0">:</span>
-                <span id="eid-email" class="leading-tight break-all lowercase tracking-normal"></span>
-              </div>
+              <span class="text-slate-400">Email</span>
+              <div class="flex gap-1.5"><span class="text-slate-300 shrink-0">:</span><span id="eid-email" class="leading-tight break-all lowercase tracking-normal"></span></div>
             </div>
 
-            <!-- Footer: Sign & QR (Dynamically generated via JS) -->
-            <div class="mt-auto flex justify-between items-end pt-2">
+            <!-- Footer Signature & QR -->
+            <div class="mt-auto flex justify-between items-end pt-1 border-t border-slate-100">
               <div class="flex flex-col items-start justify-end w-[60%]">
                 <img id="eid-chief-sign" class="h-6 object-contain mix-blend-multiply mb-0.5">
                 <p id="eid-sign-text"
-                  class="text-[7px] font-black uppercase tracking-widest text-indigo-700 border-t border-slate-300 pt-0.5 w-[80%] transition-colors duration-500">
-                  Chief Coord.</p>
+                  class="text-[7px] font-black uppercase tracking-widest text-indigo-700 border-t border-slate-300 pt-0.5 w-[85%] transition-colors duration-500">
+                  Chief Coord.
+                </p>
               </div>
-              <!-- QR Code inject target -->
-              <div id="eid-qr" class="w-[70px] h-[70px] flex items-center justify-end"></div>
+              <div id="eid-qr" class="w-[60px] h-[60px] flex items-center justify-end shrink-0"></div>
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
   </div>
 
@@ -3396,13 +3380,11 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       if (!globalActiveDataPayloadBackup) return;
 
       const pin = localStorage.getItem('trekLoggedInPIN');
-      // Finds exact matched user in array based on local PIN token
       const member = globalActiveDataPayloadBackup.members.find(m => String(m.pin).trim() === String(pin).trim());
-
       if (!member) return;
 
-      // Text Node Injections
-      document.getElementById('eid-title').innerText = globalActiveDataPayloadBackup.eidHeading || globalActiveDataPayloadBackup.tripName || 'Zantar Mantar, Dilli';
+      // Text Injections
+      document.getElementById('eid-title').innerText = globalActiveDataPayloadBackup.eidHeading || globalActiveDataPayloadBackup.tripName || 'VALLEY OF FLOWERS';
       
       const subtitleEl = document.getElementById('eid-subtitle');
       if (globalActiveDataPayloadBackup.eidSubheading && globalActiveDataPayloadBackup.eidSubheading.trim() !== "") {
@@ -3420,57 +3402,33 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       document.getElementById('eid-email').innerText = member.email || '-';
       document.getElementById('eid-chief-sign').src = globalActiveDataPayloadBackup.chiefCoordinatorSignature || '';
 
-      // Set Up Styling Overrides Based on Status
+      // Verification Logic & Dynamic Theme Switching
       const leftBar = document.getElementById('eid-left-bar');
       const photoBorder = document.getElementById('eid-photo-container');
       const titleText = document.getElementById('eid-title');
       const signText = document.getElementById('eid-sign-text');
       const verticalStatusText = document.getElementById('eid-vertical-status');
-      const cardSurface = document.getElementById('eid-card-surface');
       
-      const status = (member.verification || '').toLowerCase();
-      const isVerified = status.includes('verified');
+      const status = String(member.verification || '').toLowerCase().trim();
+      const isVerified = status === 'verified';
 
-      if (verticalStatusText) {
-        verticalStatusText.innerText = isVerified ? "VERIFIED" : "UNVERIFIED";
-      }
-
-      // Applies Theme Hijack depending on approval state (Blue vs Red ID)
       if (isVerified) {
-        leftBar.className = "w-[50px] bg-indigo-600 flex flex-col justify-between items-center pt-4 pb-4 text-white shrink-0 transition-colors duration-500";
-        photoBorder.className = "h-[190px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 overflow-hidden transition-colors duration-500";
-        titleText.className = "text-[22px] font-black tracking-tighter uppercase text-indigo-700 leading-none transition-colors duration-500 w-full truncate text-center";
-        signText.className = "text-[7px] font-black uppercase tracking-widest text-indigo-700 border-t border-slate-300 pt-0.5 w-[80%] transition-colors duration-500";
+        // Indigo Theme (Verified)
+        verticalStatusText.innerText = "VERIFIED";
+        leftBar.className = "w-[46px] bg-indigo-600 flex flex-col justify-between items-center py-4 text-white shrink-0 transition-colors duration-500 select-none";
+        photoBorder.className = "h-[180px] w-full border-y-[2.5px] border-indigo-600 relative bg-slate-100 overflow-hidden rounded-md transition-colors duration-500";
+        titleText.className = "text-base font-black tracking-wide uppercase text-indigo-700 leading-tight w-full truncate transition-colors duration-500";
+        signText.className = "text-[7px] font-black uppercase tracking-widest text-indigo-700 border-t border-slate-300 pt-0.5 w-[85%] transition-colors duration-500";
       } else {
-        leftBar.className = "w-[50px] bg-rose-600 flex flex-col justify-between items-center pt-4 pb-4 text-white shrink-0 transition-colors duration-500";
-        photoBorder.className = "h-[190px] w-full border-y-[3px] border-rose-600 relative bg-slate-100 overflow-hidden transition-colors duration-500";
-        titleText.className = "text-[22px] font-black tracking-tighter uppercase text-rose-700 leading-none transition-colors duration-500 w-full truncate text-center";
-        signText.className = "text-[7px] font-black uppercase tracking-widest text-rose-700 border-t border-slate-300 pt-0.5 w-[80%] transition-colors duration-500";
+        // Rose/Red Theme (Unverified)
+        verticalStatusText.innerText = "UNVERIFIED";
+        leftBar.className = "w-[46px] bg-rose-600 flex flex-col justify-between items-center py-4 text-white shrink-0 transition-colors duration-500 select-none";
+        photoBorder.className = "h-[180px] w-full border-y-[2.5px] border-rose-600 relative bg-slate-100 overflow-hidden rounded-md transition-colors duration-500";
+        titleText.className = "text-base font-black tracking-wide uppercase text-rose-700 leading-tight w-full truncate transition-colors duration-500";
+        signText.className = "text-[7px] font-black uppercase tracking-widest text-rose-700 border-t border-slate-300 pt-0.5 w-[85%] transition-colors duration-500";
       }
 
-      // Generate the background SVG text watermark programmatically 
-      if (cardSurface) {
-        const line1Text = globalActiveDataPayloadBackup.eidHeading || globalActiveDataPayloadBackup.tripName || "Zantar Mantar, Dilli";
-        const row = `${line1Text}  •  `.repeat(4);
-        const svgWatermark = `
-          <svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'>
-            <g transform='rotate(-35 140 140)' fill='rgba(148, 163, 184, 0.04)' font-size='16' font-weight='900' font-family="sans-serif">
-              <text x='-120' y='40'>${row}</text>
-              <text x='-120' y='110'>${row}</text>
-              <text x='-120' y='180'>${row}</text>
-              <text x='-120' y='250'>${row}</text>
-              <text x='-120' y='320'>${row}</text>
-              <text x='-120' y='390'>${row}</text>
-            </g>
-          </svg>
-        `;
-        // Inject SVG directly via CSS rule
-        cardSurface.style.backgroundImage = `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgWatermark)}")`;
-        cardSurface.style.backgroundRepeat = 'repeat';
-        cardSurface.style.backgroundPosition = 'center';
-      }
-
-      // Fetch specific physical stamp image if it exists on sheet
+      // Stamp Image
       const stampImageUrl = globalActiveDataPayloadBackup.eidStampImage;
       const stampContainer = document.getElementById('eid-stamp-container');
       const stampImgEl = document.getElementById('eid-stamp-img');
@@ -3487,19 +3445,17 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       lucide.createIcons();
     }
 
-    // Configures the qrcode.js generator package
     function buildQR(member) {
       const qr = document.getElementById('eid-qr');
-      qr.innerHTML = ''; // Wipe canvas before inject
-      const statusText = (member.verification || '').toLowerCase().includes('verified') ? 'VERIFIED' : 'UNVERIFIED';
-      
-      // Data embedded inside the readable QR block
-      const securePayload = member.name + " | " + (member.designation || 'Member') + " | STATUS: " + statusText;
+      qr.innerHTML = '';
+      const isVerified = String(member.verification || '').toLowerCase().trim() === 'verified';
+      const statusText = isVerified ? 'VERIFIED' : 'UNVERIFIED';
+      const securePayload = `${member.name} | ${member.designation || 'Member'} | STATUS: ${statusText}`;
 
       new QRCode(qr, {
         text: securePayload,
-        width: 75,
-        height: 75,
+        width: 60,
+        height: 60,
         colorDark: "#0f172a",
         colorLight: "#ffffff"
       });
