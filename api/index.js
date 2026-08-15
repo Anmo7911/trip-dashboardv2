@@ -1,27 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'node:crypto';
 
-// Fallback across all standard env variable names
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 const bucket = process.env.SUPABASE_STORAGE_BUCKET || 'trip-assets';
-
-if (!supabaseUrl || !serviceRoleKey) {
-  console.warn('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
-}
 
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: { persistSession: false, autoRefreshToken: false }
 });
 
-function text(v) {
-  return v === null || v === undefined ? '' : String(v).trim();
-}
-
-function number(v) {
-  const n = parseFloat(v);
-  return Number.isFinite(n) ? n : 0;
-}
+function text(v) { return v === null || v === undefined ? '' : String(v).trim(); }
+function number(v) { const n = parseFloat(v); return Number.isFinite(n) ? n : 0; }
 
 function applySecurityMask(fullName) {
   if (!fullName) return '';
@@ -40,29 +29,15 @@ function asIso(v) {
   return Number.isNaN(d.getTime()) ? text(v) : d.toISOString();
 }
 
-function formatMonthDay(v, timeZone = 'Asia/Kolkata') {
-  if (!v) return '';
-  const d = new Date(v);
-  if (Number.isNaN(d.getTime())) return text(v);
-  return new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit', timeZone }).format(d);
-}
-
-function formatHHMM(v, timeZone = 'Asia/Kolkata') {
-  if (!v) return '';
-  const d = new Date(v);
-  if (Number.isNaN(d.getTime())) {
-    const raw = text(v);
-    return raw.length >= 5 ? raw.slice(0, 5) : raw;
-  }
-  return new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone }).format(d);
-}
-
 function json(res, status, payload) {
   res.status(status).setHeader('Cache-Control', 'no-store');
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   return res.status(status).json(payload);
 }
 
+// -------------------------------------------------------------
+// USER API HELPERS
+// -------------------------------------------------------------
 async function resolveAsset(value, expiresIn = 3600) {
   const raw = text(value);
   if (!raw) return '';
@@ -78,17 +53,7 @@ async function resolveAsset(value, expiresIn = 3600) {
 }
 
 async function dashboard() {
-  const [
-    settingsResult,
-    txResult,
-    membersResult,
-    memberMetaResult,
-    placesResult,
-    budgetResult,
-    messagesResult,
-    archivesResult,
-    appMetaResult
-  ] = await Promise.all([
+  const [settingsResult, txResult, membersResult, memberMetaResult, placesResult, budgetResult, messagesResult, archivesResult, appMetaResult] = await Promise.all([
     supabase.from('settings_sheet').select('*').order('row_number', { ascending: true }),
     supabase.from('transactions_sheet').select('*').order('id', { ascending: true }),
     supabase.from('members_sheet').select('*').order('id', { ascending: true }),
@@ -155,11 +120,13 @@ async function dashboard() {
     }
 
     return {
+      id: row.id,
       utr: text(row.col_a),
       date: asIso(row.col_b),
       amount: amt,
       category: cat,
       notes: row.col_f ?? '',
+      claimant: claimant,
       isVerified
     };
   }).reverse();
@@ -183,9 +150,12 @@ async function dashboard() {
       finalImg = defaultSecureAvatar;
     }
     members.push({
+      id: r.id,
       name: finalName,
+      rawName: rawName,
       role: roleName,
       img: finalImg,
+      rawImg: r.col_c,
       pin: text(r.col_d),
       attendance: text(r.col_e),
       designation: roleName,
@@ -201,29 +171,31 @@ async function dashboard() {
     });
   }
 
-  const timeZone = text(meta.trip_timezone) || 'Asia/Kolkata';
   const places = (placesResult.data || []).map((r, index) => ({
+    id: r.id,
     rowId: index + 1,
     name: r.col_a,
     note: r.col_b,
     status: text(r.col_c) || 'Pending',
     timeString: r.col_d ? asIso(r.col_d) : '',
     tripDay: text(r.col_f),
-    targetDate: r.col_g ? formatMonthDay(r.col_g, timeZone) : '',
-    eta: r.col_h ? formatHHMM(`1970-01-01T${r.col_h}`, 'UTC') : '',
+    targetDate: text(r.col_g),
+    eta: text(r.col_h),
     location: text(r.col_i),
     details: text(r.col_j),
-    ata: r.col_k ? formatHHMM(r.col_k, timeZone) : '',
+    ata: text(r.col_k),
     cancelStatus: text(r.col_l)
   }));
 
-  const squadMessages = (messagesResult.data || []).reverse().map(r => ({
+  const squadMessages = (messagesResult.data || []).map(r => ({
+    id: r.id,
     timestamp: asIso(r.col_a),
     sender: text(r.col_b),
     text: text(r.col_c)
   }));
 
   const pastTrips = (archivesResult.data || []).map(r => ({
+    id: r.id,
     name: text(r.col_a),
     dates: text(r.col_b),
     totalSpent: number(text(r.col_c).replace(/[^0-9.]/g, '')),
@@ -245,164 +217,119 @@ async function dashboard() {
       percentLeft: totalBudget > 0 ? ((totalBudget - totalExpenses) / totalBudget) * 100 : 0
     },
     allocations: { limits: categoryBudgets, spent: categorySpent },
-    transactions, members, places, messages: squadMessages, pastTrips
+    transactions, members, places, messages: squadMessages, pastTrips,
+    settingsRaw: settingsRows
   };
 }
 
-async function verifyMemberPIN(name, pin) {
-  const { data, error } = await supabase.from('members_sheet').select('col_a,col_d').order('id', { ascending: true });
-  if (error) throw error;
-
-  const targetName = text(name).toLowerCase();
-  const targetPin = text(pin).replace(/\D/g, ''); // strip any non-digit chars
-
-  for (const row of data || []) {
-    const rawName = text(row.col_a).toLowerCase();
-    const maskedName = applySecurityMask(text(row.col_a)).toLowerCase();
-    const dbPin = text(row.col_d).replace(/\D/g, '');
-
-    if (rawName === targetName || maskedName === targetName) {
-      if (dbPin === targetPin && targetPin.length > 0) {
-        return { success: true, name: text(row.col_a) };
-      }
-    }
+// -------------------------------------------------------------
+// ADMIN ACTION HANDLERS
+// -------------------------------------------------------------
+async function adminLogin(username, password) {
+  const { data, error } = await supabase.from('admin_auth').select('*').eq('username', text(username)).maybeSingle();
+  if (error || !data) return { success: false, error: 'Invalid admin credentials' };
+  if (text(data.password_hash) === text(password)) {
+    return { success: true, token: crypto.randomUUID() };
   }
-  return { success: false, error: 'Invalid PIN' };
+  return { success: false, error: 'Invalid password' };
 }
 
-async function saveExpense(formData) {
-  const { data: settingsRows, error: settingsError } = await supabase.from('settings_sheet').select('*');
-  if (settingsError) throw settingsError;
-  const expenseSettingRow = settingsRows?.find(r => Number(r.row_number) === 22);
-  const expenseStatus = text(expenseSettingRow?.col_b);
-  if (expenseStatus === 'STOP Expense') return dashboard();
-
-  const amount = number(formData.amount);
-  if (!(amount >= 0)) throw new Error('Invalid amount');
-
-  let newUTR = '';
-  for (;;) {
-    newUTR = `VOF${crypto.randomInt(100000, 1000000)}`;
-    const { data, error } = await supabase.from('transactions_sheet').select('id').eq('col_a', newUTR).limit(1);
-    if (error) throw error;
-    if (!data?.length) break;
-  }
-
-  const { error } = await supabase.from('transactions_sheet').insert({
-    col_a: newUTR,
-    col_b: formData.date || new Date().toISOString(),
-    col_c: amount,
-    col_d: formData.category || 'Other',
-    col_e: 'App',
-    col_f: formData.notes || '',
-    col_g: new Date().toISOString(),
-    col_h: formData.paidVia || 'UPI',
-    col_i: formData.claimant || '',
-    col_j: 'Verified'
-  });
-  if (error) throw error;
-  return dashboard();
-}
-
-async function updatePlaceStatus(rowId, nextStatus) {
-  const rows = await supabase.from('places_sheet').select('id').order('id', { ascending: true });
-  if (rows.error) throw rows.error;
-  const row = rows.data?.[Number(rowId) - 1];
-  if (row) {
-    const patch = { col_c: nextStatus };
-    patch.col_d = nextStatus === 'Visited' ? new Date().toISOString() : null;
-    const { error } = await supabase.from('places_sheet').update(patch).eq('id', row.id);
-    if (error) throw error;
+async function adminUpdateSetting(rowNumber, col, value) {
+  const { data: rows } = await supabase.from('settings_sheet').select('*').eq('row_number', Number(rowNumber));
+  const patch = { [`col_${col.toLowerCase()}`]: value };
+  if (rows?.length) {
+    await supabase.from('settings_sheet').update(patch).eq('row_number', Number(rowNumber));
+  } else {
+    await supabase.from('settings_sheet').insert({ row_number: Number(rowNumber), ...patch });
   }
   return dashboard();
 }
 
-async function stampATA(rowId) {
-  const rows = await supabase.from('places_sheet').select('id').order('id', { ascending: true });
-  if (rows.error) throw rows.error;
-  const row = rows.data?.[Number(rowId) - 1];
-  if (row) {
-    const { error } = await supabase.from('places_sheet').update({ col_k: new Date().toISOString() }).eq('id', row.id);
-    if (error) throw error;
+async function adminSaveMember(memberData) {
+  const payload = {
+    col_a: memberData.name || '',
+    col_b: memberData.role || 'Member',
+    col_c: memberData.img || '',
+    col_d: memberData.pin || '1234',
+    col_e: memberData.attendance || 'Confirmed',
+    col_h: memberData.memberRole || '',
+    col_i: memberData.verification || 'Verified',
+    col_l: memberData.assignedRoleDetail || '',
+    col_o: memberData.mobile || '',
+    col_p: memberData.email || ''
+  };
+
+  if (memberData.id) {
+    await supabase.from('members_sheet').update(payload).eq('id', memberData.id);
+  } else {
+    await supabase.from('members_sheet').insert(payload);
   }
   return dashboard();
 }
 
-async function saveFinalSignature(memberPin, base64Data) {
-  const cleanPin = text(memberPin).replace(/\D/g, '');
-  const { data: members, error } = await supabase.from('members_sheet').select('id,col_d');
-  if (error) throw error;
+async function adminDeleteMember(memberId) {
+  await supabase.from('members_sheet').delete().eq('id', memberId);
+  return dashboard();
+}
 
-  const matchedMembers = (members || []).filter(m => text(m.col_d).replace(/\D/g, '') === cleanPin);
-  if (!matchedMembers.length) return dashboard();
+async function adminSavePlace(placeData) {
+  const payload = {
+    col_a: placeData.name || '',
+    col_b: placeData.note || '',
+    col_c: placeData.status || 'Pending',
+    col_f: placeData.tripDay || 'Day 1',
+    col_g: placeData.targetDate || '',
+    col_h: placeData.eta || '',
+    col_i: placeData.location || '',
+    col_j: placeData.details || '',
+    col_k: placeData.ata || '',
+    col_l: placeData.cancelStatus || ''
+  };
 
-  const match = String(base64Data || '').match(/^data:image\/([a-zA-Z0-9.+-]+);base64,(.+)$/);
-  if (!match) throw new Error('Invalid signature image');
-  const ext = match[1].toLowerCase() === 'jpeg' ? 'jpg' : match[1].toLowerCase();
-  const bytes = Buffer.from(match[2], 'base64');
-  const path = `signatures/${crypto.randomUUID()}.${ext}`;
-
-  const { error: uploadError } = await supabase.storage.from(bucket).upload(path, bytes, {
-    contentType: `image/${ext}`,
-    upsert: false
-  });
-  if (uploadError) throw uploadError;
-
-  for (const member of matchedMembers) {
-    const { error: updateError } = await supabase.from('members_sheet').update({ col_n: `storage:${path}` }).eq('id', member.id);
-    if (updateError) throw updateError;
+  if (placeData.id) {
+    await supabase.from('places_sheet').update(payload).eq('id', placeData.id);
+  } else {
+    await supabase.from('places_sheet').insert(payload);
   }
   return dashboard();
 }
 
-async function saveSquadMessage(sender, message) {
-  const { error } = await supabase.from('messages_sheet').insert({
-    col_a: new Date().toISOString(),
-    col_b: sender || '',
-    col_c: message || ''
-  });
-  if (error) throw error;
-  const lowerText = text(message).toLowerCase();
-  if (lowerText.includes('/help') || lowerText.includes('/support')) {
-    const { error: adminError } = await supabase.from('messages_sheet').insert({
-      col_a: new Date().toISOString(),
-      col_b: 'Admin',
-      col_c: 'Typing....'
-    });
-    if (adminError) throw adminError;
-  }
+async function adminDeletePlace(placeId) {
+  await supabase.from('places_sheet').delete().eq('id', placeId);
   return dashboard();
 }
 
-async function changeMemberPIN(name, oldPin, newPin) {
-  const { data, error } = await supabase.from('members_sheet').select('*').order('id', { ascending: true });
-  if (error) throw error;
-  const target = (data || []).find(r => text(r.col_a).toLowerCase() === text(name).toLowerCase());
-  if (!target) return { success: false, error: 'User not found' };
-  if (text(target.col_d).replace(/\D/g, '') !== text(oldPin).replace(/\D/g, '')) {
-    return { success: false, error: 'Incorrect Current PIN' };
-  }
-  const { error: updateError } = await supabase.from('members_sheet').update({ col_d: text(newPin) }).eq('id', target.id);
-  if (updateError) throw updateError;
-  return { success: true };
+async function adminVerifyTx(txId, status) {
+  await supabase.from('transactions_sheet').update({ col_j: status }).eq('id', txId);
+  return dashboard();
 }
 
-async function uploadAsset(file) {
+async function adminDeleteTx(txId) {
+  await supabase.from('transactions_sheet').delete().eq('id', txId);
+  return dashboard();
+}
+
+async function adminUploadFile(file) {
   if (!file || !file.base64Data) throw new Error('No asset supplied');
   const raw = String(file.base64Data);
   const match = raw.match(/^data:([^;]+);base64,(.+)$/);
-  if (!match) throw new Error('Invalid data URL');
+  if (!match) throw new Error('Invalid data format');
   const mime = match[1];
   const bytes = Buffer.from(match[2], 'base64');
-  const safeName = text(file.fileName).replace(/[^a-zA-Z0-9._-]/g, '_') || 'asset';
-  const path = `uploads/${crypto.randomUUID()}-${safeName}`;
-  const { error } = await supabase.storage.from(bucket).upload(path, bytes, { contentType: mime, upsert: false });
-  if (error) throw error;
-  const { data: signed, error: signError } = await supabase.storage.from(bucket).createSignedUrl(path, 3600);
-  if (signError) throw signError;
-  return { path: `storage:${path}`, signedUrl: signed.signedUrl };
+  const ext = mime.split('/')[1] || 'jpg';
+  const cleanName = text(file.fileName).replace(/[^a-zA-Z0-9._-]/g, '_') || 'upload';
+  const path = `uploads/${Date.now()}-${cleanName}.${ext}`;
+
+  const { error: uploadErr } = await supabase.storage.from(bucket).upload(path, bytes, { contentType: mime, upsert: true });
+  if (uploadErr) throw uploadErr;
+
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+  return { publicUrl: data.publicUrl, storagePath: `storage:${path}` };
 }
 
+// -------------------------------------------------------------
+// MAIN API ROUTER
+// -------------------------------------------------------------
 export default async function handler(req, res) {
   if (req.method !== 'POST' && req.method !== 'GET') {
     return json(res, 405, { error: 'Method not allowed' });
@@ -413,15 +340,20 @@ export default async function handler(req, res) {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
 
     switch (action) {
+      // User Actions
       case 'dashboard': return json(res, 200, await dashboard());
-      case 'login': return json(res, 200, await verifyMemberPIN(body.name, body.pin));
-      case 'expense': return json(res, 200, await saveExpense(body));
-      case 'place-status': return json(res, 200, await updatePlaceStatus(body.rowId, body.nextStatus));
-      case 'ata': return json(res, 200, await stampATA(body.rowId));
-      case 'signature': return json(res, 200, await saveFinalSignature(body.memberPin, body.base64Data));
-      case 'message': return json(res, 200, await saveSquadMessage(body.sender, body.text));
-      case 'change-pin': return json(res, 200, await changeMemberPIN(body.name, body.oldPin, body.newPin));
-      case 'upload-asset': return json(res, 200, await uploadAsset(body));
+      case 'login': return json(res, 200, await adminLogin(body.name, body.pin));
+      
+      // Admin Actions
+      case 'admin-login': return json(res, 200, await adminLogin(body.username, body.password));
+      case 'admin-update-setting': return json(res, 200, await adminUpdateSetting(body.rowNumber, body.col, body.value));
+      case 'admin-save-member': return json(res, 200, await adminSaveMember(body));
+      case 'admin-delete-member': return json(res, 200, await adminDeleteMember(body.id));
+      case 'admin-save-place': return json(res, 200, await adminSavePlace(body));
+      case 'admin-delete-place': return json(res, 200, await adminDeletePlace(body.id));
+      case 'admin-verify-tx': return json(res, 200, await adminVerifyTx(body.id, body.status));
+      case 'admin-delete-tx': return json(res, 200, await adminDeleteTx(body.id));
+      case 'admin-upload': return json(res, 200, await adminUploadFile(body));
       default: return json(res, 200, await dashboard());
     }
   } catch (error) {
