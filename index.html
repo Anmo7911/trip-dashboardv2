@@ -2854,8 +2854,16 @@ renderArchivesList(data.pastTrips);
       }
 
       // Format ISO Date for backend
-      const pickedDateStr = this.date.value; let finalDateTimeIso = pickedDateStr;
-      if (pickedDateStr) { const now = new Date(); const hour = String(now.getHours()).padStart(2, '0'); const min = String(now.getMinutes()).padStart(2, '0'); const sec = String(now.getSeconds()).padStart(2, '0'); finalDateTimeIso = `${pickedDateStr}T${hour}:${min}:${sec}`; }
+      // Format exact Real-Time Timestamp with proper timezone
+      const pickedDateStr = this.date.value;
+      const now = new Date();
+      let finalDateTimeIso = now.toISOString();
+
+      if (pickedDateStr) {
+        const [year, month, day] = pickedDateStr.split('-').map(Number);
+        const expenseDate = new Date(year, month - 1, day, now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+        finalDateTimeIso = expenseDate.toISOString();
+      }
       
       // Set active claimant context
       const activeClaimant = localStorage.getItem('trekLoggedInUser') || "Unknown";
@@ -3717,8 +3725,17 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         if (t.date) { 
           try { 
             const txDate = new Date(t.date); 
-            const datePart = txDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }); 
-            const timePart = txDate.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true }); 
+            const datePart = new Intl.DateTimeFormat('en-IN', { 
+              day: 'numeric', 
+              month: 'short', 
+              timeZone: 'Asia/Kolkata' 
+            }).format(txDate); 
+            const timePart = new Intl.DateTimeFormat('en-IN', { 
+              hour: 'numeric', 
+              minute: '2-digit', 
+              hour12: true, 
+              timeZone: 'Asia/Kolkata' 
+            }).format(txDate); 
             dateTimeString = `${datePart}, ${timePart}`; 
           } catch(e) { dateTimeString = t.date; } 
         }
