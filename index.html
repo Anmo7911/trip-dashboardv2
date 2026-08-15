@@ -3904,6 +3904,58 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
     // Instant Search Filter Handler
     function filterArchivesList(searchTerm) {
+      if (!globalActiveDataPayloadBackup || !globalActiveDataPayloadBackup.pastTrips) return;
+      
+      const term = searchTerm.toLowerCase().trim();
+      const filtered = globalActiveDataPayloadBackup.pastTrips.filter(trip => {
+        const nameMatch = trip.name ? trip.name.toLowerCase().includes(term) : false;
+        const dateMatch = trip.dates ? trip.dates.toLowerCase().includes(term) : false;
+        return nameMatch || dateMatch;
+      });
+
+      renderArchivesList(filtered);
+    }
+
+    // Separate Reusable Renderer
+    function renderArchivesList(trips) {
+      const container = document.getElementById('archives-modal-content');
+      if (!container) return;
+
+      if (!trips || trips.length === 0) {
+        container.innerHTML = `
+          <div class="bg-slate-50 rounded-2xl p-6 text-center border border-slate-200">
+            <i data-lucide="search-x" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">No matching trips found</p>
+          </div>`;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = trips.map(trip => `
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col justify-between gap-3">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">${trip.name}</h3>
+              ${trip.dates ? `<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${trip.dates}</p>` : ''}
+            </div>
+            ${trip.totalSpent ? `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase">Spent: ₹${Math.round(trip.totalSpent).toLocaleString('en-IN')}</span>` : ''}
+          </div>
+          
+          <div class="flex gap-2 pt-1 border-t border-slate-200">
+            ${trip.reportUrl ? `
+              <a href="${trip.reportUrl}" target="_blank" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm">
+                <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Report
+              </a>` : ''}
+            ${trip.galleryUrl ? `
+              <a href="${trip.galleryUrl}" target="_blank" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] font-black uppercase tracking-widest py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+                <i data-lucide="image" class="w-3.5 h-3.5"></i> Gallery
+              </a>` : ''}
+          </div>
+        </div>
+      `).join('');
+      
+      lucide.createIcons();
+    }
 
     function closeArchivesModal() {
       const modal = document.getElementById('archives-modal');
