@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trip Admin Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+  <!-- =========================================
+       ADMIN LOGIN OVERLAY
+       ========================================= -->
+  <div id="admin-login-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="max-w-sm w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl text-center">
+      <div class="w-16 h-16 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="shield-check" class="w-8 h-8"></i>
+      </div>
+      <h1 class="text-xl font-black uppercase tracking-wider text-white">Admin Portal</h1>
+      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1 mb-6">Management Authentication</p>
+
+      <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-4 text-left">
+        <div>
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Username</label>
+          <input type="text" id="adminUser" value="admin" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white font-bold outline-none focus:border-indigo-500 mt-1">
+        </div>
+        <div>
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Master Password / PIN</label>
+          <input type="password" id="adminPass" placeholder="••••" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white font-bold outline-none focus:border-indigo-500 mt-1 tracking-widest">
+        </div>
+        <p id="loginError" class="text-rose-400 text-xs font-bold hidden"></p>
+        <button type="submit" id="loginBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest shadow-lg">
+          Unlock Dashboard
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================
+       ADMIN NAVIGATION HEADER
+       ========================================= -->
+  <header class="bg-slate-950 border-b border-slate-800 px-6 py-4 sticky top-0 z-40 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md">
+        <i data-lucide="shield" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <h2 id="headerTripName" class="text-base font-black uppercase tracking-wide leading-tight">Trip Dashboard</h2>
+        <span class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Live Admin Session
+        </span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <a href="/" target="_blank" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+        <i data-lucide="external-link" class="w-4 h-4"></i> <span class="hidden sm:inline">View App</span>
+      </a>
+      <button onclick="adminLogout()" class="px-3.5 py-2 bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+        <i data-lucide="log-out" class="w-4 h-4"></i> <span class="hidden sm:inline">Logout</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================================
+       ADMIN TABS
+       ========================================= -->
+  <div class="bg-slate-950/60 border-b border-slate-800 px-6 flex gap-2 overflow-x-auto">
+    <button onclick="switchTab('settings')" id="tabBtn-settings" class="px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 border-indigo-500 text-indigo-400 flex items-center gap-2">
+      <i data-lucide="sliders" class="w-4 h-4"></i> Settings & Switches
+    </button>
+    <button onclick="switchTab('members')" id="tabBtn-members" class="px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2">
+      <i data-lucide="users" class="w-4 h-4"></i> Members & Photo Upload
+    </button>
+    <button onclick="switchTab('places')" id="tabBtn-places" class="px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2">
+      <i data-lucide="map-pin" class="w-4 h-4"></i> Route & Timeline
+    </button>
+    <button onclick="switchTab('ledger')" id="tabBtn-ledger" class="px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2">
+      <i data-lucide="receipt" class="w-4 h-4"></i> Expenses & Ledger
+    </button>
+  </div>
+
+  <!-- =========================================
+       MAIN CONTENT CONTAINER
+       ========================================= -->
+  <main class="flex-1 p-6 max-w-6xl w-full mx-auto space-y-6">
+
+    <!-- TAB 1: SETTINGS & SWITCHES -->
+    <section id="pane-settings" class="tab-pane active space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Live App Controls -->
+        <div class="bg-slate-950 border border-slate-800 p-6 rounded-3xl space-y-4">
+          <h3 class="text-sm font-black uppercase tracking-wider text-slate-300 flex items-center gap-2">
+            <i data-lucide="toggle-left" class="w-4 h-4 text-indigo-400"></i> Global App Switches
+          </h3>
+
+          <!-- App Lock -->
+          <div class="flex items-center justify-between p-3 bg-slate-900 rounded-2xl border border-slate-800">
+            <div>
+              <p class="text-xs font-bold text-white">App Master Lock</p>
+              <p class="text-[10px] text-slate-400">Freeze user access when trip concludes</p>
+            </div>
+            <select onchange="saveSetting(19, 'b', this.value)" id="setAppStatus" class="bg-slate-950 border border-slate-700 text-xs font-bold rounded-xl px-3 py-2 text-indigo-400 outline-none">
+              <option value="OPEN">ACTIVE (Open)</option>
+              <option value="LOCKED">LOCKED (Concluded)</option>
+            </select>
+          </div>
+
+          <!-- Expense Add Toggle -->
+          <div class="flex items-center justify-between p-3 bg-slate-900 rounded-2xl border border-slate-800">
+            <div>
+              <p class="text-xs font-bold text-white">Expense Logging Status</p>
+              <p class="text-[10px] text-slate-400">Allow or pause new expense entries</p>
+            </div>
+            <select onchange="saveSetting(22, 'b', this.value)" id="setExpenseStatus" class="bg-slate-950 border border-slate-700 text-xs font-bold rounded-xl px-3 py-2 text-indigo-400 outline-none">
+              <option value="ALLOW Expense">ALLOW Expense</option>
+              <option value="STOP Expense">PAUSE (Stop Expense)</option>
+            </select>
+          </div>
+
+          <!-- Route Live Tracking Mode -->
+          <div class="flex items-center justify-between p-3 bg-slate-900 rounded-2xl border border-slate-800">
+            <div>
+              <p class="text-xs font-bold text-white">Route & GPS Visibility</p>
+              <p class="text-[10px] text-slate-400">Route tab security vault mode</p>
+            </div>
+            <select onchange="saveSetting(18, 'b', this.value)" id="setRouteStatus" class="bg-slate-950 border border-slate-700 text-xs font-bold rounded-xl px-3 py-2 text-indigo-400 outline-none">
+              <option value="ACTIVE">ACTIVE (Unlocked)</option>
+              <option value="LOCKED">LOCKED (Vault Standby)</option>
+              <option value="STEALTH">STEALTH (Hidden)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Trip Information -->
+        <div class="bg-slate-950 border border-slate-800 p-6 rounded-3xl space-y-4">
+          <h3 class="text-sm font-black uppercase tracking-wider text-slate-300 flex items-center gap-2">
+            <i data-lucide="edit-3" class="w-4 h-4 text-indigo-400"></i> Trip Details & Notices
+          </h3>
+
+          <div>
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Trip Name</label>
+            <input type="text" id="setTripName" onchange="saveSetting(2, 'b', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white font-bold mt-1">
+          </div>
+
+          <div>
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Destination Subtitle</label>
+            <input type="text" id="setTripSub" onchange="saveSetting(2, 'c', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white font-bold mt-1">
+          </div>
+
+          <div>
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">General Notice Banner</label>
+            <input type="text" id="setNotice" onchange="saveSetting(7, 'b', this.value)" placeholder="e.g. #TRIPTOUTTARAKHAND" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white font-bold mt-1">
+          </div>
+
+          <div>
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Emergency Alert Banner</label>
+            <input type="text" id="setWarning" onchange="saveSetting(8, 'b', this.value)" placeholder="Over-Budget warning message..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-rose-400 font-bold mt-1">
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 2: MEMBERS & DIRECT PHOTO UPLOADER -->
+    <section id="pane-members" class="tab-pane space-y-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-black uppercase tracking-wider text-slate-300">Squad Members</h3>
+        <button onclick="openMemberModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black uppercase tracking-wider px-4 py-2.5 rounded-xl flex items-center gap-2">
+          <i data-lucide="user-plus" class="w-4 h-4"></i> Add Member
+        </button>
+      </div>
+
+      <div id="membersAdminGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- TAB 3: ROUTE & TIMELINE -->
+    <section id="pane-places" class="tab-pane space-y-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-black uppercase tracking-wider text-slate-300">Route Stops & Timetable</h3>
+        <button onclick="openPlaceModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black uppercase tracking-wider px-4 py-2.5 rounded-xl flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i> Add Stop
+        </button>
+      </div>
+
+      <div class="bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-900 text-slate-400 uppercase font-black tracking-wider text-[10px]">
+            <tr>
+              <th class="p-4">Day</th>
+              <th class="p-4">Location</th>
+              <th class="p-4">ETA / ATA</th>
+              <th class="p-4">Status</th>
+              <th class="p-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="placesAdminTable" class="divide-y divide-slate-800 font-bold">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 4: EXPENSES & LEDGER -->
+    <section id="pane-ledger" class="tab-pane space-y-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-black uppercase tracking-wider text-slate-300">Financial Ledger</h3>
+        <div id="ledgerStats" class="text-xs font-bold text-emerald-400"></div>
+      </div>
+
+      <div class="bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-900 text-slate-400 uppercase font-black tracking-wider text-[10px]">
+            <tr>
+              <th class="p-4">UTR / Date</th>
+              <th class="p-4">Claimant</th>
+              <th class="p-4">Category / Notes</th>
+              <th class="p-4">Amount</th>
+              <th class="p-4">Verification</th>
+              <th class="p-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ledgerAdminTable" class="divide-y divide-slate-800 font-bold">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================
+       MEMBER EDIT / ADD MODAL WITH PHOTO UPLOAD
+       ========================================= -->
+  <div id="memberModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4 my-8">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+        <h3 id="memberModalTitle" class="text-sm font-black uppercase tracking-wider text-white">Add Member</h3>
+        <button onclick="closeMemberModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="memberForm" onsubmit="saveMemberForm(event)" class="space-y-3 text-left">
+        <input type="hidden" id="memId">
+        
+        <div>
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Full Name</label>
+          <input type="text" id="memName" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Role / Designation</label>
+            <input type="text" id="memRole" placeholder="e.g. Coordinator, Member" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          </div>
+          <div>
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">4-Digit PIN</label>
+            <input type="text" id="memPin" maxlength="4" placeholder="1234" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1 tracking-widest">
+          </div>
+        </div>
+
+        <!-- Integrated Drag and Drop Photo Uploader -->
+        <div>
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Profile Photo (Drag & Drop or Select)</label>
+          <div id="dropZone" onclick="document.getElementById('memPhotoFile').click()" class="mt-1 border-2 border-dashed border-slate-800 hover:border-indigo-500 rounded-2xl p-4 text-center cursor-pointer bg-slate-950 transition-colors">
+            <input type="file" id="memPhotoFile" accept="image/*" class="hidden" onchange="handlePhotoSelect(this)">
+            <div id="uploadPreview" class="flex flex-col items-center">
+              <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-500 mb-1"></i>
+              <p class="text-[11px] font-bold text-slate-400">Click to browse or drop JPG/PNG image</p>
+            </div>
+          </div>
+          <input type="hidden" id="memImgUrl">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Mobile</label>
+            <input type="text" id="memMobile" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          </div>
+          <div>
+            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Email</label>
+            <input type="email" id="memEmail" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Assigned Role Description</label>
+          <textarea id="memRoleDetail" rows="2" placeholder="Tasks assigned to this member..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold mt-1"></textarea>
+        </div>
+
+        <button type="submit" id="saveMemBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest">
+          Save Member
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================
+       JAVASCRIPT LOGIC
+       ========================================= -->
+  <script>
+    let globalData = null;
+    let autoLogoutTimer = null;
+
+    // Reset inactivity timer on any user interaction
+    function resetAutoLogout() {
+      if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
+      autoLogoutTimer = setTimeout(() => {
+        alert("Session expired due to 15 minutes of inactivity.");
+        adminLogout();
+      }, 15 * 60 * 1000); // 15 minutes
+    }
+
+    ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
+      document.addEventListener(evt, resetAutoLogout, { passive: true });
+    });
+
+    async function adminApi(action, payload = {}) {
+      const res = await fetch(`/api/index?action=${encodeURIComponent(action)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Request failed');
+      return data;
+    }
+
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('adminUser').value;
+      const p = document.getElementById('adminPass').value;
+      const btn = document.getElementById('loginBtn');
+      const err = document.getElementById('loginError');
+
+      btn.innerText = 'VERIFYING...';
+      err.classList.add('hidden');
+
+      try {
+        const res = await adminApi('admin-login', { username: u, password: p });
+        if (res.success) {
+          sessionStorage.setItem('adminToken', res.token);
+          document.getElementById('admin-login-modal').classList.add('hidden');
+          resetAutoLogout();
+          loadAdminDashboard();
+        } else {
+          err.innerText = res.error || 'Invalid credentials';
+          err.classList.remove('hidden');
+        }
+      } catch (error) {
+        err.innerText = error.message;
+        err.classList.remove('hidden');
+      } finally {
+        btn.innerText = 'Unlock Dashboard';
+      }
+    }
+
+    function adminLogout() {
+      sessionStorage.removeItem('adminToken');
+      location.reload();
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('[id^="tabBtn-"]').forEach(b => {
+        b.classList.remove('border-indigo-500', 'text-indigo-400');
+        b.classList.add('border-transparent', 'text-slate-400');
+      });
+
+      document.getElementById(`pane-${tab}`).classList.add('active');
+      const btn = document.getElementById(`tabBtn-${tab}`);
+      btn.classList.add('border-indigo-500', 'text-indigo-400');
+      btn.classList.remove('border-transparent', 'text-slate-400');
+    }
+
+    async function loadAdminDashboard() {
+      try {
+        const data = await adminApi('dashboard');
+        globalData = data;
+        renderSettings(data);
+        renderMembers(data.members);
+        renderPlaces(data.places);
+        renderLedger(data.transactions, data.stats);
+        lucide.createIcons();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderSettings(d) {
+      document.getElementById('headerTripName').innerText = d.tripName || 'Trip Dashboard';
+      document.getElementById('setTripName').value = d.tripName || '';
+      document.getElementById('setTripSub').value = d.secondaryTitle || '';
+      document.getElementById('setNotice').value = d.tripNotice || '';
+      document.getElementById('setWarning').value = d.warningNotice || '';
+      document.getElementById('setAppStatus').value = d.appStatus || 'OPEN';
+      document.getElementById('setExpenseStatus').value = d.expenseStatus || 'ALLOW Expense';
+      document.getElementById('setRouteStatus').value = d.routeStatus || 'ACTIVE';
+    }
+
+    async function saveSetting(row, col, val) {
+      try {
+        const fresh = await adminApi('admin-update-setting', { rowNumber: row, col: col, value: val });
+        globalData = fresh;
+        renderSettings(fresh);
+      } catch (err) {
+        alert('Failed to save setting: ' + err.message);
+      }
+    }
+
+    // Photo Drag & Drop Upload
+    function handlePhotoSelect(input) {
+      const file = input.files[0];
+      if (!file) return;
+      uploadImageFile(file);
+    }
+
+    const dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-indigo-500'));
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-indigo-500');
+      if (e.dataTransfer.files.length) uploadImageFile(e.dataTransfer.files[0]);
+    });
+
+    async function uploadImageFile(file) {
+      const preview = document.getElementById('uploadPreview');
+      preview.innerHTML = '<p class="text-xs text-indigo-400 font-bold animate-pulse">Uploading photo to Supabase...</p>';
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const res = await adminApi('admin-upload', { fileName: file.name, base64Data: reader.result });
+          document.getElementById('memImgUrl').value = res.publicUrl;
+          preview.innerHTML = `<img src="${res.publicUrl}" class="w-16 h-16 rounded-xl object-cover border border-slate-700 mx-auto"><p class="text-[10px] text-emerald-400 font-bold mt-1">Photo Uploaded Successfully</p>`;
+        } catch (err) {
+          preview.innerHTML = `<p class="text-xs text-rose-400 font-bold">Upload failed: ${err.message}</p>`;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function renderMembers(mems) {
+      const grid = document.getElementById('membersAdminGrid');
+      grid.innerHTML = mems.map(m => `
+        <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <img src="${m.img || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.name)}" class="w-12 h-12 rounded-xl object-cover border border-slate-800 bg-slate-900">
+            <div>
+              <p class="text-xs font-black text-white">${m.rawName || m.name}</p>
+              <p class="text-[10px] font-bold text-indigo-400 uppercase">${m.role || 'Member'}</p>
+              <p class="text-[10px] font-mono text-slate-500">PIN: ${m.pin}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick='editMember(${JSON.stringify(m)})' class="p-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-lg"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+            <button onclick="deleteMember(${m.id})" class="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function openMemberModal() {
+      document.getElementById('memberModalTitle').innerText = 'Add Member';
+      document.getElementById('memberForm').reset();
+      document.getElementById('memId').value = '';
+      document.getElementById('memImgUrl').value = '';
+      document.getElementById('uploadPreview').innerHTML = '<i data-lucide="upload-cloud" class="w-8 h-8 text-slate-500 mb-1"></i><p class="text-[11px] font-bold text-slate-400">Click to browse or drop JPG/PNG image</p>';
+      document.getElementById('memberModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function editMember(m) {
+      document.getElementById('memberModalTitle').innerText = 'Edit Member';
+      document.getElementById('memId').value = m.id || '';
+      document.getElementById('memName').value = m.rawName || m.name;
+      document.getElementById('memRole').value = m.role || 'Member';
+      document.getElementById('memPin').value = m.pin || '1234';
+      document.getElementById('memMobile').value = m.mobile || '';
+      document.getElementById('memEmail').value = m.email || '';
+      document.getElementById('memRoleDetail').value = m.assignedRoleDetail || '';
+      document.getElementById('memImgUrl').value = m.rawImg || m.img || '';
+      if (m.img) {
+        document.getElementById('uploadPreview').innerHTML = `<img src="${m.img}" class="w-16 h-16 rounded-xl object-cover border border-slate-700 mx-auto">`;
+      }
+      document.getElementById('memberModal').classList.remove('hidden');
+    }
+
+    function closeMemberModal() {
+      document.getElementById('memberModal').classList.add('hidden');
+    }
+
+    async function saveMemberForm(e) {
+      e.preventDefault();
+      const payload = {
+        id: document.getElementById('memId').value ? Number(document.getElementById('memId').value) : null,
+        name: document.getElementById('memName').value,
+        role: document.getElementById('memRole').value,
+        pin: document.getElementById('memPin').value,
+        img: document.getElementById('memImgUrl').value,
+        mobile: document.getElementById('memMobile').value,
+        email: document.getElementById('memEmail').value,
+        assignedRoleDetail: document.getElementById('memRoleDetail').value
+      };
+
+      try {
+        const fresh = await adminApi('admin-save-member', payload);
+        globalData = fresh;
+        renderMembers(fresh.members);
+        closeMemberModal();
+      } catch (err) {
+        alert('Failed to save member: ' + err.message);
+      }
+    }
+
+    async function deleteMember(id) {
+      if (!confirm('Are you sure you want to delete this member?')) return;
+      try {
+        const fresh = await adminApi('admin-delete-member', { id });
+        globalData = fresh;
+        renderMembers(fresh.members);
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    function renderPlaces(places) {
+      const table = document.getElementById('placesAdminTable');
+      table.innerHTML = places.map(p => `
+        <tr class="hover:bg-slate-900/50">
+          <td class="p-4 text-indigo-400">${p.tripDay || '-'}</td>
+          <td class="p-4 text-white">${p.location || p.name || '-'}</td>
+          <td class="p-4 text-slate-400">ETA: ${p.eta || '-'} | ATA: ${p.ata || '-'}</td>
+          <td class="p-4"><span class="px-2 py-1 rounded-md text-[10px] ${p.status === 'Visited' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-800 text-slate-400'}">${p.status}</span></td>
+          <td class="p-4 text-right">
+            <button onclick="deletePlace(${p.id})" class="text-rose-400 hover:text-rose-300 p-1.5"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </td>
+        </tr>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    async function deletePlace(id) {
+      if (!confirm('Delete this stop from the itinerary?')) return;
+      try {
+        const fresh = await adminApi('admin-delete-place', { id });
+        globalData = fresh;
+        renderPlaces(fresh.places);
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    function renderLedger(txs, stats) {
+      document.getElementById('ledgerStats').innerText = `Total Spent: ₹${stats.expenses.toLocaleString('en-IN')} / ₹${stats.budget.toLocaleString('en-IN')}`;
+      const table = document.getElementById('ledgerAdminTable');
+      table.innerHTML = txs.map(t => `
+        <tr class="hover:bg-slate-900/50">
+          <td class="p-4"><span class="font-mono text-indigo-400">${t.utr}</span></td>
+          <td class="p-4 text-white">${t.claimant || 'Unknown'}</td>
+          <td class="p-4 text-slate-300"><span class="text-indigo-400 uppercase text-[10px]">[${t.category}]</span> ${t.notes}</td>
+          <td class="p-4 text-emerald-400 font-black">₹${t.amount}</td>
+          <td class="p-4">
+            <select onchange="verifyTx(${t.id}, this.value)" class="bg-slate-900 border border-slate-700 text-[10px] rounded-lg px-2 py-1 ${t.isVerified ? 'text-emerald-400' : 'text-amber-400'}">
+              <option value="Verified" ${t.isVerified ? 'selected' : ''}>Verified</option>
+              <option value="Unverified" ${!t.isVerified ? 'selected' : ''}>Unverified</option>
+            </select>
+          </td>
+          <td class="p-4 text-right">
+            <button onclick="deleteTx(${t.id})" class="text-rose-400 hover:text-rose-300 p-1.5"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          </td>
+        </tr>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    async function verifyTx(id, status) {
+      try {
+        const fresh = await adminApi('admin-verify-tx', { id, status });
+        globalData = fresh;
+        renderLedger(fresh.transactions, fresh.stats);
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function deleteTx(id) {
+      if (!confirm('Permanently delete this transaction?')) return;
+      try {
+        const fresh = await adminApi('admin-delete-tx', { id });
+        globalData = fresh;
+        renderLedger(fresh.transactions, fresh.stats);
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    // Auto-check if session token exists on load
+    window.onload = () => {
+      lucide.createIcons();
+      if (sessionStorage.getItem('adminToken')) {
+        document.getElementById('admin-login-modal').classList.add('hidden');
+        resetAutoLogout();
+        loadAdminDashboard();
+      }
+    };
+  </script>
+</body>
+</html>
