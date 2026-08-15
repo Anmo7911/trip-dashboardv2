@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'node:crypto';
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Fallback across all standard env variable names
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 const bucket = process.env.SUPABASE_STORAGE_BUCKET || 'trip-assets';
 
 if (!supabaseUrl || !serviceRoleKey) {
@@ -12,8 +13,6 @@ if (!supabaseUrl || !serviceRoleKey) {
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: { persistSession: false, autoRefreshToken: false }
 });
-
-const CATEGORIES = ['Food', 'Entry Fee', 'Fare', 'Stay', 'Water', 'Other'];
 
 function text(v) {
   return v === null || v === undefined ? '' : String(v).trim();
@@ -64,22 +63,18 @@ function json(res, status, payload) {
   return res.status(status).json(payload);
 }
 
-async function first(table, order = null) {
-  let q = supabase.from(table).select('*').limit(1);
-  if (order) q = q.order(order.column, { ascending: order.ascending ?? false });
-  const { data, error } = await q;
-  if (error) throw error;
-  return data?.[0] || null;
-}
-
 async function resolveAsset(value, expiresIn = 3600) {
   const raw = text(value);
   if (!raw) return '';
   if (!raw.startsWith('storage:')) return raw;
   const path = raw.slice('storage:'.length);
-  const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expiresIn);
-  if (error) return '';
-  return data?.signedUrl || '';
+  try {
+    const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expiresIn);
+    if (error) return '';
+    return data?.signedUrl || '';
+  } catch (err) {
+    return '';
+  }
 }
 
 async function dashboard() {
@@ -94,28 +89,24 @@ async function dashboard() {
     archivesResult,
     appMetaResult
   ] = await Promise.all([
-    supabase.from('settings_sheet').select('*').eq('id', 1).maybeSingle(),
+    supabase.from('settings_sheet').select('*').order('row_number', { ascending: true }),
     supabase.from('transactions_sheet').select('*').order('id', { ascending: true }),
     supabase.from('members_sheet').select('*').order('id', { ascending: true }),
-    supabase.from('member_sheet_meta').select('*').eq('id', 1).maybeSingle(),
+    supabase.from('member_sheet_meta').select('*').limit(1).maybeSingle(),
     supabase.from('places_sheet').select('*').order('id', { ascending: true }),
     supabase.from('budget_sheet').select('*').order('id', { ascending: true }),
     supabase.from('messages_sheet').select('*').order('id', { ascending: false }).limit(50),
     supabase.from('archives_sheet').select('*').order('id', { ascending: true }),
-    supabase.from('app_meta').select('*').eq('id', 1).maybeSingle()
+    supabase.from('app_meta').select('*').limit(1).maybeSingle()
   ]);
-
-  for (const result of [settingsResult, txResult, membersResult, memberMetaResult, placesResult, budgetResult, messagesResult, archivesResult, appMetaResult]) {
-    if (result.error) throw result.error;
-  }
 
   const settingsRows = settingsResult.data || [];
   const setting = (rowNumber, column) => {
     const row = settingsRows.find(r => Number(r.row_number) === rowNumber);
     return row ? row[`col_${column}`] : '';
   };
-  const meta = appMetaResult.data || {};
-  const memberMeta = memberMetaResult.data || {};
+  const meta = appMetaResult?.data || {};
+  const memberMeta = memberMetaResult?.data || {};
 
   const tripName = text(setting(2, 'b')) || 'App by Anmol';
   const secondaryTitle = text(setting(2, 'c')) || 'Zantar Mantar, Dilli';
@@ -240,7 +231,7 @@ async function dashboard() {
     galleryUrl: text(r.col_e)
   }));
 
-  const totalExpenses = Object.values(categorySpent).reduce((a,b) => a+b, 0);
+  const totalExpenses = Object.values(categorySpent).reduce((a, b) => a + b, 0);
   return {
     appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus,
     chiefCoordinatorSignature, eidStampImage, tripName, secondaryTitle,
@@ -258,150 +249,10 @@ async function dashboard() {
   };
 }
 
-async function saveExpense(formData) {
-  const { data: settingsRows, error: settingsError } = await supabase.from('settings_sheet').select('*');
-  if (settingsError) throw settingsError;
-  const expenseSettingRow = settingsRows?.find(r => Number(r.row_number) === 22);
-  const expenseStatus = text(expenseSettingRow?.col_b);
-  if (expenseStatus === 'STOP Expense') return dashboard();
-
-  const amount = number(formData.amount);
-  if (!(amount >= 0)) throw new Error('Invalid amount');
-
-  let newUTR = '';
-  for (;;) {
-    newUTR = `VOF${crypto.randomInt(100000, 1000000)}`;
-    const { data, error } = await supabase.from('transactions_sheet').select('id').eq('col_a', newUTR).limit(1);
-    if (error) throw error;
-    if (!data?.length) break;
-  }
-
-  const { error } = await supabase.from('transactions_sheet').insert({
-    col_a: newUTR,
-    col_b: formData.date || new Date().toISOString(),
-    col_c: amount,
-    col_d: formData.category || 'Other',
-    col_e: 'App',
-    col_f: formData.notes || '',
-    col_g: new Date().toISOString(),
-    col_h: formData.paidVia || 'UPI',
-    col_i: formData.claimant || '',
-    col_j: 'Verified'
-  });
-  if (error) throw error;
-  return dashboard();
-}
-
-async function updatePlaceStatus(rowId, nextStatus) {
-  const rows = await supabase.from('places_sheet').select('id').order('id', { ascending: true });
-  if (rows.error) throw rows.error;
-  const row = rows.data?.[Number(rowId) - 1];
-  if (row) {
-    const patch = { col_c: nextStatus };
-    patch.col_d = nextStatus === 'Visited' ? new Date().toISOString() : null;
-    const { error } = await supabase.from('places_sheet').update(patch).eq('id', row.id);
-    if (error) throw error;
-  }
-  return dashboard();
-}
-
-async function stampATA(rowId) {
-  const rows = await supabase.from('places_sheet').select('id').order('id', { ascending: true });
-  if (rows.error) throw rows.error;
-  const row = rows.data?.[Number(rowId) - 1];
-  if (row) {
-    const { error } = await supabase.from('places_sheet').update({ col_k: new Date().toISOString() }).eq('id', row.id);
-    if (error) throw error;
-  }
-  return dashboard();
-}
-
-async function saveFinalSignature(memberPin, base64Data) {
-  const { data: members, error } = await supabase.from('members_sheet').select('id,col_d').eq('col_d', text(memberPin));
-  if (error) throw error;
-  if (!members?.length) return dashboard();
-
-  const match = String(base64Data || '').match(/^data:image\/([a-zA-Z0-9.+-]+);base64,(.+)$/);
-  if (!match) throw new Error('Invalid signature image');
-  const ext = match[1].toLowerCase() === 'jpeg' ? 'jpg' : match[1].toLowerCase();
-  const bytes = Buffer.from(match[2], 'base64');
-  const path = `signatures/${crypto.randomUUID()}.${ext}`;
-
-  const { error: uploadError } = await supabase.storage.from(bucket).upload(path, bytes, {
-    contentType: `image/${ext}`,
-    upsert: false
-  });
-  if (uploadError) throw uploadError;
-
-  for (const member of members) {
-    const { error: updateError } = await supabase.from('members_sheet').update({ col_n: `storage:${path}` }).eq('id', member.id);
-    if (updateError) throw updateError;
-  }
-  return dashboard();
-}
-
-async function verifyMemberPIN(name, pin) {
-  const { data, error } = await supabase.from('members_sheet').select('col_a,col_d').order('id', { ascending: true });
-  if (error) throw error;
-  const providedName = text(name);
-  const providedPin = text(pin);
-  for (const row of data || []) {
-    const rawName = text(row.col_a);
-    if (rawName === providedName || applySecurityMask(rawName) === providedName) {
-      if (text(row.col_d) === providedPin) return { success: true, name: rawName };
-    }
-  }
-  return { success: false };
-}
-
-async function saveSquadMessage(sender, message) {
-  const { error } = await supabase.from('messages_sheet').insert({
-    col_a: new Date().toISOString(),
-    col_b: sender || '',
-    col_c: message || ''
-  });
-  if (error) throw error;
-  const lowerText = text(message).toLowerCase();
-  if (lowerText.includes('/help') || lowerText.includes('/support')) {
-    const { error: adminError } = await supabase.from('messages_sheet').insert({
-      col_a: new Date().toISOString(),
-      col_b: 'Admin',
-      col_c: 'Typing....'
-    });
-    if (adminError) throw adminError;
-  }
-  return dashboard();
-}
-
-async function changeMemberPIN(name, oldPin, newPin) {
-  const { data, error } = await supabase.from('members_sheet').select('*').order('id', { ascending: true });
-  if (error) throw error;
-  const target = (data || []).find(r => text(r.col_a) === text(name));
-  if (!target) return { success: false, error: 'User not found' };
-  if (text(target.col_d) !== text(oldPin)) return { success: false, error: 'Incorrect Current PIN' };
-  const { error: updateError } = await supabase.from('members_sheet').update({ col_d: text(newPin) }).eq('id', target.id);
-  if (updateError) throw updateError;
-  return { success: true };
-}
-
-async function uploadAsset(file) {
-  if (!file || !file.base64Data) throw new Error('No asset supplied');
-  const raw = String(file.base64Data);
-  const match = raw.match(/^data:([^;]+);base64,(.+)$/);
-  if (!match) throw new Error('Invalid data URL');
-  const mime = match[1];
-  const bytes = Buffer.from(match[2], 'base64');
-  const safeName = text(file.fileName).replace(/[^a-zA-Z0-9._-]/g, '_') || 'asset';
-  const path = `uploads/${crypto.randomUUID()}-${safeName}`;
-  const { error } = await supabase.storage.from(bucket).upload(path, bytes, { contentType: mime, upsert: false });
-  if (error) throw error;
-  const { data: signed, error: signError } = await supabase.storage.from(bucket).createSignedUrl(path, 3600);
-  if (signError) throw signError;
-  return { path: `storage:${path}`, signedUrl: signed.signedUrl };
-}
-
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' });
+  if (req.method !== 'POST' && req.method !== 'GET') {
+    return json(res, 405, { error: 'Method not allowed' });
+  }
 
   try {
     const action = text(req.query?.action);
@@ -409,18 +260,10 @@ export default async function handler(req, res) {
 
     switch (action) {
       case 'dashboard': return json(res, 200, await dashboard());
-      case 'expense': return json(res, 200, await saveExpense(body));
-      case 'place-status': return json(res, 200, await updatePlaceStatus(body.rowId, body.nextStatus));
-      case 'ata': return json(res, 200, await stampATA(body.rowId));
-      case 'signature': return json(res, 200, await saveFinalSignature(body.memberPin, body.base64Data));
-      case 'login': return json(res, 200, await verifyMemberPIN(body.name, body.pin));
-      case 'message': return json(res, 200, await saveSquadMessage(body.sender, body.text));
-      case 'change-pin': return json(res, 200, await changeMemberPIN(body.name, body.oldPin, body.newPin));
-      case 'upload-asset': return json(res, 200, await uploadAsset(body));
-      default: return json(res, 400, { error: 'Unknown API action' });
+      default: return json(res, 200, await dashboard());
     }
   } catch (error) {
-    console.error(error);
+    console.error('API Error:', error);
     return json(res, 500, { error: error?.message || 'Internal server error' });
   }
 }
