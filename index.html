@@ -34,55 +34,6 @@
   <meta name="theme-color" content="#4f46e5">
 
   <style>
-
-    /* Responsive Desktop Framing */
-@media (min-width: 768px) {
-  body {
-    background-color: #f1f5f9 !important;
-  }
-
-  .title-enter-bar > div:first-child {
-    display: none;
-  }
-
-  .title-enter-bar {
-    max-width: 480px;
-    margin: 0 auto;
-  }
-
-  nav.fixed {
-    max-width: 480px;
-    left: 50% !important;
-    transform: translateX(-50%);
-    border-radius: 24px 24px 0 0;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.08);
-    border-top: 1px solid #e2e8f0;
-  }
-
-  #more-menu-sheet {
-    max-width: 480px;
-    left: 50% !important;
-    transform: translate(-50%, 100%);
-    border-radius: 32px 32px 0 0;
-  }
-
-  #squad-chat-modal {
-    max-width: 480px;
-    left: 50% !important;
-    transform: translateX(-50%);
-    border-left: 1px solid #e2e8f0;
-    border-right: 1px solid #e2e8f0;
-  }
-
-  #app-splash-screen {
-    max-width: 480px;
-    left: 50% !important;
-    transform: translateX(-50%);
-    border-left: 1px solid #e2e8f0;
-    border-right: 1px solid #e2e8f0;
-  }
-}
-    
     /* =========================================
        CUSTOM CSS & ANIMATIONS ENGINE
        ========================================= */
@@ -1193,7 +1144,8 @@
     <div class="absolute bottom-full left-0 w-full h-[100vh] bg-indigo-600 pointer-events-none"></div>
 
     <!-- Header Content: App Name / Chat Trigger -->
-   <div class="w-full max-w-md mx-auto bg-gradient-to-br from-indigo-600 to-violet-700 rounded-b-3xl shadow-md px-4 pt-4 pb-4 flex flex-col items-center justify-center text-center relative z-20">
+    <div
+      class="w-full bg-gradient-to-br from-indigo-600 to-violet-700 rounded-b-3xl shadow-md px-4 pt-4 pb-4 flex flex-col items-center justify-center text-center relative z-20">
       <!-- Rotating headline scene (swaps Trip Title and Subtitle) -->
       <div class="headline-scene">
         <div id="ui-headline-flipper" class="headline-flipper">
@@ -1215,7 +1167,9 @@
     </div>
 
     <!-- Live Notice Container (Warning / Standard slider) -->
-    <div id="notice-container" class="hidden overflow-hidden w-full max-w-md mx-auto bg-slate-50 border-b border-slate-200 -mt-2 pt-4 pb-1 relative z-10 rounded-b-2xl">
+    <div id="notice-container"
+      class="hidden overflow-hidden w-full bg-slate-50 border-b border-slate-200 -mt-2 pt-4 pb-1 relative z-10">
+      <div id="notice-slider" class="carousel-track">
         <!-- Standard Notice Slot -->
         <div class="carousel-item px-4 pb-1">
           <div
