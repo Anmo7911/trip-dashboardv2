@@ -116,8 +116,10 @@ async function dashboard() {
   const endDate = setting(5, 'b') ? new Date(setting(5, 'b')).getTime() : null;
   const eidStampImage = await resolveAsset(setting(12, 'b'));
   const rawEidStamp = setting(12, 'b') || '';
-  const guidelinesUrl = setting(11, 'b') || '';
-  const tripReportUrl = setting(13, 'b') || '';
+  const guidelinesUrl = await resolveAsset(setting(11, 'b'));
+  const rawGuidelines = setting(11, 'b') || '';
+  const tripReportUrl = await resolveAsset(setting(13, 'b'));
+  const rawTripReport = setting(13, 'b') || '';
   const tripReportSubheading = text(setting(13, 'c'));
   const appStatus = text(setting(19, 'b')).toUpperCase();
   const signOffStatus = text(setting(21, 'b')).toLowerCase();
@@ -231,21 +233,26 @@ async function dashboard() {
     text: text(r.col_c)
   }));
 
-  const pastTrips = (archivesResult.data || []).map(r => ({
-    id: r.id,
-    name: text(r.col_a),
-    dates: text(r.col_b),
-    totalSpent: number(text(r.col_c).replace(/[^0-9.]/g, '')),
-    reportUrl: text(r.col_d),
-    galleryUrl: text(r.col_e)
-  }));
+  const pastTrips = [];
+  for (const r of archivesResult.data || []) {
+    pastTrips.push({
+      id: r.id,
+      name: text(r.col_a),
+      dates: text(r.col_b),
+      totalSpent: number(text(r.col_c).replace(/[^0-9.]/g, '')),
+      reportUrl: await resolveAsset(r.col_d),
+      rawReport: r.col_d || '',
+      galleryUrl: await resolveAsset(r.col_e),
+      rawGallery: r.col_e || ''
+    });
+  }
 
   const totalExpenses = Object.values(categorySpent).reduce((a, b) => a + b, 0);
   return {
     appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus,
     securityStatus: meta.security_status || 'normal',
     chiefCoordinatorSignature, eidStampImage, rawEidStamp, tripName, secondaryTitle,
-    guidelinesUrl, tripReportUrl, tripReportSubheading, eidSubheading, eidHeading,
+    guidelinesUrl, rawGuidelines, tripReportUrl, rawTripReport, tripReportSubheading, eidSubheading, eidHeading,
     tripNotice, warningNotice,
     timeData: { start: Number.isFinite(startDate) ? startDate : null, end: Number.isFinite(endDate) ? endDate : null },
     stats: {
@@ -462,19 +469,26 @@ async function adminDeleteArchive(archiveId) {
 }
 
 async function adminUploadFile(file) {
-  if (!file || !file.base64Data) throw new Error('No asset supplied');
+  if (!file || !file.base64Data) throw new Error('No file provided');
   const raw = String(file.base64Data);
   const match = raw.match(/^data:([^;]+);base64,(.+)$/);
-  if (!match) throw new Error('Invalid data format');
+  if (!match) throw new Error('Invalid file format');
   const mime = match[1];
   const bytes = Buffer.from(match[2], 'base64');
-  const ext = mime.includes('pdf') ? 'pdf' : (mime.split('/')[1] || 'jpg');
-  const cleanName = text(file.fileName).replace(/[^a-zA-Z0-9._-]/g, '_') || 'upload';
+  let ext = 'jpg';
+  if (mime.includes('pdf')) ext = 'pdf';
+  else if (mime.includes('png')) ext = 'png';
+  else if (mime.includes('webp')) ext = 'webp';
+  else if (mime.includes('jpeg')) ext = 'jpg';
+
+  const cleanName = text(file.fileName).replace(/[^a-zA-Z0-9_-]/g, '_') || 'file';
   const path = `uploads/${Date.now()}-${cleanName}.${ext}`;
 
-  await supabase.storage.from(bucket).upload(path, bytes, { contentType: mime, upsert: true });
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  return { publicUrl: data.publicUrl, storagePath: `storage:${path}` };
+  const { error: uploadError } = await supabase.storage.from(bucket).upload(path, bytes, { contentType: mime, upsert: true });
+  if (uploadError) throw uploadError;
+
+  const { data: publicData } = supabase.storage.from(bucket).getPublicUrl(path);
+  return { publicUrl: publicData?.publicUrl || '', storagePath: `storage:${path}` };
 }
 
 // -------------------------------------------------------------
