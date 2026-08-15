@@ -2700,9 +2700,8 @@
       let lastReachedRowId = null;
 
       // Group nodes by "Day" text identifier
-      data.places.forEach(p => {
-        if (p.rowId === 1) return;
-        if (!p.tripDay && !p.location) return;
+     data.places.forEach(p => {
+  if (!p.tripDay && !p.location) return;
 
         const dayGroup = p.tripDay || "Unscheduled";
         if (!groupedPlaces[dayGroup]) groupedPlaces[dayGroup] = [];
@@ -3048,7 +3047,8 @@ renderArchivesList(data.pastTrips);
     function startLiveGPS(payload) {
        if(liveGpsInterval) clearInterval(liveGpsInterval);
 
-       const places = payload.places.filter(p => p.rowId !== 1 && (p.tripDay || p.location));
+       // AFTER:
+const places = payload.places.filter(p => p.tripDay || p.location);
        if(!places || places.length === 0) return;
 
        let lastVisitedIndex = -1;
