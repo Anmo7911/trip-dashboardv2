@@ -446,9 +446,9 @@ async function adminDeleteMember(memberId) {
 async function adminSavePlace(placeData) {
   const loc = text(placeData.location || placeData.placeLocation || placeData.name || '');
   const payload = {
-    col_a: loc,
+    col_a: '',
     col_b: text(placeData.note || ''),
-    col_c: text(placeData.status || 'Pending'),
+    col_c: 'Pending',
     col_f: text(placeData.tripDay || placeData.placeDay || 'Day 1'),
     col_g: text(placeData.targetDate || placeData.placeDate || '') || null,
     col_h: text(placeData.eta || placeData.placeEta || '') || null,
