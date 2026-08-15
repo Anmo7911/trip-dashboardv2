@@ -61,7 +61,6 @@ function parseCSV(input) {
   return rows;
 }
 
-// Convert 12h time (8:00 PM) to 24h (20:00:00) or clean invalid text
 function sanitizeValue(val) {
   if (!val) return null;
   const lower = val.toLowerCase().trim();
@@ -71,7 +70,7 @@ function sanitizeValue(val) {
   ];
   if (invalidPlaceholders.includes(lower)) return null;
 
-  // Convert 12-hour AM/PM times to 24-hour HH:MM:SS
+  // Convert 12-hour AM/PM times (e.g., "8:00 PM") to 24-hour "20:00:00"
   const time12Regex = /^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(am|pm)$/i;
   const match = val.match(time12Regex);
   if (match) {
