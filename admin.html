@@ -100,6 +100,9 @@
     <button onclick="switchTab('ledger')" id="tabBtn-ledger" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap shrink-0">
       <i data-lucide="receipt" class="w-3.5 h-3.5"></i> Ledger
     </button>
+    <button onclick="switchTab('budget')" id="tabBtn-budget" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap shrink-0">
+      <i data-lucide="wallet" class="w-3.5 h-3.5"></i> Budget
+    </button>
     <button onclick="switchTab('media')" id="tabBtn-media" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap shrink-0">
       <i data-lucide="folder-up" class="w-3.5 h-3.5"></i> Media & Docs
     </button>
@@ -113,10 +116,38 @@
        ========================================= -->
   <main class="flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6">
 
-    <!-- 1. SWITCHES & SETTINGS -->
+    <!-- 1. SWITCHES & SETTINGS (LEFT: TRIP HEADER, RIGHT: SWITCHES) -->
     <section id="pane-settings" class="tab-pane active space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         
+        <!-- LEFT COLUMN: TRIP HEADER & BANNERS -->
+        <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
+          <h3 class="text-xs font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+            <i data-lucide="edit-3" class="w-4 h-4"></i> Trip Header & Banners
+          </h3>
+
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Name</label>
+            <input type="text" id="setTripName" onchange="saveSetting(2, 'b', this.value, 'Trip name updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          </div>
+
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Destination Subtitle</label>
+            <input type="text" id="setTripSub" onchange="saveSetting(2, 'c', this.value, 'Subtitle updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          </div>
+
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Notice Banner Text</label>
+            <input type="text" id="setNotice" onchange="saveSetting(7, 'b', this.value, 'Notice banner saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          </div>
+
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Emergency Alert Banner</label>
+            <input type="text" id="setWarning" onchange="saveSetting(8, 'b', this.value, 'Alert banner saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-rose-400 font-bold mt-1">
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: GLOBAL APP SWITCHES -->
         <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
           <h3 class="text-xs font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
             <i data-lucide="toggle-left" class="w-4 h-4"></i> Global App Switches
@@ -191,32 +222,6 @@
 
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
-          <h3 class="text-xs font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
-            <i data-lucide="edit-3" class="w-4 h-4"></i> Trip Header & Banners
-          </h3>
-
-          <div>
-            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Name</label>
-            <input type="text" id="setTripName" onchange="saveSetting(2, 'b', this.value, 'Trip name updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
-          </div>
-
-          <div>
-            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Destination Subtitle</label>
-            <input type="text" id="setTripSub" onchange="saveSetting(2, 'c', this.value, 'Subtitle updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
-          </div>
-
-          <div>
-            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Notice Banner Text</label>
-            <input type="text" id="setNotice" onchange="saveSetting(7, 'b', this.value, 'Notice banner saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
-          </div>
-
-          <div>
-            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Emergency Alert Banner</label>
-            <input type="text" id="setWarning" onchange="saveSetting(8, 'b', this.value, 'Alert banner saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-rose-400 font-bold mt-1">
-          </div>
-        </div>
-
       </div>
     </section>
 
@@ -234,7 +239,7 @@
       </div>
     </section>
 
-    <!-- 3. ROUTE & TIMELINE TAB -->
+    <!-- 3. ROUTE & TIMELINE TAB (DRAGGABLE / LAYER-WISE UP-DOWN) -->
     <section id="pane-places" class="tab-pane space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Route & Transit Stops</h3>
@@ -244,23 +249,48 @@
       </div>
 
       <div id="placesAdminCards" class="space-y-3">
-        <!-- Rendered by JS -->
+        <!-- Rendered as mobile-first cards by JS -->
       </div>
     </section>
 
-    <!-- 4. LEDGER TAB -->
+    <!-- 4. LEDGER TAB (SEARCH + TIME + EDIT DETAILS) -->
     <section id="pane-ledger" class="tab-pane space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-        <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Expense Ledger</h3>
-        <div id="ledgerStats" class="text-[11px] font-bold text-emerald-400"></div>
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Expense Ledger</h3>
+          <div id="ledgerStats" class="text-[11px] font-bold text-emerald-400"></div>
+        </div>
+        
+        <!-- Ledger Search Bar -->
+        <div class="relative w-full sm:w-64">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input type="text" id="ledgerSearchInput" oninput="filterLedger(this.value)" placeholder="Search by name, category, UTR..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white font-bold outline-none focus:border-indigo-500">
+        </div>
       </div>
 
       <div id="ledgerAdminCards" class="space-y-3">
+        <!-- Rendered as mobile-first cards by JS -->
+      </div>
+    </section>
+
+    <!-- 5. BUDGET & BUDGET ALLOCATION TAB (NEW) -->
+    <section id="pane-budget" class="tab-pane space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Budget Allocations</h3>
+          <p id="budgetOverviewText" class="text-[10px] font-bold text-indigo-400">Manage Category Budget Limits</p>
+        </div>
+        <button onclick="openBudgetModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 transition">
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Add Category
+        </button>
+      </div>
+
+      <div id="budgetAdminCards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
         <!-- Rendered by JS -->
       </div>
     </section>
 
-    <!-- 5. MEDIA & DOCUMENTS HUB (FILE/IMAGE UPLOADS ONLY) -->
+    <!-- 6. MEDIA & DOCUMENTS HUB (FILE/IMAGE UPLOADS + CARD BACKGROUNDS) -->
     <section id="pane-media" class="tab-pane space-y-4">
       <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Direct File & Image Uploads</h3>
 
@@ -273,10 +303,10 @@
             <a id="previewGuideline" href="#" target="_blank" class="text-[10px] font-bold text-indigo-400 underline hidden">View Current File</a>
           </div>
           <div onclick="document.getElementById('guidelineFileInput').click()" class="border-2 border-dashed border-slate-800 hover:border-indigo-500 rounded-xl p-5 text-center cursor-pointer bg-slate-950 transition flex flex-col items-center">
-            <input type="file" id="guidelineFileInput" accept="image/*,application/pdf" class="hidden" onchange="uploadDirectAsset(this, 11, 'b', 'previewGuideline', 'Guidelines Document Uploaded')">
+            <input type="file" id="guidelineFileInput" accept="image/*,application/pdf" class="hidden" onchange="uploadDirectAsset(this, 'setting', 11, 'b', 'previewGuideline', 'Guidelines Document Uploaded')">
             <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-500 mb-1"></i>
             <p class="text-[11px] font-bold text-slate-300">Choose Image or PDF Document</p>
-            <p class="text-[9px] text-slate-500 mt-0.5">Replaces current active guidelines file</p>
+            <p class="text-[9px] text-slate-500 mt-0.5">Overrides existing file</p>
           </div>
         </div>
 
@@ -287,10 +317,10 @@
             <a id="previewTripReport" href="#" target="_blank" class="text-[10px] font-bold text-amber-400 underline hidden">View Current Report</a>
           </div>
           <div onclick="document.getElementById('reportFileInput').click()" class="border-2 border-dashed border-slate-800 hover:border-amber-500 rounded-xl p-5 text-center cursor-pointer bg-slate-950 transition flex flex-col items-center">
-            <input type="file" id="reportFileInput" accept="image/*,application/pdf" class="hidden" onchange="uploadDirectAsset(this, 13, 'b', 'previewTripReport', 'Trip Report File Uploaded')">
+            <input type="file" id="reportFileInput" accept="image/*,application/pdf" class="hidden" onchange="uploadDirectAsset(this, 'setting', 13, 'b', 'previewTripReport', 'Trip Report File Uploaded')">
             <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-500 mb-1"></i>
             <p class="text-[11px] font-bold text-slate-300">Choose Report PDF or Image</p>
-            <p class="text-[9px] text-slate-500 mt-0.5">Replaces current trip report file</p>
+            <p class="text-[9px] text-slate-500 mt-0.5">Overrides existing report</p>
           </div>
           <input type="text" id="reportSubInput" onchange="saveSetting(13, 'c', this.value, 'Report subtitle updated')" placeholder="Status subheading (e.g. UNAVAILABLE or View Summary)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-bold">
         </div>
@@ -302,17 +332,38 @@
             <a id="previewStamp" href="#" target="_blank" class="text-[10px] font-bold text-rose-400 underline hidden">View Current Stamp</a>
           </div>
           <div onclick="document.getElementById('stampFileInput').click()" class="border-2 border-dashed border-slate-800 hover:border-rose-500 rounded-xl p-5 text-center cursor-pointer bg-slate-950 transition flex flex-col items-center">
-            <input type="file" id="stampFileInput" accept="image/png,image/webp,image/jpeg" class="hidden" onchange="uploadDirectAsset(this, 12, 'b', 'previewStamp', 'E-ID Stamp Uploaded')">
+            <input type="file" id="stampFileInput" accept="image/png,image/webp,image/jpeg" class="hidden" onchange="uploadDirectAsset(this, 'setting', 12, 'b', 'previewStamp', 'E-ID Stamp Uploaded')">
             <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-500 mb-1"></i>
             <p class="text-[11px] font-bold text-slate-300">Choose Transparent PNG Stamp</p>
-            <p class="text-[9px] text-slate-500 mt-0.5">Watermark stamp placed on ID cards</p>
+            <p class="text-[9px] text-slate-500 mt-0.5">Overrides current stamp</p>
+          </div>
+        </div>
+
+        <!-- Card Backgrounds Upload (Coordinator & Member) -->
+        <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
+          <h4 class="text-xs font-bold text-white flex items-center gap-2"><i data-lucide="image" class="w-4 h-4 text-emerald-400"></i> Member & Coordinator Card Backgrounds</h4>
+          
+          <div class="grid grid-cols-2 gap-2">
+            <!-- Coordinator BG -->
+            <div onclick="document.getElementById('coordBgInput').click()" class="border-2 border-dashed border-slate-800 hover:border-emerald-500 rounded-xl p-3 text-center cursor-pointer bg-slate-950 transition flex flex-col items-center">
+              <input type="file" id="coordBgInput" accept="image/*" class="hidden" onchange="uploadDirectAsset(this, 'member_meta', 'coordinator_bg', null, 'Coordinator Card BG Uploaded')">
+              <i data-lucide="upload-cloud" class="w-5 h-5 text-slate-500 mb-1"></i>
+              <p class="text-[10px] font-bold text-slate-300">Coordinator BG</p>
+            </div>
+            
+            <!-- Member BG -->
+            <div onclick="document.getElementById('memberBgInput').click()" class="border-2 border-dashed border-slate-800 hover:border-emerald-500 rounded-xl p-3 text-center cursor-pointer bg-slate-950 transition flex flex-col items-center">
+              <input type="file" id="memberBgInput" accept="image/*" class="hidden" onchange="uploadDirectAsset(this, 'member_meta', 'member_bg', null, 'Member Card BG Uploaded')">
+              <i data-lucide="upload-cloud" class="w-5 h-5 text-slate-500 mb-1"></i>
+              <p class="text-[10px] font-bold text-slate-300">Member BG</p>
+            </div>
           </div>
         </div>
 
       </div>
     </section>
 
-    <!-- 6. PAST TRIPS ARCHIVE TAB -->
+    <!-- 7. PAST TRIPS ARCHIVE TAB -->
     <section id="pane-archives" class="tab-pane space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Past Trips Archive</h3>
@@ -329,10 +380,10 @@
   </main>
 
   <!-- =========================================
-       MODAL: MEMBER
+       MODAL: MEMBER (EDIT LAYOUT: PHOTO TOP-LEFT, INPUTS TOP-RIGHT)
        ========================================= -->
   <div id="memberModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-    <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 my-8">
+    <div class="max-w-lg w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 my-8">
       <div class="flex justify-between items-center pb-2 border-b border-slate-800">
         <h3 id="memberModalTitle" class="text-xs font-black uppercase tracking-wider text-white">Member</h3>
         <button onclick="closeMemberModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -341,32 +392,41 @@
       <form id="memberForm" onsubmit="saveMemberForm(event)" class="space-y-3 text-left">
         <input type="hidden" id="memId">
         
-        <div>
-          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Full Name</label>
-          <input type="text" id="memName" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+        <!-- Profile Picture on Left, Name & Role on Right -->
+        <div class="flex gap-3.5 items-start">
+          <div id="dropZone" onclick="document.getElementById('memPhotoFile').click()" class="w-24 h-24 border-2 border-dashed border-slate-800 hover:border-indigo-500 rounded-2xl p-1 text-center cursor-pointer bg-slate-950 transition shrink-0 flex flex-col items-center justify-center overflow-hidden">
+            <input type="file" id="memPhotoFile" accept="image/*" class="hidden" onchange="handlePhotoSelect(this)">
+            <div id="uploadPreview" class="flex flex-col items-center justify-center h-full w-full">
+              <i data-lucide="user" class="w-7 h-7 text-slate-500 mb-0.5"></i>
+              <p class="text-[8px] font-bold text-slate-400 text-center">Upload Photo</p>
+            </div>
+          </div>
+          <input type="hidden" id="memImgUrl">
+
+          <div class="flex-1 space-y-2">
+            <div>
+              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Full Name</label>
+              <input type="text" id="memName" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-0.5">
+            </div>
+            <div>
+              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Role / Designation</label>
+              <input type="text" id="memRole" placeholder="Member / Chief Coordinator" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-0.5">
+            </div>
+          </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Role / Designation</label>
-            <input type="text" id="memRole" placeholder="Member / Coordinator" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
-          </div>
-          <div>
             <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">4-Digit PIN</label>
             <input type="text" id="memPin" maxlength="4" placeholder="1234" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1 tracking-widest">
           </div>
-        </div>
-
-        <div>
-          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Profile Photo</label>
-          <div id="dropZone" onclick="document.getElementById('memPhotoFile').click()" class="mt-1 border-2 border-dashed border-slate-800 hover:border-indigo-500 rounded-xl p-3 text-center cursor-pointer bg-slate-950 transition">
-            <input type="file" id="memPhotoFile" accept="image/*" class="hidden" onchange="handlePhotoSelect(this)">
-            <div id="uploadPreview" class="flex flex-col items-center">
-              <i data-lucide="upload-cloud" class="w-6 h-6 text-slate-500 mb-0.5"></i>
-              <p class="text-[10px] font-bold text-slate-400">Click to choose image file</p>
-            </div>
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Verification Status</label>
+            <select id="memVerification" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-indigo-400 font-bold mt-1">
+              <option value="Verified">Verified</option>
+              <option value="Unverified">Unverified</option>
+            </select>
           </div>
-          <input type="hidden" id="memImgUrl">
         </div>
 
         <div class="grid grid-cols-2 gap-2">
@@ -423,11 +483,11 @@
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Scheduled ETA</label>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Scheduled ETA (HH:MM)</label>
             <input type="text" id="placeEta" placeholder="e.g. 06:30" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
           </div>
           <div>
-            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Actual ATA</label>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Actual ATA (HH:MM)</label>
             <input type="text" id="placeAta" placeholder="e.g. 06:45" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-indigo-400 font-bold mt-1">
           </div>
         </div>
@@ -437,21 +497,12 @@
           <input type="text" id="placeDetails" placeholder="e.g. Train 12056 or Hotel Stay" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Status</label>
-            <select id="placeStatus" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
-              <option value="Pending">Pending</option>
-              <option value="Visited">Visited</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Cancel Flag</label>
-            <select id="placeCancel" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
-              <option value="">Normal</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
-          </div>
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Cancel Flag</label>
+          <select id="placeCancel" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+            <option value="">Normal</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
         </div>
 
         <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest">
@@ -462,7 +513,96 @@
   </div>
 
   <!-- =========================================
-       MODAL: PAST TRIP ARCHIVE (FILE UPLOADS ONLY)
+       MODAL: EDIT LEDGER TRANSACTION
+       ========================================= -->
+  <div id="txEditModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 my-8">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+        <h3 class="text-xs font-black uppercase tracking-wider text-white">Edit Transaction</h3>
+        <button onclick="closeTxModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="txEditForm" onsubmit="saveTxForm(event)" class="space-y-3 text-left">
+        <input type="hidden" id="editTxId">
+        
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Amount (₹)</label>
+          <input type="number" id="editTxAmount" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-emerald-400 font-black mt-1 text-base">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Category</label>
+            <select id="editTxCategory" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+              <option>Food</option><option>Entry Fee</option><option>Fare</option><option>Stay</option><option>Water</option><option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Payment Type</label>
+            <select id="editTxPaidVia" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+              <option>UPI</option><option>Cash</option><option>Card</option><option>Cheque</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Expense Notes / Purpose</label>
+          <input type="text" id="editTxNotes" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Claimant Name</label>
+            <input type="text" id="editTxClaimant" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          </div>
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Verification</label>
+            <select id="editTxVerification" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+              <option value="Verified">Verified</option>
+              <option value="Unverified">Unverified</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest">
+          Save Transaction
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================
+       MODAL: BUDGET ALLOCATION
+       ========================================= -->
+  <div id="budgetModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 my-8">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+        <h3 id="budgetModalTitle" class="text-xs font-black uppercase tracking-wider text-white">Budget Allocation</h3>
+        <button onclick="closeBudgetModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="budgetForm" onsubmit="saveBudgetForm(event)" class="space-y-3 text-left">
+        <input type="hidden" id="budgetId">
+        
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Category Name</label>
+          <input type="text" id="budgetCategory" placeholder="e.g. Food, Stay, Fare" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+        </div>
+
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Allocated Limit (₹)</label>
+          <input type="number" id="budgetAmount" placeholder="5000" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-emerald-400 font-bold mt-1">
+        </div>
+
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest">
+          Save Allocation
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================
+       MODAL: PAST TRIP ARCHIVE
        ========================================= -->
   <div id="archiveModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 my-8">
@@ -563,7 +703,7 @@
     function resetAutoLogout() {
       if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
       autoLogoutTimer = setTimeout(() => {
-        alert("Session timed out after 15 minutes.");
+        alert("Admin session timed out after 15 minutes.");
         adminLogout();
       }, 15 * 60 * 1000);
     }
@@ -639,6 +779,7 @@
         renderMembers(data.members);
         renderPlaces(data.places);
         renderLedger(data.transactions, data.stats);
+        renderBudget(data.budgetRawList, data.stats);
         renderMedia(data);
         renderArchives(data.pastTrips);
         lucide.createIcons();
@@ -683,22 +824,28 @@
       }
     }
 
-    // Direct Asset Upload (Guidelines, Report, Stamp)
-    async function uploadDirectAsset(input, row, col, previewLinkId, successMsg) {
+    // Direct Asset Upload (Guidelines, Report, Stamp, Card Backgrounds)
+    async function uploadDirectAsset(input, type, keyOrRow, col, previewLinkId, successMsg) {
       const file = input.files[0];
       if (!file) return;
 
-      showAlert("Uploading", "Uploading file to Supabase storage...");
+      showAlert("Uploading", "Uploading file to storage...");
       const reader = new FileReader();
       reader.onload = async () => {
         try {
           const res = await adminApi('admin-upload', { fileName: file.name, base64Data: reader.result });
-          await saveSetting(row, col, res.publicUrl, successMsg);
-          const link = document.getElementById(previewLinkId);
-          if (link) {
-            link.href = res.publicUrl;
-            link.classList.remove('hidden');
+          
+          if (type === 'setting') {
+            await saveSetting(keyOrRow, col, res.publicUrl, successMsg);
+            if (previewLinkId) {
+              const link = document.getElementById(previewLinkId);
+              if (link) { link.href = res.publicUrl; link.classList.remove('hidden'); }
+            }
+          } else if (type === 'member_meta') {
+            const fresh = await adminApi('admin-update-member-meta', { field: keyOrRow, value: res.publicUrl });
+            globalData = fresh;
           }
+
           showAlert("Upload Complete", successMsg);
         } catch (err) {
           showAlert("Upload Failed", err.message, true);
@@ -725,17 +872,17 @@
 
     async function uploadMemberPhoto(file) {
       const preview = document.getElementById('uploadPreview');
-      preview.innerHTML = '<p class="text-[10px] text-indigo-400 font-bold animate-pulse">Uploading photo...</p>';
+      preview.innerHTML = '<p class="text-[9px] text-indigo-400 font-bold animate-pulse">Uploading...</p>';
 
       const reader = new FileReader();
       reader.onload = async () => {
         try {
           const res = await adminApi('admin-upload', { fileName: file.name, base64Data: reader.result });
           document.getElementById('memImgUrl').value = res.publicUrl;
-          preview.innerHTML = `<img src="${res.publicUrl}" class="w-12 h-12 rounded-lg object-cover border border-slate-700 mx-auto"><p class="text-[9px] text-emerald-400 font-bold mt-1">Photo Uploaded</p>`;
-          showAlert("Photo Ready", "Image uploaded successfully");
+          preview.innerHTML = `<img src="${res.publicUrl}" class="w-full h-full rounded-2xl object-cover">`;
+          showAlert("Photo Ready", "Profile image attached");
         } catch (err) {
-          preview.innerHTML = `<p class="text-[9px] text-rose-400 font-bold">Failed: ${err.message}</p>`;
+          preview.innerHTML = `<p class="text-[9px] text-rose-400 font-bold">Failed</p>`;
           showAlert("Upload Error", err.message, true);
         }
       };
@@ -755,11 +902,11 @@
         try {
           const res = await adminApi('admin-upload', { fileName: file.name, base64Data: reader.result });
           document.getElementById(targetHiddenId).value = res.publicUrl;
-          preview.innerHTML = `<p class="text-[10px] font-black text-emerald-400 flex items-center gap-1 justify-center"><i data-lucide="check" class="w-3.5 h-3.5"></i> File Uploaded</p>`;
+          preview.innerHTML = `<p class="text-[10px] font-black text-emerald-400 flex items-center gap-1 justify-center"><i data-lucide="check" class="w-3.5 h-3.5"></i> Uploaded</p>`;
           lucide.createIcons();
           showAlert("File Uploaded", "Document/Photo attached successfully");
         } catch (err) {
-          preview.innerHTML = `<p class="text-[9px] text-rose-400 font-bold">Failed: ${err.message}</p>`;
+          preview.innerHTML = `<p class="text-[9px] text-rose-400 font-bold">Failed</p>`;
           showAlert("Upload Error", err.message, true);
         }
       };
@@ -774,7 +921,10 @@
             <img src="${m.img || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.name)}" class="w-10 h-10 rounded-xl object-cover border border-slate-800 bg-slate-950 shrink-0">
             <div class="min-w-0">
               <p class="text-xs font-black text-white truncate">${m.rawName || m.name}</p>
-              <p class="text-[9px] font-bold text-indigo-400 uppercase truncate">${m.role || 'Member'}</p>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="text-[9px] font-bold text-indigo-400 uppercase truncate">${m.role || 'Member'}</span>
+                <span class="text-[8px] font-black px-1.5 py-0.2 rounded uppercase ${m.verification === 'Verified' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${m.verification || 'Verified'}</span>
+              </div>
               <p class="text-[9px] font-mono text-slate-500">PIN: ${m.pin}</p>
             </div>
           </div>
@@ -792,7 +942,8 @@
       document.getElementById('memberForm').reset();
       document.getElementById('memId').value = '';
       document.getElementById('memImgUrl').value = '';
-      document.getElementById('uploadPreview').innerHTML = '<i data-lucide="upload-cloud" class="w-6 h-6 text-slate-500 mb-0.5"></i><p class="text-[10px] font-bold text-slate-400">Click to select photo</p>';
+      document.getElementById('memVerification').value = 'Verified';
+      document.getElementById('uploadPreview').innerHTML = '<i data-lucide="user" class="w-7 h-7 text-slate-500 mb-0.5"></i><p class="text-[8px] font-bold text-slate-400 text-center">Upload Photo</p>';
       document.getElementById('memberModal').classList.remove('hidden');
       lucide.createIcons();
     }
@@ -803,12 +954,13 @@
       document.getElementById('memName').value = m.rawName || m.name;
       document.getElementById('memRole').value = m.role || 'Member';
       document.getElementById('memPin').value = m.pin || '1234';
+      document.getElementById('memVerification').value = m.verification || 'Verified';
       document.getElementById('memMobile').value = m.mobile || '';
       document.getElementById('memEmail').value = m.email || '';
       document.getElementById('memRoleDetail').value = m.assignedRoleDetail || '';
       document.getElementById('memImgUrl').value = m.rawImg || m.img || '';
       if (m.img) {
-        document.getElementById('uploadPreview').innerHTML = `<img src="${m.img}" class="w-12 h-12 rounded-lg object-cover border border-slate-700 mx-auto">`;
+        document.getElementById('uploadPreview').innerHTML = `<img src="${m.img}" class="w-full h-full rounded-2xl object-cover">`;
       }
       document.getElementById('memberModal').classList.remove('hidden');
     }
@@ -822,6 +974,7 @@
         name: document.getElementById('memName').value,
         role: document.getElementById('memRole').value,
         pin: document.getElementById('memPin').value,
+        verification: document.getElementById('memVerification').value,
         img: document.getElementById('memImgUrl').value,
         mobile: document.getElementById('memMobile').value,
         email: document.getElementById('memEmail').value,
@@ -851,29 +1004,54 @@
       }
     }
 
-    // Places / Route
+    // Places / Route (Layer Reordering Up/Down)
     function renderPlaces(places) {
       const container = document.getElementById('placesAdminCards');
-      container.innerHTML = places.map(p => `
+      container.innerHTML = places.map((p, idx) => `
         <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 bg-indigo-600/20 text-indigo-400 text-[10px] font-black rounded">${p.tripDay || 'Day 1'}</span>
-              <span class="text-xs font-black text-white">${p.location || p.name || 'Location'}</span>
-              ${p.cancelStatus ? '<span class="text-[9px] font-bold text-rose-500 uppercase">Cancelled</span>' : ''}
+          <div class="flex items-start gap-2.5">
+            <!-- Up/Down Layer Reordering Controls -->
+            <div class="flex flex-col gap-1 pt-0.5">
+              <button onclick="movePlace(${idx}, -1)" ${idx === 0 ? 'disabled class="opacity-20 cursor-not-allowed"' : 'class="hover:text-indigo-400"'}><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
+              <button onclick="movePlace(${idx}, 1)" ${idx === places.length - 1 ? 'disabled class="opacity-20 cursor-not-allowed"' : 'class="hover:text-indigo-400"'}><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
             </div>
-            <p class="text-[10px] text-slate-400 font-semibold mt-1">ETA: ${p.eta || '-'} | ATA: ${p.ata || '-'} ${p.details ? '• ' + p.details : ''}</p>
+            
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 bg-indigo-600/20 text-indigo-400 text-[10px] font-black rounded">${p.tripDay || 'Day 1'}</span>
+                <span class="text-xs font-black text-white">${p.location || p.name || 'Location'}</span>
+                ${p.cancelStatus ? '<span class="text-[9px] font-bold text-rose-500 uppercase">Cancelled</span>' : ''}
+              </div>
+              <p class="text-[10px] text-slate-400 font-semibold mt-1">ETA: ${p.eta || '-'} | ATA: ${p.ata || '-'} ${p.details ? '• ' + p.details : ''}</p>
+            </div>
           </div>
-          <div class="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
-            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${p.status === 'Visited' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-950 text-slate-400'}">${p.status}</span>
-            <div class="flex gap-1">
-              <button onclick='editPlace(${JSON.stringify(p)})' class="p-1.5 bg-slate-950 text-slate-300 rounded-lg hover:bg-slate-800"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
-              <button onclick="deletePlace(${p.id})" class="p-1.5 bg-rose-500/10 text-rose-400 rounded-lg hover:bg-rose-500/20"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-            </div>
+
+          <div class="flex items-center justify-end gap-1.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+            <button onclick='editPlace(${JSON.stringify(p)})' class="p-1.5 bg-slate-950 text-slate-300 rounded-lg hover:bg-slate-800"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+            <button onclick="deletePlace(${p.id})" class="p-1.5 bg-rose-500/10 text-rose-400 rounded-lg hover:bg-rose-500/20"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
           </div>
         </div>
       `).join('');
       lucide.createIcons();
+    }
+
+    async function movePlace(index, direction) {
+      const places = [...globalData.places];
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= places.length) return;
+
+      const temp = places[index];
+      places[index] = places[targetIndex];
+      places[targetIndex] = temp;
+
+      try {
+        const fresh = await adminApi('admin-reorder-places', { places });
+        globalData = fresh;
+        renderPlaces(fresh.places);
+        showAlert("Reordered", "Route stop position updated");
+      } catch (err) {
+        showAlert("Failed", err.message, true);
+      }
     }
 
     function openPlaceModal() {
@@ -892,7 +1070,6 @@
       document.getElementById('placeEta').value = p.eta || '';
       document.getElementById('placeAta').value = p.ata || '';
       document.getElementById('placeDetails').value = p.details || '';
-      document.getElementById('placeStatus').value = p.status || 'Pending';
       document.getElementById('placeCancel').value = p.cancelStatus || '';
       document.getElementById('placeModal').classList.remove('hidden');
     }
@@ -909,7 +1086,6 @@
         eta: document.getElementById('placeEta').value,
         ata: document.getElementById('placeAta').value,
         details: document.getElementById('placeDetails').value,
-        status: document.getElementById('placeStatus').value,
         cancelStatus: document.getElementById('placeCancel').value
       };
 
@@ -918,7 +1094,7 @@
         globalData = fresh;
         renderPlaces(fresh.places);
         closePlaceModal();
-        showAlert("Route Updated", `${payload.location} saved`);
+        showAlert("Route Saved", `${payload.location} saved successfully`);
       } catch (err) {
         showAlert("Failed", err.message, true);
       }
@@ -936,40 +1112,91 @@
       }
     }
 
-    // Ledger
+    // Ledger with Search & Edit Form
+    function filterLedger(query) {
+      if (!globalData || !globalData.transactions) return;
+      const q = query.toLowerCase().trim();
+      const filtered = globalData.transactions.filter(t => 
+        (t.notes && t.notes.toLowerCase().includes(q)) ||
+        (t.category && t.category.toLowerCase().includes(q)) ||
+        (t.utr && t.utr.toLowerCase().includes(q)) ||
+        (t.claimant && t.claimant.toLowerCase().includes(q))
+      );
+      renderLedgerCards(filtered);
+    }
+
     function renderLedger(txs, stats) {
       document.getElementById('ledgerStats').innerText = `Spent: ₹${stats.expenses.toLocaleString('en-IN')} / ₹${stats.budget.toLocaleString('en-IN')}`;
+      renderLedgerCards(txs);
+    }
+
+    function renderLedgerCards(txs) {
       const container = document.getElementById('ledgerAdminCards');
-      container.innerHTML = txs.map(t => `
+      container.innerHTML = txs.map(t => {
+        let dateFormatted = "-";
+        let timeFormatted = "";
+        if (t.date) {
+          try {
+            const d = new Date(t.date);
+            dateFormatted = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+            timeFormatted = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
+          } catch(e){}
+        }
+
+        return `
         <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div>
             <div class="flex items-center gap-2">
               <span class="font-mono text-indigo-400 text-xs font-bold">${t.utr}</span>
               <span class="text-xs font-black text-emerald-400">₹${t.amount}</span>
               <span class="text-[9px] font-bold text-slate-400">[${t.category}]</span>
+              <span class="text-[9px] font-bold text-indigo-300">(${t.paidVia || 'UPI'})</span>
             </div>
             <p class="text-[11px] text-white font-semibold mt-0.5">${t.notes || 'Expense'}</p>
-            <p class="text-[9px] text-slate-500">By: ${t.claimant || 'Unknown'} • ${t.date ? new Date(t.date).toLocaleDateString('en-IN', {day:'numeric', month:'short'}) : ''}</p>
+            <p class="text-[9px] text-slate-500">By: ${t.claimant || 'Unknown'} • ${dateFormatted} ${timeFormatted ? 'at ' + timeFormatted : ''}</p>
           </div>
 
           <div class="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
-            <select onchange="verifyTx(${t.id}, this.value)" class="bg-slate-950 border border-slate-700 text-[10px] rounded-lg px-2 py-1 ${t.isVerified ? 'text-emerald-400' : 'text-amber-400'} font-bold outline-none">
-              <option value="Verified" ${t.isVerified ? 'selected' : ''}>Verified</option>
-              <option value="Unverified" ${!t.isVerified ? 'selected' : ''}>Unverified</option>
-            </select>
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${t.isVerified ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}">${t.isVerified ? 'Verified' : 'Unverified'}</span>
+            <button onclick='openEditTxModal(${JSON.stringify(t)})' class="p-1.5 bg-slate-950 text-slate-300 rounded-lg hover:bg-slate-800"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
             <button onclick="deleteTx(${t.id})" class="p-1.5 bg-rose-500/10 text-rose-400 rounded-lg hover:bg-rose-500/20"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
           </div>
-        </div>
-      `).join('');
+        </div>`;
+      }).join('');
       lucide.createIcons();
     }
 
-    async function verifyTx(id, status) {
+    function openEditTxModal(t) {
+      document.getElementById('editTxId').value = t.id;
+      document.getElementById('editTxAmount').value = t.amount;
+      document.getElementById('editTxCategory').value = t.category || 'Other';
+      document.getElementById('editTxPaidVia').value = t.paidVia || 'UPI';
+      document.getElementById('editTxNotes').value = t.notes || '';
+      document.getElementById('editTxClaimant').value = t.claimant || '';
+      document.getElementById('editTxVerification').value = t.isVerified ? 'Verified' : 'Unverified';
+      document.getElementById('txEditModal').classList.remove('hidden');
+    }
+
+    function closeTxModal() { document.getElementById('txEditModal').classList.add('hidden'); }
+
+    async function saveTxForm(e) {
+      e.preventDefault();
+      const payload = {
+        id: Number(document.getElementById('editTxId').value),
+        amount: Number(document.getElementById('editTxAmount').value),
+        category: document.getElementById('editTxCategory').value,
+        paidVia: document.getElementById('editTxPaidVia').value,
+        notes: document.getElementById('editTxNotes').value,
+        claimant: document.getElementById('editTxClaimant').value,
+        verification: document.getElementById('editTxVerification').value
+      };
+
       try {
-        const fresh = await adminApi('admin-verify-tx', { id, status });
+        const fresh = await adminApi('admin-save-tx', payload);
         globalData = fresh;
         renderLedger(fresh.transactions, fresh.stats);
-        showAlert("Status Updated", `Transaction marked as ${status}`);
+        closeTxModal();
+        showAlert("Transaction Updated", "Expense record saved");
       } catch (err) {
         showAlert("Failed", err.message, true);
       }
@@ -982,6 +1209,73 @@
         globalData = fresh;
         renderLedger(fresh.transactions, fresh.stats);
         showAlert("Deleted", "Transaction deleted");
+      } catch (err) {
+        showAlert("Failed", err.message, true);
+      }
+    }
+
+    // Budget Allocations
+    function renderBudget(budgetList, stats) {
+      document.getElementById('budgetOverviewText').innerText = `Total Budget: ₹${stats.budget.toLocaleString('en-IN')}`;
+      const container = document.getElementById('budgetAdminCards');
+      container.innerHTML = (budgetList || []).map(b => `
+        <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex items-center justify-between">
+          <div>
+            <p class="text-xs font-black text-white">${b.category}</p>
+            <p class="text-xs font-black text-emerald-400 mt-0.5">₹${b.amount.toLocaleString('en-IN')}</p>
+          </div>
+          <div class="flex gap-1">
+            <button onclick='editBudget(${JSON.stringify(b)})' class="p-1.5 bg-slate-950 text-slate-300 rounded-lg hover:bg-slate-800"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+            <button onclick="deleteBudget(${b.id})" class="p-1.5 bg-rose-500/10 text-rose-400 rounded-lg hover:bg-rose-500/20"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function openBudgetModal() {
+      document.getElementById('budgetModalTitle').innerText = 'Add Budget Category';
+      document.getElementById('budgetForm').reset();
+      document.getElementById('budgetId').value = '';
+      document.getElementById('budgetModal').classList.remove('hidden');
+    }
+
+    function editBudget(b) {
+      document.getElementById('budgetModalTitle').innerText = 'Edit Budget Category';
+      document.getElementById('budgetId').value = b.id || '';
+      document.getElementById('budgetCategory').value = b.category || '';
+      document.getElementById('budgetAmount').value = b.amount || 0;
+      document.getElementById('budgetModal').classList.remove('hidden');
+    }
+
+    function closeBudgetModal() { document.getElementById('budgetModal').classList.add('hidden'); }
+
+    async function saveBudgetForm(e) {
+      e.preventDefault();
+      const payload = {
+        id: document.getElementById('budgetId').value ? Number(document.getElementById('budgetId').value) : null,
+        category: document.getElementById('budgetCategory').value,
+        amount: Number(document.getElementById('budgetAmount').value)
+      };
+
+      try {
+        const fresh = await adminApi('admin-save-budget', payload);
+        globalData = fresh;
+        renderBudget(fresh.budgetRawList, fresh.stats);
+        closeBudgetModal();
+        showAlert("Budget Saved", `${payload.category} allocated ₹${payload.amount}`);
+      } catch (err) {
+        showAlert("Failed", err.message, true);
+      }
+    }
+
+    async function deleteBudget(id) {
+      if (!confirm('Delete this budget allocation category?')) return;
+      try {
+        const fresh = await adminApi('admin-delete-budget', { id });
+        globalData = fresh;
+        renderBudget(fresh.budgetRawList, fresh.stats);
+        showAlert("Deleted", "Budget category removed");
       } catch (err) {
         showAlert("Failed", err.message, true);
       }
@@ -1009,7 +1303,7 @@
       }
     }
 
-    // Archives
+    // Archives (Newest on Top)
     function renderArchives(trips) {
       const container = document.getElementById('archivesAdminCards');
       container.innerHTML = trips.map(t => `
@@ -1084,7 +1378,7 @@
         globalData = fresh;
         renderArchives(fresh.pastTrips);
         closeArchiveModal();
-        showAlert("Past Trip Saved", `${payload.name} added to archives`);
+        showAlert("Past Trip Saved", `${payload.name} saved at top of archives`);
       } catch (err) {
         showAlert("Failed", err.message, true);
       }
