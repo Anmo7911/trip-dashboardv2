@@ -1958,15 +1958,352 @@
     }
 
     // Core data fetching - Calls Google Apps Script backend 'getDashboardData'
+    // 1. Updated fetchInitialData with fallback splash dismissal
     async function fetchInitialData() {
       try {
         const data = await apiRequest('dashboard');
         renderApp(data);
       } catch (error) {
-        console.error(error);
+        console.error("Dashboard fetch error:", error);
         showToast("Unable to sync latest data.");
+        attemptSplashHide(); // Ensures splash hides even if the API is offline
       }
-    } 
+    }
+
+    // 2. Cleaned and error-free renderApp function
+    function renderApp(data) { 
+      refreshMenuSignOffButton(data);
+      
+      // 1. Authentication Check
+      const currentUser = localStorage.getItem('trekLoggedInUser');
+      const currentPIN = localStorage.getItem('trekLoggedInPIN');
+      const loginOverlay = document.getElementById('login-overlay');
+      
+      if (!currentUser) {
+        loginOverlay.classList.remove('hidden');
+        const selectDropdown = document.getElementById('login-name-select');
+        if (selectDropdown && selectDropdown.options.length === 0 && data.members) {
+          selectDropdown.innerHTML = data.members.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
+        }
+        attemptSplashHide();
+        return;
+      } else {
+        loginOverlay.classList.add('hidden');
+      }
+      
+      // 2. Check global trip lock status
+      const lockScreen = document.getElementById('live-lock-screen');
+      if (data.appStatus === "CLOSED" || data.appStatus === "LOCKED") {
+        lockScreen.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden', 'touch-none');
+        attemptSplashHide();
+        return; 
+      } else {
+        lockScreen.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden', 'touch-none');
+      }
+      
+      globalActiveDataPayloadBackup = data;
+      
+      // 3. Render Chat Messages
+      renderChatData(data.messages);
+
+      // 4. Expense Lock
+      const expenseLockOverlay = document.getElementById('expense-lock-overlay');
+      const swipeTrack = document.getElementById('swipe-track');
+
+      if (data.expenseStatus === "STOP Expense") {
+          if(expenseLockOverlay) expenseLockOverlay.classList.remove('hidden');
+          if(swipeTrack) {
+              swipeTrack.style.pointerEvents = 'none';
+              swipeTrack.style.opacity = '0.5';
+              document.getElementById('swipe-text').innerText = "ENTRIES PAUSED";
+          }
+      } else { 
+          if(expenseLockOverlay) expenseLockOverlay.classList.add('hidden');
+          if(swipeTrack) {
+              swipeTrack.style.pointerEvents = 'auto';
+              swipeTrack.style.opacity = '1';
+              document.getElementById('swipe-text').innerText = "SWIPE TO SAVE";
+          }
+      }
+      
+      // 5. Live Route Lock
+      const routeVault = document.getElementById('route-lock-vault');
+      const routeNavBtn = document.getElementById('nav-btn-route');
+      const routeView = document.getElementById('view-places');
+      const secureContent = document.getElementById('route-secure-content');
+
+      if (data.routeStatus === "LOCKED") {
+        routeVault.classList.remove('hidden');
+        routeNavBtn.classList.remove('hidden');
+        routeView.style.height = 'calc(100vh - 180px)';
+        routeView.style.overflow = 'hidden';
+        if (secureContent) {
+          secureContent.classList.add('blur-[8px]', 'opacity-40', 'pointer-events-none', 'select-none');
+        }
+      } else if (data.routeStatus === "STEALTH") {
+        routeNavBtn.classList.add('hidden');
+        if (routeView.classList.contains('active-tab')) {
+          showTab('spend', document.querySelector('.nav-btn'));
+        }
+      } else { 
+        routeVault.classList.add('hidden');
+        routeNavBtn.classList.remove('hidden');
+        routeView.style.height = 'auto';
+        routeView.style.overflow = 'visible';
+        if (secureContent) {
+          secureContent.classList.remove('blur-[8px]', 'opacity-40', 'pointer-events-none', 'select-none');
+        }
+      }
+
+      // 6. External Links & Subtitles
+      const moreTripReportBtn = document.getElementById('ui-more-tripreport');
+      if (moreTripReportBtn) {
+        if (data.tripReportUrl && data.tripReportUrl.toString().trim() !== "") {
+          moreTripReportBtn.href = data.tripReportUrl;
+          moreTripReportBtn.classList.remove('opacity-50', 'pointer-events-none');
+        } else {
+          moreTripReportBtn.href = "#";
+          moreTripReportBtn.classList.add('opacity-50', 'pointer-events-none');
+        }
+      }
+
+      const reportSubtext = document.getElementById('ui-more-tripreport-subtext');
+      if (reportSubtext) {
+        if (data.tripReportSubheading && data.tripReportSubheading.toString().trim() !== "") {
+          reportSubtext.innerText = data.tripReportSubheading;
+          reportSubtext.classList.remove('hidden');
+        } else {
+          reportSubtext.classList.add('hidden');
+        }
+      }
+
+      const moreGuidelinesBtn = document.getElementById('ui-more-guidelines');
+      if (moreGuidelinesBtn) {
+        if (data.guidelinesUrl && data.guidelinesUrl.toString().trim() !== "") {
+          moreGuidelinesBtn.href = data.guidelinesUrl;
+          moreGuidelinesBtn.classList.remove('opacity-50', 'pointer-events-none');
+        } else {
+          moreGuidelinesBtn.href = "#";
+          moreGuidelinesBtn.classList.add('opacity-50', 'pointer-events-none');
+        }
+      }
+      
+      document.getElementById('ui-timeline-container').classList.remove('play-places-anim');
+      
+      if (titleText1 !== data.tripName || titleText2 !== data.secondaryTitle) { 
+          runHeadlineCarousel(data.tripName, data.secondaryTitle); 
+      }
+      
+      if (data.allocations) { globalAllocations = data.allocations; renderBackCategoryBars(); } 
+      if (data.members) { cachedMembersList = data.members; }
+      
+      // 7. Notices
+      const noticeBox = document.getElementById('notice-container');
+      const standardNoticeEl = document.getElementById('ui-trip-notice');
+      const warningNoticeEl = document.getElementById('ui-warning-notice');
+      activeNotices = []; currentSlide = 0;
+      if (data.tripNotice && data.tripNotice.trim() !== "") { standardNoticeEl.innerText = data.tripNotice; activeNotices.push('standard'); }
+      if (data.warningNotice && data.warningNotice.trim() !== "") { warningNoticeEl.innerText = data.warningNotice; activeNotices.push('warning'); }
+      if (activeNotices.length > 0) { noticeBox.classList.remove('hidden'); runNoticeCarousel(); } else { noticeBox.classList.add('hidden'); if (carouselInterval) clearInterval(carouselInterval); }
+
+      // 8. Countdown Timer
+      if (data.timeData && data.timeData.start && data.timeData.end) { 
+        const start = data.timeData.start, end = data.timeData.end, now = new Date().getTime();
+        const timerContainer = document.getElementById('timer-container');
+        const timerText = document.getElementById('ui-timer-text');
+        
+        if (timerContainer && timerText) {
+          if (now < start) { 
+            const days = Math.floor((start - now) / 86400000);
+            timerContainer.classList.remove('hidden'); 
+            timerText.innerText = `Starts in ${days} Days`; 
+          } else if (now >= start && now < end) { 
+            timerContainer.classList.remove('hidden'); 
+            const rem = end - now; 
+            const daysLeft = Math.floor(rem / 86400000);
+            const hoursLeft = Math.floor((rem % 86400000) / 3600000);
+            const minsLeft = Math.floor((rem % 3600000) / 60000);
+            timerText.innerText = `${daysLeft}D ${hoursLeft}H ${minsLeft}M Left`; 
+          } else { 
+            timerContainer.classList.remove('hidden');
+            timerText.innerText = `Trip Ended`; 
+          }
+        }
+      }
+      
+      // 9. Stats & Balances
+      document.getElementById('stat-budget').innerText = formatINR(data.stats.budget);
+      runFluidCountdownAnimationSequence(data.stats.balance, data.stats.expenses);
+      
+      const balanceCard = document.getElementById('balance-card'); 
+      const balanceLabel = document.getElementById('balance-label'); 
+      const balanceVal = document.getElementById('stat-balance');
+      const hintFooter = document.getElementById('balance-hint-footer');
+      const dotPing = document.getElementById('dot-ping'); 
+      const dotMain = document.getElementById('dot-main'); 
+      const pLeft = data.stats.percentLeft;
+      const currentBalance = data.stats.balance;
+
+      balanceCard.className = "face-front w-full h-full p-4 rounded-[24px] border border-white/60 transition-all duration-300 text-center flex flex-col justify-between items-center active:scale-[0.96] active:shadow-[0_2px_4px_rgba(0,0,0,0.02),inset_0_2px_4px_rgba(0,0,0,0.02)] cursor-pointer";
+      if(dotPing) dotPing.className = "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"; 
+      if(dotMain) dotMain.className = "relative inline-flex rounded-full h-2 w-2";
+
+      if (currentBalance < 0) {
+        balanceCard.classList.add('bg-gradient-to-b', 'from-rose-50', 'to-rose-100', 'warning-pulse', 'shadow-[0_12px_24px_rgba(225,29,72,0.08),inset_0_2px_6px_rgba(255,255,255,0.9)]');
+        if(balanceLabel) { balanceLabel.className = "text-[9.5px] font-black text-rose-600 uppercase tracking-widest drop-shadow-sm"; balanceLabel.innerText = "BUDGET EXCEEDED"; }
+        if(balanceVal) balanceVal.className = "text-3xl font-black text-rose-700 tracking-tight text-center drop-shadow-sm";
+        if(hintFooter) hintFooter.className = "text-[9px] font-bold uppercase tracking-wider text-rose-600 flex items-center justify-center gap-1 transition-colors duration-500 w-full drop-shadow-sm";
+        if(dotPing) dotPing.classList.add('bg-rose-500'); if(dotMain) dotMain.classList.add('bg-rose-600');
+      } else if (pLeft > 20) { 
+        balanceCard.classList.add('bg-gradient-to-b', 'from-emerald-50', 'to-emerald-100', 'shadow-[0_12px_24px_rgba(16,185,129,0.06),inset_0_2px_6px_rgba(255,255,255,0.9)]');
+        if(balanceLabel) { balanceLabel.className = "text-[9.5px] font-black text-emerald-600 uppercase tracking-widest drop-shadow-sm"; balanceLabel.innerText = "Remaining"; }
+        if(balanceVal) balanceVal.className = "text-3xl font-black text-emerald-700 tracking-tight text-center drop-shadow-sm";
+        if(hintFooter) hintFooter.className = "text-[9px] font-bold uppercase tracking-wider text-emerald-700 flex items-center justify-center gap-1 transition-colors duration-500 w-full drop-shadow-sm";
+        if(dotPing) dotPing.classList.add('bg-emerald-500'); if(dotMain) dotMain.classList.add('bg-emerald-600');
+      } else if (pLeft > 10) { 
+        balanceCard.classList.add('bg-gradient-to-b', 'from-amber-50', 'to-amber-100', 'shadow-[0_12px_24px_rgba(245,158,11,0.06),inset_0_2px_6px_rgba(255,255,255,0.9)]');
+        if(balanceLabel) { balanceLabel.className = "text-[9.5px] font-black text-amber-600 uppercase tracking-widest drop-shadow-sm"; balanceLabel.innerText = "Remaining"; }
+        if(balanceVal) balanceVal.className = "text-3xl font-black text-amber-700 tracking-tight text-center drop-shadow-sm";
+        if(hintFooter) hintFooter.className = "text-[9px] font-bold uppercase tracking-wider text-amber-700 flex items-center justify-center gap-1 transition-colors duration-500 w-full drop-shadow-sm";
+        if(dotPing) dotPing.classList.add('bg-amber-500'); if(dotMain) dotMain.classList.add('bg-amber-600');
+      } else { 
+        balanceCard.classList.add('bg-gradient-to-b', 'from-rose-50', 'to-rose-100', 'warning-pulse', 'shadow-[0_12px_24px_rgba(225,29,72,0.08),inset_0_2px_6px_rgba(255,255,255,0.9)]');
+        if(balanceLabel) { balanceLabel.className = "text-[9.5px] font-black text-rose-600 uppercase tracking-widest drop-shadow-sm"; balanceLabel.innerText = "Remaining"; }
+        if(balanceVal) balanceVal.className = "text-3xl font-black text-rose-700 tracking-tight text-center drop-shadow-sm";
+        if(hintFooter) hintFooter.className = "text-[9px] font-bold uppercase tracking-wider text-rose-600 flex items-center justify-center gap-1 transition-colors duration-500 w-full drop-shadow-sm";
+        if(dotPing) dotPing.classList.add('bg-rose-500'); if(dotMain) dotMain.classList.add('bg-rose-600');
+      }
+
+      // 10. Ledger & Squad
+      let runningTotal = 0;
+      const budgetLimit = data.stats.budget;
+      globalLedgerDataBackup = [...(data.transactions || [])].reverse().map(t => {
+        runningTotal += (parseFloat(t.amount) || 0);
+        return { ...t, overBudget: runningTotal > budgetLimit };
+      }).reverse();
+
+      renderLedgerList();
+      triggerSequentialWaveEffects(data);
+      
+      // 11. Route Timeline
+      const groupedPlaces = {};
+      let timelineCount = 0;
+
+      (data.places || []).forEach(p => {
+        if (!p.tripDay && !p.location) return;
+        const dayGroup = p.tripDay || "Unscheduled";
+        if (!groupedPlaces[dayGroup]) groupedPlaces[dayGroup] = [];
+        groupedPlaces[dayGroup].push(p);
+        timelineCount++;
+      });
+
+      let scheduleHtml = "";
+      let animStep = 0;
+
+      if (timelineCount > 0) {
+        scheduleHtml += `<div class="relative w-full pt-2 pb-6" id="master-timeline-wrap">
+          <div id="live-track-fill" class="absolute left-[79px] top-6 w-[2px] bg-indigo-500 z-[1] transition-all duration-[1000ms] ease-[cubic-bezier(0.25,1,0.5,1)] origin-top" style="height: 0px;"></div>
+          <div id="live-train-dot" class="absolute left-[75px] top-0 w-[10px] h-[10px] bg-emerald-400 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.8)] z-[2] transition-all duration-[1000ms] ease-[cubic-bezier(0.25,1,0.5,1)] opacity-0 border border-white"></div>`;
+
+        const dayKeys = Object.keys(groupedPlaces);
+        dayKeys.forEach((day, dayIndex) => {
+          const firstItemDate = groupedPlaces[day][0].targetDate || "";
+          const headerText = firstItemDate ? `${day} • ${firstItemDate}` : day;
+          let badgeDelay = animStep * 12; 
+
+          scheduleHtml += `
+            <div class="mb-8">
+              <div class="sticky top-0 bg-slate-50/90 backdrop-blur-sm py-2 z-30 anim-badge" style="animation-delay: ${badgeDelay}ms;">
+                <span class="bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md">${headerText}</span>
+              </div>
+              <div class="border-l-2 border-transparent ml-20 mt-4 space-y-6 relative">`;
+
+          groupedPlaces[day].forEach((p, i) => {
+            const hasNextInDay = i < groupedPlaces[day].length - 1;
+            const hasNextDay = dayIndex < dayKeys.length - 1;
+            const hasNextGlobally = hasNextInDay || hasNextDay;
+            const trackBottomClass = hasNextInDay ? '-bottom-[30px]' : '-bottom-[110px]';
+            const isCancelled = p.cancelStatus && p.cancelStatus.toLowerCase().includes("cancel");
+
+            let badgeHtml = "";
+            let detailText = p.details ? p.details.toLowerCase() : "";
+            
+            if (detailText.includes("train") || detailText.includes("exp")) {
+              badgeHtml = `<span class="bg-amber-100 text-amber-700 text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider inline-block">${p.details}</span>`;
+            } else if (detailText.includes("hotel") || detailText.includes("stay")) {
+              badgeHtml = `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider inline-block">${p.details}</span>`;
+            } else if (p.details) {
+              badgeHtml = `<span class="bg-indigo-100 text-indigo-700 text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider inline-block">${p.details}</span>`;
+            }
+
+            let timeBlock = "";
+            let dotClass = "bg-indigo-500";
+            let cardClass = "ml-6 p-3.5 rounded-xl border shadow-sm transition-all";
+            let titleClass = "font-bold text-sm";
+            let clickAction = "";
+            
+            if (isCancelled) {
+              timeBlock = `<p class="text-[11px] font-black italic text-red-500 mt-1">Cancelled</p>`;
+              dotClass = "bg-slate-300"; 
+              cardClass += " bg-red-50 border-red-200 opacity-60"; 
+              titleClass += " text-red-800 line-through decoration-red-400"; 
+            } else {
+              if (p.eta) timeBlock += `<p class="text-[9px] font-bold text-slate-400">ETA ${p.eta}</p>`;
+              if (p.ata) timeBlock += `<p class="text-[11px] font-black text-indigo-600 mt-0.5">ATA ${p.ata}</p>`;
+              cardClass += " bg-white border-slate-200 active:scale-95 cursor-pointer hover:border-indigo-200";
+              titleClass += " text-slate-800";
+              clickAction = `onclick="recordLiveATA(${p.rowId})"`;
+            }
+
+            animStep++; 
+            let nodeDelay = badgeDelay + 10; 
+            let cardDelay = nodeDelay + 15; 
+
+            scheduleHtml += `
+                <div class="relative w-full tracker-node" data-rowid="${p.rowId}" data-eta="${p.eta || ''}" data-ata="${p.ata || ''}" data-cancelled="${isCancelled}">
+                  ${hasNextGlobally ? `
+                  <div class="absolute -left-[2px] top-5 ${trackBottomClass} w-[2px] bg-slate-200 z-0">
+                    <div id="live-fill-${p.rowId}" class="w-full bg-indigo-500 transition-all duration-1000 ease-out relative flex justify-center z-10" style="height: 0%;">
+                      <span id="live-dot-${p.rowId}" class="absolute -bottom-1 flex h-2.5 w-2.5 hidden z-20">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-indigo-400"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500 shadow-[0_0_6px_rgba(99,102,241,0.8)]"></span>
+                      </span>
+                    </div>
+                  </div>` : ''}
+
+                  <div id="time-block-${p.rowId}" class="absolute -left-[84px] top-0 text-right w-16 anim-card" style="animation-delay: ${cardDelay}ms;">
+                    ${timeBlock}
+                  </div>
+                  <div class="absolute -left-[9px] top-1.5 w-4 h-4 ${dotClass} rounded-full border-4 border-slate-50 shadow-sm anim-node z-20" style="animation-delay: ${nodeDelay}ms;"></div>
+                  <div ${clickAction} class="${cardClass} anim-card relative z-10" style="animation-delay: ${cardDelay}ms;">
+                    <p class="${titleClass}">${p.location || "Location TBD"}</p>
+                    ${badgeHtml ? `<div class="mt-2.5 ${isCancelled ? 'opacity-70 grayscale' : ''}">${badgeHtml}</div>` : ''}
+                  </div>
+                </div>`;
+          });
+
+          scheduleHtml += `</div></div>`;
+        });
+        
+        scheduleHtml += `</div>`;
+      }
+
+      document.getElementById('ui-timeline-container').innerHTML = scheduleHtml;
+
+      if(window.liveTimelineInterval) clearInterval(window.liveTimelineInterval);
+      window.liveTimelineInterval = setInterval(updateLiveTimelineEngine, 30000); 
+      setTimeout(updateLiveTimelineEngine, 100); 
+      
+      const eidModal = document.getElementById('eid-modal');
+      if (eidModal && !eidModal.classList.contains('hidden')) {
+        refreshEIDCardData();
+      }
+      
+      renderArchivesList(data.pastTrips);
+      attemptSplashHide();
+    }
     
     // Simple helper to format numbers as Indian Rupees string
     function formatINR(num) { return '₹' + Math.round(num).toLocaleString('en-IN'); } 
