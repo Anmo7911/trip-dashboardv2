@@ -547,5 +547,5 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('API Error:', error);
     return json(res, 500, { error: error?.message || 'Internal server error' });
-  }
+  } 
 }
