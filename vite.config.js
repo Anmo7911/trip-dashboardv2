@@ -8,9 +8,7 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         squad: resolve(__dirname, 'squad.html'),
         route: resolve(__dirname, 'route.html'),
-        chat: resolve(__dirname, 'chat.html'),
-        archives: resolve(__dirname, 'archives.html'),
-        // add any additional HTML files here
+        admin: resolve(__dirname, 'admin.html')
       }
     }
   }
