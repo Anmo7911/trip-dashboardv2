@@ -233,10 +233,10 @@ async function dashboard() {
     timeString: r.col_d ? asIso(r.col_d) : '',
     tripDay: text(r.col_f),
     targetDate: text(r.col_g),
-    eta: text(r.col_h),
+    eta: formatHHMM(r.col_h, timeZone),
     location: text(r.col_i),
     details: text(r.col_j),
-    ata: text(r.col_k),
+    ata: formatHHMM(r.col_k, timeZone),
     cancelStatus: text(r.col_l)
   }));
 
