@@ -39,24 +39,14 @@ function formatMonthDay(v, timeZone = 'Asia/Kolkata') {
 function formatHHMM(v, timeZone = 'Asia/Kolkata') {
   if (!v) return '';
   const raw = String(v).trim();
-  
-  // If already in HH:MM or HH:MM:SS format
   if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(raw)) {
     const parts = raw.split(':');
     return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
   }
-
-  // If ISO Timestamp string
   const d = new Date(raw);
   if (!Number.isNaN(d.getTime())) {
-    return new Intl.DateTimeFormat('en-GB', { 
-      hour: '2-digit', 
-      minute: '2-digit', 
-      hour12: false, 
-      timeZone 
-    }).format(d);
+    return new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone }).format(d);
   }
-
   return raw.length >= 5 ? raw.slice(0, 5) : raw;
 }
 
@@ -102,7 +92,17 @@ async function verifyMemberPIN(name, pin) {
 }
 
 async function dashboard() {
-  const [settingsResult, txResult, membersResult, memberMetaResult, placesResult, budgetResult, messagesResult, archivesResult, appMetaResult] = await Promise.all([
+  const [
+    settingsResult,
+    txResult,
+    membersResult,
+    memberMetaResult,
+    placesResult,
+    budgetResult,
+    messagesResult,
+    archivesResult,
+    appMetaResult
+  ] = await Promise.all([
     supabase.from('settings_sheet').select('*').order('row_number', { ascending: true }),
     supabase.from('transactions_sheet').select('*').order('id', { ascending: true }),
     supabase.from('members_sheet').select('*').order('id', { ascending: true }),
@@ -110,7 +110,7 @@ async function dashboard() {
     supabase.from('places_sheet').select('*').order('id', { ascending: true }),
     supabase.from('budget_sheet').select('*').order('id', { ascending: true }),
     supabase.from('messages_sheet').select('*').order('id', { ascending: false }).limit(50),
-    supabase.from('archives_sheet').select('*').order('id', { ascending: true }),
+    supabase.from('archives_sheet').select('*').order('id', { ascending: false }),
     supabase.from('app_meta').select('*').limit(1).maybeSingle()
   ]);
 
@@ -145,9 +145,12 @@ async function dashboard() {
 
   const categoryBudgets = { Food: 0, 'Entry Fee': 0, Fare: 0, Stay: 0, Water: 0, Other: 0 };
   let calculatedTotalBudget = 0;
+  const budgetRawList = [];
+
   for (const row of budgetResult.data || []) {
     const catName = text(row.col_a);
     const catAmount = number(row.col_b);
+    budgetRawList.push({ id: row.id, category: catName, amount: catAmount });
     if (catName && Object.prototype.hasOwnProperty.call(categoryBudgets, catName)) {
       categoryBudgets[catName] = catAmount;
       calculatedTotalBudget += catAmount;
@@ -177,6 +180,7 @@ async function dashboard() {
       date: asIso(row.col_b),
       amount: amt,
       category: cat,
+      paidVia: text(row.col_h) || 'UPI',
       notes: row.col_f ?? '',
       claimant: claimant,
       isVerified
@@ -185,8 +189,11 @@ async function dashboard() {
 
   const isEncrypted = text(meta.security_status).toLowerCase() === 'encrypted';
   const defaultSecureAvatar = text(meta.default_secure_avatar) || 'https://ui-avatars.com/api/?name=U&background=cbd5e1&color=ffffff';
-  const coordinatorBg = await resolveAsset(memberMeta.coordinator_bg);
-  const memberBg = await resolveAsset(memberMeta.member_bg);
+  
+  const rawCoordinatorBg = memberMeta.coordinator_bg || '';
+  const rawMemberBg = memberMeta.member_bg || '';
+  const coordinatorBg = await resolveAsset(rawCoordinatorBg);
+  const memberBg = await resolveAsset(rawMemberBg);
   const chiefCoordinatorSignature = await resolveAsset(memberMeta.chief_coordinator_signature);
 
   const members = [];
@@ -212,7 +219,7 @@ async function dashboard() {
       attendance: text(r.col_e),
       designation: roleName,
       memberRole: text(r.col_h),
-      verification: text(r.col_i),
+      verification: text(r.col_i) || 'Verified',
       contribution: memberContributions[rawName] || 0,
       mobile: text(r.col_o),
       email: text(r.col_p),
@@ -267,6 +274,7 @@ async function dashboard() {
     securityStatus: meta.security_status || 'normal',
     chiefCoordinatorSignature, eidStampImage, rawEidStamp, tripName, secondaryTitle,
     guidelinesUrl, rawGuidelines, tripReportUrl, rawTripReport, tripReportSubheading, eidSubheading, eidHeading,
+    rawCoordinatorBg, rawMemberBg, coordinatorBg, memberBg,
     tripNotice, warningNotice,
     timeData: { start: Number.isFinite(startDate) ? startDate : null, end: Number.isFinite(endDate) ? endDate : null },
     stats: {
@@ -276,6 +284,7 @@ async function dashboard() {
       percentLeft: totalBudget > 0 ? ((totalBudget - totalExpenses) / totalBudget) * 100 : 0
     },
     allocations: { limits: categoryBudgets, spent: categorySpent },
+    budgetRawList,
     transactions, members, places, messages: squadMessages, pastTrips,
     settingsRaw: settingsRows
   };
@@ -396,6 +405,17 @@ async function adminUpdateMeta(securityStatus) {
   return dashboard();
 }
 
+async function adminUpdateMemberMeta(field, value) {
+  const { data: metaRows } = await supabase.from('member_sheet_meta').select('*').limit(1);
+  const patch = { [field]: value };
+  if (metaRows?.length) {
+    await supabase.from('member_sheet_meta').update(patch).eq('id', metaRows[0].id);
+  } else {
+    await supabase.from('member_sheet_meta').insert(patch);
+  }
+  return dashboard();
+}
+
 async function adminSaveMember(memberData) {
   const payload = {
     col_a: memberData.name || '',
@@ -425,9 +445,9 @@ async function adminDeleteMember(memberId) {
 
 async function adminSavePlace(placeData) {
   const payload = {
-    col_a: placeData.name || '',
+    col_a: placeData.location || placeData.name || '',
     col_b: placeData.note || '',
-    col_c: placeData.status || 'Pending',
+    col_c: 'Pending',
     col_f: placeData.tripDay || 'Day 1',
     col_g: placeData.targetDate || '',
     col_h: placeData.eta || '',
@@ -445,8 +465,43 @@ async function adminSavePlace(placeData) {
   return dashboard();
 }
 
+async function adminReorderPlaces(placesList) {
+  for (const item of placesList) {
+    await supabase.from('places_sheet').update({
+      col_f: item.tripDay || 'Day 1',
+      col_g: item.targetDate || '',
+      col_h: item.eta || '',
+      col_i: item.location || '',
+      col_j: item.details || '',
+      col_k: item.ata || '',
+      col_l: item.cancelStatus || ''
+    }).eq('id', item.id);
+  }
+  return dashboard();
+}
+
 async function adminDeletePlace(placeId) {
   await supabase.from('places_sheet').delete().eq('id', placeId);
+  return dashboard();
+}
+
+async function adminSaveTx(txData) {
+  const payload = {
+    col_c: number(txData.amount),
+    col_d: txData.category || 'Other',
+    col_f: txData.notes || '',
+    col_h: txData.paidVia || 'UPI',
+    col_i: txData.claimant || '',
+    col_j: txData.verification || 'Verified'
+  };
+
+  if (txData.date) {
+    payload.col_b = txData.date;
+  }
+
+  if (txData.id) {
+    await supabase.from('transactions_sheet').update(payload).eq('id', txData.id);
+  }
   return dashboard();
 }
 
@@ -479,6 +534,25 @@ async function adminSaveArchive(archiveData) {
 
 async function adminDeleteArchive(archiveId) {
   await supabase.from('archives_sheet').delete().eq('id', archiveId);
+  return dashboard();
+}
+
+async function adminSaveBudget(budgetData) {
+  const payload = {
+    col_a: budgetData.category,
+    col_b: number(budgetData.amount)
+  };
+
+  if (budgetData.id) {
+    await supabase.from('budget_sheet').update(payload).eq('id', budgetData.id);
+  } else {
+    await supabase.from('budget_sheet').insert(payload);
+  }
+  return dashboard();
+}
+
+async function adminDeleteBudget(budgetId) {
+  await supabase.from('budget_sheet').delete().eq('id', budgetId);
   return dashboard();
 }
 
@@ -532,14 +606,19 @@ export default async function handler(req, res) {
       case 'admin-login': return json(res, 200, await adminLogin(body.username, body.password));
       case 'admin-update-setting': return json(res, 200, await adminUpdateSetting(body.rowNumber, body.col, body.value));
       case 'admin-update-meta': return json(res, 200, await adminUpdateMeta(body.securityStatus));
+      case 'admin-update-member-meta': return json(res, 200, await adminUpdateMemberMeta(body.field, body.value));
       case 'admin-save-member': return json(res, 200, await adminSaveMember(body));
       case 'admin-delete-member': return json(res, 200, await adminDeleteMember(body.id));
       case 'admin-save-place': return json(res, 200, await adminSavePlace(body));
+      case 'admin-reorder-places': return json(res, 200, await adminReorderPlaces(body.places));
       case 'admin-delete-place': return json(res, 200, await adminDeletePlace(body.id));
+      case 'admin-save-tx': return json(res, 200, await adminSaveTx(body));
       case 'admin-verify-tx': return json(res, 200, await adminVerifyTx(body.id, body.status));
       case 'admin-delete-tx': return json(res, 200, await adminDeleteTx(body.id));
       case 'admin-save-archive': return json(res, 200, await adminSaveArchive(body));
       case 'admin-delete-archive': return json(res, 200, await adminDeleteArchive(body.id));
+      case 'admin-save-budget': return json(res, 200, await adminSaveBudget(body));
+      case 'admin-delete-budget': return json(res, 200, await adminDeleteBudget(body.id));
       case 'admin-upload': return json(res, 200, await adminUploadFile(body));
 
       default: return json(res, 200, await dashboard());
