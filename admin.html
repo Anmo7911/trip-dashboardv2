@@ -1077,28 +1077,28 @@
     function closePlaceModal() { document.getElementById('placeModal').classList.add('hidden'); }
 
     async function savePlaceForm(e) {
-      e.preventDefault();
-      const payload = {
-        id: document.getElementById('placeId').value ? Number(document.getElementById('placeId').value) : null,
-        tripDay: document.getElementById('placeDay').value,
-        targetDate: document.getElementById('placeDate').value,
-        location: document.getElementById('placeLocation').value,
-        eta: document.getElementById('placeEta').value,
-        ata: document.getElementById('placeAta').value,
-        details: document.getElementById('placeDetails').value,
-        cancelStatus: document.getElementById('placeCancel').value
-      };
+  e.preventDefault();
+  const payload = {
+    id: document.getElementById('placeId').value ? Number(document.getElementById('placeId').value) : null,
+    tripDay: document.getElementById('placeDay').value.trim(),
+    targetDate: document.getElementById('placeDate').value.trim(),
+    location: document.getElementById('placeLocation').value.trim(),
+    eta: document.getElementById('placeEta').value.trim(),
+    ata: document.getElementById('placeAta').value.trim(),
+    details: document.getElementById('placeDetails').value.trim(),
+    cancelStatus: document.getElementById('placeCancel').value
+  };
 
-      try {
-        const fresh = await adminApi('admin-save-place', payload);
-        globalData = fresh;
-        renderPlaces(fresh.places);
-        closePlaceModal();
-        showAlert("Route Saved", `${payload.location} saved successfully`);
-      } catch (err) {
-        showAlert("Failed", err.message, true);
-      }
-    }
+  try {
+    const fresh = await adminApi('admin-save-place', payload);
+    globalData = fresh;
+    renderPlaces(fresh.places);
+    closePlaceModal();
+    showAlert("Route Saved", `${payload.location} saved successfully`);
+  } catch (err) {
+    showAlert("Failed", err.message, true);
+  }
+}
 
     async function deletePlace(id) {
       if (!confirm('Delete this stop?')) return;
