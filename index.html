@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <!-- Mobile Responsive Viewport Setup (Fixes Mobile Scaling) -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -85,7 +86,6 @@
     }
 
     body::-webkit-scrollbar, main::-webkit-scrollbar, .tab-content::-webkit-scrollbar { display: none; }
-
     body, main, .tab-content { -ms-overflow-style: none; scrollbar-width: none; }
 
     @keyframes floodFill {
@@ -137,6 +137,17 @@
       0% { opacity: 0; transform: translateX(-4px); }
       100% { opacity: 1; transform: translateX(0); }
     }
+
+    .morph-wrapper { position: relative; width: 64px; height: 64px; margin: 0 auto; }
+
+    .morph-icon {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      transition: all 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .morph-out { opacity: 0; transform: scale(0.2) rotate(90deg); filter: blur(2px); }
+    .morph-in { opacity: 1; transform: scale(1) rotate(0); filter: blur(0px); }
 
     .text-fade { transition: opacity 0.15s ease, transform 0.15s ease; }
     .text-hidden { opacity: 0; transform: translateY(4px); }
@@ -205,9 +216,7 @@
     .card-scene { perspective: 1000px; }
 
     .card-flipper {
-      width: 100%;
-      height: 100%;
-      position: relative;
+      width: 100%; height: 100%; position: relative;
       transform-style: preserve-3d;
       transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -215,13 +224,8 @@
     .flipper-rotated { transform: rotateY(180deg); }
 
     .face-front, .face-back {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      backface-visibility: hidden; -webkit-backface-visibility: hidden;
     }
 
     .face-back { transform: rotateY(180deg); }
@@ -229,9 +233,7 @@
     .budget-scene-mount { perspective: 800px; width: 100%; height: 100%; }
 
     .budget-card-inner-engine {
-      width: 100%;
-      height: 100%;
-      position: relative;
+      width: 100%; height: 100%; position: relative;
       transform-style: preserve-3d;
       transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -239,49 +241,29 @@
     .budget-card-inner-engine.budget-flipped { transform: rotateY(180deg); }
 
     .budget-front, .budget-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 12px;
-      top: 0;
-      left: 0;
+      position: absolute; width: 100%; height: 100%;
+      backface-visibility: hidden; border-radius: 12px; top: 0; left: 0;
     }
 
     .budget-front { z-index: 2; transform: rotateY(0deg); }
     .budget-back { z-index: 1; transform: rotateY(180deg); }
 
-    .carousel-track {
-      display: flex;
-      width: 200%;
-      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
+    .carousel-track { display: flex; width: 200%; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
     .carousel-item { width: 50%; flex-shrink: 0; }
 
     .headline-scene { perspective: 600px; width: 100%; height: 28px; }
 
     .headline-flipper {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transform-style: preserve-3d;
-      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative; width: 100%; height: 100%;
+      transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .headline-rotated { transform: rotateX(-180deg); }
 
     .headline-front, .headline-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      left: 0;
-      top: 0;
+      position: absolute; width: 100%; height: 100%;
+      backface-visibility: hidden; display: flex; align-items: center; justify-content: center;
+      text-align: center; left: 0; top: 0;
     }
 
     .headline-back { transform: rotateX(180deg); }
@@ -290,13 +272,8 @@
     .squad-leader-box { perspective: 800px; min-height: 180px; height: auto; width: 100%; }
 
     .squad-front, .squad-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 12px;
-      top: 0;
-      left: 0;
+      position: absolute; width: 100%; height: 100%;
+      backface-visibility: hidden; border-radius: 12px; top: 0; left: 0;
     }
 
     .squad-front { z-index: 2; transform: rotateY(0deg); }
@@ -389,9 +366,8 @@
           <div class="h-16 flex flex-col justify-center items-center px-4 relative text-center">
             <h1 id="eid-title"
               class="text-[22px] font-black tracking-tighter uppercase text-indigo-700 leading-none transition-colors duration-500 w-full truncate">
-              Zantar Mantar, Dilli</h1>
-            <p id="eid-subtitle"
-              class="text-[8px] font-bold tracking-[0.2em] text-slate-400 uppercase mt-1 truncate w-full"></p>
+              Trip Pass</h1>
+            <p id="eid-subtitle" class="text-[8px] font-bold tracking-[0.2em] text-slate-400 uppercase mt-1 truncate w-full"></p>
           </div>
 
           <div id="eid-photo-container"
@@ -404,9 +380,7 @@
           </div>
 
           <div class="flex-1 p-4 pb-3 flex flex-col relative">
-            <p id="eid-name"
-              class="font-black text-lg text-slate-800 leading-none tracking-tight uppercase truncate mb-3 border-b border-slate-100 pb-2">
-            </p>
+            <p id="eid-name" class="font-black text-lg text-slate-800 leading-none tracking-tight uppercase truncate mb-3 border-b border-slate-100 pb-2"></p>
 
             <div class="grid grid-cols-[65px_auto] gap-y-1.5 gap-x-2 text-[8.5px] font-bold text-slate-800 uppercase tracking-wide mb-2 w-full">
               <span class="text-slate-500">Position</span>
@@ -569,8 +543,8 @@
             stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289"
             class="transition-all duration-[300ms] ease-linear drop-shadow-[0_0_4px_rgba(99,102,241,0.4)]" />
         </svg>
-        <div id="splash-icon-container" class="text-indigo-600 flex items-center justify-center">
-          <i data-lucide="compass" class="w-10 h-10 stroke-[1.5] animate-spin"></i>
+        <div id="splash-icon-container" class="morph-wrapper text-indigo-600 !w-10 !h-10 flex items-center justify-center">
+          <i data-lucide="compass" class="w-10 h-10 stroke-[1.5] text-indigo-600 animate-spin"></i>
         </div>
       </div>
       <div class="w-full flex justify-center">
@@ -919,6 +893,7 @@
     let cachedMembersList = []; 
     let globalActiveDataPayloadBackup = null;
     let autoFetchInterval = null;
+    let isLedgerActive = false;
 
     function hideSplashScreenNow() {
       const splash = document.getElementById('app-splash-screen');
@@ -932,7 +907,7 @@
       hideSplashScreenNow();
     }
 
-    // Safety splash timeout (Guarantees splash disappears within 2s)
+    // Safety fallback timer so loading never hangs
     setTimeout(hideSplashScreenNow, 2000);
 
     lucide.createIcons(); 
@@ -1219,7 +1194,7 @@
                 <div class="relative w-full tracker-node" data-rowid="${p.rowId}" data-eta="${p.eta || ''}" data-ata="${p.ata || ''}" data-cancelled="${isCancelled}">
                   ${hasNextGlobally ? `<div class="absolute -left-[2px] top-5 -bottom-[30px] w-[2px] bg-slate-200 z-0"><div id="live-fill-${p.rowId}" class="w-full bg-indigo-500" style="height: 0%;"></div></div>` : ''}
                   <div id="time-block-${p.rowId}" class="absolute -left-[84px] top-0 text-right w-16 anim-card">${timeBlock}</div>
-                  <div class="absolute -left-[9px] top-1.5 w-4 h-4 ${dotClass} rounded-full border-4 border-slate-50 shadow-sm anim-node z-20"></div>
+                  <div id="timeline-dot-${p.rowId}" class="absolute -left-[9px] top-1.5 w-4 h-4 ${dotClass} rounded-full border-4 border-slate-50 shadow-sm anim-node z-20"></div>
                   <div ${clickAction} class="${cardClass} anim-card relative z-10">
                     <p class="${titleClass}">${p.location || "Location TBD"}</p>
                     ${badgeHtml ? `<div class="mt-2.5">${badgeHtml}</div>` : ''}
@@ -1233,7 +1208,6 @@
 
       document.getElementById('ui-timeline-container').innerHTML = scheduleHtml;
 
-      renderArchivesList(data.pastTrips);
       attemptSplashHide();
       lucide.createIcons();
     }
@@ -1251,39 +1225,40 @@
         .catch(err => console.error(err));
     }
 
-    function triggerSequentialWaveEffects(data) {
-      const coordinator = (data.members || []).find(m => m.role && m.role.toLowerCase() === 'chief coordinator');
-      const others = (data.members || []).filter(m => !m.role || m.role.toLowerCase() !== 'chief coordinator'); 
+    function triggerSequentialWaveEffects(data, playAnim = false) {
+      const coordinator = (data.members || []).find(m => m.role && m.role.toLowerCase().includes('coordinator'));
+      const others = (data.members || []).filter(m => !m.role || !m.role.toLowerCase().includes('coordinator')); 
       const showContribution = data.contributionToggle === "ACTIVE";
 
       if (coordinator) {
         document.getElementById('leaderSection').innerHTML = `
         <div class="squad-leader-box mt-2">
-          <div class="h-[180px] bg-gradient-to-br from-indigo-600 to-violet-700 rounded-2xl shadow-md p-4 text-white flex flex-col justify-between relative">
-            <div>
+          <div class="h-[180px] bg-gradient-to-br from-indigo-600 to-violet-700 rounded-2xl shadow-md p-4 text-white flex flex-col justify-between relative overflow-hidden">
+            ${coordinator.bgImage ? `<div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('${coordinator.bgImage}')"></div>` : ''}
+            <div class="relative z-10">
               <p class="text-2xl font-black">${coordinator.name}</p>
-              <p class="text-[9px] uppercase font-bold text-indigo-200">Chief Coordinator</p>
+              <p class="text-[9px] uppercase font-bold text-indigo-200">${coordinator.role || 'Chief Coordinator'}</p>
             </div>
-            ${showContribution ? `<div class="bg-indigo-950/80 px-3 py-1 rounded-xl text-xs font-bold text-emerald-400 w-fit">Contribution: ${formatINR(coordinator.contribution)}</div>` : ''}
+            ${showContribution ? `<div class="relative z-10 bg-indigo-950/80 px-3 py-1 rounded-xl text-xs font-bold text-emerald-400 w-fit">Contribution: ${formatINR(coordinator.contribution)}</div>` : ''}
           </div>
         </div>`;
       }
 
       const memList = document.getElementById('memberList');
       memList.innerHTML = others.map(m => `
-        <div class="squad-scene-box bg-white rounded-2xl border border-slate-200 shadow-sm p-3 flex flex-col justify-between">
-          <div>
-            <img src="${m.img || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.name)}" class="w-12 h-12 rounded-full mx-auto object-cover mb-2">
+        <div class="squad-scene-box bg-white rounded-2xl border border-slate-200 shadow-sm p-3 flex flex-col justify-between relative overflow-hidden">
+          ${m.bgImage ? `<div class="absolute inset-0 bg-cover bg-center opacity-20" style="background-image: url('${m.bgImage}')"></div>` : ''}
+          <div class="relative z-10">
+            <img src="${m.img || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.name)}" class="w-12 h-12 rounded-full mx-auto object-cover mb-2 border border-slate-100 shadow-sm">
             <p class="font-bold text-xs text-center text-slate-800 truncate">${m.name}</p>
             <p class="text-[9px] font-bold text-indigo-500 uppercase text-center">${m.role || 'Member'}</p>
           </div>
-          ${showContribution ? `<p class="text-[10px] font-black text-emerald-600 text-center mt-2">${formatINR(m.contribution)}</p>` : ''}
+          ${showContribution ? `<p class="relative z-10 text-[10px] font-black text-emerald-600 text-center mt-2">${formatINR(m.contribution)}</p>` : ''}
         </div>
       `).join('');
       lucide.createIcons();
     }
 
-    let isLedgerActive = false;
     function toggleLedger() {
       isLedgerActive = !isLedgerActive;
       const topCards = document.getElementById('ui-top-cards-wrapper');
@@ -1294,10 +1269,11 @@
         renderLedgerList();
         topCards.classList.add('hidden');
         formWrap.classList.add('hidden');
-        ledgerBox.classList.remove('hidden', 'opacity-0', 'translate-y-10');
+        ledgerBox.classList.remove('hidden');
+        setTimeout(() => { ledgerBox.classList.remove('opacity-0', 'translate-y-10'); }, 50);
       } else {
         ledgerBox.classList.add('opacity-0', 'translate-y-10');
-        setTimeout(() => ledgerBox.classList.add('hidden'), 300);
+        setTimeout(() => { ledgerBox.classList.add('hidden'); }, 300);
         topCards.classList.remove('hidden');
         formWrap.classList.remove('hidden');
       }
@@ -1356,21 +1332,43 @@
       }
     }
 
-    function renderArchivesList(trips) {
-      // Container handled by modal if open
+    function openEID() {
+      document.getElementById('eid-modal').classList.remove('hidden');
+      if (globalActiveDataPayloadBackup) {
+        const pin = localStorage.getItem('trekLoggedInPIN');
+        const member = (globalActiveDataPayloadBackup.members || []).find(m => String(m.pin).trim() === String(pin).trim());
+        if (member) {
+          document.getElementById('eid-name').innerText = member.name;
+          document.getElementById('eid-designation').innerText = member.designation || '-';
+          document.getElementById('eid-role').innerText = member.memberRole || '-';
+          document.getElementById('eid-mobile').innerText = member.mobile || '-';
+          document.getElementById('eid-email').innerText = member.email || '-';
+          document.getElementById('eid-photo').src = member.img || '';
+          
+          const qr = document.getElementById('eid-qr');
+          qr.innerHTML = '';
+          new QRCode(qr, { text: member.name + " | " + member.pin, width: 70, height: 70 });
+        }
+      }
+      lucide.createIcons();
     }
 
+    function closeEID() { document.getElementById('eid-modal').classList.add('hidden'); }
+    function openChatModal() { document.getElementById('squad-chat-modal').classList.remove('hidden'); }
+    function closeChatModal() { document.getElementById('squad-chat-modal').classList.add('hidden'); }
     function renderChatData(msgs) {}
     function refreshMenuSignOffButton(d) {}
     function closeReceiptModal() {}
-    function closeEID() {}
-    function openEID() {}
-    function openChatModal() {}
-    function closeChatModal() {}
     function showToast(m) {}
     function openChangePinModal() {}
     function closeChangePinModal() {}
     function openArchivesModal() {}
+    function toggleLedgerFilter() {}
+    function downloadLedgerCSV() {}
+    function closeSignaturePad() {}
+    function submitSignature() {}
+    function handleMenuSignOff() {}
+    function copyUTR() {}
   </script>
 </body>
 </html>
