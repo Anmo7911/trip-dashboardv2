@@ -1,9 +1,8 @@
 /*
   Google Sheet -> Supabase import helper.
   Export each original sheet as CSV and run:
-    node scripts/import-sheet-csv.mjs Settings settings.csv
-    node scripts/import-sheet-csv.mjs Transactions transactions.csv
-  Requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the environment.
+    node --env-file=.env scripts/import-sheet-csv.mjs Settings sheet-export/Settings.csv
+    node --env-file=.env scripts/import-sheet-csv.mjs Places sheet-export/Places.csv
 */
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
@@ -62,6 +61,34 @@ function parseCSV(input) {
   return rows;
 }
 
+// Convert 12h time (8:00 PM) to 24h (20:00:00) or clean invalid text
+function sanitizeValue(val) {
+  if (!val) return null;
+  const lower = val.toLowerCase().trim();
+  const invalidPlaceholders = [
+    '', 'to be announce', 'to be announced', 'tba', 'tbd', 
+    'n/a', 'na', '-', 'none', 'null', 'morning', 'evening', 'afternoon'
+  ];
+  if (invalidPlaceholders.includes(lower)) return null;
+
+  // Convert 12-hour AM/PM times to 24-hour HH:MM:SS
+  const time12Regex = /^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(am|pm)$/i;
+  const match = val.match(time12Regex);
+  if (match) {
+    let hours = parseInt(match[1], 10);
+    const minutes = match[2];
+    const seconds = match[3] || '00';
+    const meridian = match[4].toLowerCase();
+
+    if (meridian === 'pm' && hours < 12) hours += 12;
+    if (meridian === 'am' && hours === 12) hours = 0;
+
+    return `${String(hours).padStart(2, '0')}:${minutes}:${seconds}`;
+  }
+
+  return val;
+}
+
 const table = map[sheetName];
 const rawContent = fs.readFileSync(csvPath, 'utf8');
 const rows = parseCSV(rawContent);
@@ -71,31 +98,15 @@ if (rows.length === 0) {
   process.exit(0);
 }
 
-// Drop the header row
+// Drop header row 1
 const dataRows = rows.slice(1);
-
-// List of invalid placeholder values to convert to null
-const INVALID_DATE_PLACEHOLDERS = [
-  '',
-  'to be announce',
-  'to be announced',
-  'tba',
-  'tbd',
-  'n/a',
-  'na',
-  '-',
-  'none'
-];
 
 const records = dataRows.map((cols, rowIndex) => {
   const record = {};
   const max = Math.min(cols.length, 23);
   for (let i = 0; i < max; i++) {
-    let val = (cols[i] ?? '').trim();
-    if (INVALID_DATE_PLACEHOLDERS.includes(val.toLowerCase())) {
-      val = null;
-    }
-    record[`col_${String.fromCharCode(97 + i)}`] = val;
+    const rawVal = cols[i] ?? '';
+    record[`col_${String.fromCharCode(97 + i)}`] = sanitizeValue(rawVal);
   }
   if (sheetName === 'Settings') {
     record.row_number = rowIndex + 1;
