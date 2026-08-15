@@ -2650,27 +2650,31 @@
       // Render the ledger elements using the newly formed global array
       renderLedgerList();
       
+      // Render the ledger elements using the newly formed global array
+      renderLedgerList();
+      
       // Renders the Squad view cards
       triggerSequentialWaveEffects(data);
       
       // --- ROUTE/PLACES RENDERING ENGINE ---
-      const activeContainer = document.getElementById('activePlaceList');
-      const visitedContainer = document.getElementById('visitedPlaceList');
-      if (activeContainer) activeContainer.innerHTML = "";
-      if (visitedContainer) visitedContainer.innerHTML = "";
-      const divLine = document.getElementById('ui-places-divider');
-      const headActive = document.getElementById('head-active-places');
-      const headVisited = document.getElementById('head-visited-places');
-      if (divLine) divLine.className = "hidden";
-      if (headActive) headActive.className = "hidden";
-      if (headVisited) headVisited.className = "hidden";
+      const groupedPlaces = {};
+      let timelineCount = 0;
+      let lastReachedRowId = null;
 
-      // Show/hide sections based on data presence
-      document.getElementById('ui-places-divider').className = activeCount > 0 ? "w-full h-[1px] bg-slate-200 my-8 block" : "hidden";
-      document.getElementById('head-active-places').className = activeCount > 0 ? "text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 block" : "hidden";
-      document.getElementById('head-visited-places').className = visitedCount > 0 ? "text-[10px] font-bold text-emerald-500 uppercase tracking-widest px-1 block mt-4" : "hidden";
-      activeContainer.innerHTML = activeHtml; 
-      visitedContainer.innerHTML = visitedHtml;
+      // Group nodes by "Day" text identifier
+      (data.places || []).forEach(p => {
+        if (!p.tripDay && !p.location) return;
+
+        const dayGroup = p.tripDay || "Unscheduled";
+        if (!groupedPlaces[dayGroup]) groupedPlaces[dayGroup] = [];
+        groupedPlaces[dayGroup].push(p);
+        timelineCount++;
+
+        if (p.ata) lastReachedRowId = p.rowId;
+      });
+
+      let scheduleHtml = "";
+      let animStep = 0;
 
       // Render the Main Vertical Route Timeline
       const groupedPlaces = {};
