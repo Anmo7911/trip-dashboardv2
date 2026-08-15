@@ -38,12 +38,26 @@ function formatMonthDay(v, timeZone = 'Asia/Kolkata') {
 
 function formatHHMM(v, timeZone = 'Asia/Kolkata') {
   if (!v) return '';
-  const d = new Date(v);
-  if (Number.isNaN(d.getTime())) {
-    const raw = text(v);
-    return raw.length >= 5 ? raw.slice(0, 5) : raw;
+  const raw = String(v).trim();
+  
+  // If already in HH:MM or HH:MM:SS format
+  if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(raw)) {
+    const parts = raw.split(':');
+    return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
   }
-  return new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone }).format(d);
+
+  // If ISO Timestamp string
+  const d = new Date(raw);
+  if (!Number.isNaN(d.getTime())) {
+    return new Intl.DateTimeFormat('en-GB', { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: false, 
+      timeZone 
+    }).format(d);
+  }
+
+  return raw.length >= 5 ? raw.slice(0, 5) : raw;
 }
 
 function json(res, status, payload) {
