@@ -1977,8 +1977,9 @@
       } catch (error) {
         console.error(error);
         showToast("Unable to sync latest data.");
+        attemptSplashHide();
       }
-    } 
+    }
     
     // Simple helper to format numbers as Indian Rupees string
     function formatINR(num) { return '₹' + Math.round(num).toLocaleString('en-IN'); } 
@@ -2667,6 +2668,7 @@
       triggerSequentialWaveEffects(data);
       
       // --- ROUTE/PLACES RENDERING ENGINE ---
+// --- ROUTE/PLACES RENDERING ENGINE ---
       const activeContainer = document.getElementById('activePlaceList');
       const visitedContainer = document.getElementById('visitedPlaceList');
       if (activeContainer) activeContainer.innerHTML = "";
@@ -2677,14 +2679,6 @@
       if (divLine) divLine.className = "hidden";
       if (headActive) headActive.className = "hidden";
       if (headVisited) headVisited.className = "hidden";
-
-      // Show/hide sections based on data presence
-      document.getElementById('ui-places-divider').className = activeCount > 0 ? "w-full h-[1px] bg-slate-200 my-8 block" : "hidden";
-      document.getElementById('head-active-places').className = activeCount > 0 ? "text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 block" : "hidden";
-      document.getElementById('head-visited-places').className = visitedCount > 0 ? "text-[10px] font-bold text-emerald-500 uppercase tracking-widest px-1 block mt-4" : "hidden";
-      activeContainer.innerHTML = activeHtml; 
-      visitedContainer.innerHTML = visitedHtml;
-
       // Render the Main Vertical Route Timeline
       const groupedPlaces = {};
       let timelineCount = 0;
