@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Trip Admin Portal</title>
+  <title>Admin Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -15,10 +15,23 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col pb-10 select-none">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col pb-12 select-none">
 
   <!-- =========================================
-       ADMIN LOGIN OVERLAY
+       POPUP ALERT DIALOG / TOAST
+       ========================================= -->
+  <div id="adminToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-[100] transform -translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2.5 bg-slate-900 border border-indigo-500/40 text-white px-5 py-3 rounded-2xl shadow-2xl">
+    <div id="toastIconContainer" class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+      <i id="toastIcon" data-lucide="check" class="w-4 h-4"></i>
+    </div>
+    <div>
+      <p id="toastTitle" class="text-xs font-black uppercase tracking-wider text-white">Success</p>
+      <p id="toastMessage" class="text-[10px] font-bold text-slate-300">Changes updated successfully.</p>
+    </div>
+  </div>
+
+  <!-- =========================================
+       ADMIN LOGIN MODAL
        ========================================= -->
   <div id="admin-login-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
     <div class="max-w-sm w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-center">
@@ -46,7 +59,7 @@
   </div>
 
   <!-- =========================================
-       HEADER BAR
+       HEADER
        ========================================= -->
   <header class="bg-slate-900 border-b border-slate-800 px-4 py-3 sticky top-0 z-40 flex items-center justify-between">
     <div class="flex items-center gap-2.5">
@@ -72,9 +85,9 @@
   </header>
 
   <!-- =========================================
-       HORIZONTAL SCROLLABLE TABS
+       TABS NAVIGATION
        ========================================= -->
-  <div class="bg-slate-900/60 border-b border-slate-800 px-4 flex gap-2 overflow-x-auto no-scrollbar">
+  <div class="bg-slate-900/70 border-b border-slate-800 px-4 flex gap-2 overflow-x-auto no-scrollbar">
     <button onclick="switchTab('settings')" id="tabBtn-settings" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-indigo-500 text-indigo-400 flex items-center gap-1.5 whitespace-nowrap shrink-0">
       <i data-lucide="sliders" class="w-3.5 h-3.5"></i> Switches
     </button>
@@ -96,37 +109,34 @@
   </div>
 
   <!-- =========================================
-       TAB PANES
+       MAIN CONTAINERS
        ========================================= -->
   <main class="flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6">
 
-    <!-- 1. SWITCHES & SETTINGS TAB -->
+    <!-- 1. SWITCHES & SETTINGS -->
     <section id="pane-settings" class="tab-pane active space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         
-        <!-- Live App Feature Switches -->
         <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
           <h3 class="text-xs font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
             <i data-lucide="toggle-left" class="w-4 h-4"></i> Global App Switches
           </h3>
 
-          <!-- Individual Contribution Toggle -->
-          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
             <div class="pr-2">
-              <p class="text-xs font-bold text-white leading-tight">Individual Contribution</p>
+              <p class="text-xs font-bold text-white">Individual Contribution</p>
               <p class="text-[9px] text-slate-400 mt-0.5">Show member spending bookmarks</p>
             </div>
-            <select onchange="saveSetting(23, 'b', this.value)" id="setContriStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+            <select onchange="saveSetting(23, 'b', this.value, 'Contribution switch updated')" id="setContriStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
               <option value="ACTIVE">ACTIVE (Show)</option>
               <option value="INACTIVE">HIDDEN</option>
             </select>
           </div>
 
-          <!-- Encrypted / Masked Member View -->
-          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
             <div class="pr-2">
-              <p class="text-xs font-bold text-white leading-tight">Member Security Mode</p>
-              <p class="text-[9px] text-slate-400 mt-0.5">Mask names & hide photo identities</p>
+              <p class="text-xs font-bold text-white">Member Security Mode</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Mask names & avatar identities</p>
             </div>
             <select onchange="saveMetaSecurity(this.value)" id="setSecurityStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
               <option value="normal">Normal (Public)</option>
@@ -134,49 +144,45 @@
             </select>
           </div>
 
-          <!-- Signing Off Status -->
-          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
             <div class="pr-2">
-              <p class="text-xs font-bold text-white leading-tight">Signing Off Period</p>
-              <p class="text-[9px] text-slate-400 mt-0.5">Allow squad members to sign final ledger</p>
+              <p class="text-xs font-bold text-white">Signing Off Period</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Enable signature pad on profile</p>
             </div>
-            <select onchange="saveSetting(21, 'b', this.value)" id="setSignOffStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+            <select onchange="saveSetting(21, 'b', this.value, 'Sign-off status updated')" id="setSignOffStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
               <option value="signing off">SIGNING OFF (Active)</option>
               <option value="closed">CLOSED</option>
             </select>
           </div>
 
-          <!-- App Lock -->
-          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
             <div class="pr-2">
-              <p class="text-xs font-bold text-white leading-tight">Trip Finished Lock</p>
-              <p class="text-[9px] text-slate-400 mt-0.5">Full app freeze screen</p>
+              <p class="text-xs font-bold text-white">Trip Finished Lock</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Freeze screen when trip concludes</p>
             </div>
-            <select onchange="saveSetting(19, 'b', this.value)" id="setAppStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+            <select onchange="saveSetting(19, 'b', this.value, 'Trip lock updated')" id="setAppStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
               <option value="OPEN">ACTIVE (Open)</option>
               <option value="LOCKED">LOCKED</option>
             </select>
           </div>
 
-          <!-- Expense Add Status -->
-          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
             <div class="pr-2">
-              <p class="text-xs font-bold text-white leading-tight">Expense Logging</p>
-              <p class="text-[9px] text-slate-400 mt-0.5">Pause user submissions</p>
+              <p class="text-xs font-bold text-white">Expense Logging</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Pause member expense entries</p>
             </div>
-            <select onchange="saveSetting(22, 'b', this.value)" id="setExpenseStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+            <select onchange="saveSetting(22, 'b', this.value, 'Expense status updated')" id="setExpenseStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
               <option value="ALLOW Expense">ALLOW Entries</option>
               <option value="STOP Expense">PAUSE Entries</option>
             </select>
           </div>
 
-          <!-- Route Status -->
-          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
             <div class="pr-2">
-              <p class="text-xs font-bold text-white leading-tight">Route & GPS Status</p>
-              <p class="text-[9px] text-slate-400 mt-0.5">Timeline vault clearance</p>
+              <p class="text-xs font-bold text-white">Route & GPS Status</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Timeline vault mode</p>
             </div>
-            <select onchange="saveSetting(18, 'b', this.value)" id="setRouteStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+            <select onchange="saveSetting(18, 'b', this.value, 'Route status updated')" id="setRouteStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
               <option value="ACTIVE">ACTIVE</option>
               <option value="LOCKED">LOCKED (Vault)</option>
               <option value="STEALTH">STEALTH</option>
@@ -185,7 +191,6 @@
 
         </div>
 
-        <!-- Trip Details & Notice Banners -->
         <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
           <h3 class="text-xs font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
             <i data-lucide="edit-3" class="w-4 h-4"></i> Trip Header & Banners
@@ -193,22 +198,22 @@
 
           <div>
             <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Name</label>
-            <input type="text" id="setTripName" onchange="saveSetting(2, 'b', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+            <input type="text" id="setTripName" onchange="saveSetting(2, 'b', this.value, 'Trip name updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
           </div>
 
           <div>
             <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Destination Subtitle</label>
-            <input type="text" id="setTripSub" onchange="saveSetting(2, 'c', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+            <input type="text" id="setTripSub" onchange="saveSetting(2, 'c', this.value, 'Subtitle updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
           </div>
 
           <div>
             <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Notice Banner Text</label>
-            <input type="text" id="setNotice" onchange="saveSetting(7, 'b', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+            <input type="text" id="setNotice" onchange="saveSetting(7, 'b', this.value, 'Notice banner saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
           </div>
 
           <div>
             <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Emergency Alert Banner</label>
-            <input type="text" id="setWarning" onchange="saveSetting(8, 'b', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-rose-400 font-bold mt-1">
+            <input type="text" id="setWarning" onchange="saveSetting(8, 'b', this.value, 'Alert banner saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-rose-400 font-bold mt-1">
           </div>
         </div>
 
@@ -229,7 +234,7 @@
       </div>
     </section>
 
-    <!-- 3. ROUTE & TIMELINE TAB (Mobile-Friendly Stacked Cards) -->
+    <!-- 3. ROUTE & TIMELINE TAB -->
     <section id="pane-places" class="tab-pane space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Route & Transit Stops</h3>
@@ -239,11 +244,11 @@
       </div>
 
       <div id="placesAdminCards" class="space-y-3">
-        <!-- Rendered as mobile-first cards by JS -->
+        <!-- Rendered by JS -->
       </div>
     </section>
 
-    <!-- 4. EXPENSES & LEDGER TAB (Mobile Cards) -->
+    <!-- 4. LEDGER TAB -->
     <section id="pane-ledger" class="tab-pane space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
         <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Expense Ledger</h3>
@@ -251,65 +256,68 @@
       </div>
 
       <div id="ledgerAdminCards" class="space-y-3">
-        <!-- Rendered as mobile-first cards by JS -->
+        <!-- Rendered by JS -->
       </div>
     </section>
 
-    <!-- 5. MEDIA & DOCUMENTS HUB (NEW TAB) -->
+    <!-- 5. MEDIA & DOCUMENTS HUB (FILE/IMAGE UPLOADS ONLY) -->
     <section id="pane-media" class="tab-pane space-y-4">
-      <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Document & Image Uploads</h3>
+      <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Direct File & Image Uploads</h3>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         
-        <!-- Guidelines Image / Document -->
+        <!-- Guidelines Image/PDF Upload -->
         <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
           <div class="flex items-center justify-between">
-            <h4 class="text-xs font-bold text-white flex items-center gap-2"><i data-lucide="book-text" class="w-4 h-4 text-indigo-400"></i> Trip Guidelines Link / PDF</h4>
-            <a id="previewGuideline" href="#" target="_blank" class="text-[10px] font-bold text-indigo-400 underline hidden">View Link</a>
+            <h4 class="text-xs font-bold text-white flex items-center gap-2"><i data-lucide="book-text" class="w-4 h-4 text-indigo-400"></i> Trip Guidelines (Image / PDF)</h4>
+            <a id="previewGuideline" href="#" target="_blank" class="text-[10px] font-bold text-indigo-400 underline hidden">View Current File</a>
           </div>
-          <div onclick="document.getElementById('guidelineFileInput').click()" class="border-2 border-dashed border-slate-800 hover:border-indigo-500 rounded-xl p-4 text-center cursor-pointer bg-slate-950 transition">
-            <input type="file" id="guidelineFileInput" accept="image/*,application/pdf" class="hidden" onchange="uploadSpecialAsset(this, 11, 'b', 'previewGuideline')">
-            <i data-lucide="upload-cloud" class="w-6 h-6 text-slate-500 mx-auto mb-1"></i>
-            <p class="text-[10px] font-bold text-slate-400">Upload New Guidelines Image/PDF</p>
+          <div onclick="document.getElementById('guidelineFileInput').click()" class="border-2 border-dashed border-slate-800 hover:border-indigo-500 rounded-xl p-5 text-center cursor-pointer bg-slate-950 transition flex flex-col items-center">
+            <input type="file" id="guidelineFileInput" accept="image/*,application/pdf" class="hidden" onchange="uploadDirectAsset(this, 11, 'b', 'previewGuideline', 'Guidelines Document Uploaded')">
+            <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-500 mb-1"></i>
+            <p class="text-[11px] font-bold text-slate-300">Choose Image or PDF Document</p>
+            <p class="text-[9px] text-slate-500 mt-0.5">Replaces current active guidelines file</p>
           </div>
-          <input type="text" id="guidelineUrlInput" onchange="saveSetting(11, 'b', this.value)" placeholder="Or paste full URL here..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-bold">
         </div>
 
-        <!-- Current Trip Report Document -->
+        <!-- Trip Report Image/PDF Upload -->
         <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
           <div class="flex items-center justify-between">
-            <h4 class="text-xs font-bold text-white flex items-center gap-2"><i data-lucide="file-pie-chart" class="w-4 h-4 text-amber-400"></i> Current Trip Report</h4>
-            <a id="previewTripReport" href="#" target="_blank" class="text-[10px] font-bold text-amber-400 underline hidden">View Link</a>
+            <h4 class="text-xs font-bold text-white flex items-center gap-2"><i data-lucide="file-pie-chart" class="w-4 h-4 text-amber-400"></i> Current Trip Report (Image / PDF)</h4>
+            <a id="previewTripReport" href="#" target="_blank" class="text-[10px] font-bold text-amber-400 underline hidden">View Current Report</a>
           </div>
-          <div onclick="document.getElementById('reportFileInput').click()" class="border-2 border-dashed border-slate-800 hover:border-amber-500 rounded-xl p-4 text-center cursor-pointer bg-slate-950 transition">
-            <input type="file" id="reportFileInput" accept="image/*,application/pdf" class="hidden" onchange="uploadSpecialAsset(this, 13, 'b', 'previewTripReport')">
-            <i data-lucide="upload-cloud" class="w-6 h-6 text-slate-500 mx-auto mb-1"></i>
-            <p class="text-[10px] font-bold text-slate-400">Upload Trip Report File / Image</p>
+          <div onclick="document.getElementById('reportFileInput').click()" class="border-2 border-dashed border-slate-800 hover:border-amber-500 rounded-xl p-5 text-center cursor-pointer bg-slate-950 transition flex flex-col items-center">
+            <input type="file" id="reportFileInput" accept="image/*,application/pdf" class="hidden" onchange="uploadDirectAsset(this, 13, 'b', 'previewTripReport', 'Trip Report File Uploaded')">
+            <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-500 mb-1"></i>
+            <p class="text-[11px] font-bold text-slate-300">Choose Report PDF or Image</p>
+            <p class="text-[9px] text-slate-500 mt-0.5">Replaces current trip report file</p>
           </div>
-          <input type="text" id="reportUrlInput" onchange="saveSetting(13, 'b', this.value)" placeholder="Or paste report URL here..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-bold">
-          <input type="text" id="reportSubInput" onchange="saveSetting(13, 'c', this.value)" placeholder="Subheading text (e.g. UNAVAILABLE or View Summary)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-400 font-bold">
+          <input type="text" id="reportSubInput" onchange="saveSetting(13, 'c', this.value, 'Report subtitle updated')" placeholder="Status subheading (e.g. UNAVAILABLE or View Summary)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-bold">
         </div>
 
-        <!-- E-ID Physical Stamp Image -->
+        <!-- E-ID Stamp Overlay -->
         <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
-          <h4 class="text-xs font-bold text-white flex items-center gap-2"><i data-lucide="stamp" class="w-4 h-4 text-rose-400"></i> E-ID Card Stamp Overlay</h4>
-          <div onclick="document.getElementById('stampFileInput').click()" class="border-2 border-dashed border-slate-800 hover:border-rose-500 rounded-xl p-4 text-center cursor-pointer bg-slate-950 transition">
-            <input type="file" id="stampFileInput" accept="image/*" class="hidden" onchange="uploadSpecialAsset(this, 12, 'b')">
-            <i data-lucide="upload-cloud" class="w-6 h-6 text-slate-500 mx-auto mb-1"></i>
-            <p class="text-[10px] font-bold text-slate-400">Upload Stamp PNG (Transparent)</p>
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-white flex items-center gap-2"><i data-lucide="stamp" class="w-4 h-4 text-rose-400"></i> E-ID Digital Stamp PNG</h4>
+            <a id="previewStamp" href="#" target="_blank" class="text-[10px] font-bold text-rose-400 underline hidden">View Current Stamp</a>
           </div>
-          <input type="text" id="stampUrlInput" onchange="saveSetting(12, 'b', this.value)" placeholder="Stamp storage URL..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-bold">
+          <div onclick="document.getElementById('stampFileInput').click()" class="border-2 border-dashed border-slate-800 hover:border-rose-500 rounded-xl p-5 text-center cursor-pointer bg-slate-950 transition flex flex-col items-center">
+            <input type="file" id="stampFileInput" accept="image/png,image/webp,image/jpeg" class="hidden" onchange="uploadDirectAsset(this, 12, 'b', 'previewStamp', 'E-ID Stamp Uploaded')">
+            <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-500 mb-1"></i>
+            <p class="text-[11px] font-bold text-slate-300">Choose Transparent PNG Stamp</p>
+            <p class="text-[9px] text-slate-500 mt-0.5">Watermark stamp placed on ID cards</p>
+          </div>
         </div>
 
       </div>
     </section>
 
-    <!-- 6. PAST TRIPS ARCHIVE TAB (NEW TAB) -->
+    <!-- 6. PAST TRIPS ARCHIVE TAB -->
     <section id="pane-archives" class="tab-pane space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Past Trips Archive</h3>
         <button onclick="openArchiveModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 transition">
-          <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Add Trip Archive
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Add Past Trip
         </button>
       </div>
 
@@ -321,7 +329,7 @@
   </main>
 
   <!-- =========================================
-       MEMBER MODAL
+       MODAL: MEMBER
        ========================================= -->
   <div id="memberModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 my-8">
@@ -355,7 +363,7 @@
             <input type="file" id="memPhotoFile" accept="image/*" class="hidden" onchange="handlePhotoSelect(this)">
             <div id="uploadPreview" class="flex flex-col items-center">
               <i data-lucide="upload-cloud" class="w-6 h-6 text-slate-500 mb-0.5"></i>
-              <p class="text-[10px] font-bold text-slate-400">Click to select photo</p>
+              <p class="text-[10px] font-bold text-slate-400">Click to choose image file</p>
             </div>
           </div>
           <input type="hidden" id="memImgUrl">
@@ -385,7 +393,7 @@
   </div>
 
   <!-- =========================================
-       STOP / PLACE MODAL
+       MODAL: ROUTE STOP
        ========================================= -->
   <div id="placeModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 my-8">
@@ -410,7 +418,7 @@
 
         <div>
           <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Location Name</label>
-          <input type="text" id="placeLocation" placeholder="e.g. Haridwar Station" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          <input type="text" id="placeLocation" placeholder="e.g. Haridwar Junction" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
         </div>
 
         <div class="grid grid-cols-2 gap-2">
@@ -454,7 +462,7 @@
   </div>
 
   <!-- =========================================
-       PAST TRIP ARCHIVE MODAL
+       MODAL: PAST TRIP ARCHIVE (FILE UPLOADS ONLY)
        ========================================= -->
   <div id="archiveModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 my-8">
@@ -482,14 +490,30 @@
           </div>
         </div>
 
+        <!-- File Upload: Past Trip Report -->
         <div>
-          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Report URL</label>
-          <input type="text" id="archReport" placeholder="https://drive.google.com/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Report Document (Image / PDF)</label>
+          <div onclick="document.getElementById('archReportFile').click()" class="mt-1 border-2 border-dashed border-slate-800 hover:border-indigo-500 rounded-xl p-3 text-center cursor-pointer bg-slate-950 transition">
+            <input type="file" id="archReportFile" accept="image/*,application/pdf" class="hidden" onchange="handleArchiveFileUpload(this, 'archReport', 'archReportPreview')">
+            <div id="archReportPreview" class="flex flex-col items-center">
+              <i data-lucide="file-text" class="w-5 h-5 text-slate-500 mb-0.5"></i>
+              <p class="text-[10px] font-bold text-slate-400">Select PDF or Image Report</p>
+            </div>
+          </div>
+          <input type="hidden" id="archReport">
         </div>
 
+        <!-- File Upload: Past Trip Photo / Gallery Cover -->
         <div>
-          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Gallery Drive Link</label>
-          <input type="text" id="archGallery" placeholder="https://drive.google.com/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Gallery Cover / Photo (Image)</label>
+          <div onclick="document.getElementById('archGalleryFile').click()" class="mt-1 border-2 border-dashed border-slate-800 hover:border-indigo-500 rounded-xl p-3 text-center cursor-pointer bg-slate-950 transition">
+            <input type="file" id="archGalleryFile" accept="image/*" class="hidden" onchange="handleArchiveFileUpload(this, 'archGallery', 'archGalleryPreview')">
+            <div id="archGalleryPreview" class="flex flex-col items-center">
+              <i data-lucide="image" class="w-5 h-5 text-slate-500 mb-0.5"></i>
+              <p class="text-[10px] font-bold text-slate-400">Select Trip Photo / Cover Image</p>
+            </div>
+          </div>
+          <input type="hidden" id="archGallery">
         </div>
 
         <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest">
@@ -500,16 +524,46 @@
   </div>
 
   <!-- =========================================
-       SCRIPT LOGIC
+       SCRIPT
        ========================================= -->
   <script>
     let globalData = null;
     let autoLogoutTimer = null;
+    let toastTimeout = null;
+
+    function showAlert(title, message, isError = false) {
+      const toast = document.getElementById('adminToast');
+      const toastTitle = document.getElementById('toastTitle');
+      const toastMessage = document.getElementById('toastMessage');
+      const iconContainer = document.getElementById('toastIconContainer');
+      const icon = document.getElementById('toastIcon');
+
+      toastTitle.innerText = title;
+      toastMessage.innerText = message;
+
+      if (isError) {
+        iconContainer.className = "w-6 h-6 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0";
+        icon.setAttribute('data-lucide', 'alert-circle');
+      } else {
+        iconContainer.className = "w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0";
+        icon.setAttribute('data-lucide', 'check');
+      }
+      lucide.createIcons();
+
+      toast.classList.remove('opacity-0', '-translate-y-20');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', '-translate-y-20');
+      }, 3000);
+    }
 
     function resetAutoLogout() {
       if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
       autoLogoutTimer = setTimeout(() => {
-        alert("Admin session timed out after 15 minutes.");
+        alert("Session timed out after 15 minutes.");
         adminLogout();
       }, 15 * 60 * 1000);
     }
@@ -546,6 +600,7 @@
           document.getElementById('admin-login-modal').classList.add('hidden');
           resetAutoLogout();
           loadAdminDashboard();
+          showAlert("Welcome Admin", "Signed in successfully");
         } else {
           err.innerText = res.error || 'Invalid credentials';
           err.classList.remove('hidden');
@@ -588,7 +643,7 @@
         renderArchives(data.pastTrips);
         lucide.createIcons();
       } catch (err) {
-        console.error(err);
+        showAlert("Error Loading Data", err.message, true);
       }
     }
 
@@ -606,13 +661,14 @@
       document.getElementById('setSecurityStatus').value = d.securityStatus || 'normal';
     }
 
-    async function saveSetting(row, col, val) {
+    async function saveSetting(row, col, val, msg = "Setting Saved") {
       try {
         const fresh = await adminApi('admin-update-setting', { rowNumber: row, col: col, value: val });
         globalData = fresh;
         renderSettings(fresh);
+        showAlert("Saved", msg);
       } catch (err) {
-        alert('Failed to save: ' + err.message);
+        showAlert("Failed", err.message, true);
       }
     }
 
@@ -621,12 +677,37 @@
         const fresh = await adminApi('admin-update-meta', { securityStatus: val });
         globalData = fresh;
         renderSettings(fresh);
+        showAlert("Updated", `Security mode set to ${val}`);
       } catch (err) {
-        alert('Failed to update security: ' + err.message);
+        showAlert("Failed", err.message, true);
       }
     }
 
-    // Photo Upload for Members
+    // Direct Asset Upload (Guidelines, Report, Stamp)
+    async function uploadDirectAsset(input, row, col, previewLinkId, successMsg) {
+      const file = input.files[0];
+      if (!file) return;
+
+      showAlert("Uploading", "Uploading file to Supabase storage...");
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const res = await adminApi('admin-upload', { fileName: file.name, base64Data: reader.result });
+          await saveSetting(row, col, res.publicUrl, successMsg);
+          const link = document.getElementById(previewLinkId);
+          if (link) {
+            link.href = res.publicUrl;
+            link.classList.remove('hidden');
+          }
+          showAlert("Upload Complete", successMsg);
+        } catch (err) {
+          showAlert("Upload Failed", err.message, true);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Member Photo Upload
     function handlePhotoSelect(input) {
       const file = input.files[0];
       if (!file) return;
@@ -644,39 +725,42 @@
 
     async function uploadMemberPhoto(file) {
       const preview = document.getElementById('uploadPreview');
-      preview.innerHTML = '<p class="text-[10px] text-indigo-400 font-bold animate-pulse">Uploading...</p>';
+      preview.innerHTML = '<p class="text-[10px] text-indigo-400 font-bold animate-pulse">Uploading photo...</p>';
 
       const reader = new FileReader();
       reader.onload = async () => {
         try {
           const res = await adminApi('admin-upload', { fileName: file.name, base64Data: reader.result });
           document.getElementById('memImgUrl').value = res.publicUrl;
-          preview.innerHTML = `<img src="${res.publicUrl}" class="w-12 h-12 rounded-lg object-cover border border-slate-700 mx-auto"><p class="text-[9px] text-emerald-400 font-bold mt-1">Uploaded</p>`;
+          preview.innerHTML = `<img src="${res.publicUrl}" class="w-12 h-12 rounded-lg object-cover border border-slate-700 mx-auto"><p class="text-[9px] text-emerald-400 font-bold mt-1">Photo Uploaded</p>`;
+          showAlert("Photo Ready", "Image uploaded successfully");
         } catch (err) {
           preview.innerHTML = `<p class="text-[9px] text-rose-400 font-bold">Failed: ${err.message}</p>`;
+          showAlert("Upload Error", err.message, true);
         }
       };
       reader.readAsDataURL(file);
     }
 
-    // Special Assets Upload (Guidelines, Report, Stamp)
-    async function uploadSpecialAsset(input, row, col, previewLinkId = null) {
+    // Past Trip File Upload Helper
+    async function handleArchiveFileUpload(input, targetHiddenId, previewContainerId) {
       const file = input.files[0];
       if (!file) return;
+
+      const preview = document.getElementById(previewContainerId);
+      preview.innerHTML = '<p class="text-[10px] text-indigo-400 font-bold animate-pulse">Uploading...</p>';
 
       const reader = new FileReader();
       reader.onload = async () => {
         try {
           const res = await adminApi('admin-upload', { fileName: file.name, base64Data: reader.result });
-          await saveSetting(row, col, res.publicUrl);
-          if (previewLinkId) {
-            const link = document.getElementById(previewLinkId);
-            link.href = res.publicUrl;
-            link.classList.remove('hidden');
-          }
-          alert('Uploaded and linked successfully!');
+          document.getElementById(targetHiddenId).value = res.publicUrl;
+          preview.innerHTML = `<p class="text-[10px] font-black text-emerald-400 flex items-center gap-1 justify-center"><i data-lucide="check" class="w-3.5 h-3.5"></i> File Uploaded</p>`;
+          lucide.createIcons();
+          showAlert("File Uploaded", "Document/Photo attached successfully");
         } catch (err) {
-          alert('Upload failed: ' + err.message);
+          preview.innerHTML = `<p class="text-[9px] text-rose-400 font-bold">Failed: ${err.message}</p>`;
+          showAlert("Upload Error", err.message, true);
         }
       };
       reader.readAsDataURL(file);
@@ -749,23 +833,25 @@
         globalData = fresh;
         renderMembers(fresh.members);
         closeMemberModal();
+        showAlert("Member Saved", `${payload.name} updated in squad`);
       } catch (err) {
-        alert('Failed: ' + err.message);
+        showAlert("Failed", err.message, true);
       }
     }
 
     async function deleteMember(id) {
-      if (!confirm('Delete this member?')) return;
+      if (!confirm('Delete this member from squad?')) return;
       try {
         const fresh = await adminApi('admin-delete-member', { id });
         globalData = fresh;
         renderMembers(fresh.members);
+        showAlert("Member Removed", "Member deleted from database");
       } catch (err) {
-        alert(err.message);
+        showAlert("Failed", err.message, true);
       }
     }
 
-    // Places Cards (Mobile Friendly)
+    // Places / Route
     function renderPlaces(places) {
       const container = document.getElementById('placesAdminCards');
       container.innerHTML = places.map(p => `
@@ -832,8 +918,9 @@
         globalData = fresh;
         renderPlaces(fresh.places);
         closePlaceModal();
+        showAlert("Route Updated", `${payload.location} saved`);
       } catch (err) {
-        alert(err.message);
+        showAlert("Failed", err.message, true);
       }
     }
 
@@ -843,12 +930,13 @@
         const fresh = await adminApi('admin-delete-place', { id });
         globalData = fresh;
         renderPlaces(fresh.places);
+        showAlert("Stop Deleted", "Stop removed from itinerary");
       } catch (err) {
-        alert(err.message);
+        showAlert("Failed", err.message, true);
       }
     }
 
-    // Ledger Cards (Mobile Friendly)
+    // Ledger
     function renderLedger(txs, stats) {
       document.getElementById('ledgerStats').innerText = `Spent: ₹${stats.expenses.toLocaleString('en-IN')} / ₹${stats.budget.toLocaleString('en-IN')}`;
       const container = document.getElementById('ledgerAdminCards');
@@ -881,32 +969,32 @@
         const fresh = await adminApi('admin-verify-tx', { id, status });
         globalData = fresh;
         renderLedger(fresh.transactions, fresh.stats);
+        showAlert("Status Updated", `Transaction marked as ${status}`);
       } catch (err) {
-        alert(err.message);
+        showAlert("Failed", err.message, true);
       }
     }
 
     async function deleteTx(id) {
-      if (!confirm('Delete this transaction?')) return;
+      if (!confirm('Permanently delete this transaction?')) return;
       try {
         const fresh = await adminApi('admin-delete-tx', { id });
         globalData = fresh;
         renderLedger(fresh.transactions, fresh.stats);
+        showAlert("Deleted", "Transaction deleted");
       } catch (err) {
-        alert(err.message);
+        showAlert("Failed", err.message, true);
       }
     }
 
-    // Media & Docs Render
+    // Media & Docs
     function renderMedia(d) {
-      document.getElementById('guidelineUrlInput').value = d.guidelinesUrl || '';
       if (d.guidelinesUrl) {
         const link = document.getElementById('previewGuideline');
         link.href = d.guidelinesUrl;
         link.classList.remove('hidden');
       }
 
-      document.getElementById('reportUrlInput').value = d.tripReportUrl || '';
       document.getElementById('reportSubInput').value = d.tripReportSubheading || '';
       if (d.tripReportUrl) {
         const link = document.getElementById('previewTripReport');
@@ -914,10 +1002,14 @@
         link.classList.remove('hidden');
       }
 
-      document.getElementById('stampUrlInput').value = d.rawEidStamp || '';
+      if (d.eidStampImage) {
+        const link = document.getElementById('previewStamp');
+        link.href = d.eidStampImage;
+        link.classList.remove('hidden');
+      }
     }
 
-    // Archives Render
+    // Archives
     function renderArchives(trips) {
       const container = document.getElementById('archivesAdminCards');
       container.innerHTML = trips.map(t => `
@@ -931,8 +1023,8 @@
           </div>
           <div class="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
             <div class="flex gap-2">
-              ${t.reportUrl ? `<a href="${t.reportUrl}" target="_blank" class="text-[10px] text-indigo-400 font-bold underline">Report</a>` : ''}
-              ${t.galleryUrl ? `<a href="${t.galleryUrl}" target="_blank" class="text-[10px] text-indigo-400 font-bold underline">Gallery</a>` : ''}
+              ${t.reportUrl ? `<a href="${t.reportUrl}" target="_blank" class="text-[10px] text-indigo-400 font-bold underline">Report Doc</a>` : ''}
+              ${t.galleryUrl ? `<a href="${t.galleryUrl}" target="_blank" class="text-[10px] text-indigo-400 font-bold underline">Photo</a>` : ''}
             </div>
             <div class="flex gap-1">
               <button onclick='editArchive(${JSON.stringify(t)})' class="p-1.5 bg-slate-950 text-slate-300 rounded-lg hover:bg-slate-800"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
@@ -945,20 +1037,32 @@
     }
 
     function openArchiveModal() {
-      document.getElementById('archiveModalTitle').innerText = 'Add Trip Archive';
+      document.getElementById('archiveModalTitle').innerText = 'Add Past Trip';
       document.getElementById('archiveForm').reset();
       document.getElementById('archId').value = '';
+      document.getElementById('archReport').value = '';
+      document.getElementById('archGallery').value = '';
+      document.getElementById('archReportPreview').innerHTML = '<i data-lucide="file-text" class="w-5 h-5 text-slate-500 mb-0.5"></i><p class="text-[10px] font-bold text-slate-400">Select PDF or Image Report</p>';
+      document.getElementById('archGalleryPreview').innerHTML = '<i data-lucide="image" class="w-5 h-5 text-slate-500 mb-0.5"></i><p class="text-[10px] font-bold text-slate-400">Select Trip Photo / Cover Image</p>';
       document.getElementById('archiveModal').classList.remove('hidden');
+      lucide.createIcons();
     }
 
     function editArchive(t) {
-      document.getElementById('archiveModalTitle').innerText = 'Edit Trip Archive';
+      document.getElementById('archiveModalTitle').innerText = 'Edit Past Trip';
       document.getElementById('archId').value = t.id || '';
       document.getElementById('archName').value = t.name || '';
       document.getElementById('archDates').value = t.dates || '';
       document.getElementById('archSpent').value = t.totalSpent || '';
-      document.getElementById('archReport').value = t.reportUrl || '';
-      document.getElementById('archGallery').value = t.galleryUrl || '';
+      document.getElementById('archReport').value = t.rawReport || t.reportUrl || '';
+      document.getElementById('archGallery').value = t.rawGallery || t.galleryUrl || '';
+      
+      if (t.reportUrl) {
+        document.getElementById('archReportPreview').innerHTML = `<p class="text-[10px] font-black text-emerald-400">Attached File Saved</p>`;
+      }
+      if (t.galleryUrl) {
+        document.getElementById('archGalleryPreview').innerHTML = `<img src="${t.galleryUrl}" class="w-10 h-10 rounded object-cover mx-auto">`;
+      }
       document.getElementById('archiveModal').classList.remove('hidden');
     }
 
@@ -980,19 +1084,21 @@
         globalData = fresh;
         renderArchives(fresh.pastTrips);
         closeArchiveModal();
+        showAlert("Past Trip Saved", `${payload.name} added to archives`);
       } catch (err) {
-        alert(err.message);
+        showAlert("Failed", err.message, true);
       }
     }
 
     async function deleteArchive(id) {
-      if (!confirm('Delete this past trip archive?')) return;
+      if (!confirm('Delete this past trip record?')) return;
       try {
         const fresh = await adminApi('admin-delete-archive', { id });
         globalData = fresh;
         renderArchives(fresh.pastTrips);
+        showAlert("Deleted", "Past trip removed");
       } catch (err) {
-        alert(err.message);
+        showAlert("Failed", err.message, true);
       }
     }
 
