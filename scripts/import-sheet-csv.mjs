@@ -72,7 +72,7 @@ if (rows.length === 0) {
 }
 
 // Keep headers for Places if it lacks one, otherwise drop header row 1
-const dataRows = sheetName === 'Places' ? rows : rows.slice(1);
+const dataRows = rows.slice(1);
 
 const records = dataRows.map((cols, rowIndex) => {
   const record = {};
