@@ -295,9 +295,11 @@ async function saveExpense(formData) {
   if (!(amount >= 0)) throw new Error('Invalid amount');
 
   let newUTR = `VOF${crypto.randomInt(100000, 1000000)}`;
+  const expenseTimestamp = formData.date ? new Date(formData.date).toISOString() : new Date().toISOString();
+
   const { error } = await supabase.from('transactions_sheet').insert({
     col_a: newUTR,
-    col_b: formData.date || new Date().toISOString(),
+    col_b: expenseTimestamp,
     col_c: amount,
     col_d: formData.category || 'Other',
     col_e: 'App',
