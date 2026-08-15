@@ -71,14 +71,16 @@ if (rows.length === 0) {
   process.exit(0);
 }
 
-// Keep headers for Places if it lacks one, otherwise drop header row 1
+// Drop the header row
 const dataRows = rows.slice(1);
 
 const records = dataRows.map((cols, rowIndex) => {
   const record = {};
   const max = Math.min(cols.length, 23);
   for (let i = 0; i < max; i++) {
-    record[`col_${String.fromCharCode(97 + i)}`] = cols[i] ?? '';
+    const val = (cols[i] ?? '').trim();
+    // Convert empty strings to null for PostgreSQL compatibility
+    record[`col_${String.fromCharCode(97 + i)}`] = val === '' ? null : val;
   }
   if (sheetName === 'Settings') {
     record.row_number = rowIndex + 1;
