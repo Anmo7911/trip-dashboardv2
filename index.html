@@ -3108,7 +3108,12 @@ renderArchivesList(data.pastTrips);
 
       // Generate precise timestamp array string
       const now = new Date();
-      const instantAta = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+      const instantAta = new Intl.DateTimeFormat('en-GB', { 
+  hour: '2-digit', 
+  minute: '2-digit', 
+  hour12: false, 
+  timeZone: 'Asia/Kolkata' 
+}).format(now);
 
       // Drop in the new visual timestamp with 3-second blinking FX
       timeBlock.innerHTML += `<p class="text-[11px] font-black text-indigo-600 mt-0.5 animate-blink-3">ATA ${instantAta}</p>`;
