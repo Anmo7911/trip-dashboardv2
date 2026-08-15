@@ -1474,12 +1474,24 @@
 
       <!-- The Live Vertical Timeline Tracker (Injected by JS) -->
       <div id="ui-timeline-container" class="text-left w-full -mt-2"></div>
-      <div></div>
+<div id="ui-places-divider" class="hidden w-full h-[1px] bg-slate-200 my-8"></div>
 
-      
+      <!-- Pending Places Checklists -->
+      <div class="space-y-2">
+        <h2 id="head-active-places" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 hidden">
+          Additional Locations</h2>
+        <div id="activePlaceList" class="space-y-2"></div>
+      </div>
+
+      <!-- Visited Places Checklists -->
+      <div class="space-y-2 pb-10">
+        <h4 id="head-visited-places"
+          class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest px-1 hidden">Additional Locations
+          Visited ✅</h4>
+        <div id="visitedPlaceList" class="space-y-2"></div>
+      </div>
     </div>
   </main>
-
 
  <!-- =========================================
        BOTTOM NAVIGATION BAR
