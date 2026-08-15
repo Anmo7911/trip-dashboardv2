@@ -1,16 +1,9 @@
 {
+  "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/spend",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/squad",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/route",
-      "destination": "/index.html"
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
     }
   ]
 }
