@@ -264,7 +264,8 @@ async function dashboard() {
       reportUrl: await resolveAsset(r.col_d),
       rawReport: r.col_d || '',
       galleryUrl: await resolveAsset(r.col_e),
-      rawGallery: r.col_e || ''
+      rawGallery: r.col_e || '',
+      tripId: text(r.col_f)
     });
   }
 
@@ -527,7 +528,8 @@ async function adminSaveArchive(archiveData) {
     col_b: archiveData.dates || '',
     col_c: archiveData.totalSpent ? `₹${archiveData.totalSpent}` : '₹0',
     col_d: archiveData.reportUrl || '',
-    col_e: archiveData.galleryUrl || ''
+    col_e: archiveData.galleryUrl || '',
+    col_f: archiveData.tripId || ''
   };
 
   if (archiveData.id) {
