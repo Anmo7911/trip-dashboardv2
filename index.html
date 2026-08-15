@@ -3,6 +3,15 @@
 <html lang="en">
 
 <head>
+
+  <!-- Mobile Responsive Viewport Setup (Fixes Mobile Scaling) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- iOS specific meta tags to enable full-screen standalone mode -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#4f46e5">
+  
   <!-- Include QRCode.js library for generating QR codes on the E-ID card -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -1166,7 +1175,7 @@
           <div
             class="bg-indigo-50 border border-indigo-100 rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto">
             <span class="relative flex h-2 w-2 flex-shrink-0"></span>
-            <p id="ui-trip-notice" class="text-[11px] font-bold text-indigo-700 truncate text-center"></p>
+            <p id="ui-trip-notice" class="text-[11px] font-black text-indigo-700 truncate text-center tracking-wide"></p>
           </div>
         </div>
         <!-- Warning Notice Slot -->
