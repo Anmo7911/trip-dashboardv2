@@ -1977,6 +1977,7 @@
       } catch (error) {
         console.error(error);
         showToast("Unable to sync latest data.");
+      } finally {
         attemptSplashHide();
       }
     }
