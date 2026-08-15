@@ -52,9 +52,6 @@ function json(res, status, payload) {
   return res.status(status).json(payload);
 }
 
-// -------------------------------------------------------------
-// USER HELPERS & DASHBOARD
-// -------------------------------------------------------------
 async function resolveAsset(value, expiresIn = 3600) {
   const raw = text(value);
   if (!raw) return '';
@@ -118,6 +115,7 @@ async function dashboard() {
   const startDate = setting(4, 'b') ? new Date(setting(4, 'b')).getTime() : null;
   const endDate = setting(5, 'b') ? new Date(setting(5, 'b')).getTime() : null;
   const eidStampImage = await resolveAsset(setting(12, 'b'));
+  const rawEidStamp = setting(12, 'b') || '';
   const guidelinesUrl = setting(11, 'b') || '';
   const tripReportUrl = setting(13, 'b') || '';
   const tripReportSubheading = text(setting(13, 'c'));
@@ -218,11 +216,11 @@ async function dashboard() {
     status: text(r.col_c) || 'Pending',
     timeString: r.col_d ? asIso(r.col_d) : '',
     tripDay: text(r.col_f),
-    targetDate: r.col_g ? formatMonthDay(r.col_g, timeZone) : '',
-    eta: r.col_h ? formatHHMM(`1970-01-01T${r.col_h}`, 'UTC') : '',
+    targetDate: text(r.col_g),
+    eta: text(r.col_h),
     location: text(r.col_i),
     details: text(r.col_j),
-    ata: r.col_k ? formatHHMM(r.col_k, timeZone) : '',
+    ata: text(r.col_k),
     cancelStatus: text(r.col_l)
   }));
 
@@ -245,7 +243,8 @@ async function dashboard() {
   const totalExpenses = Object.values(categorySpent).reduce((a, b) => a + b, 0);
   return {
     appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus,
-    chiefCoordinatorSignature, eidStampImage, tripName, secondaryTitle,
+    securityStatus: meta.security_status || 'normal',
+    chiefCoordinatorSignature, eidStampImage, rawEidStamp, tripName, secondaryTitle,
     guidelinesUrl, tripReportUrl, tripReportSubheading, eidSubheading, eidHeading,
     tripNotice, warningNotice,
     timeData: { start: Number.isFinite(startDate) ? startDate : null, end: Number.isFinite(endDate) ? endDate : null },
@@ -266,7 +265,6 @@ async function saveExpense(formData) {
   if (!(amount >= 0)) throw new Error('Invalid amount');
 
   let newUTR = `VOF${crypto.randomInt(100000, 1000000)}`;
-
   const { error } = await supabase.from('transactions_sheet').insert({
     col_a: newUTR,
     col_b: formData.date || new Date().toISOString(),
@@ -345,7 +343,7 @@ async function changeMemberPIN(name, oldPin, newPin) {
 }
 
 // -------------------------------------------------------------
-// ADMIN ACTION HANDLERS
+// ADMIN ACTIONS
 // -------------------------------------------------------------
 async function adminLogin(username, password) {
   const { data, error } = await supabase.from('admin_auth').select('*').eq('username', text(username)).maybeSingle();
@@ -363,6 +361,16 @@ async function adminUpdateSetting(rowNumber, col, value) {
     await supabase.from('settings_sheet').update(patch).eq('row_number', Number(rowNumber));
   } else {
     await supabase.from('settings_sheet').insert({ row_number: Number(rowNumber), ...patch });
+  }
+  return dashboard();
+}
+
+async function adminUpdateMeta(securityStatus) {
+  const { data: metaRows } = await supabase.from('app_meta').select('*').limit(1);
+  if (metaRows?.length) {
+    await supabase.from('app_meta').update({ security_status: securityStatus }).eq('id', metaRows[0].id);
+  } else {
+    await supabase.from('app_meta').insert({ security_status: securityStatus });
   }
   return dashboard();
 }
@@ -431,6 +439,28 @@ async function adminDeleteTx(txId) {
   return dashboard();
 }
 
+async function adminSaveArchive(archiveData) {
+  const payload = {
+    col_a: archiveData.name || '',
+    col_b: archiveData.dates || '',
+    col_c: archiveData.totalSpent ? `₹${archiveData.totalSpent}` : '₹0',
+    col_d: archiveData.reportUrl || '',
+    col_e: archiveData.galleryUrl || ''
+  };
+
+  if (archiveData.id) {
+    await supabase.from('archives_sheet').update(payload).eq('id', archiveData.id);
+  } else {
+    await supabase.from('archives_sheet').insert(payload);
+  }
+  return dashboard();
+}
+
+async function adminDeleteArchive(archiveId) {
+  await supabase.from('archives_sheet').delete().eq('id', archiveId);
+  return dashboard();
+}
+
 async function adminUploadFile(file) {
   if (!file || !file.base64Data) throw new Error('No asset supplied');
   const raw = String(file.base64Data);
@@ -438,7 +468,7 @@ async function adminUploadFile(file) {
   if (!match) throw new Error('Invalid data format');
   const mime = match[1];
   const bytes = Buffer.from(match[2], 'base64');
-  const ext = mime.split('/')[1] || 'jpg';
+  const ext = mime.includes('pdf') ? 'pdf' : (mime.split('/')[1] || 'jpg');
   const cleanName = text(file.fileName).replace(/[^a-zA-Z0-9._-]/g, '_') || 'upload';
   const path = `uploads/${Date.now()}-${cleanName}.${ext}`;
 
@@ -460,7 +490,7 @@ export default async function handler(req, res) {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
 
     switch (action) {
-      // User Member Actions
+      // Member Actions
       case 'dashboard': return json(res, 200, await dashboard());
       case 'login': return json(res, 200, await verifyMemberPIN(body.name, body.pin));
       case 'expense': return json(res, 200, await saveExpense(body));
@@ -473,12 +503,15 @@ export default async function handler(req, res) {
       // Admin Actions
       case 'admin-login': return json(res, 200, await adminLogin(body.username, body.password));
       case 'admin-update-setting': return json(res, 200, await adminUpdateSetting(body.rowNumber, body.col, body.value));
+      case 'admin-update-meta': return json(res, 200, await adminUpdateMeta(body.securityStatus));
       case 'admin-save-member': return json(res, 200, await adminSaveMember(body));
       case 'admin-delete-member': return json(res, 200, await adminDeleteMember(body.id));
       case 'admin-save-place': return json(res, 200, await adminSavePlace(body));
       case 'admin-delete-place': return json(res, 200, await adminDeletePlace(body.id));
       case 'admin-verify-tx': return json(res, 200, await adminVerifyTx(body.id, body.status));
       case 'admin-delete-tx': return json(res, 200, await adminDeleteTx(body.id));
+      case 'admin-save-archive': return json(res, 200, await adminSaveArchive(body));
+      case 'admin-delete-archive': return json(res, 200, await adminDeleteArchive(body.id));
       case 'admin-upload': return json(res, 200, await adminUploadFile(body));
 
       default: return json(res, 200, await dashboard());
