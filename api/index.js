@@ -444,38 +444,42 @@ async function adminDeleteMember(memberId) {
 }
 
 async function adminSavePlace(placeData) {
+  const loc = text(placeData.location || placeData.placeLocation || placeData.name || '');
   const payload = {
-    col_a: placeData.location || placeData.name || '',
-    col_b: placeData.note || '',
-    col_c: 'Pending',
-    col_f: placeData.tripDay || 'Day 1',
-    col_g: placeData.targetDate || '',
-    col_h: placeData.eta || '',
-    col_i: placeData.location || '',
-    col_j: placeData.details || '',
-    col_k: placeData.ata || '',
-    col_l: placeData.cancelStatus || ''
+    col_a: loc,
+    col_b: text(placeData.note || ''),
+    col_c: text(placeData.status || 'Pending'),
+    col_f: text(placeData.tripDay || placeData.placeDay || 'Day 1'),
+    col_g: text(placeData.targetDate || placeData.placeDate || '') || null,
+    col_h: text(placeData.eta || placeData.placeEta || '') || null,
+    col_i: loc,
+    col_j: text(placeData.details || placeData.placeDetails || ''),
+    col_k: text(placeData.ata || placeData.placeAta || '') || null,
+    col_l: text(placeData.cancelStatus || placeData.placeCancel || '') || null
   };
 
   if (placeData.id) {
-    await supabase.from('places_sheet').update(payload).eq('id', placeData.id);
+    const { error } = await supabase.from('places_sheet').update(payload).eq('id', Number(placeData.id));
+    if (error) throw error;
   } else {
-    await supabase.from('places_sheet').insert(payload);
+    const { error } = await supabase.from('places_sheet').insert(payload);
+    if (error) throw error;
   }
   return dashboard();
 }
 
 async function adminReorderPlaces(placesList) {
-  for (const item of placesList) {
+  for (let i = 0; i < placesList.length; i++) {
+    const item = placesList[i];
     await supabase.from('places_sheet').update({
-      col_f: item.tripDay || 'Day 1',
-      col_g: item.targetDate || '',
-      col_h: item.eta || '',
-      col_i: item.location || '',
-      col_j: item.details || '',
-      col_k: item.ata || '',
-      col_l: item.cancelStatus || ''
-    }).eq('id', item.id);
+      col_f: text(item.tripDay || 'Day 1'),
+      col_g: text(item.targetDate || '') || null,
+      col_h: text(item.eta || '') || null,
+      col_i: text(item.location || item.name || ''),
+      col_j: text(item.details || ''),
+      col_k: text(item.ata || '') || null,
+      col_l: text(item.cancelStatus || '') || null
+    }).eq('id', Number(item.id));
   }
   return dashboard();
 }
