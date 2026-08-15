@@ -614,25 +614,19 @@
       <form id="archiveForm" onsubmit="saveArchiveForm(event)" class="space-y-3 text-left">
         <input type="hidden" id="archId">
         
-        <div class="grid grid-cols-3 gap-2">
-          <div class="col-span-2">
-            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Name</label>
-            <input type="text" id="archName" placeholder="e.g. Kerala Is On 2.0" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
-          </div>
-          <div>
-            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip ID</label>
-            <input type="text" id="archTripId" placeholder="e.g. KRL25" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-indigo-400 font-bold mt-1 font-mono uppercase">
-          </div>
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Name</label>
+          <input type="text" id="archName" placeholder="e.g. Manali Expedition 2025" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Dates</label>
-            <input type="text" id="archDates" placeholder="e.g. 10-16 Nov, 2025" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+            <input type="text" id="archDates" placeholder="e.g. 15-20 June 2025" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
           </div>
           <div>
             <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Total Spent (₹)</label>
-            <input type="number" id="archSpent" placeholder="8754" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-emerald-400 font-bold mt-1">
+            <input type="number" id="archSpent" placeholder="35000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-emerald-400 font-bold mt-1">
           </div>
         </div>
 
@@ -666,6 +660,8 @@
           Save Past Trip
         </button>
       </form>
+    </div>
+  </div>
 
   <!-- =========================================
        SCRIPT
@@ -1313,9 +1309,8 @@
       container.innerHTML = trips.map(t => `
         <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div>
-            <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex items-center gap-2">
               <span class="text-xs font-black text-white">${t.name}</span>
-              ${t.tripId ? `<span class="bg-indigo-500/20 text-indigo-400 font-mono text-[9px] px-1.5 py-0.5 rounded font-black uppercase">${t.tripId}</span>` : ''}
               ${t.totalSpent ? `<span class="text-[10px] font-bold text-emerald-400">₹${t.totalSpent.toLocaleString('en-IN')}</span>` : ''}
             </div>
             <p class="text-[10px] text-slate-400">${t.dates || '-'}</p>
@@ -1339,7 +1334,6 @@
       document.getElementById('archiveModalTitle').innerText = 'Add Past Trip';
       document.getElementById('archiveForm').reset();
       document.getElementById('archId').value = '';
-      document.getElementById('archTripId').value = '';
       document.getElementById('archReport').value = '';
       document.getElementById('archGallery').value = '';
       document.getElementById('archReportPreview').innerHTML = '<i data-lucide="file-text" class="w-5 h-5 text-slate-500 mb-0.5"></i><p class="text-[10px] font-bold text-slate-400">Select PDF or Image Report</p>';
@@ -1352,7 +1346,6 @@
       document.getElementById('archiveModalTitle').innerText = 'Edit Past Trip';
       document.getElementById('archId').value = t.id || '';
       document.getElementById('archName').value = t.name || '';
-      document.getElementById('archTripId').value = t.tripId || '';
       document.getElementById('archDates').value = t.dates || '';
       document.getElementById('archSpent').value = t.totalSpent || '';
       document.getElementById('archReport').value = t.rawReport || t.reportUrl || '';
@@ -1367,13 +1360,14 @@
       document.getElementById('archiveModal').classList.remove('hidden');
     }
 
+    function closeArchiveModal() { document.getElementById('archiveModal').classList.add('hidden'); }
+
     async function saveArchiveForm(e) {
       e.preventDefault();
       const payload = {
         id: document.getElementById('archId').value ? Number(document.getElementById('archId').value) : null,
-        name: document.getElementById('archName').value.trim(),
-        tripId: document.getElementById('archTripId').value.trim(),
-        dates: document.getElementById('archDates').value.trim(),
+        name: document.getElementById('archName').value,
+        dates: document.getElementById('archDates').value,
         totalSpent: document.getElementById('archSpent').value,
         reportUrl: document.getElementById('archReport').value,
         galleryUrl: document.getElementById('archGallery').value
