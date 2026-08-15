@@ -2,41 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Trip Admin Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col pb-10 select-none">
 
   <!-- =========================================
        ADMIN LOGIN OVERLAY
        ========================================= -->
-  <div id="admin-login-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="max-w-sm w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl text-center">
-      <div class="w-16 h-16 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-        <i data-lucide="shield-check" class="w-8 h-8"></i>
+  <div id="admin-login-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="max-w-sm w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-center">
+      <div class="w-14 h-14 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <i data-lucide="shield-check" class="w-7 h-7"></i>
       </div>
       <h1 class="text-xl font-black uppercase tracking-wider text-white">Admin Portal</h1>
-      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1 mb-6">Management Authentication</p>
+      <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 mb-6">Management Control</p>
 
       <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-4 text-left">
         <div>
           <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Username</label>
-          <input type="text" id="adminUser" value="admin" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white font-bold outline-none focus:border-indigo-500 mt-1">
+          <input type="text" id="adminUser" value="admin" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white font-bold outline-none focus:border-indigo-500 mt-1">
         </div>
         <div>
-          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Master Password / PIN</label>
-          <input type="password" id="adminPass" placeholder="••••" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white font-bold outline-none focus:border-indigo-500 mt-1 tracking-widest">
+          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Password / PIN</label>
+          <input type="password" id="adminPass" placeholder="••••" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white font-bold outline-none focus:border-indigo-500 mt-1 tracking-widest">
         </div>
-        <p id="loginError" class="text-rose-400 text-xs font-bold hidden"></p>
-        <button type="submit" id="loginBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest shadow-lg">
+        <p id="loginError" class="text-rose-400 text-[11px] font-bold hidden"></p>
+        <button type="submit" id="loginBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3.5 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest shadow-lg">
           Unlock Dashboard
         </button>
       </form>
@@ -44,208 +46,287 @@
   </div>
 
   <!-- =========================================
-       ADMIN NAVIGATION HEADER
+       HEADER BAR
        ========================================= -->
-  <header class="bg-slate-950 border-b border-slate-800 px-6 py-4 sticky top-0 z-40 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md">
-        <i data-lucide="shield" class="w-5 h-5"></i>
+  <header class="bg-slate-900 border-b border-slate-800 px-4 py-3 sticky top-0 z-40 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-md">
+        <i data-lucide="shield" class="w-4 h-4"></i>
       </div>
       <div>
-        <h2 id="headerTripName" class="text-base font-black uppercase tracking-wide leading-tight">Trip Dashboard</h2>
-        <span class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Live Admin Session
+        <h2 id="headerTripName" class="text-xs font-black uppercase tracking-wide leading-tight truncate max-w-[150px] sm:max-w-xs">Admin Control</h2>
+        <span class="text-[8px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Active Session
         </span>
       </div>
     </div>
 
-    <div class="flex items-center gap-2">
-      <a href="/" target="_blank" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
-        <i data-lucide="external-link" class="w-4 h-4"></i> <span class="hidden sm:inline">View App</span>
+    <div class="flex items-center gap-1.5">
+      <a href="/" target="_blank" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-bold transition flex items-center gap-1">
+        <i data-lucide="external-link" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Live App</span>
       </a>
-      <button onclick="adminLogout()" class="px-3.5 py-2 bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
-        <i data-lucide="log-out" class="w-4 h-4"></i> <span class="hidden sm:inline">Logout</span>
+      <button onclick="adminLogout()" class="px-2.5 py-1.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 rounded-lg text-[10px] font-bold transition flex items-center gap-1">
+        <i data-lucide="log-out" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Logout</span>
       </button>
     </div>
   </header>
 
   <!-- =========================================
-       ADMIN TABS
+       HORIZONTAL SCROLLABLE TABS
        ========================================= -->
-  <div class="bg-slate-950/60 border-b border-slate-800 px-6 flex gap-2 overflow-x-auto">
-    <button onclick="switchTab('settings')" id="tabBtn-settings" class="px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 border-indigo-500 text-indigo-400 flex items-center gap-2">
-      <i data-lucide="sliders" class="w-4 h-4"></i> Settings & Switches
+  <div class="bg-slate-900/60 border-b border-slate-800 px-4 flex gap-2 overflow-x-auto no-scrollbar">
+    <button onclick="switchTab('settings')" id="tabBtn-settings" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-indigo-500 text-indigo-400 flex items-center gap-1.5 whitespace-nowrap shrink-0">
+      <i data-lucide="sliders" class="w-3.5 h-3.5"></i> Switches
     </button>
-    <button onclick="switchTab('members')" id="tabBtn-members" class="px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2">
-      <i data-lucide="users" class="w-4 h-4"></i> Members & Photo Upload
+    <button onclick="switchTab('members')" id="tabBtn-members" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap shrink-0">
+      <i data-lucide="users" class="w-3.5 h-3.5"></i> Members
     </button>
-    <button onclick="switchTab('places')" id="tabBtn-places" class="px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2">
-      <i data-lucide="map-pin" class="w-4 h-4"></i> Route & Timeline
+    <button onclick="switchTab('places')" id="tabBtn-places" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap shrink-0">
+      <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Route
     </button>
-    <button onclick="switchTab('ledger')" id="tabBtn-ledger" class="px-4 py-3 text-xs font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2">
-      <i data-lucide="receipt" class="w-4 h-4"></i> Expenses & Ledger
+    <button onclick="switchTab('ledger')" id="tabBtn-ledger" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap shrink-0">
+      <i data-lucide="receipt" class="w-3.5 h-3.5"></i> Ledger
+    </button>
+    <button onclick="switchTab('media')" id="tabBtn-media" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap shrink-0">
+      <i data-lucide="folder-up" class="w-3.5 h-3.5"></i> Media & Docs
+    </button>
+    <button onclick="switchTab('archives')" id="tabBtn-archives" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap shrink-0">
+      <i data-lucide="archive" class="w-3.5 h-3.5"></i> Past Trips
     </button>
   </div>
 
   <!-- =========================================
-       MAIN CONTENT CONTAINER
+       TAB PANES
        ========================================= -->
-  <main class="flex-1 p-6 max-w-6xl w-full mx-auto space-y-6">
+  <main class="flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6">
 
-    <!-- TAB 1: SETTINGS & SWITCHES -->
-    <section id="pane-settings" class="tab-pane active space-y-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- 1. SWITCHES & SETTINGS TAB -->
+    <section id="pane-settings" class="tab-pane active space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         
-        <!-- Live App Controls -->
-        <div class="bg-slate-950 border border-slate-800 p-6 rounded-3xl space-y-4">
-          <h3 class="text-sm font-black uppercase tracking-wider text-slate-300 flex items-center gap-2">
-            <i data-lucide="toggle-left" class="w-4 h-4 text-indigo-400"></i> Global App Switches
+        <!-- Live App Feature Switches -->
+        <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
+          <h3 class="text-xs font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+            <i data-lucide="toggle-left" class="w-4 h-4"></i> Global App Switches
           </h3>
+
+          <!-- Individual Contribution Toggle -->
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+            <div class="pr-2">
+              <p class="text-xs font-bold text-white leading-tight">Individual Contribution</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Show member spending bookmarks</p>
+            </div>
+            <select onchange="saveSetting(23, 'b', this.value)" id="setContriStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+              <option value="ACTIVE">ACTIVE (Show)</option>
+              <option value="INACTIVE">HIDDEN</option>
+            </select>
+          </div>
+
+          <!-- Encrypted / Masked Member View -->
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+            <div class="pr-2">
+              <p class="text-xs font-bold text-white leading-tight">Member Security Mode</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Mask names & hide photo identities</p>
+            </div>
+            <select onchange="saveMetaSecurity(this.value)" id="setSecurityStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+              <option value="normal">Normal (Public)</option>
+              <option value="encrypted">Encrypted (Masked)</option>
+            </select>
+          </div>
+
+          <!-- Signing Off Status -->
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+            <div class="pr-2">
+              <p class="text-xs font-bold text-white leading-tight">Signing Off Period</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Allow squad members to sign final ledger</p>
+            </div>
+            <select onchange="saveSetting(21, 'b', this.value)" id="setSignOffStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+              <option value="signing off">SIGNING OFF (Active)</option>
+              <option value="closed">CLOSED</option>
+            </select>
+          </div>
 
           <!-- App Lock -->
-          <div class="flex items-center justify-between p-3 bg-slate-900 rounded-2xl border border-slate-800">
-            <div>
-              <p class="text-xs font-bold text-white">App Master Lock</p>
-              <p class="text-[10px] text-slate-400">Freeze user access when trip concludes</p>
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+            <div class="pr-2">
+              <p class="text-xs font-bold text-white leading-tight">Trip Finished Lock</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Full app freeze screen</p>
             </div>
-            <select onchange="saveSetting(19, 'b', this.value)" id="setAppStatus" class="bg-slate-950 border border-slate-700 text-xs font-bold rounded-xl px-3 py-2 text-indigo-400 outline-none">
+            <select onchange="saveSetting(19, 'b', this.value)" id="setAppStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
               <option value="OPEN">ACTIVE (Open)</option>
-              <option value="LOCKED">LOCKED (Concluded)</option>
+              <option value="LOCKED">LOCKED</option>
             </select>
           </div>
 
-          <!-- Expense Add Toggle -->
-          <div class="flex items-center justify-between p-3 bg-slate-900 rounded-2xl border border-slate-800">
-            <div>
-              <p class="text-xs font-bold text-white">Expense Logging Status</p>
-              <p class="text-[10px] text-slate-400">Allow or pause new expense entries</p>
+          <!-- Expense Add Status -->
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+            <div class="pr-2">
+              <p class="text-xs font-bold text-white leading-tight">Expense Logging</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Pause user submissions</p>
             </div>
-            <select onchange="saveSetting(22, 'b', this.value)" id="setExpenseStatus" class="bg-slate-950 border border-slate-700 text-xs font-bold rounded-xl px-3 py-2 text-indigo-400 outline-none">
-              <option value="ALLOW Expense">ALLOW Expense</option>
-              <option value="STOP Expense">PAUSE (Stop Expense)</option>
+            <select onchange="saveSetting(22, 'b', this.value)" id="setExpenseStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+              <option value="ALLOW Expense">ALLOW Entries</option>
+              <option value="STOP Expense">PAUSE Entries</option>
             </select>
           </div>
 
-          <!-- Route Live Tracking Mode -->
-          <div class="flex items-center justify-between p-3 bg-slate-900 rounded-2xl border border-slate-800">
-            <div>
-              <p class="text-xs font-bold text-white">Route & GPS Visibility</p>
-              <p class="text-[10px] text-slate-400">Route tab security vault mode</p>
+          <!-- Route Status -->
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+            <div class="pr-2">
+              <p class="text-xs font-bold text-white leading-tight">Route & GPS Status</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Timeline vault clearance</p>
             </div>
-            <select onchange="saveSetting(18, 'b', this.value)" id="setRouteStatus" class="bg-slate-950 border border-slate-700 text-xs font-bold rounded-xl px-3 py-2 text-indigo-400 outline-none">
-              <option value="ACTIVE">ACTIVE (Unlocked)</option>
-              <option value="LOCKED">LOCKED (Vault Standby)</option>
-              <option value="STEALTH">STEALTH (Hidden)</option>
+            <select onchange="saveSetting(18, 'b', this.value)" id="setRouteStatus" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+              <option value="ACTIVE">ACTIVE</option>
+              <option value="LOCKED">LOCKED (Vault)</option>
+              <option value="STEALTH">STEALTH</option>
             </select>
           </div>
+
         </div>
 
-        <!-- Trip Information -->
-        <div class="bg-slate-950 border border-slate-800 p-6 rounded-3xl space-y-4">
-          <h3 class="text-sm font-black uppercase tracking-wider text-slate-300 flex items-center gap-2">
-            <i data-lucide="edit-3" class="w-4 h-4 text-indigo-400"></i> Trip Details & Notices
+        <!-- Trip Details & Notice Banners -->
+        <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
+          <h3 class="text-xs font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+            <i data-lucide="edit-3" class="w-4 h-4"></i> Trip Header & Banners
           </h3>
 
           <div>
-            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Trip Name</label>
-            <input type="text" id="setTripName" onchange="saveSetting(2, 'b', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white font-bold mt-1">
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Name</label>
+            <input type="text" id="setTripName" onchange="saveSetting(2, 'b', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
           </div>
 
           <div>
-            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Destination Subtitle</label>
-            <input type="text" id="setTripSub" onchange="saveSetting(2, 'c', this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white font-bold mt-1">
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Destination Subtitle</label>
+            <input type="text" id="setTripSub" onchange="saveSetting(2, 'c', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
           </div>
 
           <div>
-            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">General Notice Banner</label>
-            <input type="text" id="setNotice" onchange="saveSetting(7, 'b', this.value)" placeholder="e.g. #TRIPTOUTTARAKHAND" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white font-bold mt-1">
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Notice Banner Text</label>
+            <input type="text" id="setNotice" onchange="saveSetting(7, 'b', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
           </div>
 
           <div>
-            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Emergency Alert Banner</label>
-            <input type="text" id="setWarning" onchange="saveSetting(8, 'b', this.value)" placeholder="Over-Budget warning message..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-rose-400 font-bold mt-1">
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Emergency Alert Banner</label>
+            <input type="text" id="setWarning" onchange="saveSetting(8, 'b', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-rose-400 font-bold mt-1">
           </div>
         </div>
 
       </div>
     </section>
 
-    <!-- TAB 2: MEMBERS & DIRECT PHOTO UPLOADER -->
-    <section id="pane-members" class="tab-pane space-y-6">
+    <!-- 2. MEMBERS TAB -->
+    <section id="pane-members" class="tab-pane space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="text-sm font-black uppercase tracking-wider text-slate-300">Squad Members</h3>
-        <button onclick="openMemberModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black uppercase tracking-wider px-4 py-2.5 rounded-xl flex items-center gap-2">
-          <i data-lucide="user-plus" class="w-4 h-4"></i> Add Member
+        <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Squad Members</h3>
+        <button onclick="openMemberModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 transition">
+          <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Add Member
         </button>
       </div>
 
-      <div id="membersAdminGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div id="membersAdminGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <!-- Rendered by JS -->
       </div>
     </section>
 
-    <!-- TAB 3: ROUTE & TIMELINE -->
-    <section id="pane-places" class="tab-pane space-y-6">
+    <!-- 3. ROUTE & TIMELINE TAB (Mobile-Friendly Stacked Cards) -->
+    <section id="pane-places" class="tab-pane space-y-4">
       <div class="flex items-center justify-between">
-        <h3 class="text-sm font-black uppercase tracking-wider text-slate-300">Route Stops & Timetable</h3>
-        <button onclick="openPlaceModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black uppercase tracking-wider px-4 py-2.5 rounded-xl flex items-center gap-2">
-          <i data-lucide="plus-circle" class="w-4 h-4"></i> Add Stop
+        <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Route & Transit Stops</h3>
+        <button onclick="openPlaceModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 transition">
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Add Stop
         </button>
       </div>
 
-      <div class="bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-slate-900 text-slate-400 uppercase font-black tracking-wider text-[10px]">
-            <tr>
-              <th class="p-4">Day</th>
-              <th class="p-4">Location</th>
-              <th class="p-4">ETA / ATA</th>
-              <th class="p-4">Status</th>
-              <th class="p-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="placesAdminTable" class="divide-y divide-slate-800 font-bold">
-            <!-- Rendered by JS -->
-          </tbody>
-        </table>
+      <div id="placesAdminCards" class="space-y-3">
+        <!-- Rendered as mobile-first cards by JS -->
       </div>
     </section>
 
-    <!-- TAB 4: EXPENSES & LEDGER -->
-    <section id="pane-ledger" class="tab-pane space-y-6">
-      <div class="flex items-center justify-between">
-        <h3 class="text-sm font-black uppercase tracking-wider text-slate-300">Financial Ledger</h3>
-        <div id="ledgerStats" class="text-xs font-bold text-emerald-400"></div>
+    <!-- 4. EXPENSES & LEDGER TAB (Mobile Cards) -->
+    <section id="pane-ledger" class="tab-pane space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+        <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Expense Ledger</h3>
+        <div id="ledgerStats" class="text-[11px] font-bold text-emerald-400"></div>
       </div>
 
-      <div class="bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-slate-900 text-slate-400 uppercase font-black tracking-wider text-[10px]">
-            <tr>
-              <th class="p-4">UTR / Date</th>
-              <th class="p-4">Claimant</th>
-              <th class="p-4">Category / Notes</th>
-              <th class="p-4">Amount</th>
-              <th class="p-4">Verification</th>
-              <th class="p-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="ledgerAdminTable" class="divide-y divide-slate-800 font-bold">
-            <!-- Rendered by JS -->
-          </tbody>
-        </table>
+      <div id="ledgerAdminCards" class="space-y-3">
+        <!-- Rendered as mobile-first cards by JS -->
+      </div>
+    </section>
+
+    <!-- 5. MEDIA & DOCUMENTS HUB (NEW TAB) -->
+    <section id="pane-media" class="tab-pane space-y-4">
+      <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Document & Image Uploads</h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <!-- Guidelines Image / Document -->
+        <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-white flex items-center gap-2"><i data-lucide="book-text" class="w-4 h-4 text-indigo-400"></i> Trip Guidelines Link / PDF</h4>
+            <a id="previewGuideline" href="#" target="_blank" class="text-[10px] font-bold text-indigo-400 underline hidden">View Link</a>
+          </div>
+          <div onclick="document.getElementById('guidelineFileInput').click()" class="border-2 border-dashed border-slate-800 hover:border-indigo-500 rounded-xl p-4 text-center cursor-pointer bg-slate-950 transition">
+            <input type="file" id="guidelineFileInput" accept="image/*,application/pdf" class="hidden" onchange="uploadSpecialAsset(this, 11, 'b', 'previewGuideline')">
+            <i data-lucide="upload-cloud" class="w-6 h-6 text-slate-500 mx-auto mb-1"></i>
+            <p class="text-[10px] font-bold text-slate-400">Upload New Guidelines Image/PDF</p>
+          </div>
+          <input type="text" id="guidelineUrlInput" onchange="saveSetting(11, 'b', this.value)" placeholder="Or paste full URL here..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-bold">
+        </div>
+
+        <!-- Current Trip Report Document -->
+        <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-white flex items-center gap-2"><i data-lucide="file-pie-chart" class="w-4 h-4 text-amber-400"></i> Current Trip Report</h4>
+            <a id="previewTripReport" href="#" target="_blank" class="text-[10px] font-bold text-amber-400 underline hidden">View Link</a>
+          </div>
+          <div onclick="document.getElementById('reportFileInput').click()" class="border-2 border-dashed border-slate-800 hover:border-amber-500 rounded-xl p-4 text-center cursor-pointer bg-slate-950 transition">
+            <input type="file" id="reportFileInput" accept="image/*,application/pdf" class="hidden" onchange="uploadSpecialAsset(this, 13, 'b', 'previewTripReport')">
+            <i data-lucide="upload-cloud" class="w-6 h-6 text-slate-500 mx-auto mb-1"></i>
+            <p class="text-[10px] font-bold text-slate-400">Upload Trip Report File / Image</p>
+          </div>
+          <input type="text" id="reportUrlInput" onchange="saveSetting(13, 'b', this.value)" placeholder="Or paste report URL here..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-bold">
+          <input type="text" id="reportSubInput" onchange="saveSetting(13, 'c', this.value)" placeholder="Subheading text (e.g. UNAVAILABLE or View Summary)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-400 font-bold">
+        </div>
+
+        <!-- E-ID Physical Stamp Image -->
+        <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
+          <h4 class="text-xs font-bold text-white flex items-center gap-2"><i data-lucide="stamp" class="w-4 h-4 text-rose-400"></i> E-ID Card Stamp Overlay</h4>
+          <div onclick="document.getElementById('stampFileInput').click()" class="border-2 border-dashed border-slate-800 hover:border-rose-500 rounded-xl p-4 text-center cursor-pointer bg-slate-950 transition">
+            <input type="file" id="stampFileInput" accept="image/*" class="hidden" onchange="uploadSpecialAsset(this, 12, 'b')">
+            <i data-lucide="upload-cloud" class="w-6 h-6 text-slate-500 mx-auto mb-1"></i>
+            <p class="text-[10px] font-bold text-slate-400">Upload Stamp PNG (Transparent)</p>
+          </div>
+          <input type="text" id="stampUrlInput" onchange="saveSetting(12, 'b', this.value)" placeholder="Stamp storage URL..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white font-bold">
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 6. PAST TRIPS ARCHIVE TAB (NEW TAB) -->
+    <section id="pane-archives" class="tab-pane space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Past Trips Archive</h3>
+        <button onclick="openArchiveModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 transition">
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Add Trip Archive
+        </button>
+      </div>
+
+      <div id="archivesAdminCards" class="space-y-3">
+        <!-- Rendered by JS -->
       </div>
     </section>
 
   </main>
 
   <!-- =========================================
-       MEMBER EDIT / ADD MODAL WITH PHOTO UPLOAD
+       MEMBER MODAL
        ========================================= -->
   <div id="memberModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-    <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4 my-8">
+    <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 my-8">
       <div class="flex justify-between items-center pb-2 border-b border-slate-800">
-        <h3 id="memberModalTitle" class="text-sm font-black uppercase tracking-wider text-white">Add Member</h3>
+        <h3 id="memberModalTitle" class="text-xs font-black uppercase tracking-wider text-white">Member</h3>
         <button onclick="closeMemberModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
 
@@ -253,29 +334,28 @@
         <input type="hidden" id="memId">
         
         <div>
-          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Full Name</label>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Full Name</label>
           <input type="text" id="memName" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Role / Designation</label>
-            <input type="text" id="memRole" placeholder="e.g. Coordinator, Member" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Role / Designation</label>
+            <input type="text" id="memRole" placeholder="Member / Coordinator" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
           </div>
           <div>
-            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">4-Digit PIN</label>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">4-Digit PIN</label>
             <input type="text" id="memPin" maxlength="4" placeholder="1234" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1 tracking-widest">
           </div>
         </div>
 
-        <!-- Integrated Drag and Drop Photo Uploader -->
         <div>
-          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Profile Photo (Drag & Drop or Select)</label>
-          <div id="dropZone" onclick="document.getElementById('memPhotoFile').click()" class="mt-1 border-2 border-dashed border-slate-800 hover:border-indigo-500 rounded-2xl p-4 text-center cursor-pointer bg-slate-950 transition-colors">
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Profile Photo</label>
+          <div id="dropZone" onclick="document.getElementById('memPhotoFile').click()" class="mt-1 border-2 border-dashed border-slate-800 hover:border-indigo-500 rounded-xl p-3 text-center cursor-pointer bg-slate-950 transition">
             <input type="file" id="memPhotoFile" accept="image/*" class="hidden" onchange="handlePhotoSelect(this)">
             <div id="uploadPreview" class="flex flex-col items-center">
-              <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-500 mb-1"></i>
-              <p class="text-[11px] font-bold text-slate-400">Click to browse or drop JPG/PNG image</p>
+              <i data-lucide="upload-cloud" class="w-6 h-6 text-slate-500 mb-0.5"></i>
+              <p class="text-[10px] font-bold text-slate-400">Click to select photo</p>
             </div>
           </div>
           <input type="hidden" id="memImgUrl">
@@ -283,18 +363,18 @@
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Mobile</label>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Mobile</label>
             <input type="text" id="memMobile" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
           </div>
           <div>
-            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Email</label>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Email</label>
             <input type="email" id="memEmail" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
           </div>
         </div>
 
         <div>
-          <label class="text-[10px] font-black uppercase tracking-widest text-slate-400">Assigned Role Description</label>
-          <textarea id="memRoleDetail" rows="2" placeholder="Tasks assigned to this member..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold mt-1"></textarea>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Assigned Tasks Description</label>
+          <textarea id="memRoleDetail" rows="2" placeholder="Tasks for this member..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold mt-1"></textarea>
         </div>
 
         <button type="submit" id="saveMemBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest">
@@ -305,19 +385,133 @@
   </div>
 
   <!-- =========================================
-       JAVASCRIPT LOGIC
+       STOP / PLACE MODAL
+       ========================================= -->
+  <div id="placeModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 my-8">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+        <h3 id="placeModalTitle" class="text-xs font-black uppercase tracking-wider text-white">Route Stop</h3>
+        <button onclick="closePlaceModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="placeForm" onsubmit="savePlaceForm(event)" class="space-y-3 text-left">
+        <input type="hidden" id="placeId">
+        
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Day</label>
+            <input type="text" id="placeDay" placeholder="e.g. Day 1" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          </div>
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Target Date</label>
+            <input type="text" id="placeDate" placeholder="e.g. Jun 26" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Location Name</label>
+          <input type="text" id="placeLocation" placeholder="e.g. Haridwar Station" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Scheduled ETA</label>
+            <input type="text" id="placeEta" placeholder="e.g. 06:30" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          </div>
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Actual ATA</label>
+            <input type="text" id="placeAta" placeholder="e.g. 06:45" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-indigo-400 font-bold mt-1">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Transit / Stay Details</label>
+          <input type="text" id="placeDetails" placeholder="e.g. Train 12056 or Hotel Stay" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Status</label>
+            <select id="placeStatus" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+              <option value="Pending">Pending</option>
+              <option value="Visited">Visited</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Cancel Flag</label>
+            <select id="placeCancel" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+              <option value="">Normal</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest">
+          Save Stop
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================
+       PAST TRIP ARCHIVE MODAL
+       ========================================= -->
+  <div id="archiveModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 my-8">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+        <h3 id="archiveModalTitle" class="text-xs font-black uppercase tracking-wider text-white">Past Trip Archive</h3>
+        <button onclick="closeArchiveModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="archiveForm" onsubmit="saveArchiveForm(event)" class="space-y-3 text-left">
+        <input type="hidden" id="archId">
+        
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Name</label>
+          <input type="text" id="archName" placeholder="e.g. Manali Expedition 2025" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Dates</label>
+            <input type="text" id="archDates" placeholder="e.g. 15-20 June 2025" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          </div>
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Total Spent (₹)</label>
+            <input type="number" id="archSpent" placeholder="35000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-emerald-400 font-bold mt-1">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Report URL</label>
+          <input type="text" id="archReport" placeholder="https://drive.google.com/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+        </div>
+
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Gallery Drive Link</label>
+          <input type="text" id="archGallery" placeholder="https://drive.google.com/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+        </div>
+
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest">
+          Save Past Trip
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================
+       SCRIPT LOGIC
        ========================================= -->
   <script>
     let globalData = null;
     let autoLogoutTimer = null;
 
-    // Reset inactivity timer on any user interaction
     function resetAutoLogout() {
       if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
       autoLogoutTimer = setTimeout(() => {
-        alert("Session expired due to 15 minutes of inactivity.");
+        alert("Admin session timed out after 15 minutes.");
         adminLogout();
-      }, 15 * 60 * 1000); // 15 minutes
+      }, 15 * 60 * 1000);
     }
 
     ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
@@ -390,6 +584,8 @@
         renderMembers(data.members);
         renderPlaces(data.places);
         renderLedger(data.transactions, data.stats);
+        renderMedia(data);
+        renderArchives(data.pastTrips);
         lucide.createIcons();
       } catch (err) {
         console.error(err);
@@ -397,7 +593,7 @@
     }
 
     function renderSettings(d) {
-      document.getElementById('headerTripName').innerText = d.tripName || 'Trip Dashboard';
+      document.getElementById('headerTripName').innerText = d.tripName || 'Admin Control';
       document.getElementById('setTripName').value = d.tripName || '';
       document.getElementById('setTripSub').value = d.secondaryTitle || '';
       document.getElementById('setNotice').value = d.tripNotice || '';
@@ -405,6 +601,9 @@
       document.getElementById('setAppStatus').value = d.appStatus || 'OPEN';
       document.getElementById('setExpenseStatus').value = d.expenseStatus || 'ALLOW Expense';
       document.getElementById('setRouteStatus').value = d.routeStatus || 'ACTIVE';
+      document.getElementById('setContriStatus').value = d.contributionToggle || 'ACTIVE';
+      document.getElementById('setSignOffStatus').value = d.signOffStatus || 'closed';
+      document.getElementById('setSecurityStatus').value = d.securityStatus || 'normal';
     }
 
     async function saveSetting(row, col, val) {
@@ -413,15 +612,25 @@
         globalData = fresh;
         renderSettings(fresh);
       } catch (err) {
-        alert('Failed to save setting: ' + err.message);
+        alert('Failed to save: ' + err.message);
       }
     }
 
-    // Photo Drag & Drop Upload
+    async function saveMetaSecurity(val) {
+      try {
+        const fresh = await adminApi('admin-update-meta', { securityStatus: val });
+        globalData = fresh;
+        renderSettings(fresh);
+      } catch (err) {
+        alert('Failed to update security: ' + err.message);
+      }
+    }
+
+    // Photo Upload for Members
     function handlePhotoSelect(input) {
       const file = input.files[0];
       if (!file) return;
-      uploadImageFile(file);
+      uploadMemberPhoto(file);
     }
 
     const dropZone = document.getElementById('dropZone');
@@ -430,21 +639,44 @@
     dropZone.addEventListener('drop', (e) => {
       e.preventDefault();
       dropZone.classList.remove('border-indigo-500');
-      if (e.dataTransfer.files.length) uploadImageFile(e.dataTransfer.files[0]);
+      if (e.dataTransfer.files.length) uploadMemberPhoto(e.dataTransfer.files[0]);
     });
 
-    async function uploadImageFile(file) {
+    async function uploadMemberPhoto(file) {
       const preview = document.getElementById('uploadPreview');
-      preview.innerHTML = '<p class="text-xs text-indigo-400 font-bold animate-pulse">Uploading photo to Supabase...</p>';
+      preview.innerHTML = '<p class="text-[10px] text-indigo-400 font-bold animate-pulse">Uploading...</p>';
 
       const reader = new FileReader();
       reader.onload = async () => {
         try {
           const res = await adminApi('admin-upload', { fileName: file.name, base64Data: reader.result });
           document.getElementById('memImgUrl').value = res.publicUrl;
-          preview.innerHTML = `<img src="${res.publicUrl}" class="w-16 h-16 rounded-xl object-cover border border-slate-700 mx-auto"><p class="text-[10px] text-emerald-400 font-bold mt-1">Photo Uploaded Successfully</p>`;
+          preview.innerHTML = `<img src="${res.publicUrl}" class="w-12 h-12 rounded-lg object-cover border border-slate-700 mx-auto"><p class="text-[9px] text-emerald-400 font-bold mt-1">Uploaded</p>`;
         } catch (err) {
-          preview.innerHTML = `<p class="text-xs text-rose-400 font-bold">Upload failed: ${err.message}</p>`;
+          preview.innerHTML = `<p class="text-[9px] text-rose-400 font-bold">Failed: ${err.message}</p>`;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Special Assets Upload (Guidelines, Report, Stamp)
+    async function uploadSpecialAsset(input, row, col, previewLinkId = null) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const res = await adminApi('admin-upload', { fileName: file.name, base64Data: reader.result });
+          await saveSetting(row, col, res.publicUrl);
+          if (previewLinkId) {
+            const link = document.getElementById(previewLinkId);
+            link.href = res.publicUrl;
+            link.classList.remove('hidden');
+          }
+          alert('Uploaded and linked successfully!');
+        } catch (err) {
+          alert('Upload failed: ' + err.message);
         }
       };
       reader.readAsDataURL(file);
@@ -453,18 +685,18 @@
     function renderMembers(mems) {
       const grid = document.getElementById('membersAdminGrid');
       grid.innerHTML = mems.map(m => `
-        <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <img src="${m.img || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.name)}" class="w-12 h-12 rounded-xl object-cover border border-slate-800 bg-slate-900">
-            <div>
-              <p class="text-xs font-black text-white">${m.rawName || m.name}</p>
-              <p class="text-[10px] font-bold text-indigo-400 uppercase">${m.role || 'Member'}</p>
-              <p class="text-[10px] font-mono text-slate-500">PIN: ${m.pin}</p>
+        <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <img src="${m.img || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.name)}" class="w-10 h-10 rounded-xl object-cover border border-slate-800 bg-slate-950 shrink-0">
+            <div class="min-w-0">
+              <p class="text-xs font-black text-white truncate">${m.rawName || m.name}</p>
+              <p class="text-[9px] font-bold text-indigo-400 uppercase truncate">${m.role || 'Member'}</p>
+              <p class="text-[9px] font-mono text-slate-500">PIN: ${m.pin}</p>
             </div>
           </div>
-          <div class="flex items-center gap-1.5">
-            <button onclick='editMember(${JSON.stringify(m)})' class="p-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-lg"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
-            <button onclick="deleteMember(${m.id})" class="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+          <div class="flex items-center gap-1 shrink-0">
+            <button onclick='editMember(${JSON.stringify(m)})' class="p-1.5 bg-slate-950 hover:bg-slate-800 text-slate-300 rounded-lg"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+            <button onclick="deleteMember(${m.id})" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
           </div>
         </div>
       `).join('');
@@ -476,7 +708,7 @@
       document.getElementById('memberForm').reset();
       document.getElementById('memId').value = '';
       document.getElementById('memImgUrl').value = '';
-      document.getElementById('uploadPreview').innerHTML = '<i data-lucide="upload-cloud" class="w-8 h-8 text-slate-500 mb-1"></i><p class="text-[11px] font-bold text-slate-400">Click to browse or drop JPG/PNG image</p>';
+      document.getElementById('uploadPreview').innerHTML = '<i data-lucide="upload-cloud" class="w-6 h-6 text-slate-500 mb-0.5"></i><p class="text-[10px] font-bold text-slate-400">Click to select photo</p>';
       document.getElementById('memberModal').classList.remove('hidden');
       lucide.createIcons();
     }
@@ -492,14 +724,12 @@
       document.getElementById('memRoleDetail').value = m.assignedRoleDetail || '';
       document.getElementById('memImgUrl').value = m.rawImg || m.img || '';
       if (m.img) {
-        document.getElementById('uploadPreview').innerHTML = `<img src="${m.img}" class="w-16 h-16 rounded-xl object-cover border border-slate-700 mx-auto">`;
+        document.getElementById('uploadPreview').innerHTML = `<img src="${m.img}" class="w-12 h-12 rounded-lg object-cover border border-slate-700 mx-auto">`;
       }
       document.getElementById('memberModal').classList.remove('hidden');
     }
 
-    function closeMemberModal() {
-      document.getElementById('memberModal').classList.add('hidden');
-    }
+    function closeMemberModal() { document.getElementById('memberModal').classList.add('hidden'); }
 
     async function saveMemberForm(e) {
       e.preventDefault();
@@ -520,12 +750,12 @@
         renderMembers(fresh.members);
         closeMemberModal();
       } catch (err) {
-        alert('Failed to save member: ' + err.message);
+        alert('Failed: ' + err.message);
       }
     }
 
     async function deleteMember(id) {
-      if (!confirm('Are you sure you want to delete this member?')) return;
+      if (!confirm('Delete this member?')) return;
       try {
         const fresh = await adminApi('admin-delete-member', { id });
         globalData = fresh;
@@ -535,24 +765,80 @@
       }
     }
 
+    // Places Cards (Mobile Friendly)
     function renderPlaces(places) {
-      const table = document.getElementById('placesAdminTable');
-      table.innerHTML = places.map(p => `
-        <tr class="hover:bg-slate-900/50">
-          <td class="p-4 text-indigo-400">${p.tripDay || '-'}</td>
-          <td class="p-4 text-white">${p.location || p.name || '-'}</td>
-          <td class="p-4 text-slate-400">ETA: ${p.eta || '-'} | ATA: ${p.ata || '-'}</td>
-          <td class="p-4"><span class="px-2 py-1 rounded-md text-[10px] ${p.status === 'Visited' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-800 text-slate-400'}">${p.status}</span></td>
-          <td class="p-4 text-right">
-            <button onclick="deletePlace(${p.id})" class="text-rose-400 hover:text-rose-300 p-1.5"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-          </td>
-        </tr>
+      const container = document.getElementById('placesAdminCards');
+      container.innerHTML = places.map(p => `
+        <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-indigo-600/20 text-indigo-400 text-[10px] font-black rounded">${p.tripDay || 'Day 1'}</span>
+              <span class="text-xs font-black text-white">${p.location || p.name || 'Location'}</span>
+              ${p.cancelStatus ? '<span class="text-[9px] font-bold text-rose-500 uppercase">Cancelled</span>' : ''}
+            </div>
+            <p class="text-[10px] text-slate-400 font-semibold mt-1">ETA: ${p.eta || '-'} | ATA: ${p.ata || '-'} ${p.details ? '• ' + p.details : ''}</p>
+          </div>
+          <div class="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+            <span class="px-2 py-0.5 rounded text-[9px] font-bold ${p.status === 'Visited' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-950 text-slate-400'}">${p.status}</span>
+            <div class="flex gap-1">
+              <button onclick='editPlace(${JSON.stringify(p)})' class="p-1.5 bg-slate-950 text-slate-300 rounded-lg hover:bg-slate-800"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+              <button onclick="deletePlace(${p.id})" class="p-1.5 bg-rose-500/10 text-rose-400 rounded-lg hover:bg-rose-500/20"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </div>
+          </div>
+        </div>
       `).join('');
       lucide.createIcons();
     }
 
+    function openPlaceModal() {
+      document.getElementById('placeModalTitle').innerText = 'Add Route Stop';
+      document.getElementById('placeForm').reset();
+      document.getElementById('placeId').value = '';
+      document.getElementById('placeModal').classList.remove('hidden');
+    }
+
+    function editPlace(p) {
+      document.getElementById('placeModalTitle').innerText = 'Edit Route Stop';
+      document.getElementById('placeId').value = p.id || '';
+      document.getElementById('placeDay').value = p.tripDay || 'Day 1';
+      document.getElementById('placeDate').value = p.targetDate || '';
+      document.getElementById('placeLocation').value = p.location || p.name || '';
+      document.getElementById('placeEta').value = p.eta || '';
+      document.getElementById('placeAta').value = p.ata || '';
+      document.getElementById('placeDetails').value = p.details || '';
+      document.getElementById('placeStatus').value = p.status || 'Pending';
+      document.getElementById('placeCancel').value = p.cancelStatus || '';
+      document.getElementById('placeModal').classList.remove('hidden');
+    }
+
+    function closePlaceModal() { document.getElementById('placeModal').classList.add('hidden'); }
+
+    async function savePlaceForm(e) {
+      e.preventDefault();
+      const payload = {
+        id: document.getElementById('placeId').value ? Number(document.getElementById('placeId').value) : null,
+        tripDay: document.getElementById('placeDay').value,
+        targetDate: document.getElementById('placeDate').value,
+        location: document.getElementById('placeLocation').value,
+        eta: document.getElementById('placeEta').value,
+        ata: document.getElementById('placeAta').value,
+        details: document.getElementById('placeDetails').value,
+        status: document.getElementById('placeStatus').value,
+        cancelStatus: document.getElementById('placeCancel').value
+      };
+
+      try {
+        const fresh = await adminApi('admin-save-place', payload);
+        globalData = fresh;
+        renderPlaces(fresh.places);
+        closePlaceModal();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
     async function deletePlace(id) {
-      if (!confirm('Delete this stop from the itinerary?')) return;
+      if (!confirm('Delete this stop?')) return;
       try {
         const fresh = await adminApi('admin-delete-place', { id });
         globalData = fresh;
@@ -562,25 +848,30 @@
       }
     }
 
+    // Ledger Cards (Mobile Friendly)
     function renderLedger(txs, stats) {
-      document.getElementById('ledgerStats').innerText = `Total Spent: ₹${stats.expenses.toLocaleString('en-IN')} / ₹${stats.budget.toLocaleString('en-IN')}`;
-      const table = document.getElementById('ledgerAdminTable');
-      table.innerHTML = txs.map(t => `
-        <tr class="hover:bg-slate-900/50">
-          <td class="p-4"><span class="font-mono text-indigo-400">${t.utr}</span></td>
-          <td class="p-4 text-white">${t.claimant || 'Unknown'}</td>
-          <td class="p-4 text-slate-300"><span class="text-indigo-400 uppercase text-[10px]">[${t.category}]</span> ${t.notes}</td>
-          <td class="p-4 text-emerald-400 font-black">₹${t.amount}</td>
-          <td class="p-4">
-            <select onchange="verifyTx(${t.id}, this.value)" class="bg-slate-900 border border-slate-700 text-[10px] rounded-lg px-2 py-1 ${t.isVerified ? 'text-emerald-400' : 'text-amber-400'}">
+      document.getElementById('ledgerStats').innerText = `Spent: ₹${stats.expenses.toLocaleString('en-IN')} / ₹${stats.budget.toLocaleString('en-IN')}`;
+      const container = document.getElementById('ledgerAdminCards');
+      container.innerHTML = txs.map(t => `
+        <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-indigo-400 text-xs font-bold">${t.utr}</span>
+              <span class="text-xs font-black text-emerald-400">₹${t.amount}</span>
+              <span class="text-[9px] font-bold text-slate-400">[${t.category}]</span>
+            </div>
+            <p class="text-[11px] text-white font-semibold mt-0.5">${t.notes || 'Expense'}</p>
+            <p class="text-[9px] text-slate-500">By: ${t.claimant || 'Unknown'} • ${t.date ? new Date(t.date).toLocaleDateString('en-IN', {day:'numeric', month:'short'}) : ''}</p>
+          </div>
+
+          <div class="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+            <select onchange="verifyTx(${t.id}, this.value)" class="bg-slate-950 border border-slate-700 text-[10px] rounded-lg px-2 py-1 ${t.isVerified ? 'text-emerald-400' : 'text-amber-400'} font-bold outline-none">
               <option value="Verified" ${t.isVerified ? 'selected' : ''}>Verified</option>
               <option value="Unverified" ${!t.isVerified ? 'selected' : ''}>Unverified</option>
             </select>
-          </td>
-          <td class="p-4 text-right">
-            <button onclick="deleteTx(${t.id})" class="text-rose-400 hover:text-rose-300 p-1.5"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-          </td>
-        </tr>
+            <button onclick="deleteTx(${t.id})" class="p-1.5 bg-rose-500/10 text-rose-400 rounded-lg hover:bg-rose-500/20"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+          </div>
+        </div>
       `).join('');
       lucide.createIcons();
     }
@@ -596,7 +887,7 @@
     }
 
     async function deleteTx(id) {
-      if (!confirm('Permanently delete this transaction?')) return;
+      if (!confirm('Delete this transaction?')) return;
       try {
         const fresh = await adminApi('admin-delete-tx', { id });
         globalData = fresh;
@@ -606,7 +897,105 @@
       }
     }
 
-    // Auto-check if session token exists on load
+    // Media & Docs Render
+    function renderMedia(d) {
+      document.getElementById('guidelineUrlInput').value = d.guidelinesUrl || '';
+      if (d.guidelinesUrl) {
+        const link = document.getElementById('previewGuideline');
+        link.href = d.guidelinesUrl;
+        link.classList.remove('hidden');
+      }
+
+      document.getElementById('reportUrlInput').value = d.tripReportUrl || '';
+      document.getElementById('reportSubInput').value = d.tripReportSubheading || '';
+      if (d.tripReportUrl) {
+        const link = document.getElementById('previewTripReport');
+        link.href = d.tripReportUrl;
+        link.classList.remove('hidden');
+      }
+
+      document.getElementById('stampUrlInput').value = d.rawEidStamp || '';
+    }
+
+    // Archives Render
+    function renderArchives(trips) {
+      const container = document.getElementById('archivesAdminCards');
+      container.innerHTML = trips.map(t => `
+        <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-black text-white">${t.name}</span>
+              ${t.totalSpent ? `<span class="text-[10px] font-bold text-emerald-400">₹${t.totalSpent.toLocaleString('en-IN')}</span>` : ''}
+            </div>
+            <p class="text-[10px] text-slate-400">${t.dates || '-'}</p>
+          </div>
+          <div class="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+            <div class="flex gap-2">
+              ${t.reportUrl ? `<a href="${t.reportUrl}" target="_blank" class="text-[10px] text-indigo-400 font-bold underline">Report</a>` : ''}
+              ${t.galleryUrl ? `<a href="${t.galleryUrl}" target="_blank" class="text-[10px] text-indigo-400 font-bold underline">Gallery</a>` : ''}
+            </div>
+            <div class="flex gap-1">
+              <button onclick='editArchive(${JSON.stringify(t)})' class="p-1.5 bg-slate-950 text-slate-300 rounded-lg hover:bg-slate-800"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+              <button onclick="deleteArchive(${t.id})" class="p-1.5 bg-rose-500/10 text-rose-400 rounded-lg hover:bg-rose-500/20"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function openArchiveModal() {
+      document.getElementById('archiveModalTitle').innerText = 'Add Trip Archive';
+      document.getElementById('archiveForm').reset();
+      document.getElementById('archId').value = '';
+      document.getElementById('archiveModal').classList.remove('hidden');
+    }
+
+    function editArchive(t) {
+      document.getElementById('archiveModalTitle').innerText = 'Edit Trip Archive';
+      document.getElementById('archId').value = t.id || '';
+      document.getElementById('archName').value = t.name || '';
+      document.getElementById('archDates').value = t.dates || '';
+      document.getElementById('archSpent').value = t.totalSpent || '';
+      document.getElementById('archReport').value = t.reportUrl || '';
+      document.getElementById('archGallery').value = t.galleryUrl || '';
+      document.getElementById('archiveModal').classList.remove('hidden');
+    }
+
+    function closeArchiveModal() { document.getElementById('archiveModal').classList.add('hidden'); }
+
+    async function saveArchiveForm(e) {
+      e.preventDefault();
+      const payload = {
+        id: document.getElementById('archId').value ? Number(document.getElementById('archId').value) : null,
+        name: document.getElementById('archName').value,
+        dates: document.getElementById('archDates').value,
+        totalSpent: document.getElementById('archSpent').value,
+        reportUrl: document.getElementById('archReport').value,
+        galleryUrl: document.getElementById('archGallery').value
+      };
+
+      try {
+        const fresh = await adminApi('admin-save-archive', payload);
+        globalData = fresh;
+        renderArchives(fresh.pastTrips);
+        closeArchiveModal();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function deleteArchive(id) {
+      if (!confirm('Delete this past trip archive?')) return;
+      try {
+        const fresh = await adminApi('admin-delete-archive', { id });
+        globalData = fresh;
+        renderArchives(fresh.pastTrips);
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
     window.onload = () => {
       lucide.createIcons();
       if (sessionStorage.getItem('adminToken')) {
