@@ -1554,7 +1554,7 @@
     <!-- The Pill Grid Navigation System -->
     <div class="grid grid-cols-2 gap-3 mb-6">
 
-      <!-- Guidelines External Link -->
+      <!-- 1. Guidelines (Left Half) -->
       <a id="ui-more-guidelines" href="#" target="_blank"
         class="flex items-center p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
         <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center mr-2.5 shrink-0">
@@ -1565,8 +1565,20 @@
         </div>
       </a>
 
+      <!-- 2. Trip Report (Right Half - Inline with Guidelines) -->
+      <a id="ui-more-tripreport" href="#" target="_blank"
+        class="flex items-center p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
+        <div class="w-8 h-8 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mr-2.5 shrink-0">
+          <i data-lucide="file-pie-chart" class="w-4 h-4"></i>
+        </div>
+        <div class="flex-1 overflow-hidden flex flex-col justify-center">
+          <p class="text-[11px] font-black text-slate-700 uppercase tracking-widest truncate">Trip Report</p>
+          <p id="ui-more-tripreport-subtext"
+            class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 truncate hidden"></p>
+        </div>
+      </a>
 
-      <!-- Past Archives Button -->
+      <!-- 3. Past Archives (Full Width Below) -->
       <div onclick="openArchivesModal()"
         class="col-span-2 flex items-center p-3.5 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
         <div
@@ -1580,34 +1592,20 @@
         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
       </div>
 
-      <!-- Trip Report External Link -->
-      <a id="ui-more-tripreport" href="#" target="_blank"
-        class="flex items-center p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
-        <div class="w-8 h-8 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mr-2.5 shrink-0">
-          <i data-lucide="file-pie-chart" class="w-4 h-4"></i>
-        </div>
-        <div class="flex-1 overflow-hidden flex flex-col justify-center">
-          <p class="text-[11px] font-black text-slate-700 uppercase tracking-widest truncate">Trip Report</p>
-          <p id="ui-more-tripreport-subtext"
-            class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 truncate hidden"></p>
-        </div>
-      </a>
-
-      <!-- Google Drive Trip Gallery Link (Full width) -->
+      <!-- 4. Google Drive Trip Gallery (Full Width Below) -->
       <a href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank"
-        class="col-span-2 flex items-center p-3.5 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors mt-1">
+        class="col-span-2 flex items-center p-3.5 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
         <div
           class="w-10 h-10 rounded-full bg-slate-50 text-slate-600 flex items-center justify-center mr-3 shrink-0 border border-slate-100">
           <i data-lucide="camera" class="w-5 h-5"></i>
         </div>
         <div class="flex-1">
           <p class="text-sm font-black text-slate-800 uppercase tracking-wide">Trip Gallery</p>
-          <p class="text-[7px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Upload photos & receipts to
-            Drive</p>
+          <p class="text-[7px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Upload photos & receipts to Drive</p>
         </div>
         <i data-lucide="external-link" class="w-4 h-4 text-slate-300"></i>
       </a>
-    </div> 
+    </div>
 
     <!-- Footer: Change PIN (Small) / Log Out (Large) -->
     <div class="flex items-center gap-3">
