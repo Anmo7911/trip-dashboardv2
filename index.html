@@ -1676,13 +1676,13 @@
   <!-- =========================================
        BOTTOM SHEET "MORE" MENU
        ========================================= -->
-  <!-- The Blurred Background Overlay (Clicking it closes menu) -->
-  <div id="more-menu-overlay" class="hidden fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-md transition-opacity"
+  <!-- The Blurred Background Overlay -->
+  <div id="more-menu-overlay" class="lg:hidden hidden fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-md transition-opacity"
     onclick="toggleMoreMenu()"></div>
 
   <!-- The Slide-up Menu Container -->
   <div id="more-menu-sheet"
-    class="fixed z-[310] bottom-0 left-0 right-0 bg-white rounded-t-[32px] shadow-[0_-8px_30px_rgba(0,0,0,0.04)] transform translate-y-full transition-transform duration-300 px-6 pt-5 pb-8 border-t border-slate-100">
+    class="lg:hidden fixed z-[310] bottom-0 left-0 right-0 bg-white rounded-t-[32px] shadow-[0_-8px_30px_rgba(0,0,0,0.04)] transform translate-y-full transition-transform duration-300 px-6 pt-5 pb-8 border-t border-slate-100">
 
     <!-- Minimal drag handle indicator -->
     <div class="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-6"></div>
@@ -4058,12 +4058,14 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
     // --- REAL-TIME ARCHIVES SEARCH ENGINE ---
     function openArchivesModal() {
-      toggleMoreMenu(); // Close bottom sheet menu
+      const overlay = document.getElementById('more-menu-overlay');
+      if (overlay && !overlay.classList.contains('hidden')) {
+        toggleMoreMenu(); // Only close mobile sheet if active
+      }
       
       const searchInput = document.getElementById('archive-search-input');
-      if (searchInput) searchInput.value = ''; // Reset search input on open
+      if (searchInput) searchInput.value = '';
       
-      // Render full trip list when modal opens
       if (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.pastTrips) {
         renderArchivesList(globalActiveDataPayloadBackup.pastTrips);
       }
@@ -4075,6 +4077,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       }
     }
 
+    
     function closeArchivesModal() {
       const modal = document.getElementById('archives-modal');
       if (modal) {
@@ -4308,7 +4311,10 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     // CHANGE SECURITY PIN LOGIC
     // ==========================================
     function openChangePinModal() {
-      toggleMoreMenu(); 
+      const overlay = document.getElementById('more-menu-overlay');
+      if (overlay && !overlay.classList.contains('hidden')) {
+        toggleMoreMenu(); 
+      }
       document.getElementById('cp-old-pin').value = '';
       document.getElementById('cp-new-pin').value = '';
       document.getElementById('cp-error-msg').classList.add('hidden');
@@ -4573,33 +4579,32 @@ const places = payload.places.filter(p => p.tripDay || p.location);
   </div>
 
   <!-- =========================================
-       ARCHIVES MODAL
-       Pop-up window listing all previous trips
+       ARCHIVES MODAL (Desktop Wide 2-Column Grid & Mobile 1-Column)
        ========================================= -->
   <div id="archives-modal"
-    class="hidden fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans transition-opacity duration-300">
-    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl p-6 border border-slate-200 text-center relative max-h-[80vh] flex flex-col">
+    class="hidden fixed inset-0 z-[10000] bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 lg:p-6 font-sans transition-opacity duration-300">
+    <div class="w-full max-w-md lg:max-w-3xl bg-white rounded-[28px] lg:rounded-[32px] shadow-2xl p-6 lg:p-8 border border-slate-200 text-center relative max-h-[85vh] flex flex-col">
       
       <!-- Close Button -->
-      <button onclick="closeArchivesModal()" class="absolute top-4 right-4 w-8 h-8 bg-slate-50 text-slate-500 rounded-full flex items-center justify-center hover:bg-slate-100 active:scale-90 transition-all outline-none">
+      <button onclick="closeArchivesModal()" class="absolute top-5 right-5 w-9 h-9 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-full flex items-center justify-center active:scale-90 transition-all outline-none border border-slate-200">
         <i data-lucide="x" class="w-4 h-4"></i>
       </button>
 
       <!-- Header -->
-      <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 border border-indigo-100 shrink-0">
+      <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-3 border border-indigo-100 shadow-inner shrink-0">
         <i data-lucide="archive" class="w-6 h-6 stroke-[2.5]"></i>
       </div>
-      <h2 class="text-xl font-black text-slate-800 tracking-wide uppercase mb-1">Past Trips Archive</h2>
-      <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-4">Reports & Media Folders</p>
+      <h2 class="text-xl lg:text-2xl font-black text-slate-800 tracking-wide uppercase mb-0.5">Past Trips Archive</h2>
+      <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-5">Reports & Media Folders</p>
 
-      <!-- NEW: Quick Search Input Bar -->
-      <div class="relative mb-3 shrink-0">
-        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-        <input type="text" id="archive-search-input" oninput="filterArchivesList(this.value)" placeholder="Search trips by name or date..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-3 py-2.5 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
+      <!-- Search Input -->
+      <div class="relative mb-4 shrink-0 max-w-xl mx-auto w-full">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+        <input type="text" id="archive-search-input" oninput="filterArchivesList(this.value)" placeholder="Search trips by name or date..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3 text-xs lg:text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
       </div>
 
-      <!-- Scrollable Trip List Container -->
-      <div id="archives-modal-content" class="overflow-y-auto space-y-3 pr-1 text-left flex-1">
+      <!-- Responsive Grid for Past Trips -->
+      <div id="archives-modal-content" class="overflow-y-auto pr-1 text-left flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <!-- Injected dynamically by JS -->
       </div>
     </div>
