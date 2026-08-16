@@ -4198,10 +4198,13 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       input.focus(); 
     }
 
-    // Forces DOM element layout scroll position to maximum height
     function scrollToBottomChat() {
       const chatBox = document.getElementById('ui-chat-messages');
-      if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+      if (chatBox) {
+        requestAnimationFrame(() => {
+          chatBox.scrollTop = chatBox.scrollHeight;
+        });
+      }
     }
 
     // Translates chat array into physical message bubbles
@@ -4269,7 +4272,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         }
       }).join('');
       
-      if (isChatOpen) scrollToBottomChat();
+      scrollToBottomChat();
       lucide.createIcons();
     }
 
@@ -4282,8 +4285,6 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
       const currentUser = localStorage.getItem('trekLoggedInUser') || "Unknown";
 
-      // 1. OPTIMISTIC UI UPDATE
-      // Creates a faux block immediately so UI doesn't hang waiting for server response
       const tempMessage = {
         timestamp: new Date().toISOString(),
         sender: currentUser,
@@ -4296,17 +4297,17 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         globalActiveDataPayloadBackup.messages = [tempMessage];
       }
 
-      renderChatData(globalActiveDataPayloadBackup.messages);
-
-      // 2. Clear out textbox while retaining focus (Prevents keyboard drop)
       input.value = '';
-      setTimeout(() => input.focus(), 10);
 
-      // 3. BACKGROUND SYNC API CALL
+      // Re-render and enforce stick-to-bottom scroll
+      renderChatData(globalActiveDataPayloadBackup.messages);
+      scrollToBottomChat();
+
       apiRequest('message', { sender: currentUser, text })
         .then((freshData) => {
           globalActiveDataPayloadBackup = freshData;
           renderChatData(freshData.messages);
+          scrollToBottomChat();
         })
         .catch((err) => {
           console.error(err);
