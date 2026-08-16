@@ -1862,45 +1862,63 @@
     });
     
     // --- TAB SWITCHING MANAGER ---
-    // Controls toggling between Spend, Squad, and Places views
-    function showTab(tabId, el) { 
-      // Reset all tabs
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab')); 
+    function showTab(tabId, el) {
+      // If clicking "More" on desktop sidebar, trigger the More modal/sheet
+      if (tabId === 'more') {
+        toggleMoreMenu();
+        return;
+      }
+
+      const targetTab = document.getElementById('view-' + tabId);
+      if (!targetTab) return; // Prevents crash if element is missing
+
+      // Reset all active tab panes
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+      targetTab.classList.add('active-tab');
+
+      // Sync Mobile Bottom Nav Buttons
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
-      
-      // Activate target tab
-      document.getElementById('view-' + tabId).classList.add('active-tab'); 
-      el.classList.add('nav-active'); 
-      
+      const mobileBtn = document.querySelector(`.nav-btn[onclick*="${tabId}"]`);
+      if (mobileBtn) mobileBtn.classList.add('nav-active');
+
+      // Sync Desktop Sidebar Buttons
+      document.querySelectorAll('.desktop-nav-btn').forEach(b => {
+        b.classList.remove('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-100');
+        b.classList.add('text-slate-500', 'hover:text-slate-800', 'hover:bg-slate-50');
+      });
+      const desktopBtn = document.querySelector(`.desktop-nav-btn[data-tab="${tabId}"]`);
+      if (desktopBtn) {
+        desktopBtn.classList.remove('text-slate-500', 'hover:text-slate-800', 'hover:bg-slate-50');
+        desktopBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-100');
+      }
+
       // Contextual Logic: Reset UI states specific to the SPEND tab
       if (tabId === 'spend') {
         const flipper = document.getElementById('card-flipper-engine');
         if (flipper) flipper.classList.remove('flipper-rotated');
-        if (isLedgerActive) toggleLedger(); // close ledger if it was open
+        if (typeof isLedgerActive !== 'undefined' && isLedgerActive) toggleLedger();
         currentLedgerFilter = "All";
-        renderLedgerList();
+        if (typeof renderLedgerList === 'function') renderLedgerList();
       }
-      
+
       // Contextual Logic: Trigger stagger animations in SQUAD tab
       if (tabId === 'squad' && globalActiveDataPayloadBackup) { 
         triggerSequentialWaveEffects(globalActiveDataPayloadBackup, true); 
       }
-      
+
       // Contextual Logic: Restart timeline animations in ROUTE tab
       if (tabId === 'places') {
         const tLine = document.getElementById('ui-timeline-container');
         if (tLine) {
           tLine.classList.remove('play-places-anim');
-          void tLine.offsetWidth; // Force layout recalculation
+          void tLine.offsetWidth; // Force reflow
           tLine.classList.add('play-places-anim');
         }
 
-        // Delay checks for auto-scrolling to the active GPS node
         setTimeout(() => {
           const lockVault = document.getElementById('route-lock-vault');
-          // Abort auto-scrolling if security vault is visible
-          if (lockVault && !lockVault.classList.contains('hidden')) return; 
-          
+          if (lockVault && !lockVault.classList.contains('hidden')) return;
+
           const nodes = Array.from(document.querySelectorAll('.tracker-node'));
           if (nodes.length === 0) return;
 
@@ -1909,26 +1927,21 @@
           const isTripFinished = lastNode && lastNode.getAttribute('data-ata');
 
           if (isTripFinished) {
-            // Trigger beautiful spring-pop complete modal if at end of timeline
             window.scrollTo({ top: 0, behavior: 'smooth' });
             if (window.popupDelayTimeout) clearTimeout(window.popupDelayTimeout);
-            
             window.popupDelayTimeout = setTimeout(() => {
               const modal = document.getElementById('trip-complete-popup');
               const card = document.getElementById('trip-complete-card');
-              
               if (modal && card) {
                 modal.classList.remove('hidden');
-                lucide.createIcons(); 
-                void modal.offsetHeight; // Reflow
+                lucide.createIcons();
+                void modal.offsetHeight;
                 modal.classList.remove('opacity-0');
                 card.classList.remove('scale-75', 'opacity-0');
                 card.classList.add('scale-100', 'opacity-100');
               }
             }, 900);
-            
           } else {
-            // Standard scroll-to-active node alignment
             let activeNode = null;
             for (let i = 0; i < nodes.length; i++) {
               if (nodes[i].getAttribute('data-ata')) {
@@ -1937,11 +1950,9 @@
                   : nodes[i];
               }
             }
-
             if (!activeNode && nodes.length > 0) {
               activeNode = nodes.find(n => n.getAttribute('data-cancelled') !== 'true');
             }
-
             if (activeNode) {
               activeNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
