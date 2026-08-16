@@ -595,6 +595,12 @@ async function adminDeleteMessage(id) {
   return dashboard();
 }
 
+
+async function updatePollVote(msgId, pollText) {
+  await supabase.from('messages_sheet').update({ col_c: pollText }).eq('id', Number(msgId));
+  return dashboard();
+}
+
 // -------------------------------------------------------------
 // MAIN API ROUTER
 // -------------------------------------------------------------
@@ -641,6 +647,7 @@ export default async function handler(req, res) {
       case 'admin-send-message': return json(res, 200, await saveSquadMessage(body.sender || 'Admin', body.text));
       case 'admin-edit-message': return json(res, 200, await adminEditMessage(body.id, body.text));
       case 'admin-delete-message': return json(res, 200, await adminDeleteMessage(body.id));
+      case 'poll-vote': return json(res, 200, await updatePollVote(body.id, body.text));
 
       default: return json(res, 200, await dashboard());
     }
