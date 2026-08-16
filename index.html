@@ -2631,6 +2631,7 @@
     // Receives fresh data from Google Apps Script and updates the DOM
     // ==========================================
     function renderApp(data) { 
+      document.title = data.tripName || "Bharat Way";
       refreshMenuSignOffButton(data);
       
       // 1. VIP Wristband & Login Check - Stops flow if user not authenticated
