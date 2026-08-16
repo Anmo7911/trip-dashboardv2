@@ -1481,32 +1481,83 @@
 
   <!-- =========================================
        TAB 2: SQUAD VIEW
-       Responsive Desktop Grid & Mobile Compatible
+       Handles Polls, Coordinator Info, and Members list
        ========================================= -->
-  <main id="view-squad" class="tab-content w-full max-w-md lg:max-w-6xl mx-auto p-4 lg:p-8 space-y-5 lg:space-y-7">
+  <main id="view-squad" class="tab-content max-w-md mx-auto p-4 space-y-5 -mt-[1px]">
 
-    <!-- Desktop Secondary Sub-Header Bar (Hidden on Mobile) -->
-    <div class="hidden lg:flex items-center justify-between bg-white/80 border border-slate-200/80 rounded-2xl px-6 py-3 text-xs font-bold text-slate-600 shadow-sm">
-      <span class="text-indigo-600 font-black tracking-widest uppercase">#TRIPOFUTTARAKHAND</span>
-      <div class="flex items-center gap-2 text-slate-300">
-        <span class="w-12 h-[1px] bg-slate-200"></span>
-        <i data-lucide="sparkles" class="w-4 h-4 text-indigo-400"></i>
-        <span class="w-12 h-[1px] bg-slate-200"></span>
-      </div>
-      <div class="flex items-center gap-2 text-slate-700 font-black uppercase tracking-wider">
-        <i data-lucide="calendar" class="w-4 h-4 text-indigo-500"></i>
-        <span id="squad-subbar-dates">27 June – 30 June 2026</span>
+
+
+    <!-- Containers for dynamically injected Squad Cards -->
+    <div id="leaderSection" class="space-y-3"></div>
+    <div class="space-y-3">
+      <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Trip Members</h3>
+      <!-- Member grid -->
+      <div id="memberList" class="grid grid-cols-2 gap-3"></div>
+    </div>
+  </main>
+
+  <!-- =========================================
+       TAB 3: ROUTE/PLACES VIEW
+       Displays transit timeline and live GPS
+       ========================================= -->
+  <main id="view-places" class="tab-content max-w-md mx-auto p-4 space-y-0 -mt-[1px] relative min-h-[70vh]">
+
+    <!-- FROSTED GLASS VAULT OVERLAY (If Route tracking is locked) -->
+    <div id="route-lock-vault"
+      class="hidden absolute top-0 bottom-0 left-0 right-0 z-[100] flex flex-col items-center justify-center px-6 text-center transition-all duration-700">
+      <div
+        class="bg-white/95 backdrop-blur-2xl p-8 rounded-[32px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] border border-slate-200/60 max-w-[280px] w-full relative overflow-hidden m-auto">
+        <div class="relative w-16 h-16 mx-auto mb-6">
+          <div class="absolute inset-0 bg-indigo-400 rounded-full animate-ping opacity-30"></div>
+          <div
+            class="absolute inset-0 bg-indigo-50 border border-indigo-100 rounded-full flex items-center justify-center z-10 shadow-sm">
+            <i data-lucide="lock" class="w-7 h-7 text-indigo-600 stroke-[2.5]"></i>
+          </div>
+        </div>
+        <h2 class="text-lg font-black text-slate-800 uppercase tracking-widest mb-2">Navigation Standby</h2>
+        <p class="text-[10px] font-bold text-slate-400 uppercase leading-relaxed tracking-wider mb-8">As the route
+          contains live tracking, transit coordinates, and Estimated Time of Arrival (ETA) details,is currently
+          restricted to ensure operational security. Tracking functionality will be enabled nearer to the scheduled
+          departure. </p>
+        <div
+          class="flex items-center justify-center text-indigo-500 bg-indigo-50 py-3 px-4 rounded-xl border border-indigo-100">
+          <span class="text-[9px] font-black uppercase tracking-widest animate-pulse">Awaiting Clearance</span>
+        </div>
       </div>
     </div>
 
-    <!-- Container for Chief Coordinator Card -->
-    <div id="leaderSection" class="w-full"></div>
+    <!-- SECURE CONTENT WRAPPER (This area gets blurred if locked) -->
+    <div id="route-secure-content" class="w-full transition-all duration-700 ease-in-out pt-3">
 
-    <!-- Members Section -->
-    <div class="space-y-3 lg:space-y-4">
-      <h3 class="text-[10px] lg:text-xs font-black text-slate-400 uppercase tracking-widest px-1">Trip Members</h3>
-      <!-- Dynamic Responsive Grid: 2 cols on mobile, 4 cols on desktop -->
-      <div id="memberList" class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5"></div>
+      <!-- Top Section (Trip Countdown Timer) -->
+      <div class="w-full flex flex-col items-center justify-center -mt-3 pb-3">
+        <div id="timer-container"
+          class="hidden bg-white border border-slate-200 rounded-full py-1.5 px-3 mb-1.5 flex items-center justify-center gap-1.5 shadow-sm">
+          <i data-lucide="hourglass" class="w-3.5 h-3.5 text-indigo-500 animate-pulse"></i>
+          <span id="ui-timer-text" class="text-[10px] font-black text-slate-700 uppercase tracking-widest leading-none mt-px"></span>
+        </div>
+        <span class="text-[9px] font-medium italic text-slate-400 text-center leading-none">*The schedule will be considered from Delhi onwards.</span>
+      </div>
+
+      <!-- The Live Vertical Timeline Tracker (Injected by JS) -->
+      <div id="ui-timeline-container" class="text-left w-full -mt-2"></div>
+
+      <div id="ui-places-divider" class="hidden w-full h-[1px] bg-slate-200 my-8"></div>
+
+      <!-- Pending Places Checklists -->
+      <div class="space-y-2">
+        <h2 id="head-active-places" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 hidden">
+          Additional Locations</h2>
+        <div id="activePlaceList" class="space-y-2"></div>
+      </div>
+
+      <!-- Visited Places Checklists -->
+      <div class="space-y-2 pb-10">
+        <h4 id="head-visited-places"
+          class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest px-1 hidden">Additional Locations
+          Visited ✅</h4>
+        <div id="visitedPlaceList" class="space-y-2"></div>
+      </div>
     </div>
   </main>
 
@@ -1659,7 +1710,7 @@
     // VERCEL / SUPABASE API BRIDGE
     // ==========================================
     async function apiRequest(action, payload = {}) {
-      const response = await fetch(`/api?action=${encodeURIComponent(action)}`, {
+      const response = await fetch(`/api/index?action=${encodeURIComponent(action)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
@@ -1823,11 +1874,6 @@
     // Main App Initialization
     window.onload = () => { 
       runSplashSequence(); 
-      // Safety fallback: Dismiss splash screen after 3.5 seconds max regardless of status
-    setTimeout(() => {
-      hideSplashScreenNow();
-    }, 3500);
-      
       fetchInitialData(); 
       startPolling(); 
     };
@@ -1862,63 +1908,45 @@
     });
     
     // --- TAB SWITCHING MANAGER ---
-    function showTab(tabId, el) {
-      // If clicking "More" on desktop sidebar, trigger the More modal/sheet
-      if (tabId === 'more') {
-        toggleMoreMenu();
-        return;
-      }
-
-      const targetTab = document.getElementById('view-' + tabId);
-      if (!targetTab) return; // Prevents crash if element is missing
-
-      // Reset all active tab panes
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
-      targetTab.classList.add('active-tab');
-
-      // Sync Mobile Bottom Nav Buttons
+    // Controls toggling between Spend, Squad, and Places views
+    function showTab(tabId, el) { 
+      // Reset all tabs
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab')); 
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
-      const mobileBtn = document.querySelector(`.nav-btn[onclick*="${tabId}"]`);
-      if (mobileBtn) mobileBtn.classList.add('nav-active');
-
-      // Sync Desktop Sidebar Buttons
-      document.querySelectorAll('.desktop-nav-btn').forEach(b => {
-        b.classList.remove('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-100');
-        b.classList.add('text-slate-500', 'hover:text-slate-800', 'hover:bg-slate-50');
-      });
-      const desktopBtn = document.querySelector(`.desktop-nav-btn[data-tab="${tabId}"]`);
-      if (desktopBtn) {
-        desktopBtn.classList.remove('text-slate-500', 'hover:text-slate-800', 'hover:bg-slate-50');
-        desktopBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-100');
-      }
-
+      
+      // Activate target tab
+      document.getElementById('view-' + tabId).classList.add('active-tab'); 
+      el.classList.add('nav-active'); 
+      
       // Contextual Logic: Reset UI states specific to the SPEND tab
       if (tabId === 'spend') {
         const flipper = document.getElementById('card-flipper-engine');
         if (flipper) flipper.classList.remove('flipper-rotated');
-        if (typeof isLedgerActive !== 'undefined' && isLedgerActive) toggleLedger();
+        if (isLedgerActive) toggleLedger(); // close ledger if it was open
         currentLedgerFilter = "All";
-        if (typeof renderLedgerList === 'function') renderLedgerList();
+        renderLedgerList();
       }
-
+      
       // Contextual Logic: Trigger stagger animations in SQUAD tab
       if (tabId === 'squad' && globalActiveDataPayloadBackup) { 
         triggerSequentialWaveEffects(globalActiveDataPayloadBackup, true); 
       }
-
+      
       // Contextual Logic: Restart timeline animations in ROUTE tab
       if (tabId === 'places') {
         const tLine = document.getElementById('ui-timeline-container');
         if (tLine) {
           tLine.classList.remove('play-places-anim');
-          void tLine.offsetWidth; // Force reflow
+          void tLine.offsetWidth; // Force layout recalculation
           tLine.classList.add('play-places-anim');
         }
 
+        // Delay checks for auto-scrolling to the active GPS node
         setTimeout(() => {
           const lockVault = document.getElementById('route-lock-vault');
-          if (lockVault && !lockVault.classList.contains('hidden')) return;
-
+          // Abort auto-scrolling if security vault is visible
+          if (lockVault && !lockVault.classList.contains('hidden')) return; 
+          
           const nodes = Array.from(document.querySelectorAll('.tracker-node'));
           if (nodes.length === 0) return;
 
@@ -1927,21 +1955,26 @@
           const isTripFinished = lastNode && lastNode.getAttribute('data-ata');
 
           if (isTripFinished) {
+            // Trigger beautiful spring-pop complete modal if at end of timeline
             window.scrollTo({ top: 0, behavior: 'smooth' });
             if (window.popupDelayTimeout) clearTimeout(window.popupDelayTimeout);
+            
             window.popupDelayTimeout = setTimeout(() => {
               const modal = document.getElementById('trip-complete-popup');
               const card = document.getElementById('trip-complete-card');
+              
               if (modal && card) {
                 modal.classList.remove('hidden');
-                lucide.createIcons();
-                void modal.offsetHeight;
+                lucide.createIcons(); 
+                void modal.offsetHeight; // Reflow
                 modal.classList.remove('opacity-0');
                 card.classList.remove('scale-75', 'opacity-0');
                 card.classList.add('scale-100', 'opacity-100');
               }
             }, 900);
+            
           } else {
+            // Standard scroll-to-active node alignment
             let activeNode = null;
             for (let i = 0; i < nodes.length; i++) {
               if (nodes[i].getAttribute('data-ata')) {
@@ -1950,9 +1983,11 @@
                   : nodes[i];
               }
             }
+
             if (!activeNode && nodes.length > 0) {
               activeNode = nodes.find(n => n.getAttribute('data-cancelled') !== 'true');
             }
+
             if (activeNode) {
               activeNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
@@ -1999,16 +2034,16 @@
       }
     }
 
-async function fetchInitialData() {
+    // Core data fetching - Calls Google Apps Script backend 'getDashboardData'
+    async function fetchInitialData() {
       try {
         const data = await apiRequest('dashboard');
         renderApp(data);
       } catch (error) {
         console.error(error);
         showToast("Unable to sync latest data.");
-        hideSplashScreenNow(); // Forces splash screen to dismiss even if fetch fails
       }
-    }
+    } 
     
     // Simple helper to format numbers as Indian Rupees string
     function formatINR(num) { return '₹' + Math.round(num).toLocaleString('en-IN'); } 
@@ -2208,10 +2243,9 @@ async function fetchInitialData() {
         </div>` : '';
 
         // Inject the completed coordinator DOM without the old back card assets
-        // Inject the completed coordinator DOM
         document.getElementById('leaderSection').innerHTML = `
-        <div class="squad-leader-box mt-2 w-full">
-          <div id="lead-flip-engine" onclick="executeCardFlipCycle('lead-flip-engine')" class="h-[180px] lg:h-[220px] relative z-10 cursor-pointer w-full">
+        <div class="squad-leader-box mt-2">
+          <div id="lead-flip-engine" onclick="executeCardFlipCycle('lead-flip-engine')" class="h-[180px] relative z-10 cursor-pointer">
             ${coordFrontHtml}
           </div>
           ${coordBookmark}
@@ -2220,9 +2254,9 @@ async function fetchInitialData() {
         document.getElementById('leaderSection').innerHTML = '';
       }
 
-     // RENDER ALL OTHER MEMBERS
+      // RENDER ALL OTHER MEMBERS
       const memList = document.getElementById('memberList');
-      memList.className = 'grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5';
+      memList.className = 'grid grid-cols-2 gap-3'; 
 
       memList.innerHTML = others.map((m, index) => {
         const structuralStaggerDelay = index * 40; 
