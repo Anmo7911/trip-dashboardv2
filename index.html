@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<!-- Declare document type as HTML5 -->
+<html lang="en">
+
+<head>
+  <title>Squad Goals</title>
+
+  <!-- Mobile Responsive Viewport Setup (Fixes Mobile Scaling) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- iOS specific meta tags to enable full-screen standalone mode -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#4f46e5">
+  
+  <!-- Include QRCode.js library for generating QR codes on the E-ID card -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Include Tailwind CSS via CDN for rapid utility-first styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Include Lucide icons library for modern, scalable SVG icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Import Google Font 'Inter' for a clean, modern typography scheme -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Define a Web App Manifest inline using a Data URI to allow the app to be installed (PWA) -->
+  <link rel="manifest"
+    href="data:application/json;charset=utf-8,%7B%22name%22%3A%22Squad%20Goals%22%2C%22short_name%22%3A%22Squad%20Goals%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f8fafc%22%2C%22theme_color%22%3A%22%234f46e5%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F610%2F610120.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+
+  <!-- iOS specific meta tags to enable full-screen standalone mode -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#4f46e5">
+
+  <style>
+    /* =========================================
+       CUSTOM CSS & ANIMATIONS ENGINE
+       ========================================= */
+
+    /* Prevents the chat message container from pulling the whole page down (pull-to-refresh) */
+    #ui-chat-messages {
+      overscroll-behavior-y: contain;
+    }
+
+    /* Container for the background text on the empty state (Spend view) */
+    .watermark-container {
+      position: absolute;
+      top: 640px;
+      /* Pushed down below the form */
+      left: 0;
+      width: 100%;
+      padding: 0 24px;
+      pointer-events: none;
+      /* Allows clicking through the text */
+      z-index: 0;
+    }
+
+    /* Styling for the large background watermark text */
+    .watermark-text-large {
+      font-weight: 900;
+      text-transform: uppercase;
+      color: #cbd5e1;
+      /* Light slate color to blend into background */
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+
+    /* Frosted glass overlay used when expense entries are paused */
+    #expense-lock-overlay {
+      background-color: rgba(248, 250, 252, 0.8);
+      backdrop-filter: blur(2px);
+      cursor: not-allowed;
+    }
+
+    /* Pulsing animation class for locked text */
+    .lock-text-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Standard opacity pulse keyframes */
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .5;
+      }
+    }
+
+    /* Lanyard clip shape for styling ID cards (if applied) */
+    .clip-path-lanyard {
+      clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+    }
+
+    /* =========================================
+       ID CARD SCANNER SWEEP ANIMATIONS
+       ========================================= */
+
+    /* Sweeps the black scanner curtain upwards to reveal the ID card */
+    @keyframes scanSweepReveal {
+      0% {
+        height: 100%;
+        opacity: 1;
+      }
+
+      85% {
+        height: 0%;
+        opacity: 1;
+      }
+
+      100% {
+        height: 0%;
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    /* Fades and scales down the QR icon before the curtain opens */
+    @keyframes qrFadeOut {
+
+      0%,
+      85% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(0.85);
+      }
+    }
+
+    /* Laser line moving up and down over the QR icon */
+    @keyframes qrLaserBounce {
+      0% {
+        top: 0%;
+        opacity: 0;
+      }
+
+      15% {
+        opacity: 1;
+      }
+
+      50% {
+        top: 100%;
+        opacity: 1;
+      }
+
+      85% {
+        opacity: 1;
+      }
+
+      100% {
+        top: 0%;
+        opacity: 0;
+      }
+    }
+
+    /* Applies the curtain reveal animation with a 2.5s delay */
+    .anim-scanner-curtain {
+      animation: scanSweepReveal 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      animation-delay: 2.5s;
+    }
+
+    /* Applies the QR fade out animation */
+    .anim-scanner-qr {
+      animation: qrFadeOut 2.5s forwards;
+    }
+
+    /* Applies the bouncing laser animation */
+    .qr-laser-scan {
+      animation: qrLaserBounce 0.6s ease-in-out infinite;
+    }
+
+    /* =========================================
+       GLOBAL SCROLLBAR OVERRIDE (Nuclear Option)
+       Hides scrollbars across all browsers while keeping functionality
+       ========================================= */
+    html,
+    body,
+    * {
+      -ms-overflow-style: none !important;
+      /* IE and Edge */
+      scrollbar-width: none !important;
+      /* Firefox */
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar,
+    *::-webkit-scrollbar {
+      display: none !important;
+      /* Chrome, Safari, and Opera */
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    /* Explicitly hide scrollbars for main containers */
+    body::-webkit-scrollbar,
+    main::-webkit-scrollbar,
+    .tab-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    body,
+    main,
+    .tab-content {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* =========================================
+       NAVIGATION ANIMATIONS
+       ========================================= */
+
+    /* Animation to fill the icon with color when a tab becomes active */
+    @keyframes floodFill {
+      0% {
+        fill: transparent;
+        stroke-width: 2px;
+        transform: scale(1);
+      }
+
+      40% {
+        fill: rgba(79, 70, 229, 0.4);
+        stroke-width: 2.5px;
+        transform: scale(0.85);
+      }
+
+      100% {
+        fill: currentColor;
+        stroke-width: 2px;
+        transform: scale(1);
+      }
+    }
+
+    /* Trigger the fill animation on active nav icons */
+    .nav-active .nav-anim-icon {
+      animation: floodFill 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* Blinks an element exactly 3 times (used for ATA timestamps) */
+    @keyframes blink-three {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.2;
+      }
+    }
+
+    .animate-blink-3 {
+      animation: blink-three 1s ease-in-out 3;
+    }
+
+    /* Modern Pill Navigation Engine Styling */
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 14px;
+      border-radius: 20px;
+      color: #94a3b8;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Nav text is hidden by default to save space */
+    .nav-btn .nav-text {
+      display: none;
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Expanded state for active navigation button */
+    .nav-btn.nav-active {
+      background-color: #eef2ff;
+      color: #4f46e5;
+      padding: 9px 20px;
+    }
+
+    /* Reveal the text with an animation when button is active */
+    .nav-btn.nav-active .nav-text {
+      display: block;
+      animation: navTextReveal 0.3s ease forwards;
+    }
+
+    /* Sliding and fading text reveal for nav items */
+    @keyframes navTextReveal {
+      0% {
+        opacity: 0;
+        transform: translateX(-4px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* =========================================
+       SPLASH SCREEN MORPHING ENGINE
+       ========================================= */
+    .morph-wrapper {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      margin: 0 auto;
+    }
+
+    /* Base styling for morphing icons */
+    .morph-icon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transition: all 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    /* State when an icon is leaving (shrinks, rotates, blurs) */
+    .morph-out {
+      opacity: 0;
+      transform: scale(0.2) rotate(90deg);
+      filter: blur(2px);
+    }
+
+    /* State when an icon is entering (normal size, clear) */
+    .morph-in {
+      opacity: 1;
+      transform: scale(1) rotate(0);
+      filter: blur(0px);
+    }
+
+    /* Transitions for text fading in the splash screen */
+    .text-fade {
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+    /* Hidden state for splash text */
+    .text-hidden {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+
+    /* =========================================
+       GLOBAL UTILITIES & 3D CSS
+       ========================================= */
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      /* Removes touch blue outline on mobile */
+      padding-bottom: 80px;
+      /* Space for fixed nav bar */
+      overscroll-behavior-y: none;
+      /* Stops pull-to-refresh globally */
+    }
+
+    /* Simple spinning loader */
+    .loader {
+      border-top-color: #fff;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Tab switching system classes */
+    .tab-content {
+      display: none;
+    }
+
+    .active-tab {
+      display: block;
+    }
+
+    .nav-active {
+      color: #4f46e5 !important;
+    }
+
+    /* Pulse background for warnings */
+    .warning-pulse {
+      animation: pulse-bg 2s infinite;
+    }
+
+    @keyframes pulse-bg {
+      0% {
+        background-color: #fef2f2;
+      }
+
+      50% {
+        background-color: #fee2e2;
+      }
+
+      100% {
+        background-color: #fef2f2;
+      }
+    }
+
+    /* Slide down animation for top title bar */
+    .title-enter-bar {
+      animation: barReveal 0.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes barReveal {
+      0% {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 3D Scene setup for Flippable Cards (Balance Card) */
+    .card-scene {
+      perspective: 1000px;
+    }
+
+    .card-flipper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .flipper-rotated {
+      transform: rotateY(180deg);
+    }
+
+    .face-front,
+    .face-back {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .face-back {
+      transform: rotateY(180deg);
+    }
+
+    /* 3D Scene setup for Budget Card */
+    .budget-scene-mount {
+      perspective: 800px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .budget-card-inner-engine {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .budget-card-inner-engine.budget-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .budget-front,
+    .budget-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      top: 0;
+      left: 0;
+    }
+
+    .budget-front {
+      z-index: 2;
+      transform: rotateY(0deg);
+    }
+
+    .budget-back {
+      z-index: 1;
+      transform: rotateY(180deg);
+    }
+
+    /* Layout classes for notice sliding carousel */
+    .carousel-track {
+      display: flex;
+      width: 200%;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .carousel-item {
+      width: 50%;
+      flex-shrink: 0;
+    }
+
+    /* 3D Scene setup for Header Text Carousel */
+    .headline-scene {
+      perspective: 600px;
+      width: 100%;
+      height: 28px;
+    }
+
+    .headline-flipper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .headline-rotated {
+      transform: rotateX(-180deg);
+    }
+
+    .headline-front,
+    .headline-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      left: 0;
+      top: 0;
+    }
+
+    .headline-back {
+      transform: rotateX(180deg);
+    }
+
+    /* Staggered entry animations for squad members */
+    @keyframes waveSlideDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-12px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes waveSlideUp {
+      0% {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-wave-leader {
+      animation: waveSlideDown 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .animate-wave-member {
+      opacity: 0;
+      animation: waveSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Setup for Dynamic Auto-Expanding Squad Member Cards */
+    .squad-scene-box {
+      perspective: 800px;
+      min-height: 144px;
+      /* Changed from 160px to 144px to match card dimensions */
+      height: auto;
+      width: 100%;
+    }
+
+    .squad-leader-box {
+      perspective: 800px;
+      min-height: 180px;
+      height: auto;
+      width: 100%;
+    }
+
+    /* Smooth card face state changes */
+    .squad-card-inner {
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), min-height 0.4s ease;
+    }
+
+    .squad-card-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .squad-card-inner.squad-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .squad-front,
+    .squad-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      top: 0;
+      left: 0;
+    }
+
+    .squad-front {
+      z-index: 2;
+      transform: rotateY(0deg);
+    }
+
+    .squad-back {
+      z-index: 1;
+      transform: rotateY(180deg);
+    }
+
+    /* Utility for rotating text vertically (Guidelines tab) */
+    .guidelines-text {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+    }
+
+    /* =========================================
+       PLACES TIMELINE ANIMATION ENGINE
+       ========================================= */
+    @keyframes dropIn {
+      0% {
+        opacity: 0;
+        transform: translateY(-12px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes popIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.2);
+      }
+
+      70% {
+        opacity: 1;
+        transform: scale(1.3);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes slideInRight {
+      0% {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Default states for timeline components */
+    .anim-badge,
+    .anim-node,
+    .anim-card {
+      opacity: 1;
+    }
+
+    /* Active classes to trigger the staggered entry animations when tab opens */
+    .play-places-anim .anim-badge {
+      opacity: 0;
+      animation: dropIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .play-places-anim .anim-node {
+      opacity: 0;
+      animation: popIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .play-places-anim .anim-card {
+      opacity: 0;
+      animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Notification dot popping animation */
+    @keyframes dotPop {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+
+      50% {
+        transform: scale(1.5);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .anim-dot-pop {
+      animation: dotPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      animation-delay: 0.8s;
+      opacity: 0;
+    }
+
+    /* Login Error Shake Animation (Triggered on bad PIN) */
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20%,
+      60% {
+        transform: translateX(-6px);
+      }
+
+      40%,
+      80% {
+        transform: translateX(6px);
+      }
+    }
+
+    .animate-shake {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    /* =========================================
+       SQUAD CHAT ANIMATIONS & STYLES
+       ========================================= */
+    /* Slide chat modal up from the bottom */
+    @keyframes slideUpChat {
+      0% {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .anim-chat-open {
+      animation: slideUpChat 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    /* Hide scrollbar strictly for the chat window */
+    #ui-chat-messages::-webkit-scrollbar {
+      display: none;
+    }
+
+    #ui-chat-messages {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50">
+
+  <!-- =========================================
+       PREMIUM MINIMALIST eID MODAL
+       ========================================= -->
+  <div id="eid-modal"
+    class="hidden fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 font-sans transition-opacity duration-300">
+
+    <!-- FLOATING CLOSE BUTTON -->
+    <button type="button" onclick="closeEID()" class="absolute top-6 right-6 z-50 flex items-center justify-center w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md text-white transition active:scale-95 outline-none border border-white/20 shadow-lg">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+
+    <!-- The Sharp Physical ID Card Surface (Crisp corners & exact aspect ratio) -->
+    <div id="eid-card-surface"
+      class="w-full max-w-[320px] bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] relative flex flex-col rounded-sm border border-slate-200 overflow-hidden">
+
+      <!-- PITCH BLACK SCANNER CURTAIN -->
+      <div id="eid-scan-curtain"
+        class="absolute inset-0 bg-slate-950 z-[100] flex items-center justify-center pointer-events-none rounded-sm">
+        <div class="absolute top-0 left-0 w-full h-[3px] bg-indigo-500 shadow-[0_0_20px_rgba(99,102,241,1)]"></div>
+        <div id="eid-qr-scanner" class="flex flex-col items-center gap-3">
+          <div class="relative w-14 h-14 flex items-center justify-center bg-slate-900 rounded-xl border border-slate-800 shadow-inner overflow-hidden">
+            <i data-lucide="qr-code" class="w-8 h-8 text-indigo-400"></i>
+            <div class="absolute left-0 w-full h-[2px] bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)] qr-laser-scan"></div>
+          </div>
+          <span class="text-[9px] font-black tracking-[0.2em] uppercase text-emerald-400 animate-pulse">Authenticating Pass...</span>
+        </div>
+      </div>
+
+      <!-- Main Split Layout -->
+      <div class="flex flex-row w-full h-full bg-white rounded-sm overflow-hidden">
+
+        <!-- LEFT VERTICAL STATUS BAR -->
+        <div id="eid-left-bar"
+          class="w-[52px] bg-indigo-600 flex flex-col justify-between items-center py-4 text-white shrink-0 transition-colors duration-500 select-none overflow-hidden">
+          <div style="writing-mode: vertical-rl; transform: rotate(180deg);"
+            class="text-[11px] font-black tracking-[0.25em] uppercase opacity-90 whitespace-nowrap">
+            E-ID
+          </div>
+          <div class="w-[1.5px] h-10 bg-white/40 my-2"></div>
+          <div id="eid-vertical-status" style="writing-mode: vertical-rl; transform: rotate(180deg);"
+            class="text-[34px] font-black tracking-wider uppercase whitespace-nowrap flex items-center justify-start leading-none">
+            VERIFIED
+          </div>
+        </div>
+
+        <!-- RIGHT CONTENT AREA -->
+        <div class="flex-1 flex flex-col relative pt-1 min-w-0">
+
+          <!-- Header Area (Fixed vertical & horizontal clipping) -->
+          <div class="h-14 flex flex-col justify-center items-center px-3 text-center overflow-hidden">
+            <h1 id="eid-title"
+              class="text-[16px] font-black tracking-tight uppercase text-indigo-700 leading-tight w-full truncate transition-colors duration-500">
+              VALLEY OF FLOWERS
+            </h1>
+            <p id="eid-subtitle"
+              class="text-[7.5px] font-bold tracking-[0.18em] text-slate-400 uppercase mt-0.5 truncate w-full hidden"></p>
+          </div>
+
+          <!-- Photo Section -->
+          <div id="eid-photo-container"
+            class="h-[185px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 overflow-hidden transition-colors duration-500">
+            <img id="eid-photo" src="" class="w-full h-full object-cover object-top grayscale contrast-125">
+            <!-- Overlay Stamp -->
+            <div id="eid-stamp-container"
+              class="absolute bottom-1 right-1 w-[75px] h-[75px] pointer-events-none hidden transition-all duration-500 opacity-90 z-40 mix-blend-multiply -rotate-12">
+              <img id="eid-stamp-img" src="" class="w-full h-full object-contain filter contrast-125">
+            </div>
+          </div>
+
+          <!-- Member Details Grid -->
+          <div class="flex-1 p-3.5 pb-2.5 flex flex-col justify-between">
+            <div>
+              <p id="eid-name"
+                class="font-black text-base text-slate-900 leading-none tracking-tight uppercase truncate mb-2.5 border-b border-slate-100 pb-1.5">
+              </p>
+
+              <div class="grid grid-cols-[55px_auto] gap-y-1.5 gap-x-2 text-[8.5px] font-bold text-slate-800 uppercase tracking-wide w-full mb-1">
+                <span class="text-slate-400">Position</span>
+                <div class="flex gap-1.5"><span class="text-slate-300 shrink-0">:</span><span id="eid-designation" class="leading-tight truncate"></span></div>
+
+                <span class="text-slate-400">Role</span>
+                <div class="flex gap-1.5"><span class="text-slate-300 shrink-0">:</span><span id="eid-role" class="leading-tight break-words"></span></div>
+
+                <span class="text-slate-400">Mobile</span>
+                <div class="flex gap-1.5"><span class="text-slate-300 shrink-0">:</span><span id="eid-mobile" class="leading-tight"></span></div>
+
+                <span class="text-slate-400">Email</span>
+                <div class="flex gap-1.5"><span class="text-slate-300 shrink-0">:</span><span id="eid-email" class="leading-tight break-all lowercase tracking-normal"></span></div>
+              </div>
+            </div>
+
+            <!-- Footer: Signature & QR -->
+            <div class="mt-auto flex justify-between items-end pt-1.5 border-t border-slate-100">
+              <div class="flex flex-col items-start justify-end w-[60%]">
+                <img id="eid-chief-sign" class="h-5 object-contain mix-blend-multiply mb-0.5">
+                <p id="eid-sign-text"
+                  class="text-[7px] font-black uppercase tracking-widest text-indigo-700 border-t border-slate-300 pt-0.5 w-[85%] transition-colors duration-500">
+                  Chief Coord.
+                </p>
+              </div>
+              <div id="eid-qr" class="w-[62px] h-[62px] flex items-center justify-end shrink-0"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================
+       SIGNATURE CAPTURE MODAL
+       Used for members to sign off on final expenses
+       ========================================= -->
+  <div id="signature-modal"
+    class="hidden fixed inset-0 z-[9999] bg-slate-900/80 flex items-center justify-center p-4 font-sans backdrop-blur-sm transition-opacity">
+    <div class="max-w-sm w-full bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+      <!-- Modal Header -->
+      <div class="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center">
+        <h2 class="font-black text-slate-800 tracking-wide uppercase text-sm">Sign Final Ledger</h2>
+        <button onclick="closeSignaturePad()" class="text-slate-400 hover:text-rose-500 font-bold px-2 py-1 bg-white rounded-md border border-slate-200 active:scale-95">X</button>
+      </div>
+      <!-- Canvas drawing area -->
+      <div class="p-4 bg-slate-100 flex-grow" style="height: 250px;">
+        <canvas id="sig-canvas"
+          class="w-full h-full bg-white rounded-xl shadow-inner border border-slate-200 touch-none"></canvas>
+      </div>
+      <!-- Legal Text & Submit -->
+      <div class="p-5 border-t border-slate-200 text-center">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 leading-relaxed">
+          ☑ By clicking ‘Submit’, I agree to the transaction details provided without any objection.
+        </p>
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-4 leading-relaxed">
+          सबमिट पर क्लिक करके, मैं पुष्टि करता/करती हूँ कि मुझे इस लेनदेन पर कोई आपत्ति नहीं है।
+        </p>
+        <button id="sig-submit-btn" onclick="submitSignature()" class="w-full bg-slate-900 text-white font-black py-4 rounded-xl active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
+          Submit Signature
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================
+       APP LOCK SCREEN (Trip Concluded State)
+       Overlays entire app if trip is marked finished/archived
+       ========================================= -->
+  <div id="live-lock-screen"
+    class="hidden fixed inset-0 z-[9999] bg-slate-900 flex items-center justify-center p-4 font-sans backdrop-blur-md">
+    <div
+      class="max-w-sm w-full bg-slate-50 rounded-3xl shadow-2xl overflow-hidden text-center p-8 border border-slate-200">
+      <div
+        class="w-16 h-16 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+        <!-- Lock icon SVG -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+      </div>
+      <h1 class="text-2xl font-black text-slate-900 mb-2">Trip Concluded</h1>
+      <p class="text-slate-500 text-sm mb-8 leading-relaxed">The financial ledger has been officially settled and
+        archived. Live access is no longer available. Contact Admin for trip reports.</p>
+
+      <a href="mailto:officialanmol1609@gmail.com?subject=Trek App - Archive Request"
+        class="inline-block w-full bg-slate-900 active:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition-colors decoration-none">
+        Contact Admin
+      </a>
+    </div>
+  </div>
+
+  <!-- =========================================
+       TRANSACTION RECEIPT MODAL
+       Displays details of a clicked ledger item
+       ========================================= -->
+  <div id="receipt-modal"
+    class="hidden fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans transition-opacity duration-300 opacity-0"
+    onclick="closeReceiptModal()">
+    <div class="w-full max-w-sm bg-white rounded-[24px] shadow-2xl overflow-hidden relative flex flex-col"
+      onclick="event.stopPropagation()">
+
+      <!-- Dynamic Header: Background and Text color vary by verification state -->
+      <div id="receipt-head-bg"
+        class="bg-blue-600 px-6 pt-10 pb-8 text-center text-white relative transition-colors duration-300">
+        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
+          <i id="receipt-head-icon" data-lucide="check" class="w-8 h-8 text-blue-600 stroke-[3] transition-colors duration-300"></i>
+        </div>
+        <p id="receipt-head-title"
+          class="text-[11px] font-bold uppercase tracking-widest text-blue-100 mb-1 transition-colors duration-300">
+          Payment Successful</p>
+        <h2 id="receipt-amount" class="text-4xl font-black tracking-tight">₹0</h2>
+      </div>
+
+      <!-- Receipt Body Data -->
+      <div class="px-6 py-8 bg-slate-50 relative z-20">
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+
+           <!-- UTR Number & Copy Action -->
+          <div class="flex justify-between items-center pt-1">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">UTR No.</span>
+            <div class="flex items-center gap-1.5">
+              <span id="receipt-utr" class="font-mono text-xs font-black text-indigo-600"></span>
+              <i data-lucide="copy" class="w-3.5 h-3.5 text-slate-300 cursor-pointer hover:text-indigo-500" onclick="copyUTR()"></i>
+            </div>
+          </div>
+          
+          <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-3">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</span>
+            <div id="receipt-status-badge"></div>
+          </div>
+
+          
+          <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-3">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Date & Time</span>
+            <span id="receipt-date" class="text-[10px] font-bold text-slate-600 text-right"></span>
+          </div>
+
+         
+
+          <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-3">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Category</span>
+            <span id="receipt-category" class="text-xs font-black text-slate-800 uppercase"></span>
+          </div>
+
+          <div class="flex justify-between items-start border-b border-dashed border-slate-200 pb-3 gap-3">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest shrink-0 mt-0.5">Notes</span>
+            <span id="receipt-notes" class="text-xs font-bold text-slate-600 text-right break-words max-w-[70%] leading-snug"></span>
+          </div>
+
+        </div>
+
+        <button onclick="closeReceiptModal()" class="w-full mt-6 bg-slate-200 hover:bg-slate-300 text-slate-700 font-black py-4 rounded-xl transition active:scale-95 text-[11px] uppercase tracking-widest">
+          Close Receipt
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- =========================================
+       LOGIN SCREEN OVERLAY
+       Forces user to authenticate before viewing data
+       ========================================= -->
+  <div id="login-overlay"
+    class="hidden fixed inset-0 z-[250] bg-slate-900/50 backdrop-blur-xl flex items-center justify-center p-4 font-sans">
+    <div id="login-card"
+      class="max-w-sm w-full bg-white/95 rounded-3xl shadow-2xl p-6 border border-slate-200 text-center">
+      <div
+        class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner border border-indigo-100">
+        <i data-lucide="lock" class="w-6 h-6 stroke-[2.5]"></i>
+      </div>
+      <h2 class="text-xl font-black text-slate-800 tracking-wide uppercase mb-1">Member Authentication</h2>
+      <p class="text-slate-400 text-xs font-medium mb-6">Select your Name & enter Trip PIN</p>
+
+      <div class="space-y-4 text-left">
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Select Your Name</label>
+          <!-- Names injected here dynamically by JS -->
+          <select id="login-name-select" class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none appearance-none cursor-pointer text-slate-700"></select>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Enter 4-Digit PIN</label>
+          <input type="password" id="login-pin-input" pattern="\d*" maxlength="4" placeholder="••••" class="w-full text-center tracking-[0.5em] py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-black text-xl">
+        </div>
+        <p id="login-error-msg"
+          class="text-rose-500 text-center text-[11px] font-black hidden uppercase tracking-wider">Invalid PIN! Try
+          again.</p>
+        <button onclick="processAppLogin()" id="login-submit-btn" class="w-full bg-slate-900 text-white font-black py-4 rounded-xl active:scale-95 transition shadow-lg mt-2">Sign In</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================
+       LOGOUT CONFIRMATION SCREEN
+       Shown briefly after local session is destroyed
+       ========================================= -->
+  <div id="logout-screen"
+    class="hidden fixed inset-0 z-[300] bg-slate-50 flex items-center justify-center p-6 text-center">
+    <div class="max-w-xs w-full space-y-6">
+      <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+        <i data-lucide="check-circle" class="w-8 h-8"></i>
+      </div>
+      <div>
+        <h2 class="text-xl font-black text-slate-800 uppercase tracking-wide">All synced.</h2>
+        <p class="text-sm font-bold text-slate-500 mt-2">You're all set for now.</p>
+      </div>
+
+      <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl">
+        <p class="text-xs font-black text-indigo-600 uppercase tracking-widest italic">
+          Refresh the page to login again
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================
+       SPLASH SCREEN (Compass Ring Loader)
+       Hides the UI while heavy data is fetched
+       ========================================= -->
+  <div id="app-splash-screen"
+    class="fixed inset-0 bg-slate-50 z-[200] flex flex-col items-center justify-center p-6 transition-opacity duration-500 ease-out">
+    <div class="flex flex-col items-center max-w-xs w-full">
+
+      <!-- The Ring Container -->
+      <div class="relative w-24 h-24 flex items-center justify-center mb-5">
+
+        <!-- SVG Compass Progress Ring -->
+        <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" fill="none" stroke="#f1f5f9" stroke-width="2.5" />
+          <circle id="splash-progress-ring" cx="50" cy="50" r="46" fill="none" stroke="#6366f1" stroke-width="2.5"
+            stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289"
+            class="transition-all duration-[300ms] ease-linear drop-shadow-[0_0_4px_rgba(99,102,241,0.4)]" />
+        </svg>
+
+        <!-- Morphing Icons swapping in the center -->
+        <div id="splash-icon-container" class="morph-wrapper text-indigo-600 !w-10 !h-10">
+          <i id="splash-icon-a" data-lucide="users" class="morph-icon morph-in stroke-[1.5]"></i>
+          <i id="splash-icon-b" data-lucide="users" class="morph-icon morph-out stroke-[1.5]"></i>
+        </div>
+      </div>
+
+      <!-- Updating Action Text (e.g., "Boarding bus...") -->
+      <div class="w-full flex justify-center">
+        <p id="splash-micro-text"
+          class="text-[9px] font-bold text-slate-400 tracking-[0.25em] uppercase text-center text-fade"></p>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- =========================================
+       MAIN APP HEADER BAR (Sticky Top)
+       ========================================= -->
+  <div class="title-enter-bar sticky top-0 z-50 w-full flex flex-col items-center">
+    <!-- Illusion background to prevent scrolling content from showing through safe-areas -->
+    <div class="absolute bottom-full left-0 w-full h-[100vh] bg-indigo-600 pointer-events-none"></div>
+
+    <!-- Header Content: App Name / Chat Trigger -->
+    <div
+      class="w-full bg-gradient-to-br from-indigo-600 to-violet-700 rounded-b-3xl shadow-md px-4 pt-4 pb-4 flex flex-col items-center justify-center text-center relative z-20">
+      <!-- Rotating headline scene (swaps Trip Title and Subtitle) -->
+      <div class="headline-scene">
+        <div id="ui-headline-flipper" class="headline-flipper">
+          <div class="headline-front">
+            <h1 id="ui-title-1" class="font-black text-white text-lg tracking-wide uppercase">Loading...</h1>
+          </div>
+          <div class="headline-back">
+            <h1 id="ui-title-2" class="font-black text-white text-lg tracking-wide uppercase">Zantar Mantar, Dilli</h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Universal Chat Button -->
+      <button onclick="window.location.href='chat.html'" class="absolute right-4 top-1/2 -translate-y-1/2 z-40 w-[38px] h-[38px] bg-white/10 hover:bg-white/20 border border-white/20 rounded-full flex items-center justify-center backdrop-blur-md active:scale-90 transition-all shadow-sm outline-none">
+        <i data-lucide="message-circle" class="w-4 h-4 text-white stroke-[2.5]"></i>
+        <!-- Unread notification dot -->
+        <span id="chat-unread-dot" class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-rose-500 border-[1.5px] border-violet-700 rounded-full hidden shadow-sm"></span>
+      </button>
+    </div>
+
+    <!-- Live Notice Container (Warning / Standard slider) -->
+    <div id="notice-container"
+      class="hidden overflow-hidden w-full bg-slate-50 border-b border-slate-200 -mt-2 pt-4 pb-1 relative z-10">
+      <div id="notice-slider" class="carousel-track">
+        <!-- Standard Notice Slot -->
+        <div class="carousel-item px-4 pb-1">
+          <div
+            class="bg-indigo-50 border border-indigo-100 rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto">
+            <span class="relative flex h-2 w-2 flex-shrink-0"></span>
+            <p id="ui-trip-notice" class="text-[11px] font-black text-indigo-700 truncate text-center tracking-wide"></p>
+          </div>
+        </div>
+        <!-- Warning Notice Slot -->
+        <div class="carousel-item px-4 pb-1">
+          <div
+            class="bg-rose-50 border border-rose-100 rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto warning-pulse">
+            <span class="relative flex h-2 w-2 flex-shrink-0"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span></span>
+            <p id="ui-warning-notice" class="text-[11px] font-bold text-rose-700 truncate text-center"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================
+       TAB 1: SPEND VIEW
+       Handles budgeting, adding expenses, and ledger
+       ========================================= -->
+  <main id="view-spend" class="tab-content active-tab max-w-md mx-auto p-4 space-y-4 -mt-[1px]">
+    <!-- Background Watermark text -->
+    <div class="watermark-container pt-23 pb-4" id="empty-state-watermark">
+      <div class="watermark-text-large text-slate-200 text-3xl mt-1 tracking-tight">ALL SET FOR<br>TODAY VOF0726</div>
+    </div>
+
+    <!-- 3D BENTO GRID (Balance on Left, Total/Spent on Right) -->
+    <div id="ui-top-cards-wrapper"
+      class="transition-all duration-500 overflow-hidden max-h-[300px] opacity-100 origin-top mb-1">
+      <div class="flex justify-between h-[140px] w-full relative">
+
+        <!-- Left Column: Flippable Balance Card -->
+        <div id="balance-col" class="transition-all duration-[600ms] ease-[cubic-bezier(0.25,1,0.5,1)] h-full z-20"
+          style="width: calc(50% - 6px);">
+          <div class="card-scene h-full w-full">
+            <div id="card-flipper-engine" onclick="flipBalanceCard()" class="card-flipper cursor-pointer select-none">
+
+              <!-- Front of Balance Card -->
+              <div id="balance-card"
+                class="face-front w-full h-full p-4 rounded-[24px] border border-white/60 transition-all duration-300 text-center flex flex-col justify-between items-center active:scale-[0.96]">
+
+                <!-- Changed back to justify-start to push it up to the red line -->
+                <div class="w-full flex-1 flex flex-col items-center justify-start mt-1">
+                  <div class="flex items-center justify-center gap-1.5 mb-1.5">
+                    <span class="relative flex h-2 w-2">
+        <span id="dot-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-emerald-400"></span>
+                    <span id="dot-main" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <p id="balance-label"
+                      class="text-[9.5px] font-black text-emerald-500 uppercase tracking-widest drop-shadow-sm">
+                      Remaining</p>
+                  </div>
+                  <!-- The main dynamic balance number -->
+                  <p id="stat-balance" class="text-3xl font-black text-emerald-600 tracking-tight drop-shadow-sm">₹0</p>
+                </div>
+
+                <!-- Hint to click/flip -->
+                <div id="balance-hint-footer"
+                  class="mt-2 text-[9px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-center gap-1 transition-colors duration-500 w-full drop-shadow-sm">
+                  <span class="text-slate-400">Allocations</span><i data-lucide="layers" class="w-3 h-3 stroke-[2.5] text-slate-400"></i>
+                </div>
+              </div>
+
+              <!-- Back of Balance Card (Shows category limits) -->
+              <div
+                class="face-back w-full h-full p-4 rounded-[24px] border border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 shadow-[0_12px_24px_rgba(0,0,0,0.15),inset_0_2px_4px_rgba(255,255,255,0.1)] text-slate-100 flex flex-col justify-between">
+                <div class="text-center w-full border-b border-slate-700/80 pb-1.5 px-1 relative">
+                  <p class="text-[10px] font-black uppercase tracking-widest text-indigo-400 drop-shadow-sm">Budget
+                    Allocations
+                  </p>
+                  <i data-lucide="x" class="absolute right-0 top-0 w-4 h-4 text-slate-400 hover:text-white transition-colors"></i>
+                </div>
+                <!-- Grid injected dynamically -->
+                <div id="back-bars-grid"
+                  class="grid grid-cols-2 gap-x-6 gap-y-1.5 w-full text-center text-[10px] font-bold px-1 overflow-y-auto mt-2"
+                  style="max-height: 85px;"></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Budget & Spent Metrics -->
+        <div id="stats-col"
+          class="transition-all duration-[500ms] ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col justify-between h-full opacity-100 z-10"
+          style="width: calc(50% - 6px);">
+
+          <!-- Top Right Block: Total Budget (Flippable confirmation peek) -->
+          <div id="ui-budget-wrapper"
+            class="w-full transition-all duration-500 overflow-hidden opacity-100 rounded-[20px]"
+            style="height: calc(50% - 6px);">
+            <div class="budget-scene-mount h-full w-full">
+              <div id="ui-budget-flip-engine" class="budget-card-inner-engine w-full h-full">
+                <!-- Front (Base stat) -->
+                <div
+                  class="budget-front bg-gradient-to-b from-white to-slate-50 border border-white shadow-[0_8px_16px_rgba(0,0,0,0.03),inset_0_2px_4px_rgba(255,255,255,1)] px-2 py-0 rounded-[20px] w-full h-full flex flex-col justify-center items-center text-center">
+                  <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mb-0.5 drop-shadow-sm">Total
+                    Budget</p>
+                  <p id="stat-budget" class="text-sm font-black text-slate-800 drop-shadow-sm">₹0</p>
+                </div>
+                <!-- Back (Confirmation of submitted expense) -->
+                <div
+                  class="budget-back bg-gradient-to-b from-emerald-50 to-emerald-100 border border-emerald-50 p-2 text-center rounded-[20px] shadow-[0_8px_16px_rgba(16,185,129,0.06),inset_0_2px_4px_rgba(255,255,255,0.8)] w-full h-full flex flex-col justify-center items-center">
+                  <p id="ui-peek-title-row"
+                    class="text-[10px] font-black tracking-wide text-emerald-600 uppercase drop-shadow-sm"></p>
+                  <p id="ui-peek-notes-row"
+                    class="text-[9px] font-semibold text-emerald-500/90 truncate w-full mt-0.5 drop-shadow-sm"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Right Block: Total Spent (Triggers Ledger View) -->
+          <div id="ui-spent-hero-card" onclick="window.location.href='transaction.html'"
+            class="w-full bg-gradient-to-b from-rose-50 to-rose-100 border border-white/60 shadow-[0_8px_16px_rgba(225,29,72,0.04),inset_0_2px_4px_rgba(255,255,255,0.9)] px-2 py-0 rounded-[20px] flex flex-col justify-center items-center text-center cursor-pointer transition-all duration-300 active:scale-[0.96]"
+            style="height: calc(50% - 6px);">
+            <div class="flex items-center justify-center gap-1 mb-0.5">
+              <p id="ui-spent-label"
+                class="text-[9px] font-bold text-rose-500 uppercase tracking-tighter drop-shadow-sm">Spent</p>
+              <i data-lucide="receipt-text" class="w-3 h-3 text-rose-500 drop-shadow-sm"></i>
+            </div>
+            <p id="stat-spent" class="text-sm font-black text-rose-600 drop-shadow-sm">₹0</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- NEW EXPENSE ENTRY FORM -->
+    <div id="ui-form-wrapper" class="transition-all duration-500 overflow-hidden max-h-[500px] opacity-100 origin-top">
+      <div class="bg-white rounded-[28px] p-5 border border-slate-200 shadow-sm relative overflow-hidden">
+
+        <!-- FROSTED GLASS LOCK OVERLAY (If expenses are paused globally) -->
+        <div id="expense-lock-overlay"
+          class="hidden absolute inset-0 z-[60] flex flex-col items-center justify-center rounded-[28px] border border-slate-200 transition-all duration-300">
+          <div class="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center mb-2">
+            <i data-lucide="lock" class="w-6 h-6 text-slate-600"></i>
+          </div>
+          <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest lock-text-pulse">
+            Adding Expenses Paused
+          </p>
+        </div>
+
+        <!-- Visual Flare styling for the container -->
+        <div
+          class="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full blur-3xl -z-10 -mr-10 -mt-10 pointer-events-none">
+        </div>
+
+        <!-- The Actual Form -->
+        <form id="expenseForm" class="space-y-4 relative z-10">
+
+          <!-- Form Header & Date Picker (Moved to Top Right) -->
+          <div class="flex items-center justify-between mb-4 relative z-10">
+            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enter New Expense</h3>
+
+            <div
+              class="flex items-center gap-1 bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-200 px-2 py-1 rounded-lg cursor-pointer">
+              <i data-lucide="calendar" class="w-3 h-3 text-slate-400"></i>
+              <input type="date" id="todayDate" name="date" required class="bg-transparent text-[10px] font-black text-indigo-500 uppercase tracking-wider outline-none cursor-pointer appearance-none pl-0.5 w-auto">
+            </div>
+          </div>
+
+          <!-- Large Amount Input -->
+          <div class="flex items-end gap-2 border-b-2 border-slate-100 pb-2">
+            <span class="text-2xl font-black text-slate-300 mb-1">₹</span>
+            <input type="number" name="amount" placeholder="0" required class="w-full bg-transparent outline-none font-black text-4xl text-slate-800 placeholder-slate-200 p-0">
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <!-- Payment Method Selector (Moved to Left Grid) -->
+            <div
+              class="bg-slate-50 hover:bg-slate-100 transition-colors rounded-[16px] border border-slate-100 px-3 py-3 flex items-center gap-2">
+              <i data-lucide="credit-card" class="w-4 h-4 text-indigo-500"></i>
+              <select name="paidVia" class="w-full bg-transparent text-[11px] font-black uppercase tracking-wider text-slate-700 outline-none appearance-none cursor-pointer">
+                <option value="UPI" selected>UPI</option>
+                <option value="Cash">Cash</option>
+                <option value="Card">Card</option>
+                <option value="Cheque">Cheque</option>
+              </select>
+            </div>
+
+            <!-- Category Selector (Moved to Right Grid) -->
+            <div
+              class="bg-slate-50 hover:bg-slate-100 transition-colors rounded-[16px] border border-slate-100 px-3 py-3 flex items-center gap-2">
+              <i data-lucide="grid" class="w-4 h-4 text-emerald-500"></i>
+              <select name="category" class="w-full bg-transparent text-[11px] font-black uppercase tracking-wider text-slate-700 outline-none appearance-none cursor-pointer">
+                <option>Food</option><option>Entry Fee</option><option>Fare</option><option>Stay</option><option>Water</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Notes Input -->
+          <div class="bg-slate-50 rounded-[16px] border border-slate-100 px-4 py-3.5 flex items-center gap-3">
+            <i data-lucide="message-square" class="w-4 h-4 text-slate-400"></i>
+            <input type="text" name="notes" placeholder="What was this for?" class="w-full bg-transparent text-xs font-bold text-slate-700 outline-none placeholder-slate-400">
+          </div>
+
+          <!-- Hidden storage for state rollback -->
+          <input type="hidden" name="lastActionAmount" id="lastActionAmount">
+          <input type="hidden" name="lastActionNotes" id="lastActionNotes">
+          <button type="submit" id="hidden-submit-btn" class="hidden"></button>
+
+          <!-- SWIPE-TO-SAVE INTERFACE -->
+          <div id="swipe-track"
+            class="w-full bg-slate-900 rounded-[18px] h-[60px] relative flex items-center select-none overflow-hidden touch-none shadow-md mt-2">
+            <span id="swipe-text" class="absolute w-full text-center text-slate-400 font-black text-[11px] uppercase tracking-[0.2em] pointer-events-none transition-all duration-300">
+              Swipe to Save
+            </span>
+            <!-- Draggable thumb block -->
+            <div id="swipe-thumb"
+              class="absolute left-1.5 w-[48px] h-[48px] bg-white rounded-[14px] shadow-sm flex items-center justify-center cursor-grab active:cursor-grabbing text-slate-900 z-10">
+              <i data-lucide="chevrons-right" class="w-5 h-5 stroke-[3]"></i>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- TRANSACTION LEDGER (Hidden by default, triggered by Spent button) -->
+    <div id="ui-ledger-container" class="hidden opacity-0 translate-y-10 transition-all duration-500 pb-10">
+      <div class="flex items-center justify-between mb-3 px-2">
+        <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Transaction Ledger</h3>
+        <div class="flex items-center gap-2">
+          <!-- Filter and Download Buttons -->
+          <button type="button" onclick="toggleLedgerFilter()" class="w-7 h-7 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors active:scale-90 outline-none"><i data-lucide="filter" class="w-3.5 h-3.5 stroke-[2.5]"></i></button>
+          <button type="button" onclick="downloadLedgerCSV()" class="w-7 h-7 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors active:scale-90 outline-none"><i data-lucide="download" class="w-3.5 h-3.5 stroke-[2.5]"></i></button>
+        </div>
+      </div>
+      <!-- Horizontal Filter Pill Bar (Injected by JS) -->
+      <div id="ledger-filter-bar" class="hidden flex gap-2 overflow-x-auto pb-4 px-2 mb-2 snap-x"
+        style="scrollbar-width: none; -ms-overflow-style: none;"></div>
+
+      <!-- Transaction List (Injected by JS) -->
+      <div id="txList" class="space-y-2"></div>
+    </div>
+
+  </main>
+
+  <!-- =========================================
+       TAB 2: SQUAD VIEW
+       Handles Polls, Coordinator Info, and Members list
+       ========================================= -->
+  <main id="view-squad" class="tab-content max-w-md mx-auto p-4 space-y-5 -mt-[1px]">
+
+
+
+    <!-- Containers for dynamically injected Squad Cards -->
+    <div id="leaderSection" class="space-y-3"></div>
+    <div class="space-y-3">
+      <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Trip Members</h3>
+      <!-- Member grid -->
+      <div id="memberList" class="grid grid-cols-2 gap-3"></div>
+    </div>
+  </main>
+
+  <!-- =========================================
+       TAB 3: ROUTE/PLACES VIEW
+       Displays transit timeline and live GPS
+       ========================================= -->
+  <main id="view-places" class="tab-content max-w-md mx-auto p-4 space-y-0 -mt-[1px] relative min-h-[70vh]">
+
+    <!-- FROSTED GLASS VAULT OVERLAY (If Route tracking is locked) -->
+    <div id="route-lock-vault"
+      class="hidden absolute top-0 bottom-0 left-0 right-0 z-[100] flex flex-col items-center justify-center px-6 text-center transition-all duration-700">
+      <div
+        class="bg-white/95 backdrop-blur-2xl p-8 rounded-[32px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] border border-slate-200/60 max-w-[280px] w-full relative overflow-hidden m-auto">
+        <div class="relative w-16 h-16 mx-auto mb-6">
+          <div class="absolute inset-0 bg-indigo-400 rounded-full animate-ping opacity-30"></div>
+          <div
+            class="absolute inset-0 bg-indigo-50 border border-indigo-100 rounded-full flex items-center justify-center z-10 shadow-sm">
+            <i data-lucide="lock" class="w-7 h-7 text-indigo-600 stroke-[2.5]"></i>
+          </div>
+        </div>
+        <h2 class="text-lg font-black text-slate-800 uppercase tracking-widest mb-2">Navigation Standby</h2>
+        <p class="text-[10px] font-bold text-slate-400 uppercase leading-relaxed tracking-wider mb-8">As the route
+          contains live tracking, transit coordinates, and Estimated Time of Arrival (ETA) details,is currently
+          restricted to ensure operational security. Tracking functionality will be enabled nearer to the scheduled
+          departure. </p>
+        <div
+          class="flex items-center justify-center text-indigo-500 bg-indigo-50 py-3 px-4 rounded-xl border border-indigo-100">
+          <span class="text-[9px] font-black uppercase tracking-widest animate-pulse">Awaiting Clearance</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECURE CONTENT WRAPPER (This area gets blurred if locked) -->
+    <div id="route-secure-content" class="w-full transition-all duration-700 ease-in-out pt-3">
+
+      <!-- Top Section (Trip Countdown Timer) -->
+      <div class="w-full flex flex-col items-center justify-center -mt-3 pb-3">
+        <div id="timer-container"
+          class="hidden bg-white border border-slate-200 rounded-full py-1.5 px-3 mb-1.5 flex items-center justify-center gap-1.5 shadow-sm">
+          <i data-lucide="hourglass" class="w-3.5 h-3.5 text-indigo-500 animate-pulse"></i>
+          <span id="ui-timer-text" class="text-[10px] font-black text-slate-700 uppercase tracking-widest leading-none mt-px"></span>
+        </div>
+        <span class="text-[9px] font-medium italic text-slate-400 text-center leading-none">*The schedule will be considered from Delhi onwards.</span>
+      </div>
+
+      <!-- The Live Vertical Timeline Tracker (Injected by JS) -->
+      <div id="ui-timeline-container" class="text-left w-full -mt-2"></div>
+
+      <div id="ui-places-divider" class="hidden w-full h-[1px] bg-slate-200 my-8"></div>
+
+      <!-- Pending Places Checklists -->
+      <div class="space-y-2">
+        <h2 id="head-active-places" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 hidden">
+          Additional Locations</h2>
+        <div id="activePlaceList" class="space-y-2"></div>
+      </div>
+
+      <!-- Visited Places Checklists -->
+      <div class="space-y-2 pb-10">
+        <h4 id="head-visited-places"
+          class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest px-1 hidden">Additional Locations
+          Visited ✅</h4>
+        <div id="visitedPlaceList" class="space-y-2"></div>
+      </div>
+    </div>
+  </main>
+
+
+ <!-- =========================================
+       BOTTOM NAVIGATION BAR
+       Always fixed at the bottom
+       ========================================= -->
+  <nav
+    class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md px-4 py-2.5 flex justify-between items-center z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.03)]">
+    <!-- Gradient accent line along the top of nav -->
+    <div
+      class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 opacity-80">
+    </div>
+
+    <!-- Spend Tab Button -->
+    <button onclick="window.location.href='spent.html'" class="nav-btn nav-active group outline-none">
+      <i data-lucide="wallet" class="w-5 h-5 nav-anim-icon group-active:scale-90 transition-transform"></i>
+      <span class="nav-text">Spend</span>
+    </button>
+
+    <!-- Squad Tab Button -->
+    <button onclick="window.location.href='squad.html'" class="nav-btn group outline-none">
+      <i data-lucide="users" class="w-5 h-5 nav-anim-icon group-active:scale-90 transition-transform"></i>
+      <span class="nav-text">Squad</span>
+    </button>
+
+    <!-- Route Tab Button -->
+    <button id="nav-btn-route" onclick="window.location.href='route.html'" class="nav-btn group outline-none">
+      <i data-lucide="map-pin" class="w-5 h-5 nav-anim-icon group-active:scale-90 transition-transform"></i>
+      <span class="nav-text">Route</span>
+    </button>
+
+    <!-- Triggers the expanded 'More' bottom sheet menu -->
+    <button onclick="toggleMoreMenu()" class="relative flex items-center justify-center p-2.5 mr-1 text-indigo-600 group outline-none transition-colors before:absolute before:content-[''] before:-right-5 before:top-1/2 before:-translate-y-1/2 before:w-[84px] before:h-[48px] before:bg-indigo-100 before:rounded-l-full before:-z-10 active:before:bg-indigo-200 transition-all">
+      <i data-lucide="menu" class="w-6 h-6 group-active:scale-90 transition-transform relative z-10"></i>
+    </button>
+  </nav>
+
+  <!-- =========================================
+       BOTTOM SHEET "MORE" MENU
+       ========================================= -->
+  <!-- The Blurred Background Overlay (Clicking it closes menu) -->
+  <div id="more-menu-overlay" class="hidden fixed inset-0 z-[300] bg-slate-900/60 backdrop-blur-md transition-opacity"
+    onclick="toggleMoreMenu()"></div>
+
+  <!-- The Slide-up Menu Container -->
+  <div id="more-menu-sheet"
+    class="fixed z-[310] bottom-0 left-0 right-0 bg-white rounded-t-[32px] shadow-[0_-8px_30px_rgba(0,0,0,0.04)] transform translate-y-full transition-transform duration-300 px-6 pt-5 pb-8 border-t border-slate-100">
+
+    <!-- Minimal drag handle indicator -->
+    <div class="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-6"></div>
+
+    <!-- Header: User greeting and quick actions -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex-1 min-w-0 pr-3">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Hello</p>
+        <!-- Injected Username -->
+        <p id="ui-more-username" class="text-xl font-black text-slate-800 leading-tight truncate">Squad Member</p>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <!-- View ID Card Trigger -->
+        <div onclick="window.location.href='idcard.html'"
+          class="px-4 py-2 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-full flex items-center gap-2 transition-colors active:bg-indigo-100 outline-none cursor-pointer">
+          <i data-lucide="id-card" class="w-4 h-4 stroke-[2.5]"></i>
+          <span class="text-[10px] font-bold uppercase tracking-widest">ID CARD</span>
+        </div>
+
+        <!-- Dynamic Sign Off Container (injected if signing period active) -->
+        <div id="more-sign-off-container" onclick="handleMenuSignOff()"></div>
+      </div>
+    </div>
+
+    <!-- The Pill Grid Navigation System -->
+    <div class="grid grid-cols-2 gap-3 mb-6">
+
+      <!-- 1. Guidelines (Left Half) -->
+      <a id="ui-more-guidelines" href="#" target="_blank"
+        class="flex items-center p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
+        <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center mr-2.5 shrink-0">
+          <i data-lucide="book-text" class="w-4 h-4"></i>
+        </div>
+        <div class="flex-1 overflow-hidden">
+          <p class="text-[11px] font-black text-slate-700 uppercase tracking-widest truncate">Guidelines</p>
+        </div>
+      </a>
+
+      <!-- 2. Trip Report (Right Half - Inline with Guidelines) -->
+      <a id="ui-more-tripreport" href="#" target="_blank"
+        class="flex items-center p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
+        <div class="w-8 h-8 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center mr-2.5 shrink-0">
+          <i data-lucide="file-pie-chart" class="w-4 h-4"></i>
+        </div>
+        <div class="flex-1 overflow-hidden flex flex-col justify-center">
+          <p class="text-[11px] font-black text-slate-700 uppercase tracking-widest truncate">Trip Report</p>
+          <p id="ui-more-tripreport-subtext"
+            class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 truncate hidden"></p>
+        </div>
+      </a>
+
+      <!-- 3. Past Archives (Full Width Below) -->
+      <div onclick="window.location.href='archives.html'"
+        class="col-span-2 flex items-center p-3.5 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
+        <div
+          class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mr-3 shrink-0 border border-indigo-100">
+          <i data-lucide="archive" class="w-5 h-5"></i>
+        </div>
+        <div class="flex-1">
+          <p class="text-sm font-black text-slate-800 uppercase tracking-wide">Past Trips Archive</p>
+          <p class="text-[7px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Previous trip reports & photos</p>
+        </div>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+      </div>
+
+      <!-- 4. Google Drive Trip Gallery (Full Width Below) -->
+      <a href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank"
+        class="col-span-2 flex items-center p-3.5 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
+        <div
+          class="w-10 h-10 rounded-full bg-slate-50 text-slate-600 flex items-center justify-center mr-3 shrink-0 border border-slate-100">
+          <i data-lucide="camera" class="w-5 h-5"></i>
+        </div>
+        <div class="flex-1">
+          <p class="text-sm font-black text-slate-800 uppercase tracking-wide">Trip Gallery</p>
+          <p class="text-[7px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Upload photos & receipts to Drive</p>
+        </div>
+        <i data-lucide="external-link" class="w-4 h-4 text-slate-300"></i>
+      </a>
+    </div>
+
+    <!-- Footer: Change PIN (Small) / Log Out (Large) -->
+    <div class="flex items-center gap-3">
+      <button onclick="openChangePinModal()" class="w-1/5 py-4 bg-slate-50 border border-slate-200 text-slate-500 rounded-2xl flex items-center justify-center active:bg-slate-100 transition-colors outline-none shrink-0" title="Change PIN">
+        <i data-lucide="key-round" class="w-5 h-5 stroke-[2.5]"></i>
+      </button>
+
+      <button onclick="processLogOut()" class="flex-1 py-4 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl flex items-center justify-center gap-2 active:bg-rose-100 transition-colors outline-none shrink-0">
+        <i data-lucide="log-out" class="w-4 h-4 stroke-[2.5]"></i>
+        <span class="text-[11px] font-black uppercase tracking-widest">Log Out</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================
+       JAVASCRIPT APP LOGIC ENGINE
+       ========================================= -->
+  <script src="js/app.js"></script>
+
+  <!-- =========================================
+       GLOBAL TOAST COMPONENT (Hidden by default)
+       ========================================= -->
+  <div id="global-toast"
+    class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[10000] transform transition-all duration-300 opacity-0 translate-y-4 pointer-events-none flex items-center gap-2 bg-slate-900/95 backdrop-blur-md text-white px-5 py-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.2)] border border-slate-700">
+    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+    <span id="toast-message" class="text-[11px] font-bold tracking-widest uppercase text-slate-100">Copied!</span>
+  </div>
+
+  <!-- =========================================
+       CHANGE PIN MODAL
+       ========================================= -->
+  <div id="change-pin-modal"
+    class="hidden fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans transition-opacity duration-300">
+    <div class="max-w-sm w-full bg-white rounded-3xl shadow-2xl p-6 border border-slate-200 text-center relative">
+      <button onclick="closeChangePinModal()" class="absolute top-4 right-4 w-8 h-8 bg-slate-50 text-slate-500 rounded-full flex items-center justify-center hover:bg-slate-100 active:scale-90 transition-all outline-none">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+
+      <div
+        class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner border border-indigo-100">
+        <i data-lucide="key-round" class="w-6 h-6 stroke-[2.5]"></i>
+      </div>
+      <h2 class="text-xl font-black text-slate-800 tracking-wide uppercase mb-1">Change PIN</h2>
+      <p class="text-slate-400 text-xs font-medium mb-6">Update your 4-digit security PIN</p>
+
+      <div class="space-y-4 text-left">
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Current PIN</label>
+          <input type="password" id="cp-old-pin" pattern="\d*" maxlength="4" placeholder="••••" class="w-full text-center tracking-[0.5em] py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-black text-xl">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">New PIN</label>
+          <input type="password" id="cp-new-pin" pattern="\d*" maxlength="4" placeholder="••••" class="w-full text-center tracking-[0.5em] py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-black text-xl">
+        </div>
+        <p id="cp-error-msg" class="text-rose-500 text-center text-[11px] font-black hidden uppercase tracking-wider">
+        </p>
+
+        <button onclick="submitPinChange()" id="cp-submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl active:scale-95 transition shadow-lg mt-2 uppercase tracking-widest text-[11px]">
+          Update PIN
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================
+       SQUAD CHAT MODAL
+       Full-screen modal for real-time app chatting
+       ========================================= -->
+  <div id="squad-chat-modal" class="hidden fixed inset-0 z-[1000] bg-slate-50 flex flex-col font-sans">
+
+    <!-- Chat Top Nav Header -->
+    <div
+      class="bg-gradient-to-br from-indigo-600 to-violet-700 px-4 pt-6 pb-4 text-white shadow-md flex justify-between items-center relative z-20 rounded-b-3xl">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
+          <i data-lucide="messages-square" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <h2 class="text-sm font-black tracking-widest uppercase">TRIP MESSANGER</h2>
+          <p class="text-[9px] font-bold text-indigo-200 uppercase tracking-widest flex items-center gap-1">
+            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span> end to end encrypted
+          </p>
+        </div>
+      </div>
+      <!-- Close chat window -->
+      <button onclick="closeChatModal()" class="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md transition-colors active:scale-90">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- Message Bubble Output Area -->
+    <div id="ui-chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 pb-24 bg-slate-50 relative z-10">
+      <!-- Injected by renderChatData() -->
+    </div>
+
+    <!-- Floating Input Form Area -->
+    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white via-white to-transparent z-20">
+
+      <!-- Small Hidden command box triggered by plus button -->
+      <div id="chat-command-menu"
+        class="hidden absolute bottom-[70px] left-4 bg-white border border-slate-200 rounded-xl shadow-lg p-2 flex flex-col gap-1 w-32 z-30 transition-all origin-bottom-left">
+        <button type="button" onclick="insertChatCommand('/Help')" class="text-left px-3 py-2 text-[11px] font-black tracking-widest uppercase text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 active:scale-95 transition-all"><i data-lucide="info" class="w-3 h-3 inline-block mr-1 -mt-0.5"></i>/Help</button>
+        <button type="button" onclick="insertChatCommand('/Support')" class="text-left px-3 py-2 text-[11px] font-black tracking-widest uppercase text-rose-600 bg-rose-50 rounded-lg hover:bg-rose-100 active:scale-95 transition-all"><i data-lucide="life-buoy" class="w-3 h-3 inline-block mr-1 -mt-0.5"></i>/Support</button>
+      </div>
+
+      <!-- User Message input box -->
+      <form id="chat-form" onsubmit="sendChatMessage(event)"
+        class="bg-white border border-slate-200 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] rounded-full px-2 py-2 flex items-center gap-2 relative">
+        <button type="button" onclick="toggleChatCommands()" class="w-8 h-8 bg-slate-50 text-slate-500 hover:bg-slate-100 border border-slate-200 rounded-full flex items-center justify-center flex-shrink-0 transition-colors active:scale-90 outline-none">
+          <i data-lucide="plus" class="w-4 h-4 stroke-[3]"></i>
+        </button>
+
+        <input type="text" id="chat-input-text" autocomplete="off" placeholder="Message the team..." class="flex-1 w-full bg-transparent text-sm font-bold text-slate-800 placeholder-slate-400 outline-none px-1" required>
+
+        <button type="submit" id="chat-send-btn" class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center flex-shrink-0 shadow-md active:scale-90 transition-transform outline-none">
+          <i data-lucide="send" class="w-4 h-4 -ml-0.5"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================
+       TRIP FINISHED MODAL (Triggered when timeline reaches end)
+       ========================================= -->
+  <div id="trip-complete-popup"
+    class="hidden fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans transition-opacity duration-500 opacity-0">
+    <div id="trip-complete-card"
+      class="w-full max-w-sm bg-white rounded-[32px] shadow-2xl p-6 text-center border border-slate-100 transform scale-75 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+      <div
+        class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-100 shadow-inner">
+        <i data-lucide="map-pin-check" class="w-8 h-8 stroke-[2]"></i>
+      </div>
+      <h2 class="text-xl font-black text-slate-800 uppercase tracking-wide mb-1">Trip Completed!</h2>
+      <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-6 leading-relaxed">
+        The final destination has been reached, Please sign off from your profile.
+      </p>
+      <button onclick="closeTripCompletePopup()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl transition active:scale-95 text-xs uppercase tracking-widest shadow-lg">
+        close
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================
+       SQUAD ASSIGNED ROLE MODAL
+       ========================================= -->
+  <div id="role-details-modal"
+    class="hidden fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans transition-opacity duration-500 opacity-0"
+    onclick="closeRoleDetailsModal()">
+    <div id="role-details-card" onclick="event.stopPropagation()"
+      class="w-full max-w-sm bg-white rounded-[32px] shadow-2xl p-6 text-center border border-slate-100 transform scale-75 opacity-0 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+
+
+
+      <h2 id="modal-role-member-name" class="text-sm font-black text-slate-400 uppercase tracking-widest mb-1">Member
+        Name</h2>
+      <h3 class="text-xl font-black text-slate-800 uppercase tracking-wide mb-4">Assigned Role</h3>
+
+      <!-- Bullet list container target -->
+      <div id="modal-role-content" class="w-full text-xs font-bold text-slate-600 leading-relaxed pb-4">
+        <!-- Injected dynamically -->
+      </div>
+
+      <button onclick="closeRoleDetailsModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl transition active:scale-95 text-xs uppercase tracking-widest shadow-lg">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================
+       ARCHIVES MODAL
+       Pop-up window listing all previous trips
+       ========================================= -->
+  <div id="archives-modal"
+    class="hidden fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 font-sans transition-opacity duration-300">
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl p-6 border border-slate-200 text-center relative max-h-[80vh] flex flex-col">
+      
+      <!-- Close Button -->
+      <button onclick="closeArchivesModal()" class="absolute top-4 right-4 w-8 h-8 bg-slate-50 text-slate-500 rounded-full flex items-center justify-center hover:bg-slate-100 active:scale-90 transition-all outline-none">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+
+      <!-- Header -->
+      <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 border border-indigo-100 shrink-0">
+        <i data-lucide="archive" class="w-6 h-6 stroke-[2.5]"></i>
+      </div>
+      <h2 class="text-xl font-black text-slate-800 tracking-wide uppercase mb-1">Past Trips Archive</h2>
+      <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-4">Reports & Media Folders</p>
+
+      <!-- NEW: Quick Search Input Bar -->
+      <div class="relative mb-3 shrink-0">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+        <input type="text" id="archive-search-input" oninput="filterArchivesList(this.value)" placeholder="Search trips by name or date..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-3 py-2.5 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
+      </div>
+
+      <!-- Scrollable Trip List Container -->
+      <div id="archives-modal-content" class="overflow-y-auto space-y-3 pr-1 text-left flex-1">
+        <!-- Injected dynamically by JS -->
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
