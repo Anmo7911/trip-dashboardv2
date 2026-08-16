@@ -824,8 +824,9 @@
           <span>Places / Trip</span>
         </button>
 
-        <!-- Trip Archives Trigger -->
-        <button type="button" onclick="openArchivesModal()" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none">
+       
+        <!-- Trip Archives Tab Button -->
+        <button onclick="showTab('archives', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="archives">
           <i data-lucide="archive" class="w-4 h-4"></i>
           <span>Trip Archives</span>
         </button>
@@ -1598,8 +1599,10 @@
 
       <!-- Middle Rows: Past Trips Archive & Google Drive Gallery -->
       <div class="space-y-3">
+       
         <!-- Past Archive -->
-        <div onclick="openArchivesModal()" class="flex items-center p-4 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-2xl cursor-pointer transition-all">
+       
+        <div onclick="showTab('archives', this)" class="flex items-center p-4 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-2xl cursor-pointer transition-all">
           <div class="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mr-4 shrink-0">
             <i data-lucide="archive" class="w-5 h-5"></i>
           </div>
@@ -1635,6 +1638,42 @@
       </div>
 
     </div>
+  </main>
+
+    <!-- =========================================
+       TAB 5: PAST TRIPS ARCHIVE FULL VIEW
+       Desktop Wide Grid & Mobile Responsive
+       ========================================= -->
+  <main id="view-archives" class="tab-content w-full max-w-md lg:max-w-5xl mx-auto p-4 lg:p-8 space-y-6">
+
+    <!-- Top Card Header -->
+    <div class="bg-white rounded-[28px] lg:rounded-[32px] p-6 lg:p-8 border border-slate-200/80 shadow-sm space-y-5">
+      
+      <div class="flex items-center justify-between border-b border-slate-100 pb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shadow-inner shrink-0">
+            <i data-lucide="archive" class="w-6 h-6 stroke-[2.5]"></i>
+          </div>
+          <div>
+            <h2 class="text-xl lg:text-2xl font-black text-slate-800 tracking-tight uppercase">Past Trips Archive</h2>
+            <p class="text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-0.5">Historical Reports & Media Folders</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Search Bar -->
+      <div class="relative w-full">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+        <input type="text" id="archive-page-search-input" oninput="filterArchivesPage(this.value)" placeholder="Search trips by name or date..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3 text-xs lg:text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
+      </div>
+
+    </div>
+
+    <!-- Responsive Grid for Past Trips -->
+    <div id="archives-page-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 pb-12">
+      <!-- Dynamic Archive Cards Rendered by JS -->
+    </div>
+
   </main>
 
     
@@ -1736,7 +1775,7 @@
       </a>
 
       <!-- 3. Past Archives (Full Width Below) -->
-      <div onclick="openArchivesModal()"
+      <div onclick="toggleMoreMenu(); showTab('archives', null);"
         class="col-span-2 flex items-center p-3.5 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
         <div
           class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mr-3 shrink-0 border border-indigo-100">
@@ -3001,6 +3040,8 @@
       
       // --- POPULATE ARCHIVES MODAL DATA ---
 renderArchivesList(data.pastTrips);
+      // --- POPULATE ARCHIVES FULL PAGE DATA ---
+      renderArchivesPageList(data.pastTrips);
       attemptSplashHide();
    }
     
@@ -4162,6 +4203,72 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       if (modal) {
         modal.classList.add('hidden');
       }
+    }
+
+
+    // ==========================================
+    // PAST TRIPS FULL PAGE CONTROLLER
+    // ==========================================
+    function filterArchivesPage(searchTerm) {
+      if (!globalActiveDataPayloadBackup || !globalActiveDataPayloadBackup.pastTrips) return;
+      
+      const term = searchTerm.toLowerCase().trim();
+      const filtered = globalActiveDataPayloadBackup.pastTrips.filter(trip => {
+        const nameMatch = trip.name ? trip.name.toLowerCase().includes(term) : false;
+        const dateMatch = trip.dates ? trip.dates.toLowerCase().includes(term) : false;
+        return nameMatch || dateMatch;
+      });
+
+      renderArchivesPageList(filtered);
+    }
+
+    function renderArchivesPageList(trips) {
+      const container = document.getElementById('archives-page-content');
+      if (!container) return;
+
+      if (!trips || trips.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full bg-white rounded-[24px] p-8 text-center border border-slate-200 shadow-sm">
+            <i data-lucide="search-x" class="w-10 h-10 text-slate-300 mx-auto mb-2.5"></i>
+            <p class="text-xs font-black text-slate-400 uppercase tracking-widest">No matching trips found</p>
+          </div>`;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = trips.map(trip => {
+        const hasReport = trip.reportUrl && trip.reportUrl.trim() !== "" && trip.reportUrl !== "#";
+        const hasGallery = trip.galleryUrl && trip.galleryUrl.trim() !== "" && trip.galleryUrl !== "#";
+        const spentText = trip.totalSpent ? `₹${Math.round(trip.totalSpent).toLocaleString('en-IN')}` : '';
+
+        return `
+          <div class="bg-white p-5 lg:p-6 rounded-[24px] border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-4">
+            <div class="flex justify-between items-start gap-2">
+              <div class="min-w-0 flex-1">
+                <h3 class="text-sm lg:text-base font-black text-slate-800 uppercase tracking-wide truncate">${trip.name || 'Past Trip'}</h3>
+                ${trip.dates ? `<p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">${trip.dates}</p>` : ''}
+              </div>
+              ${spentText ? `<span class="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-black px-3 py-1.5 rounded-full uppercase shrink-0">Spent: ${spentText}</span>` : ''}
+            </div>
+            
+            <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100">
+              ${hasReport ? `
+                <a href="${trip.reportUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm">
+                  <i data-lucide="file-text" class="w-4 h-4"></i> View Report
+                </a>` : `
+                <span class="flex-1 bg-slate-100 text-slate-400 text-[10px] lg:text-[11px] font-bold uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed border border-slate-200/60">
+                  <i data-lucide="file-x" class="w-4 h-4"></i> No Report
+                </span>`}
+
+              ${hasGallery ? `
+                <a href="${trip.galleryUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all">
+                  <i data-lucide="image" class="w-4 h-4"></i> Gallery
+                </a>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+      
+      lucide.createIcons();
     }
 
     // ==========================================
