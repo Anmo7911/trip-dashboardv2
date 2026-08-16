@@ -1225,24 +1225,14 @@
         </div>
       </div>
 
-      <!-- Right Header Actions (Chat / Notification & Profile Pill) -->
-      <div class="flex items-center gap-2 lg:gap-3 justify-end lg:w-48">
-        <!-- Chat / Notice Button -->
-        <button onclick="openChatModal()" class="relative w-9 h-9 lg:w-10 lg:h-10 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full flex items-center justify-center backdrop-blur-md active:scale-95 transition-all shadow-sm outline-none" title="Trip Messenger">
-          <i data-lucide="message-circle" class="w-4 h-4 text-white stroke-[2.5]"></i>
+     <!-- Right Header Actions -->
+      <div class="flex items-center justify-end w-10 lg:w-48">
+        <!-- Chat Button (Locked 1:1 Aspect Ratio) -->
+        <button onclick="openChatModal()" class="relative w-9 h-9 lg:w-10 lg:h-10 aspect-square shrink-0 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full flex items-center justify-center backdrop-blur-md active:scale-95 transition-all shadow-sm outline-none" title="Trip Messenger">
+          <i data-lucide="message-circle" class="w-4 h-4 lg:w-5 lg:h-5 text-white stroke-[2.5]"></i>
           <span id="chat-unread-dot" class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-rose-500 border-2 border-violet-700 rounded-full hidden shadow-sm"></span>
         </button>
-
-        <!-- Desktop User Profile Trigger Pill -->
-        <button onclick="toggleMoreMenu()" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full py-1 px-1.5 lg:px-3 text-white backdrop-blur-md transition-all active:scale-95 outline-none">
-          <div class="w-7 h-7 rounded-full bg-indigo-500 flex items-center justify-center font-black text-xs text-white uppercase overflow-hidden border border-white/30">
-            <i data-lucide="user" class="w-4 h-4"></i>
-          </div>
-          <span id="desktop-header-username" class="hidden lg:inline text-xs font-bold capitalize tracking-wide max-w-[90px] truncate">Member</span>
-          <i data-lucide="chevron-down" class="hidden lg:inline w-3.5 h-3.5 text-indigo-200"></i>
-        </button>
       </div>
-    </div>
 
     <!-- Live Notice Bar -->
     <div id="notice-container" class="hidden overflow-hidden w-full bg-transparent px-4 lg:px-8 pt-3 pb-1 relative z-10">
