@@ -1273,110 +1273,101 @@
 
   <!-- =========================================
        TAB 1: SPEND VIEW
-       Handles budgeting, adding expenses, and ledger
+       Responsive Desktop Grid & Mobile Compatible
        ========================================= -->
-  <main id="view-spend" class="tab-content active-tab max-w-md mx-auto p-4 space-y-4 -mt-[1px]">
-    <!-- Background Watermark text -->
-    <div class="watermark-container pt-23 pb-4" id="empty-state-watermark">
-      <div class="watermark-text-large text-slate-200 text-3xl mt-1 tracking-tight">ALL SET FOR<br>TODAY VOF0726</div>
-    </div>
+  <main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-5xl mx-auto p-4 lg:p-8 space-y-4 lg:space-y-6">
 
     <!-- 3D BENTO GRID (Balance on Left, Total/Spent on Right) -->
-    <div id="ui-top-cards-wrapper"
-      class="transition-all duration-500 overflow-hidden max-h-[300px] opacity-100 origin-top mb-1">
-      <div class="flex justify-between h-[140px] w-full relative">
+    <div id="ui-top-cards-wrapper" class="transition-all duration-500 overflow-hidden opacity-100 origin-top">
+      <div class="flex flex-row gap-3 lg:gap-6 h-[150px] lg:h-[180px] w-full relative">
 
-        <!-- Left Column: Flippable Balance Card -->
-        <div id="balance-col" class="transition-all duration-[600ms] ease-[cubic-bezier(0.25,1,0.5,1)] h-full z-20"
-          style="width: calc(50% - 6px);">
+        <!-- Left Column: Flippable Balance Card (Expands in desktop) -->
+        <div id="balance-col" class="transition-all duration-[600ms] ease-[cubic-bezier(0.25,1,0.5,1)] h-full z-20 w-[calc(50%-6px)] lg:w-7/12">
           <div class="card-scene h-full w-full">
             <div id="card-flipper-engine" onclick="flipBalanceCard()" class="card-flipper cursor-pointer select-none">
 
               <!-- Front of Balance Card -->
-              <div id="balance-card"
-                class="face-front w-full h-full p-4 rounded-[24px] border border-white/60 transition-all duration-300 text-center flex flex-col justify-between items-center active:scale-[0.96]">
-
-                <!-- Changed back to justify-start to push it up to the red line -->
-                <div class="w-full flex-1 flex flex-col items-center justify-start mt-1">
-                  <div class="flex items-center justify-center gap-1.5 mb-1.5">
-                    <span class="relative flex h-2 w-2">
-        <span id="dot-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-emerald-400"></span>
-                    <span id="dot-main" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </span>
-                    <p id="balance-label"
-                      class="text-[9.5px] font-black text-emerald-500 uppercase tracking-widest drop-shadow-sm">
-                      Remaining</p>
-                  </div>
-                  <!-- The main dynamic balance number -->
-                  <p id="stat-balance" class="text-3xl font-black text-emerald-600 tracking-tight drop-shadow-sm">₹0</p>
+              <div id="balance-card" class="face-front w-full h-full p-4 lg:p-6 rounded-[24px] lg:rounded-[28px] border border-white/80 bg-gradient-to-b from-emerald-50/90 to-emerald-100/70 shadow-sm transition-all duration-300 flex flex-col justify-between relative overflow-hidden active:scale-[0.98]">
+                
+                <!-- Desktop Wallet Vector Graphic Badge in Background -->
+                <div class="absolute right-4 lg:right-6 top-1/2 -translate-y-1/2 opacity-25 text-emerald-600 pointer-events-none hidden sm:block">
+                  <i data-lucide="wallet" class="w-16 h-16 lg:w-24 lg:h-24 stroke-[1.2]"></i>
                 </div>
 
-                <!-- Hint to click/flip -->
-                <div id="balance-hint-footer"
-                  class="mt-2 text-[9px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-center gap-1 transition-colors duration-500 w-full drop-shadow-sm">
-                  <span class="text-slate-400">Allocations</span><i data-lucide="layers" class="w-3 h-3 stroke-[2.5] text-slate-400"></i>
+                <div class="w-full flex-1 flex flex-col items-start justify-center">
+                  <div class="flex items-center gap-2 mb-1.5">
+                    <span class="relative flex h-2.5 w-2.5">
+                      <span id="dot-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-emerald-400"></span>
+                      <span id="dot-main" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <p id="balance-label" class="text-[10px] lg:text-xs font-black text-emerald-600 uppercase tracking-widest">
+                      Remaining
+                    </p>
+                  </div>
+                  <!-- The dynamic balance number -->
+                  <p id="stat-balance" class="text-3xl lg:text-5xl font-black text-emerald-700 tracking-tight">₹0</p>
+                </div>
+
+                <!-- Allocations Hint Footer -->
+                <div id="balance-hint-footer" class="text-[9px] lg:text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 transition-colors duration-500">
+                  <span>Allocations</span>
+                  <i data-lucide="layers" class="w-3.5 h-3.5 stroke-[2.5]"></i>
                 </div>
               </div>
 
-              <!-- Back of Balance Card (Shows category limits) -->
-              <div
-                class="face-back w-full h-full p-4 rounded-[24px] border border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 shadow-[0_12px_24px_rgba(0,0,0,0.15),inset_0_2px_4px_rgba(255,255,255,0.1)] text-slate-100 flex flex-col justify-between">
-                <div class="text-center w-full border-b border-slate-700/80 pb-1.5 px-1 relative">
-                  <p class="text-[10px] font-black uppercase tracking-widest text-indigo-400 drop-shadow-sm">Budget
-                    Allocations
-                  </p>
-                  <i data-lucide="x" class="absolute right-0 top-0 w-4 h-4 text-slate-400 hover:text-white transition-colors"></i>
+              <!-- Back of Balance Card (Allocations List) -->
+              <div class="face-back w-full h-full p-4 lg:p-6 rounded-[24px] lg:rounded-[28px] border border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 shadow-xl text-slate-100 flex flex-col justify-between">
+                <div class="flex justify-between items-center w-full border-b border-slate-700/80 pb-1.5 px-1">
+                  <p class="text-[10px] lg:text-xs font-black uppercase tracking-widest text-indigo-400">Budget Allocations</p>
+                  <i data-lucide="x" class="w-4 h-4 text-slate-400 hover:text-white transition-colors"></i>
                 </div>
-                <!-- Grid injected dynamically -->
-                <div id="back-bars-grid"
-                  class="grid grid-cols-2 gap-x-6 gap-y-1.5 w-full text-center text-[10px] font-bold px-1 overflow-y-auto mt-2"
-                  style="max-height: 85px;"></div>
+                <div id="back-bars-grid" class="grid grid-cols-2 gap-x-6 gap-y-1.5 w-full text-[10px] lg:text-xs font-bold px-1 overflow-y-auto max-h-[90px] lg:max-h-[110px]"></div>
               </div>
 
             </div>
           </div>
         </div>
 
-        <!-- Right Column: Budget & Spent Metrics -->
-        <div id="stats-col"
-          class="transition-all duration-[500ms] ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col justify-between h-full opacity-100 z-10"
-          style="width: calc(50% - 6px);">
+        <!-- Right Column: Total Budget & Spent Stack -->
+        <div id="stats-col" class="transition-all duration-[500ms] ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col justify-between h-full w-[calc(50%-6px)] lg:w-5/12 gap-3 lg:gap-4">
 
-          <!-- Top Right Block: Total Budget (Flippable confirmation peek) -->
-          <div id="ui-budget-wrapper"
-            class="w-full transition-all duration-500 overflow-hidden opacity-100 rounded-[20px]"
-            style="height: calc(50% - 6px);">
+          <!-- Top Right Card: Total Budget -->
+          <div id="ui-budget-wrapper" class="w-full h-[calc(50%-6px)] lg:h-1/2 rounded-[20px] lg:rounded-[24px] overflow-hidden">
             <div class="budget-scene-mount h-full w-full">
               <div id="ui-budget-flip-engine" class="budget-card-inner-engine w-full h-full">
-                <!-- Front (Base stat) -->
-                <div
-                  class="budget-front bg-gradient-to-b from-white to-slate-50 border border-white shadow-[0_8px_16px_rgba(0,0,0,0.03),inset_0_2px_4px_rgba(255,255,255,1)] px-2 py-0 rounded-[20px] w-full h-full flex flex-col justify-center items-center text-center">
-                  <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mb-0.5 drop-shadow-sm">Total
-                    Budget</p>
-                  <p id="stat-budget" class="text-sm font-black text-slate-800 drop-shadow-sm">₹0</p>
+                
+                <!-- Front: Total Budget -->
+                <div class="budget-front bg-white border border-slate-200/80 shadow-sm px-4 py-2 lg:px-6 rounded-[20px] lg:rounded-[24px] w-full h-full flex items-center justify-between">
+                  <div class="flex flex-col justify-center text-left">
+                    <p class="text-[9px] lg:text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Total Budget</p>
+                    <p id="stat-budget" class="text-sm lg:text-2xl font-black text-slate-800">₹0</p>
+                  </div>
+                  <div class="w-8 h-8 lg:w-11 lg:h-11 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
+                    <i data-lucide="wallet-cards" class="w-4 h-4 lg:w-5 lg:h-5"></i>
+                  </div>
                 </div>
-                <!-- Back (Confirmation of submitted expense) -->
-                <div
-                  class="budget-back bg-gradient-to-b from-emerald-50 to-emerald-100 border border-emerald-50 p-2 text-center rounded-[20px] shadow-[0_8px_16px_rgba(16,185,129,0.06),inset_0_2px_4px_rgba(255,255,255,0.8)] w-full h-full flex flex-col justify-center items-center">
-                  <p id="ui-peek-title-row"
-                    class="text-[10px] font-black tracking-wide text-emerald-600 uppercase drop-shadow-sm"></p>
-                  <p id="ui-peek-notes-row"
-                    class="text-[9px] font-semibold text-emerald-500/90 truncate w-full mt-0.5 drop-shadow-sm"></p>
+
+                <!-- Back: Expense Confirmation Peek -->
+                <div class="budget-back bg-gradient-to-b from-emerald-50 to-emerald-100 border border-emerald-100 p-2 text-center rounded-[20px] lg:rounded-[24px] w-full h-full flex flex-col justify-center items-center">
+                  <p id="ui-peek-title-row" class="text-[10px] lg:text-xs font-black tracking-wide text-emerald-600 uppercase"></p>
+                  <p id="ui-peek-notes-row" class="text-[9px] lg:text-[10px] font-semibold text-emerald-600/90 truncate w-full mt-0.5"></p>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Bottom Right Block: Total Spent (Triggers Ledger View) -->
-          <div id="ui-spent-hero-card" onclick="toggleLedger()"
-            class="w-full bg-gradient-to-b from-rose-50 to-rose-100 border border-white/60 shadow-[0_8px_16px_rgba(225,29,72,0.04),inset_0_2px_4px_rgba(255,255,255,0.9)] px-2 py-0 rounded-[20px] flex flex-col justify-center items-center text-center cursor-pointer transition-all duration-300 active:scale-[0.96]"
-            style="height: calc(50% - 6px);">
-            <div class="flex items-center justify-center gap-1 mb-0.5">
-              <p id="ui-spent-label"
-                class="text-[9px] font-bold text-rose-500 uppercase tracking-tighter drop-shadow-sm">Spent</p>
-              <i data-lucide="receipt-text" class="w-3 h-3 text-rose-500 drop-shadow-sm"></i>
+          <!-- Bottom Right Card: Spent (Triggers Ledger) -->
+          <div id="ui-spent-hero-card" onclick="toggleLedger()" class="w-full h-[calc(50%-6px)] lg:h-1/2 bg-rose-50/70 border border-rose-100/80 shadow-sm px-4 py-2 lg:px-6 rounded-[20px] lg:rounded-[24px] flex items-center justify-between cursor-pointer transition-all duration-300 hover:bg-rose-50 active:scale-[0.98]">
+            <div class="flex flex-col justify-center text-left">
+              <div class="flex items-center gap-1.5 mb-0.5">
+                <p id="ui-spent-label" class="text-[9px] lg:text-[10px] font-black text-rose-500 uppercase tracking-wider">Spent</p>
+                <i data-lucide="receipt" class="w-3 h-3 text-rose-500"></i>
+              </div>
+              <p id="stat-spent" class="text-sm lg:text-2xl font-black text-rose-600">₹0</p>
             </div>
-            <p id="stat-spent" class="text-sm font-black text-rose-600 drop-shadow-sm">₹0</p>
+            <div class="w-8 h-8 lg:w-11 lg:h-11 rounded-2xl bg-rose-100/60 flex items-center justify-center text-rose-500 shrink-0">
+              <i data-lucide="trending-up" class="w-4 h-4 lg:w-5 lg:h-5"></i>
+            </div>
           </div>
 
         </div>
@@ -1384,51 +1375,40 @@
     </div>
 
     <!-- NEW EXPENSE ENTRY FORM -->
-    <div id="ui-form-wrapper" class="transition-all duration-500 overflow-hidden max-h-[500px] opacity-100 origin-top">
-      <div class="bg-white rounded-[28px] p-5 border border-slate-200 shadow-sm relative overflow-hidden">
+    <div id="ui-form-wrapper" class="transition-all duration-500 overflow-hidden opacity-100 origin-top">
+      <div class="bg-white rounded-[28px] lg:rounded-[32px] p-5 lg:p-7 border border-slate-200/80 shadow-sm relative overflow-hidden">
 
-        <!-- FROSTED GLASS LOCK OVERLAY (If expenses are paused globally) -->
-        <div id="expense-lock-overlay"
-          class="hidden absolute inset-0 z-[60] flex flex-col items-center justify-center rounded-[28px] border border-slate-200 transition-all duration-300">
-          <div class="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center mb-2">
-            <i data-lucide="lock" class="w-6 h-6 text-slate-600"></i>
+        <!-- Frosted Glass Lock Overlay -->
+        <div id="expense-lock-overlay" class="hidden absolute inset-0 z-[60] flex flex-col items-center justify-center rounded-[28px] lg:rounded-[32px] border border-slate-200 bg-white/80 backdrop-blur-sm transition-all duration-300">
+          <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-2 text-slate-600">
+            <i data-lucide="lock" class="w-6 h-6"></i>
           </div>
-          <p class="text-[10px] font-black text-slate-600 uppercase tracking-widest lock-text-pulse">
-            Adding Expenses Paused
-          </p>
+          <p class="text-xs font-black text-slate-600 uppercase tracking-widest lock-text-pulse">Adding Expenses Paused</p>
         </div>
 
-        <!-- Visual Flare styling for the container -->
-        <div
-          class="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full blur-3xl -z-10 -mr-10 -mt-10 pointer-events-none">
-        </div>
+        <form id="expenseForm" class="space-y-4 lg:space-y-5 relative z-10">
 
-        <!-- The Actual Form -->
-        <form id="expenseForm" class="space-y-4 relative z-10">
-
-          <!-- Form Header & Date Picker (Moved to Top Right) -->
-          <div class="flex items-center justify-between mb-4 relative z-10">
-            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enter New Expense</h3>
-
-            <div
-              class="flex items-center gap-1 bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-200 px-2 py-1 rounded-lg cursor-pointer">
-              <i data-lucide="calendar" class="w-3 h-3 text-slate-400"></i>
-              <input type="date" id="todayDate" name="date" required class="bg-transparent text-[10px] font-black text-indigo-500 uppercase tracking-wider outline-none cursor-pointer appearance-none pl-0.5 w-auto">
+          <!-- Header & Date Picker -->
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-[10px] lg:text-xs font-black text-slate-400 uppercase tracking-widest">Enter New Expense</h3>
+            <div class="flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl cursor-pointer transition-colors">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-500"></i>
+              <input type="date" id="todayDate" name="date" required class="bg-transparent text-xs font-black text-indigo-600 uppercase tracking-wider outline-none cursor-pointer">
             </div>
           </div>
 
-          <!-- Large Amount Input -->
-          <div class="flex items-end gap-2 border-b-2 border-slate-100 pb-2">
-            <span class="text-2xl font-black text-slate-300 mb-1">₹</span>
-            <input type="number" name="amount" placeholder="0" required class="w-full bg-transparent outline-none font-black text-4xl text-slate-800 placeholder-slate-200 p-0">
+          <!-- Large Amount Input Container -->
+          <div class="bg-slate-50/70 rounded-2xl p-3 lg:p-4 border border-slate-100 flex items-center gap-3">
+            <span class="text-2xl lg:text-3xl font-black text-slate-400">₹</span>
+            <input type="number" name="amount" placeholder="0" required class="w-full bg-transparent outline-none font-black text-3xl lg:text-4xl text-slate-800 placeholder-slate-300">
           </div>
 
-          <div class="grid grid-cols-2 gap-2">
-            <!-- Payment Method Selector (Moved to Left Grid) -->
-            <div
-              class="bg-slate-50 hover:bg-slate-100 transition-colors rounded-[16px] border border-slate-100 px-3 py-3 flex items-center gap-2">
-              <i data-lucide="credit-card" class="w-4 h-4 text-indigo-500"></i>
-              <select name="paidVia" class="w-full bg-transparent text-[11px] font-black uppercase tracking-wider text-slate-700 outline-none appearance-none cursor-pointer">
+          <!-- Payment Method and Category Dropdowns (Two Column Grid) -->
+          <div class="grid grid-cols-2 gap-3 lg:gap-4">
+            <!-- Payment Mode -->
+            <div class="bg-slate-50 hover:bg-slate-100 transition-colors rounded-2xl border border-slate-100 px-4 py-3.5 flex items-center gap-3">
+              <i data-lucide="credit-card" class="w-4 h-4 text-indigo-500 shrink-0"></i>
+              <select name="paidVia" class="w-full bg-transparent text-xs font-black uppercase tracking-wider text-slate-700 outline-none appearance-none cursor-pointer">
                 <option value="UPI" selected>UPI</option>
                 <option value="Cash">Cash</option>
                 <option value="Card">Card</option>
@@ -1436,36 +1416,36 @@
               </select>
             </div>
 
-            <!-- Category Selector (Moved to Right Grid) -->
-            <div
-              class="bg-slate-50 hover:bg-slate-100 transition-colors rounded-[16px] border border-slate-100 px-3 py-3 flex items-center gap-2">
-              <i data-lucide="grid" class="w-4 h-4 text-emerald-500"></i>
-              <select name="category" class="w-full bg-transparent text-[11px] font-black uppercase tracking-wider text-slate-700 outline-none appearance-none cursor-pointer">
-                <option>Food</option><option>Entry Fee</option><option>Fare</option><option>Stay</option><option>Water</option><option>Other</option>
+            <!-- Category -->
+            <div class="bg-slate-50 hover:bg-slate-100 transition-colors rounded-2xl border border-slate-100 px-4 py-3.5 flex items-center gap-3">
+              <i data-lucide="layout-grid" class="w-4 h-4 text-emerald-500 shrink-0"></i>
+              <select name="category" class="w-full bg-transparent text-xs font-black uppercase tracking-wider text-slate-700 outline-none appearance-none cursor-pointer">
+                <option>Food</option>
+                <option>Entry Fee</option>
+                <option>Fare</option>
+                <option>Stay</option>
+                <option>Water</option>
+                <option>Other</option>
               </select>
             </div>
           </div>
 
-          <!-- Notes Input -->
-          <div class="bg-slate-50 rounded-[16px] border border-slate-100 px-4 py-3.5 flex items-center gap-3">
-            <i data-lucide="message-square" class="w-4 h-4 text-slate-400"></i>
-            <input type="text" name="notes" placeholder="What was this for?" class="w-full bg-transparent text-xs font-bold text-slate-700 outline-none placeholder-slate-400">
+          <!-- Notes Text Input -->
+          <div class="bg-slate-50 rounded-2xl border border-slate-100 px-4 py-3.5 flex items-center gap-3">
+            <i data-lucide="message-square" class="w-4 h-4 text-slate-400 shrink-0"></i>
+            <input type="text" name="notes" placeholder="What was this for?" class="w-full bg-transparent text-xs lg:text-sm font-bold text-slate-700 outline-none placeholder-slate-400">
           </div>
 
-          <!-- Hidden storage for state rollback -->
           <input type="hidden" name="lastActionAmount" id="lastActionAmount">
           <input type="hidden" name="lastActionNotes" id="lastActionNotes">
           <button type="submit" id="hidden-submit-btn" class="hidden"></button>
 
-          <!-- SWIPE-TO-SAVE INTERFACE -->
-          <div id="swipe-track"
-            class="w-full bg-slate-900 rounded-[18px] h-[60px] relative flex items-center select-none overflow-hidden touch-none shadow-md mt-2">
-            <span id="swipe-text" class="absolute w-full text-center text-slate-400 font-black text-[11px] uppercase tracking-[0.2em] pointer-events-none transition-all duration-300">
+          <!-- Swipe To Save Bar -->
+          <div id="swipe-track" class="w-full bg-slate-900 rounded-2xl h-[56px] lg:h-[62px] relative flex items-center select-none overflow-hidden touch-none shadow-md mt-2">
+            <span id="swipe-text" class="absolute w-full text-center text-slate-400 font-black text-xs uppercase tracking-[0.2em] pointer-events-none transition-all duration-300">
               Swipe to Save
             </span>
-            <!-- Draggable thumb block -->
-            <div id="swipe-thumb"
-              class="absolute left-1.5 w-[48px] h-[48px] bg-white rounded-[14px] shadow-sm flex items-center justify-center cursor-grab active:cursor-grabbing text-slate-900 z-10">
+            <div id="swipe-thumb" class="absolute left-1.5 w-[46px] h-[46px] lg:w-[50px] lg:h-[50px] bg-white rounded-xl shadow flex items-center justify-center cursor-grab active:cursor-grabbing text-slate-900 z-10">
               <i data-lucide="chevrons-right" class="w-5 h-5 stroke-[3]"></i>
             </div>
           </div>
@@ -1473,22 +1453,28 @@
       </div>
     </div>
 
-    <!-- TRANSACTION LEDGER (Hidden by default, triggered by Spent button) -->
+    <!-- Modern Desktop Bottom Status Bar Banner (Replaces floating watermark) -->
+    <div id="empty-state-watermark" class="w-full bg-indigo-50/70 border border-indigo-100/80 rounded-2xl p-4 flex items-center gap-3 text-indigo-700 shadow-sm">
+      <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+        <i data-lucide="calendar-check-2" class="w-5 h-5"></i>
+      </div>
+      <p class="text-xs font-black uppercase tracking-wider text-slate-700">
+        ALL SET FOR TODAY VOF0726
+      </p>
+    </div>
+
+    <!-- TRANSACTION LEDGER (Expandable) -->
     <div id="ui-ledger-container" class="hidden opacity-0 translate-y-10 transition-all duration-500 pb-10">
       <div class="flex items-center justify-between mb-3 px-2">
-        <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Transaction Ledger</h3>
+        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Transaction Ledger</h3>
         <div class="flex items-center gap-2">
-          <!-- Filter and Download Buttons -->
-          <button type="button" onclick="toggleLedgerFilter()" class="w-7 h-7 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors active:scale-90 outline-none"><i data-lucide="filter" class="w-3.5 h-3.5 stroke-[2.5]"></i></button>
-          <button type="button" onclick="downloadLedgerCSV()" class="w-7 h-7 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors active:scale-90 outline-none"><i data-lucide="download" class="w-3.5 h-3.5 stroke-[2.5]"></i></button>
+          <button type="button" onclick="toggleLedgerFilter()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors active:scale-90 outline-none"><i data-lucide="filter" class="w-4 h-4 stroke-[2.5]"></i></button>
+          <button type="button" onclick="downloadLedgerCSV()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors active:scale-90 outline-none"><i data-lucide="download" class="w-4 h-4 stroke-[2.5]"></i></button>
         </div>
       </div>
-      <!-- Horizontal Filter Pill Bar (Injected by JS) -->
-      <div id="ledger-filter-bar" class="hidden flex gap-2 overflow-x-auto pb-4 px-2 mb-2 snap-x"
-        style="scrollbar-width: none; -ms-overflow-style: none;"></div>
 
-      <!-- Transaction List (Injected by JS) -->
-      <div id="txList" class="space-y-2"></div>
+      <div id="ledger-filter-bar" class="hidden flex gap-2 overflow-x-auto pb-4 px-2 mb-2 snap-x" style="scrollbar-width: none;"></div>
+      <div id="txList" class="grid grid-cols-1 lg:grid-cols-2 gap-3"></div>
     </div>
 
   </main>
@@ -2027,24 +2013,22 @@
     }
 
     // Handles the Bento layout transition when flipping the Balance Card
-    function flipBalanceCard() { 
+   function flipBalanceCard() { 
       const flipper = document.getElementById('card-flipper-engine'); 
       const balanceCol = document.getElementById('balance-col');
       const statsCol = document.getElementById('stats-col');
+      const isDesktop = window.innerWidth >= 1024;
       
       flipper.classList.toggle('flipper-rotated'); 
 
       if (flipper.classList.contains('flipper-rotated')) {
-        // Explode balance card to 100% width
         balanceCol.style.width = '100%';
-        // Compress and hide the right stats column
         statsCol.style.width = '0px';
         statsCol.style.opacity = '0';
         statsCol.style.transform = 'translateX(10px) scale(0.95)';
       } else {
-        // Return to 50/50 split layout
-        balanceCol.style.width = 'calc(50% - 6px)';
-        statsCol.style.width = 'calc(50% - 6px)';
+        balanceCol.style.width = isDesktop ? '58.333333%' : 'calc(50% - 6px)';
+        statsCol.style.width = isDesktop ? '41.666667%' : 'calc(50% - 6px)';
         statsCol.style.opacity = '1';
         statsCol.style.transform = 'translateX(0px) scale(1)';
       }
