@@ -109,6 +109,9 @@
     <button onclick="switchTab('archives')" id="tabBtn-archives" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap shrink-0">
       <i data-lucide="archive" class="w-3.5 h-3.5"></i> Past Trips
     </button>
+    <button onclick="switchTab('chat')" id="tabBtn-chat" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap shrink-0">
+      <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Chat
+    </button>
   </div>
 
   <!-- =========================================
@@ -374,6 +377,47 @@
 
       <div id="archivesAdminCards" class="space-y-3">
         <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- 8. CHAT HUB TAB -->
+    <section id="pane-chat" class="tab-pane space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Trip Chat Manager</h3>
+          <p class="text-[10px] font-bold text-slate-500">Monitor, reply as Admin, edit, or delete any message</p>
+        </div>
+        <button onclick="loadAdminDashboard()" class="px-3 py-1.5 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 rounded-xl text-[10px] font-bold transition flex items-center gap-1.5">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
+        </button>
+      </div>
+
+      <!-- Chat Container -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden flex flex-col h-[600px]">
+        
+        <!-- Messages Area -->
+        <div id="adminChatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-950/50">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Reply Context Banner -->
+        <div id="adminReplyBanner" class="hidden px-4 py-2 bg-slate-800/90 border-t border-slate-700 flex items-center justify-between">
+          <div class="flex items-center gap-2 text-xs truncate">
+            <i data-lucide="reply" class="w-3.5 h-3.5 text-indigo-400"></i>
+            <span class="text-[10px] font-bold text-slate-400">Replying to <b id="adminReplySender" class="text-white"></b>:</span>
+            <span id="adminReplyText" class="text-[10px] text-slate-300 truncate max-w-xs sm:max-w-md italic"></span>
+          </div>
+          <button type="button" onclick="cancelAdminReply()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+
+        <!-- Input Box Area -->
+        <form id="adminChatForm" onsubmit="sendAdminMessage(event)" class="p-3 bg-slate-900 border-t border-slate-800 flex items-center gap-2">
+          <input type="text" id="adminChatInput" placeholder="Type a message or announcement as Admin..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white font-bold outline-none focus:border-indigo-500" required>
+          <button type="submit" id="adminSendBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black px-4 py-2.5 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest flex items-center gap-1.5 shadow-md">
+            <i data-lucide="send" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Send</span>
+          </button>
+        </form>
+
       </div>
     </section>
 
@@ -664,12 +708,37 @@
   </div>
 
   <!-- =========================================
+       MODAL: EDIT CHAT MESSAGE
+       ========================================= -->
+  <div id="editMessageModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+        <h3 class="text-xs font-black uppercase tracking-wider text-white">Modify Message</h3>
+        <button onclick="closeEditMessageModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form onsubmit="saveEditMessage(event)" class="space-y-3 text-left">
+        <input type="hidden" id="editMsgId">
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Message Content</label>
+          <textarea id="editMsgText" rows="3" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white font-bold mt-1 outline-none focus:border-indigo-500"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest">
+          Save Changes
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================
        SCRIPT
        ========================================= -->
   <script>
     let globalData = null;
     let autoLogoutTimer = null;
     let toastTimeout = null;
+    let adminReplyContext = null;
 
     function showAlert(title, message, isError = false) {
       const toast = document.getElementById('adminToast');
@@ -782,6 +851,7 @@
         renderBudget(data.budgetRawList, data.stats);
         renderMedia(data);
         renderArchives(data.pastTrips);
+        renderAdminChat(data.messages);
         lucide.createIcons();
       } catch (err) {
         showAlert("Error Loading Data", err.message, true);
@@ -1392,6 +1462,142 @@
         renderArchives(fresh.pastTrips);
         showAlert("Deleted", "Past trip removed");
       } catch (err) {
+        showAlert("Failed", err.message, true);
+      }
+    }
+
+    // CHAT MANAGEMENT FUNCTIONS
+    function renderAdminChat(messages) {
+      const container = document.getElementById('adminChatMessages');
+      if (!container) return;
+
+      if (!messages || messages.length === 0) {
+        container.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-slate-500 py-12">
+            <i data-lucide="message-square-off" class="w-8 h-8 mb-2 opacity-50"></i>
+            <p class="text-xs font-bold uppercase tracking-wider">No messages in chat</p>
+          </div>`;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = messages.map(m => {
+        const isAdmin = m.sender === 'Admin' || m.sender.toLowerCase().includes('coordinator');
+        let timeStr = '-';
+        if (m.timestamp) {
+          try {
+            const d = new Date(m.timestamp);
+            timeStr = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+          } catch(e){}
+        }
+
+        const safeText = (m.text || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+        return `
+          <div class="bg-slate-900 border ${isAdmin ? 'border-indigo-500/40 bg-indigo-950/20' : 'border-slate-800'} p-3 rounded-2xl flex items-start justify-between gap-3 hover:border-slate-700 transition">
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-[10px] font-black uppercase tracking-wider ${isAdmin ? 'text-indigo-400' : 'text-slate-300'}">${m.sender}</span>
+                ${isAdmin ? '<span class="px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 text-[8px] font-black uppercase">Admin</span>' : ''}
+                <span class="text-[9px] text-slate-500 font-semibold">${timeStr}</span>
+              </div>
+              <p class="text-xs font-medium text-slate-200 break-words leading-relaxed whitespace-pre-wrap">${m.text}</p>
+            </div>
+
+            <div class="flex items-center gap-1 shrink-0 pt-0.5">
+              <button type="button" title="Reply" onclick="setAdminReply('${m.sender}', '${safeText}')" class="p-1.5 bg-slate-950 hover:bg-indigo-600/30 text-slate-400 hover:text-indigo-300 rounded-lg transition">
+                <i data-lucide="reply" class="w-3.5 h-3.5"></i>
+              </button>
+              <button type="button" title="Edit" onclick="openEditMessageModal(${m.id}, '${safeText}')" class="p-1.5 bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white rounded-lg transition">
+                <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+              </button>
+              <button type="button" title="Delete" onclick="deleteAdminMessage(${m.id})" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg transition">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>`;
+      }).join('');
+
+      container.scrollTop = container.scrollHeight;
+      lucide.createIcons();
+    }
+
+    function setAdminReply(sender, text) {
+      adminReplyContext = { sender, text };
+      document.getElementById('adminReplySender').innerText = sender;
+      document.getElementById('adminReplyText').innerText = text;
+      document.getElementById('adminReplyBanner').classList.remove('hidden');
+      document.getElementById('adminChatInput').focus();
+      lucide.createIcons();
+    }
+
+    function cancelAdminReply() {
+      adminReplyContext = null;
+      document.getElementById('adminReplyBanner').classList.add('hidden');
+    }
+
+    async function sendAdminMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('adminChatInput');
+      let text = input.value.trim();
+      if (!text) return;
+
+      if (adminReplyContext) {
+        text = `Replying to @${adminReplyContext.sender}: "${adminReplyContext.text.slice(0, 40)}..."\n${text}`;
+      }
+
+      const btn = document.getElementById('adminSendBtn');
+      btn.disabled = true;
+
+      try {
+        const fresh = await adminApi('admin-send-message', { sender: 'Admin', text });
+        globalData = fresh;
+        renderAdminChat(fresh.messages);
+        input.value = '';
+        cancelAdminReply();
+        showAlert("Sent", "Admin message broadcasted");
+      } catch(err) {
+        showAlert("Failed", err.message, true);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function openEditMessageModal(id, text) {
+      document.getElementById('editMsgId').value = id;
+      document.getElementById('editMsgText').value = text;
+      document.getElementById('editMessageModal').classList.remove('hidden');
+    }
+
+    function closeEditMessageModal() {
+      document.getElementById('editMessageModal').classList.add('hidden');
+    }
+
+    async function saveEditMessage(e) {
+      e.preventDefault();
+      const id = document.getElementById('editMsgId').value;
+      const text = document.getElementById('editMsgText').value.trim();
+      if (!text) return;
+
+      try {
+        const fresh = await adminApi('admin-edit-message', { id, text });
+        globalData = fresh;
+        renderAdminChat(fresh.messages);
+        closeEditMessageModal();
+        showAlert("Message Updated", "Chat message modified");
+      } catch(err) {
+        showAlert("Failed", err.message, true);
+      }
+    }
+
+    async function deleteAdminMessage(id) {
+      if (!confirm('Delete this message from chat?')) return;
+      try {
+        const fresh = await adminApi('admin-delete-message', { id });
+        globalData = fresh;
+        renderAdminChat(fresh.messages);
+        showAlert("Deleted", "Message removed from chat");
+      } catch(err) {
         showAlert("Failed", err.message, true);
       }
     }
