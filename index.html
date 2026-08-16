@@ -1207,27 +1207,31 @@
        ========================================= -->
   <header class="sticky top-0 z-50 w-full flex flex-col items-center bg-slate-100/90 backdrop-blur-md">
     <!-- Top Gradient Bar -->
-    <div class="w-full bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 px-4 lg:px-8 py-3.5 lg:py-4 flex items-center justify-between text-white shadow-sm lg:rounded-b-[24px] relative">
+    <div class="w-full bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 px-3.5 lg:px-8 py-3.5 lg:py-4 flex items-center justify-between text-white shadow-sm rounded-b-[24px] relative">
       
-      <!-- Left Column (Expedition Tag) -->
-      <div class="w-24 lg:w-48 flex items-center gap-2 shrink-0">
+      <!-- Left Column (Compact on Mobile, Expanded on Desktop) -->
+      <div class="w-9 lg:w-48 flex items-center gap-2 shrink-0">
         <span class="hidden lg:inline-flex text-[11px] font-black tracking-widest text-indigo-200 uppercase opacity-90">✦ EXPEDITION</span>
       </div>
 
-      <!-- Center Column: 3D Rotating Title -->
-      <div class="flex-1 max-w-lg headline-scene mx-auto flex items-center justify-center">
+      <!-- Center Column: Full Title (No Truncation) -->
+      <div class="flex-1 headline-scene mx-auto flex items-center justify-center px-1">
         <div id="ui-headline-flipper" class="headline-flipper">
-          <div class="headline-front">
-            <h1 id="ui-title-1" class="font-black text-white text-base lg:text-xl tracking-wider uppercase drop-shadow-sm truncate text-center">Loading...</h1>
+          <div class="headline-front flex items-center justify-center gap-1.5 sm:gap-2">
+            <span class="text-indigo-200 text-sm sm:text-base select-none leading-none">༄</span>
+            <h1 id="ui-title-1" class="font-black text-white text-xs sm:text-sm lg:text-lg tracking-wider uppercase drop-shadow-sm whitespace-nowrap text-center">Loading...</h1>
+            <span class="text-indigo-200 text-sm sm:text-base select-none leading-none">࿐</span>
           </div>
-          <div class="headline-back">
-            <h1 id="ui-title-2" class="font-black text-white text-base lg:text-xl tracking-wider uppercase drop-shadow-sm truncate text-center">Valley of Flowers</h1>
+          <div class="headline-back flex items-center justify-center gap-1.5 sm:gap-2">
+            <span class="text-indigo-200 text-sm sm:text-base select-none leading-none">༄</span>
+            <h1 id="ui-title-2" class="font-black text-white text-xs sm:text-sm lg:text-lg tracking-wider uppercase drop-shadow-sm whitespace-nowrap text-center">Valley of Flowers</h1>
+            <span class="text-indigo-200 text-sm sm:text-base select-none leading-none">࿐</span>
           </div>
         </div>
       </div>
 
       <!-- Right Column: Chat Button -->
-      <div class="w-24 lg:w-48 flex items-center justify-end shrink-0">
+      <div class="w-9 lg:w-48 flex items-center justify-end shrink-0">
         <button type="button" onclick="openChatModal()" class="relative w-9 h-9 lg:w-10 lg:h-10 aspect-square shrink-0 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full flex items-center justify-center backdrop-blur-md active:scale-95 transition-all shadow-sm outline-none" title="Trip Messenger">
           <i data-lucide="message-circle" class="w-4 h-4 lg:w-5 lg:h-5 text-white stroke-[2.5]"></i>
           <span id="chat-unread-dot" class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-rose-500 border-2 border-violet-700 rounded-full hidden shadow-sm"></span>
@@ -1235,27 +1239,27 @@
       </div>
     </div>
 
-    <!-- Live Notice Bar (Positioned underneath the purple bar) -->
-    <div id="notice-container" class="hidden overflow-hidden w-full bg-transparent px-4 lg:px-8 pt-3 pb-1 relative z-10">
+    <!-- Banner Bar (Notice & Alerts) -->
+    <div id="notice-container" class="hidden overflow-hidden w-full bg-transparent px-3.5 lg:px-8 pt-2.5 pb-1 relative z-10">
       <div id="notice-slider" class="carousel-track">
         <!-- Standard Notice Slot -->
-        <div class="carousel-item px-2">
-          <div class="bg-rose-50 border border-rose-200/80 rounded-full px-4 py-1.5 flex items-center gap-2 justify-center max-w-2xl mx-auto shadow-sm">
-            <span class="relative flex h-2 w-2 flex-shrink-0">
+        <div class="carousel-item px-1">
+          <div class="bg-rose-50 border border-rose-200/90 rounded-full px-4 py-1.5 flex items-center gap-2 justify-center max-w-xl mx-auto shadow-sm">
+            <span class="relative flex h-2 w-2 shrink-0">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
             </span>
-            <p id="ui-trip-notice" class="text-[11px] lg:text-xs font-black text-rose-600 truncate text-center tracking-wide"></p>
+            <p id="ui-trip-notice" class="text-[10.5px] lg:text-xs font-black text-rose-600 truncate text-center tracking-wide"></p>
           </div>
         </div>
         <!-- Warning Notice Slot -->
-        <div class="carousel-item px-2">
-          <div class="bg-rose-50 border border-rose-200 rounded-full px-4 py-1.5 flex items-center gap-2 justify-center max-w-2xl mx-auto warning-pulse shadow-sm">
-            <span class="relative flex h-2 w-2 flex-shrink-0">
+        <div class="carousel-item px-1">
+          <div class="bg-rose-50 border border-rose-200 rounded-full px-4 py-1.5 flex items-center gap-2 justify-center max-w-xl mx-auto warning-pulse shadow-sm">
+            <span class="relative flex h-2 w-2 shrink-0">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
             </span>
-            <p id="ui-warning-notice" class="text-[11px] lg:text-xs font-bold text-rose-700 truncate text-center"></p>
+            <p id="ui-warning-notice" class="text-[10.5px] lg:text-xs font-bold text-rose-700 truncate text-center"></p>
           </div>
         </div>
       </div>
