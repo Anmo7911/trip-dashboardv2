@@ -4152,6 +4152,60 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     // Includes auto-scroll, commands, and optimistic UI update
     // ==========================================
     let isChatOpen = false;
+    let userReplyContext = null;
+
+    // --- @MENTION SUGGESTIONS ENGINE ---
+    function handleChatInput(val) {
+      const dropdown = document.getElementById('mentionDropdown');
+      if (!dropdown) return;
+
+      const cursorIndex = val.lastIndexOf('@');
+      if (cursorIndex !== -1) {
+        const query = val.slice(cursorIndex + 1).toLowerCase().trim();
+        const members = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.members) ? globalActiveDataPayloadBackup.members : cachedMembersList;
+        
+        const matches = members.filter(m => (m.name || '').toLowerCase().includes(query));
+
+        if (matches.length > 0) {
+          dropdown.innerHTML = matches.map(m => `
+            <button type="button" onclick="selectMention('${m.name}')" class="flex items-center gap-2 p-2 hover:bg-indigo-50 rounded-xl text-left w-full transition active:scale-95">
+              <div class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-[9px]">
+                ${m.name.charAt(0)}
+              </div>
+              <span class="text-xs font-bold text-slate-700">${m.name}</span>
+            </button>
+          `).join('');
+          dropdown.classList.remove('hidden');
+          return;
+        }
+      }
+      dropdown.classList.add('hidden');
+    }
+
+    function selectMention(name) {
+      const input = document.getElementById('chat-input-text');
+      const val = input.value;
+      const lastAt = val.lastIndexOf('@');
+      input.value = val.substring(0, lastAt) + `@${name} `;
+      document.getElementById('mentionDropdown').classList.add('hidden');
+      input.focus();
+    }
+
+    // --- REPLY TO MESSAGE ENGINE ---
+    function setUserReply(sender, text) {
+      userReplyContext = { sender, text };
+      document.getElementById('userReplySender').innerText = sender;
+      document.getElementById('userReplyText').innerText = `"${text.slice(0, 45)}..."`;
+      document.getElementById('userReplyBanner').classList.remove('hidden');
+      document.getElementById('chat-input-text').focus();
+      lucide.createIcons();
+    }
+
+    function cancelUserReply() {
+      userReplyContext = null;
+      document.getElementById('userReplyBanner').classList.add('hidden');
+    }
+    
     let lastMessageCount = 0;
 
     function openChatModal() {
@@ -4207,14 +4261,12 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       }
     }
 
-    // Translates chat array into physical message bubbles
     function renderChatData(messages) {
       const chatBox = document.getElementById('ui-chat-messages');
       if (!chatBox || !messages) return;
 
       const currentUser = localStorage.getItem('trekLoggedInUser') || "Unknown";
-      
-      // Update Red Dot Alert Logic on unread message ping
+
       if (messages.length > lastMessageCount && !isChatOpen && lastMessageCount !== 0) {
         document.getElementById('chat-unread-dot').classList.remove('hidden');
       }
@@ -4228,6 +4280,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
       chatBox.innerHTML = messages.map(msg => {
         const isMe = msg.sender === currentUser;
+        const isSystem = msg.sender === 'System / Admin' || msg.sender === 'Admin';
         
         let timeStr = "";
         if (msg.timestamp) {
@@ -4237,82 +4290,131 @@ const places = payload.places.filter(p => p.tripDay || p.location);
           } catch(e) {}
         }
 
-        // Specific trigger rules for Emergency UI themes
-        const textLower = msg.text.toLowerCase();
-        const isHighlighted = textLower.includes('/help') || textLower.includes('/support');
+        const textLower = (msg.text || '').toLowerCase();
+        const isHighlighted = textLower.includes('/help') || textLower.includes('/support') || textLower.includes('@admin');
+        const safeText = (msg.text || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+        let replyQuoteHtml = '';
+        let displayBody = msg.text || '';
         
-        let bubbleClassMe = "bg-indigo-600 text-white";
-        let bubbleClassThem = "bg-white border border-slate-200 text-slate-800";
-        let alertIcon = "";
-
-        if (isHighlighted) {
-          bubbleClassMe = "bg-rose-500 text-white border border-rose-400 shadow-[0_4px_15px_rgba(225,29,72,0.4)]";
-          bubbleClassThem = "bg-rose-50 border border-rose-300 text-rose-900 shadow-[0_4px_15px_rgba(225,29,72,0.15)]";
-          alertIcon = `<i data-lucide="alert-circle" class="w-4 h-4 inline-block mr-1.5 -mt-0.5"></i>`;
+        // Parse embedded reply quote
+        if (displayBody.startsWith('Replying to @')) {
+          const firstLineEnd = displayBody.indexOf('\n');
+          if (firstLineEnd !== -1) {
+            const quoteHeader = displayBody.slice(0, firstLineEnd);
+            displayBody = displayBody.slice(firstLineEnd + 1);
+            replyQuoteHtml = `<div class="p-2 mb-1.5 rounded-lg text-[10px] ${isMe ? 'bg-indigo-700/60 text-indigo-100' : 'bg-slate-100 text-slate-600'} border-l-2 border-indigo-400 truncate">${quoteHeader}</div>`;
+          }
         }
 
-        // Layout alignment depends on whether current device sent it
-        if (isMe) {
-          return `
-            <div class="flex flex-col items-end w-full pl-12">
-              <div class="${bubbleClassMe} p-3.5 rounded-2xl rounded-tr-sm shadow-sm transition-all break-words max-w-[85%]">
-                <p class="text-sm font-bold leading-snug">${alertIcon}${formatMessageText(msg.text)}</p>
-              </div>
-              <span class="text-[8px] font-black uppercase tracking-widest text-slate-400 mt-1">${timeStr}</span>
-            </div>`;
-        } else {
-          return `
-            <div class="flex flex-col items-start w-full pr-12">
-              <span class="text-[9px] font-black uppercase tracking-widest ${isHighlighted ? 'text-rose-500' : 'text-indigo-500'} mb-1 ml-1">${msg.sender}</span>
-              <div class="${bubbleClassThem} p-3.5 rounded-2xl rounded-tl-sm shadow-sm transition-all">
-                <p class="text-sm font-bold leading-snug">${alertIcon}${formatMessageText(msg.text)}</p>
-              </div>
-              <span class="text-[8px] font-black uppercase tracking-widest text-slate-400 mt-1 ml-1">${timeStr}</span>
-            </div>`;
+        let bubbleClass = isMe 
+          ? "bg-indigo-600 text-white rounded-2xl rounded-tr-sm shadow-sm" 
+          : "bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-tl-sm shadow-sm";
+
+        if (isSystem) {
+          bubbleClass = "bg-amber-50 border border-amber-300 text-amber-900 rounded-2xl shadow-sm";
+        } else if (isHighlighted) {
+          bubbleClass = isMe
+            ? "bg-rose-500 text-white border border-rose-400 shadow-[0_4px_15px_rgba(225,29,72,0.4)]"
+            : "bg-rose-50 border border-rose-300 text-rose-900 shadow-[0_4px_15px_rgba(225,29,72,0.15)]";
         }
+
+        return `
+          <div class="chat-msg-row flex flex-col ${isMe ? 'items-end pl-10' : 'items-start pr-10'} w-full transition-transform duration-150 relative group" data-sender="${msg.sender}" data-text="${safeText}">
+            ${!isMe ? `<span class="text-[9px] font-black uppercase tracking-widest ${isSystem ? 'text-amber-600' : (isHighlighted ? 'text-rose-500' : 'text-indigo-500')} mb-1 ml-1">${msg.sender}</span>` : ''}
+            
+            <div class="${bubbleClass} p-3.5 transition-all break-words max-w-[90%] relative cursor-pointer" onclick="setUserReply('${msg.sender}', '${safeText}')">
+              ${replyQuoteHtml}
+              <p class="text-xs font-bold leading-relaxed whitespace-pre-wrap">${formatMessageText(displayBody)}</p>
+            </div>
+            
+            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400 mt-1 ${isMe ? 'mr-1' : 'ml-1'}">${timeStr}</span>
+          </div>`;
       }).join('');
       
+      initSwipeToReply();
       scrollToBottomChat();
       lucide.createIcons();
     }
 
+    // Attach WhatsApp-like horizontal slide listeners
+    function initSwipeToReply() {
+      document.querySelectorAll('.chat-msg-row').forEach(row => {
+        let startX = 0, currentX = 0;
+        row.addEventListener('touchstart', e => {
+          startX = e.touches[0].clientX;
+        }, { passive: true });
+
+        row.addEventListener('touchmove', e => {
+          currentX = e.touches[0].clientX - startX;
+          if (currentX > 0 && currentX < 80) {
+            row.style.transform = `translateX(${currentX}px)`;
+          }
+        }, { passive: true });
+
+        row.addEventListener('touchend', () => {
+          if (currentX > 40) {
+            const sender = row.getAttribute('data-sender');
+            const text = row.getAttribute('data-text');
+            setUserReply(sender, text);
+          }
+          row.style.transform = 'translateX(0px)';
+          currentX = 0;
+        });
+      });
+    }
+
     // Master function for pushing text to the backend
-    function sendChatMessage(e) {
+    async function sendChatMessage(e) {
       e.preventDefault();
       const input = document.getElementById('chat-input-text');
-      const text = input.value.trim();
+      let text = input.value.trim();
       if (!text) return;
 
       const currentUser = localStorage.getItem('trekLoggedInUser') || "Unknown";
 
-      const tempMessage = {
+      // Attach WhatsApp reply context if active
+      if (userReplyContext) {
+        text = `Replying to @${userReplyContext.sender}: "${userReplyContext.text.slice(0, 35)}..."\n${text}`;
+      }
+
+      // 1. Optimistic UI update for user message
+      const tempUserMsg = {
         timestamp: new Date().toISOString(),
         sender: currentUser,
         text: text
       };
 
-      if (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.messages) {
-        globalActiveDataPayloadBackup.messages.push(tempMessage);
-      } else if (globalActiveDataPayloadBackup) {
-        globalActiveDataPayloadBackup.messages = [tempMessage];
-      }
+      if (!globalActiveDataPayloadBackup.messages) globalActiveDataPayloadBackup.messages = [];
+      globalActiveDataPayloadBackup.messages.push(tempUserMsg);
+
+      // Check if flagged for admin
+      const isFlagged = text.toLowerCase().includes('@admin') || 
+                        text.toLowerCase().includes('/support') || 
+                        text.toLowerCase().includes('/help');
 
       input.value = '';
-
-      // Re-render and enforce stick-to-bottom scroll
+      cancelUserReply();
       renderChatData(globalActiveDataPayloadBackup.messages);
-      scrollToBottomChat();
 
-      apiRequest('message', { sender: currentUser, text })
-        .then((freshData) => {
-          globalActiveDataPayloadBackup = freshData;
-          renderChatData(freshData.messages);
-          scrollToBottomChat();
-        })
-        .catch((err) => {
-          console.error(err);
-          showToast("Message failed to send. Check network.");
-        });
+      try {
+        const freshData = await apiRequest('message', { sender: currentUser, text });
+        globalActiveDataPayloadBackup = freshData;
+        renderChatData(freshData.messages);
+
+        // 2. Trigger Auto-Response for @admin / /support / /help
+        if (isFlagged) {
+          setTimeout(async () => {
+            const botReplyText = "Your message has been flagged for admin attention. An administrator will review it and respond as soon as possible.";
+            const botData = await apiRequest('message', { sender: 'System / Admin', text: botReplyText });
+            globalActiveDataPayloadBackup = botData;
+            renderChatData(botData.messages);
+          }, 600);
+        }
+      } catch (err) {
+        console.error(err);
+        showToast("Message failed to send. Check network.");
+      }
     }
 
     // ==========================================
