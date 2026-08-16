@@ -1202,39 +1202,39 @@
 
 
  <!-- =========================================
-       MAIN APP HEADER BAR (Sticky Top - Desktop & Mobile Harmonized)
+       MAIN APP HEADER BAR (Sticky Top)
        ========================================= -->
-  <header class="sticky top-0 z-50 w-full flex flex-col items-center bg-slate-100 backdrop-blur-md">
+  <header class="sticky top-0 z-50 w-full flex flex-col items-center bg-slate-100/90 backdrop-blur-md">
     <!-- Top Gradient Bar -->
-    <div class="w-full bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 px-4 lg:px-8 py-3.5 lg:py-4 flex items-center justify-between text-white shadow-sm lg:rounded-b-[24px]">
+    <div class="w-full bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 px-4 lg:px-8 py-3.5 lg:py-4 flex items-center justify-between text-white shadow-sm lg:rounded-b-[24px] relative">
       
-      <!-- Mobile Left Spacer / Placeholder -->
-      <div class="w-10 lg:w-48 flex items-center gap-2">
-        <span class="hidden lg:inline-flex text-[11px] font-bold tracking-widest text-indigo-200 uppercase opacity-90">✦ EXPEDITION</span>
+      <!-- Left Column (Expedition Tag) -->
+      <div class="w-24 lg:w-48 flex items-center gap-2 shrink-0">
+        <span class="hidden lg:inline-flex text-[11px] font-black tracking-widest text-indigo-200 uppercase opacity-90">✦ EXPEDITION</span>
       </div>
 
-      <!-- Center Title Carousel -->
-      <div class="flex-1 max-w-md headline-scene">
+      <!-- Center Column: 3D Rotating Title -->
+      <div class="flex-1 max-w-lg headline-scene mx-auto flex items-center justify-center">
         <div id="ui-headline-flipper" class="headline-flipper">
           <div class="headline-front">
-            <h1 id="ui-title-1" class="font-black text-white text-base lg:text-xl tracking-wider uppercase drop-shadow-sm truncate">Loading...</h1>
+            <h1 id="ui-title-1" class="font-black text-white text-base lg:text-xl tracking-wider uppercase drop-shadow-sm truncate text-center">Loading...</h1>
           </div>
           <div class="headline-back">
-            <h1 id="ui-title-2" class="font-black text-white text-base lg:text-xl tracking-wider uppercase drop-shadow-sm truncate">Valley of Flowers</h1>
+            <h1 id="ui-title-2" class="font-black text-white text-base lg:text-xl tracking-wider uppercase drop-shadow-sm truncate text-center">Valley of Flowers</h1>
           </div>
         </div>
       </div>
 
-     <!-- Right Header Actions -->
-      <div class="flex items-center justify-end w-10 lg:w-48">
-        <!-- Chat Button (Locked 1:1 Aspect Ratio) -->
-        <button onclick="openChatModal()" class="relative w-9 h-9 lg:w-10 lg:h-10 aspect-square shrink-0 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full flex items-center justify-center backdrop-blur-md active:scale-95 transition-all shadow-sm outline-none" title="Trip Messenger">
+      <!-- Right Column: Chat Button -->
+      <div class="w-24 lg:w-48 flex items-center justify-end shrink-0">
+        <button type="button" onclick="openChatModal()" class="relative w-9 h-9 lg:w-10 lg:h-10 aspect-square shrink-0 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full flex items-center justify-center backdrop-blur-md active:scale-95 transition-all shadow-sm outline-none" title="Trip Messenger">
           <i data-lucide="message-circle" class="w-4 h-4 lg:w-5 lg:h-5 text-white stroke-[2.5]"></i>
           <span id="chat-unread-dot" class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-rose-500 border-2 border-violet-700 rounded-full hidden shadow-sm"></span>
         </button>
       </div>
+    </div>
 
-    <!-- Live Notice Bar -->
+    <!-- Live Notice Bar (Positioned underneath the purple bar) -->
     <div id="notice-container" class="hidden overflow-hidden w-full bg-transparent px-4 lg:px-8 pt-3 pb-1 relative z-10">
       <div id="notice-slider" class="carousel-track">
         <!-- Standard Notice Slot -->
