@@ -1481,83 +1481,32 @@
 
   <!-- =========================================
        TAB 2: SQUAD VIEW
-       Handles Polls, Coordinator Info, and Members list
+       Responsive Desktop Grid & Mobile Compatible
        ========================================= -->
-  <main id="view-squad" class="tab-content max-w-md mx-auto p-4 space-y-5 -mt-[1px]">
+  <main id="view-squad" class="tab-content w-full max-w-md lg:max-w-6xl mx-auto p-4 lg:p-8 space-y-5 lg:space-y-7">
 
-
-
-    <!-- Containers for dynamically injected Squad Cards -->
-    <div id="leaderSection" class="space-y-3"></div>
-    <div class="space-y-3">
-      <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Trip Members</h3>
-      <!-- Member grid -->
-      <div id="memberList" class="grid grid-cols-2 gap-3"></div>
-    </div>
-  </main>
-
-  <!-- =========================================
-       TAB 3: ROUTE/PLACES VIEW
-       Displays transit timeline and live GPS
-       ========================================= -->
-  <main id="view-places" class="tab-content max-w-md mx-auto p-4 space-y-0 -mt-[1px] relative min-h-[70vh]">
-
-    <!-- FROSTED GLASS VAULT OVERLAY (If Route tracking is locked) -->
-    <div id="route-lock-vault"
-      class="hidden absolute top-0 bottom-0 left-0 right-0 z-[100] flex flex-col items-center justify-center px-6 text-center transition-all duration-700">
-      <div
-        class="bg-white/95 backdrop-blur-2xl p-8 rounded-[32px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] border border-slate-200/60 max-w-[280px] w-full relative overflow-hidden m-auto">
-        <div class="relative w-16 h-16 mx-auto mb-6">
-          <div class="absolute inset-0 bg-indigo-400 rounded-full animate-ping opacity-30"></div>
-          <div
-            class="absolute inset-0 bg-indigo-50 border border-indigo-100 rounded-full flex items-center justify-center z-10 shadow-sm">
-            <i data-lucide="lock" class="w-7 h-7 text-indigo-600 stroke-[2.5]"></i>
-          </div>
-        </div>
-        <h2 class="text-lg font-black text-slate-800 uppercase tracking-widest mb-2">Navigation Standby</h2>
-        <p class="text-[10px] font-bold text-slate-400 uppercase leading-relaxed tracking-wider mb-8">As the route
-          contains live tracking, transit coordinates, and Estimated Time of Arrival (ETA) details,is currently
-          restricted to ensure operational security. Tracking functionality will be enabled nearer to the scheduled
-          departure. </p>
-        <div
-          class="flex items-center justify-center text-indigo-500 bg-indigo-50 py-3 px-4 rounded-xl border border-indigo-100">
-          <span class="text-[9px] font-black uppercase tracking-widest animate-pulse">Awaiting Clearance</span>
-        </div>
+    <!-- Desktop Secondary Sub-Header Bar (Hidden on Mobile) -->
+    <div class="hidden lg:flex items-center justify-between bg-white/80 border border-slate-200/80 rounded-2xl px-6 py-3 text-xs font-bold text-slate-600 shadow-sm">
+      <span class="text-indigo-600 font-black tracking-widest uppercase">#TRIPOFUTTARAKHAND</span>
+      <div class="flex items-center gap-2 text-slate-300">
+        <span class="w-12 h-[1px] bg-slate-200"></span>
+        <i data-lucide="sparkles" class="w-4 h-4 text-indigo-400"></i>
+        <span class="w-12 h-[1px] bg-slate-200"></span>
+      </div>
+      <div class="flex items-center gap-2 text-slate-700 font-black uppercase tracking-wider">
+        <i data-lucide="calendar" class="w-4 h-4 text-indigo-500"></i>
+        <span id="squad-subbar-dates">27 June – 30 June 2026</span>
       </div>
     </div>
 
-    <!-- SECURE CONTENT WRAPPER (This area gets blurred if locked) -->
-    <div id="route-secure-content" class="w-full transition-all duration-700 ease-in-out pt-3">
+    <!-- Container for Chief Coordinator Card -->
+    <div id="leaderSection" class="w-full"></div>
 
-      <!-- Top Section (Trip Countdown Timer) -->
-      <div class="w-full flex flex-col items-center justify-center -mt-3 pb-3">
-        <div id="timer-container"
-          class="hidden bg-white border border-slate-200 rounded-full py-1.5 px-3 mb-1.5 flex items-center justify-center gap-1.5 shadow-sm">
-          <i data-lucide="hourglass" class="w-3.5 h-3.5 text-indigo-500 animate-pulse"></i>
-          <span id="ui-timer-text" class="text-[10px] font-black text-slate-700 uppercase tracking-widest leading-none mt-px"></span>
-        </div>
-        <span class="text-[9px] font-medium italic text-slate-400 text-center leading-none">*The schedule will be considered from Delhi onwards.</span>
-      </div>
-
-      <!-- The Live Vertical Timeline Tracker (Injected by JS) -->
-      <div id="ui-timeline-container" class="text-left w-full -mt-2"></div>
-
-      <div id="ui-places-divider" class="hidden w-full h-[1px] bg-slate-200 my-8"></div>
-
-      <!-- Pending Places Checklists -->
-      <div class="space-y-2">
-        <h2 id="head-active-places" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 hidden">
-          Additional Locations</h2>
-        <div id="activePlaceList" class="space-y-2"></div>
-      </div>
-
-      <!-- Visited Places Checklists -->
-      <div class="space-y-2 pb-10">
-        <h4 id="head-visited-places"
-          class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest px-1 hidden">Additional Locations
-          Visited ✅</h4>
-        <div id="visitedPlaceList" class="space-y-2"></div>
-      </div>
+    <!-- Members Section -->
+    <div class="space-y-3 lg:space-y-4">
+      <h3 class="text-[10px] lg:text-xs font-black text-slate-400 uppercase tracking-widest px-1">Trip Members</h3>
+      <!-- Dynamic Responsive Grid: 2 cols on mobile, 4 cols on desktop -->
+      <div id="memberList" class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5"></div>
     </div>
   </main>
 
@@ -2243,9 +2192,10 @@
         </div>` : '';
 
         // Inject the completed coordinator DOM without the old back card assets
+        // Inject the completed coordinator DOM
         document.getElementById('leaderSection').innerHTML = `
-        <div class="squad-leader-box mt-2">
-          <div id="lead-flip-engine" onclick="executeCardFlipCycle('lead-flip-engine')" class="h-[180px] relative z-10 cursor-pointer">
+        <div class="squad-leader-box mt-2 w-full">
+          <div id="lead-flip-engine" onclick="executeCardFlipCycle('lead-flip-engine')" class="h-[180px] lg:h-[220px] relative z-10 cursor-pointer w-full">
             ${coordFrontHtml}
           </div>
           ${coordBookmark}
@@ -2254,9 +2204,9 @@
         document.getElementById('leaderSection').innerHTML = '';
       }
 
-      // RENDER ALL OTHER MEMBERS
+     // RENDER ALL OTHER MEMBERS
       const memList = document.getElementById('memberList');
-      memList.className = 'grid grid-cols-2 gap-3'; 
+      memList.className = 'grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-5';
 
       memList.innerHTML = others.map((m, index) => {
         const structuralStaggerDelay = index * 40; 
