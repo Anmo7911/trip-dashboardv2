@@ -1281,11 +1281,16 @@
           <div class="card-scene h-full w-full">
             <div id="card-flipper-engine" onclick="flipBalanceCard()" class="card-flipper cursor-pointer select-none">
 
-              <!-- Front of Balance Card (Centered Layout) -->
+             <!-- Front of Balance Card (Centered Layout + Desktop Purse Icon) -->
               <div id="balance-card" class="face-front w-full h-full p-4 rounded-[24px] border border-white/80 bg-gradient-to-b from-emerald-50/90 to-emerald-100/70 shadow-sm transition-all duration-300 flex flex-col justify-between items-center text-center relative overflow-hidden active:scale-[0.98]">
                 
-                <div class="w-full flex-1 flex flex-col items-center justify-center">
-                  <!-- Header with properly sized Blinking Dot -->
+                <!-- Desktop Wallet / Purse Vector Background Icon -->
+                <div class="absolute right-4 lg:right-6 top-1/2 -translate-y-1/2 opacity-20 text-emerald-600 pointer-events-none hidden lg:block">
+                  <i data-lucide="wallet" class="w-16 h-16 lg:w-20 lg:h-20 stroke-[1.2]"></i>
+                </div>
+
+                <div class="w-full flex-1 flex flex-col items-center justify-center relative z-10">
+                  <!-- Header with Blinking Dot -->
                   <div class="flex items-center justify-center gap-1.5 mb-1.5">
                     <span class="relative flex h-2 w-2 shrink-0">
                       <span id="dot-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-emerald-400"></span>
@@ -1301,7 +1306,7 @@
                 </div>
 
                 <!-- Allocations Footer -->
-                <div id="balance-hint-footer" class="text-[9px] font-bold uppercase tracking-wider text-emerald-700/80 flex items-center justify-center gap-1.5 transition-colors duration-500 w-full">
+                <div id="balance-hint-footer" class="text-[9px] font-bold uppercase tracking-wider text-emerald-700/80 flex items-center justify-center gap-1.5 transition-colors duration-500 w-full relative z-10">
                   <span>Allocations</span>
                   <i data-lucide="layers" class="w-3.5 h-3.5 stroke-[2.5]"></i>
                 </div>
