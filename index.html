@@ -1823,6 +1823,11 @@
     // Main App Initialization
     window.onload = () => { 
       runSplashSequence(); 
+      // Safety fallback: Dismiss splash screen after 3.5 seconds max regardless of status
+    setTimeout(() => {
+      hideSplashScreenNow();
+    }, 3500);
+      
       fetchInitialData(); 
       startPolling(); 
     };
@@ -1983,16 +1988,16 @@
       }
     }
 
-    // Core data fetching - Calls Google Apps Script backend 'getDashboardData'
-    async function fetchInitialData() {
+async function fetchInitialData() {
       try {
         const data = await apiRequest('dashboard');
         renderApp(data);
       } catch (error) {
         console.error(error);
         showToast("Unable to sync latest data.");
+        hideSplashScreenNow(); // Forces splash screen to dismiss even if fetch fails
       }
-    } 
+    }
     
     // Simple helper to format numbers as Indian Rupees string
     function formatINR(num) { return '₹' + Math.round(num).toLocaleString('en-IN'); } 
