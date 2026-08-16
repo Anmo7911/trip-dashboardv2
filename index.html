@@ -4331,7 +4331,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
     async function castPollVote(msgId, optionIndex) {
       const currentUser = localStorage.getItem('trekLoggedInUser') || "Unknown";
-      const targetMsg = globalActiveDataPayloadBackup.messages.find(m => m.id === msgId);
+      const targetMsg = globalActiveDataPayloadBackup.messages.find(m => Number(m.id) === Number(msgId));
       if (!targetMsg || !targetMsg.text.startsWith('POLL:')) return;
 
       let pollData;
@@ -4341,6 +4341,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
       // Toggle or switch vote
       pollData.options.forEach((opt, idx) => {
+        if (!opt.votes) opt.votes = [];
         const userIdx = opt.votes.indexOf(currentUser);
         if (idx === optionIndex) {
           if (userIdx === -1) opt.votes.push(currentUser);
@@ -4353,8 +4354,12 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       renderChatData(globalActiveDataPayloadBackup.messages);
 
       try {
-        await apiRequest('message', { sender: targetMsg.sender, text: targetMsg.text });
-      } catch(err) {}
+        const freshData = await apiRequest('poll-vote', { id: msgId, text: targetMsg.text });
+        globalActiveDataPayloadBackup = freshData;
+        renderChatData(freshData.messages);
+      } catch(err) {
+        console.error("Poll update failed", err);
+      }
     }
 
     // --- CHAT MESSAGE RENDER ENGINE ---
@@ -4378,7 +4383,9 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
       chatBox.innerHTML = messages.map(msg => {
         const isMe = msg.sender === currentUser;
-        const isAdmin = msg.sender === 'Admin' || msg.sender === 'System / Admin';
+        const textLower = (msg.text || '').toLowerCase();
+        const isAdmin = msg.sender === 'Admin' || msg.sender === 'System / Admin' || msg.sender.toLowerCase().includes('coordinator');
+        const isHelpOrSupport = textLower.includes('/help') || textLower.includes('/support') || textLower.includes('@admin');
         
         let timeStr = "";
         if (msg.timestamp) {
@@ -4391,10 +4398,22 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         const safeText = (msg.text || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         let isPoll = (msg.text || '').startsWith('POLL:');
 
-        // Normal Rounded Bubble Design for all messages
+        // Sender color: Red for Admin, Help, Support
+        let senderColorClass = "text-indigo-500";
+        if (isAdmin || isHelpOrSupport) {
+          senderColorClass = "text-rose-600 font-black";
+        }
+
+        // Bubble styling
         let bubbleClass = isMe 
           ? "bg-indigo-600 text-white rounded-2xl rounded-tr-sm shadow-sm" 
           : "bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-tl-sm shadow-sm";
+
+        if (isAdmin || isHelpOrSupport) {
+          bubbleClass = isMe
+            ? "bg-rose-600 text-white rounded-2xl rounded-tr-sm shadow-sm"
+            : "bg-rose-50 border border-rose-200 text-rose-950 rounded-2xl rounded-tl-sm shadow-sm";
+        }
 
         // Poll Card Rendering
         if (isPoll) {
@@ -4418,8 +4437,8 @@ const places = payload.places.filter(p => p.tripDay || p.location);
             }).join('');
 
             return `
-              <div class="chat-msg-row flex flex-col ${isMe ? 'items-end pl-6' : 'items-start pr-6'} w-full transition-transform duration-150 relative">
-                ${!isMe ? `<span class="text-[9px] font-black uppercase tracking-widest ${isAdmin ? 'text-indigo-600' : 'text-slate-500'} mb-1 ml-1">${msg.sender}</span>` : ''}
+              <div class="chat-msg-row flex flex-col ${isMe ? 'items-end pl-6' : 'items-start pr-6'} w-full transition-transform duration-150 relative" data-sender="${msg.sender}">
+                ${!isMe ? `<span class="text-[9px] font-black uppercase tracking-widest ${senderColorClass} mb-1 ml-1">${msg.sender}</span>` : ''}
                 
                 <div class="bg-white border border-slate-200 text-slate-800 p-4 rounded-2xl shadow-sm w-full max-w-[300px] sm:max-w-xs space-y-2.5">
                   <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
@@ -4457,7 +4476,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
         return `
           <div class="chat-msg-row flex flex-col ${isMe ? 'items-end pl-10' : 'items-start pr-10'} w-full transition-transform duration-150 relative group" data-sender="${msg.sender}" data-text="${safeText}">
-            ${!isMe ? `<span class="text-[9px] font-black uppercase tracking-widest ${isAdmin ? 'text-indigo-600 font-bold' : 'text-indigo-500'} mb-1 ml-1">${msg.sender}</span>` : ''}
+            ${!isMe ? `<span class="text-[9px] font-black uppercase tracking-widest ${senderColorClass} mb-1 ml-1">${msg.sender}</span>` : ''}
             
             <div class="${bubbleClass} p-3.5 transition-all break-words max-w-[90%] relative cursor-pointer" onclick="setUserReply('${msg.sender}', '${safeText}')">
               ${replyQuoteHtml}
