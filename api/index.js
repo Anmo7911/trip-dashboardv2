@@ -252,7 +252,7 @@ async function dashboard() {
     timestamp: asIso(r.col_a),
     sender: text(r.col_b),
     text: text(r.col_c)
-  }));
+  })).reverse();
 
   const pastTrips = [];
   for (const r of archivesResult.data || []) {
@@ -585,6 +585,16 @@ async function adminUploadFile(file) {
   return { publicUrl: publicData?.publicUrl || '', storagePath: `storage:${path}` };
 }
 
+async function adminEditMessage(id, messageText) {
+  await supabase.from('messages_sheet').update({ col_c: messageText }).eq('id', Number(id));
+  return dashboard();
+}
+
+async function adminDeleteMessage(id) {
+  await supabase.from('messages_sheet').delete().eq('id', Number(id));
+  return dashboard();
+}
+
 // -------------------------------------------------------------
 // MAIN API ROUTER
 // -------------------------------------------------------------
@@ -626,6 +636,11 @@ export default async function handler(req, res) {
       case 'admin-save-budget': return json(res, 200, await adminSaveBudget(body));
       case 'admin-delete-budget': return json(res, 200, await adminDeleteBudget(body.id));
       case 'admin-upload': return json(res, 200, await adminUploadFile(body));
+
+      // Admin Chat Extensions
+      case 'admin-send-message': return json(res, 200, await saveSquadMessage(body.sender || 'Admin', body.text));
+      case 'admin-edit-message': return json(res, 200, await adminEditMessage(body.id, body.text));
+      case 'admin-delete-message': return json(res, 200, await adminDeleteMessage(body.id));
 
       default: return json(res, 200, await dashboard());
     }
