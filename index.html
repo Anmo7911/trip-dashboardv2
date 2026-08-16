@@ -1659,7 +1659,7 @@
     // VERCEL / SUPABASE API BRIDGE
     // ==========================================
     async function apiRequest(action, payload = {}) {
-      const response = await fetch(`/api/index?action=${encodeURIComponent(action)}`, {
+      const response = await fetch(`/api?action=${encodeURIComponent(action)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
