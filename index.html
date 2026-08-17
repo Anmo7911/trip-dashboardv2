@@ -1203,14 +1203,15 @@
 
 
  <!-- =========================================
-       SCENIC EXPEDITION APP HEADER
+       SCENIC EXPEDITION APP HEADER (Padded & Fixed Spacing)
        ========================================= -->
   <header class="relative w-full overflow-hidden bg-cover bg-center shadow-sm select-none" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');">
     
     <!-- Soft Sunlight & Sky Gradient Overlay -->
     <div class="absolute inset-0 bg-gradient-to-b from-sky-400/25 via-sky-100/10 to-slate-100/70 backdrop-blur-[0.5px]"></div>
 
-    <div class="relative z-10 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-3 pb-3 flex flex-col justify-between h-[180px] sm:h-[200px]">
+    <!-- Increased height and bottom padding so nothing overlaps the notice banner -->
+    <div class="relative z-10 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-3 pb-12 lg:pb-6 flex flex-col justify-between min-h-[240px] sm:min-h-[250px] lg:min-h-[210px]">
       
       <!-- Top Action Bar: Floating Chat Button -->
       <div class="flex items-center justify-end w-full">
@@ -1220,9 +1221,9 @@
         </button>
       </div>
 
-      <!-- Center Space: Dynamic Trip Title -->
-      <div class="flex flex-col items-center justify-center my-auto">
-        <div class="headline-scene h-8 sm:h-10 flex items-center justify-center w-full px-2">
+      <!-- Center Space: Dynamic Trip Title (Padded from top & bottom) -->
+      <div class="flex flex-col items-center justify-center my-auto py-2">
+        <div class="headline-scene h-9 sm:h-10 flex items-center justify-center w-full px-2">
           <div id="ui-headline-flipper" class="headline-flipper">
             <div class="headline-front flex items-center justify-center">
               <h1 id="ui-title-1" class="font-black text-emerald-950 text-xl sm:text-2xl lg:text-3xl tracking-wider uppercase drop-shadow-sm whitespace-nowrap text-center">Loading...</h1>
@@ -1235,7 +1236,7 @@
       </div>
 
       <!-- Bottom Frosted Notice & Warning Bar -->
-      <div id="notice-container" class="w-full">
+      <div id="notice-container" class="w-full mb-1">
         <div class="overflow-hidden w-full">
           <div id="notice-slider" class="carousel-track">
             <!-- Notice Slot -->
