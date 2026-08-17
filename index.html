@@ -1271,96 +1271,158 @@
   </header>
 
   <!-- =========================================
-       TAB 1: SPEND VIEW (More Elevated Mobile Overlap)
-       ========================================= -->
-  <main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-5xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-8 px-4 lg:px-8 space-y-4 lg:space-y-6 relative z-20">
+     TAB 1: SPEND VIEW
+     Elevated Mobile Cards — No Outer Background
+     ========================================= -->
+<main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-5xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-8 px-4 lg:px-8 space-y-4 lg:space-y-6 relative z-20">
 
-    <!-- 3D BENTO GRID (Higher Elevation & Smooth Corner Sheet on Mobile) -->
-    <div id="ui-top-cards-wrapper" class="bg-white/95 lg:bg-transparent backdrop-blur-md p-3.5 lg:p-0 rounded-[34px] lg:rounded-none shadow-[0_-14px_35px_rgba(0,0,0,0.08)] lg:shadow-none border border-white/80 lg:border-none transition-all duration-500 overflow-hidden opacity-100 origin-top">
-      <div class="flex flex-row gap-2.5 lg:gap-6 h-[160px] lg:h-[180px] w-full relative">
+  <!-- 3D BENTO GRID -->
+  <!-- Mobile: no outer background, cards stay elevated -->
+  <div id="ui-top-cards-wrapper" class="transition-all duration-500 overflow-hidden opacity-100 origin-top">
+    
+    <!-- Mobile height matched to Code 2: 150px -->
+    <div class="flex flex-row gap-2.5 lg:gap-6 h-[150px] lg:h-[180px] w-full relative">
 
-        <!-- Left Column: Flippable Balance Card -->
-        <div id="balance-col" class="transition-all duration-[600ms] ease-[cubic-bezier(0.25,1,0.5,1)] h-full z-20 w-[calc(50%-5px)] lg:w-7/12">
-          <div class="card-scene h-full w-full">
-            <div id="card-flipper-engine" onclick="flipBalanceCard()" class="card-flipper cursor-pointer select-none">
+      <!-- Left Column: Flippable Balance Card -->
+      <div id="balance-col" class="transition-all duration-[600ms] ease-[cubic-bezier(0.25,1,0.5,1)] h-full z-20 w-[calc(50%-5px)] lg:w-7/12">
+        
+        <div class="card-scene h-full w-full">
+          
+          <div id="card-flipper-engine" onclick="flipBalanceCard()" class="card-flipper cursor-pointer select-none">
 
-              <!-- Front of Balance Card -->
-              <div id="balance-card" class="face-front w-full h-full p-4 rounded-[26px] lg:rounded-[28px] border border-white/80 bg-gradient-to-b from-emerald-50/90 to-emerald-100/70 shadow-sm transition-all duration-300 flex flex-col justify-between items-center text-center relative overflow-hidden active:scale-[0.98]">
+            <!-- Front of Balance Card -->
+            <div id="balance-card" class="face-front w-full h-full p-4 rounded-[26px] lg:rounded-[28px] border border-white/80 bg-gradient-to-b from-emerald-50/90 to-emerald-100/70 shadow-sm transition-all duration-300 flex flex-col justify-between items-center text-center relative overflow-hidden active:scale-[0.98]">
+
+              <div class="w-full flex-1 flex flex-col items-center justify-center relative z-10">
                 
-                <div class="w-full flex-1 flex flex-col items-center justify-center relative z-10">
-                  <div class="flex items-center justify-center gap-1.5 mb-1">
-                    <span class="relative flex h-2 w-2 shrink-0">
-                      <span id="dot-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-emerald-400"></span>
-                      <span id="dot-main" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </span>
-                    <p id="balance-label" class="text-[9.5px] font-black text-emerald-600 uppercase tracking-widest leading-none">
-                      Remaining
-                    </p>
-                  </div>
-                  <p id="stat-balance" class="text-3xl lg:text-4xl font-black text-emerald-700 tracking-tight text-center leading-none">₹0</p>
+                <div class="flex items-center justify-center gap-1.5 mb-1">
+                  <span class="relative flex h-2 w-2 shrink-0">
+                    <span id="dot-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-emerald-400"></span>
+                    <span id="dot-main" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+
+                  <p id="balance-label" class="text-[9.5px] font-black text-emerald-600 uppercase tracking-widest leading-none">
+                    Remaining
+                  </p>
                 </div>
 
-                <div id="balance-hint-footer" class="text-[9px] font-bold uppercase tracking-wider text-emerald-700/80 flex items-center justify-center gap-1.5 transition-colors duration-500 w-full relative z-10">
-                  <span>Allocations</span>
-                  <i data-lucide="layers" class="w-3.5 h-3.5 stroke-[2.5]"></i>
-                </div>
+                <p id="stat-balance" class="text-3xl lg:text-4xl font-black text-emerald-700 tracking-tight text-center leading-none">
+                  ₹0
+                </p>
+
               </div>
 
-              <!-- Back of Balance Card -->
-              <div class="face-back w-full h-full p-4 rounded-[26px] lg:rounded-[28px] border border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 shadow-xl text-slate-100 flex flex-col justify-between">
-                <div class="flex justify-between items-center w-full border-b border-slate-700/80 pb-1.5 px-1">
-                  <p class="text-[10px] lg:text-xs font-black uppercase tracking-widest text-indigo-400">Budget Allocations</p>
-                  <i data-lucide="x" class="w-4 h-4 text-slate-400 hover:text-white transition-colors"></i>
-                </div>
-                <div id="back-bars-grid" class="grid grid-cols-2 gap-x-6 gap-y-1.5 w-full text-[10px] lg:text-xs font-bold px-1 overflow-y-auto max-h-[90px] lg:max-h-[110px]"></div>
+              <!-- Allocations Footer -->
+              <div id="balance-hint-footer" class="text-[9px] font-bold uppercase tracking-wider text-emerald-700/80 flex items-center justify-center gap-1.5 transition-colors duration-500 w-full relative z-10">
+                <span>Allocations</span>
+                <i data-lucide="layers" class="w-3.5 h-3.5 stroke-[2.5]"></i>
               </div>
 
             </div>
+
+            <!-- Back of Balance Card -->
+            <div class="face-back w-full h-full p-4 rounded-[26px] lg:rounded-[28px] border border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 shadow-xl text-slate-100 flex flex-col justify-between">
+
+              <div class="flex justify-between items-center w-full border-b border-slate-700/80 pb-1.5 px-1">
+                <p class="text-[10px] lg:text-xs font-black uppercase tracking-widest text-indigo-400">
+                  Budget Allocations
+                </p>
+
+                <i data-lucide="x" class="w-4 h-4 text-slate-400 hover:text-white transition-colors"></i>
+              </div>
+
+              <div id="back-bars-grid" class="grid grid-cols-2 gap-x-6 gap-y-1.5 w-full text-[10px] lg:text-xs font-bold px-1 overflow-y-auto max-h-[90px] lg:max-h-[110px]"></div>
+
+            </div>
+
           </div>
-        </div>
-
-        <!-- Right Column: Total Budget & Spent Stack -->
-        <div id="stats-col" class="transition-all duration-[500ms] ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col justify-between h-full w-[calc(50%-5px)] lg:w-5/12 gap-2.5">
-
-          <!-- Top Right Card: Total Budget -->
-          <div id="ui-budget-wrapper" class="w-full h-[calc(50%-5px)] rounded-[22px] overflow-hidden">
-            <div class="budget-scene-mount h-full w-full">
-              <div id="ui-budget-flip-engine" class="budget-card-inner-engine w-full h-full">
-                <div class="budget-front bg-white border border-slate-200/80 shadow-sm px-3.5 py-2 lg:px-4 rounded-[22px] w-full h-full flex items-center justify-between">
-                  <div class="flex flex-col justify-center text-left">
-                    <p class="text-[8px] lg:text-[9.5px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Total Budget</p>
-                    <p id="stat-budget" class="text-sm lg:text-xl font-black text-slate-800">₹0</p>
-                  </div>
-                  <div class="w-7 h-7 lg:w-8 lg:h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
-                    <i data-lucide="wallet-cards" class="w-3.5 h-3.5 lg:w-4 lg:h-4"></i>
-                  </div>
-                </div>
-
-                <div class="budget-back bg-gradient-to-b from-emerald-50 to-emerald-100 border border-emerald-100 p-2 text-center rounded-[22px] w-full h-full flex flex-col justify-center items-center">
-                  <p id="ui-peek-title-row" class="text-[10px] font-black tracking-wide text-emerald-600 uppercase"></p>
-                  <p id="ui-peek-notes-row" class="text-[9px] font-semibold text-emerald-600/90 truncate w-full mt-0.5"></p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Bottom Right Card: Spent -->
-          <div id="ui-spent-hero-card" onclick="toggleLedger()" class="w-full h-[calc(50%-5px)] bg-rose-50/70 border border-rose-100/80 shadow-sm px-3.5 py-2 lg:px-4 rounded-[22px] flex items-center justify-between cursor-pointer transition-all duration-300 hover:bg-rose-50 active:scale-[0.98]">
-            <div class="flex flex-col justify-center text-left">
-              <div class="flex items-center gap-1 mb-0.5">
-                <p id="ui-spent-label" class="text-[8px] lg:text-[9.5px] font-black text-rose-500 uppercase tracking-wider">Spent</p>
-                <i data-lucide="receipt" class="w-2.5 h-2.5 text-rose-500"></i>
-              </div>
-              <p id="stat-spent" class="text-sm lg:text-xl font-black text-rose-600">₹0</p>
-            </div>
-            <div class="w-7 h-7 lg:w-8 lg:h-8 rounded-xl bg-rose-100/60 flex items-center justify-center text-rose-500 shrink-0">
-              <i data-lucide="trending-up" class="w-3.5 h-3.5 lg:w-4 lg:h-4"></i>
-            </div>
-          </div>
-
         </div>
       </div>
+
+
+      <!-- Right Column: Total Budget & Spent -->
+      <div id="stats-col" class="transition-all duration-[500ms] ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col justify-between h-full w-[calc(50%-5px)] lg:w-5/12 gap-2.5">
+
+        <!-- Total Budget -->
+        <!-- Mobile height matched to Code 2 -->
+        <div id="ui-budget-wrapper" class="w-full h-[calc(50%-6px)] lg:h-[calc(50%-5px)] rounded-[22px] lg:rounded-[22px] overflow-hidden">
+
+          <div class="budget-scene-mount h-full w-full">
+
+            <div id="ui-budget-flip-engine" class="budget-card-inner-engine w-full h-full">
+
+              <!-- Front -->
+              <div class="budget-front bg-white border border-slate-200/80 shadow-sm px-3.5 py-2 lg:px-4 rounded-[22px] w-full h-full flex items-center justify-between">
+
+                <div class="flex flex-col justify-center text-left">
+
+                  <p class="text-[8px] lg:text-[9.5px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
+                    Total Budget
+                  </p>
+
+                  <p id="stat-budget" class="text-sm lg:text-xl font-black text-slate-800">
+                    ₹0
+                  </p>
+
+                </div>
+
+                <div class="w-8 h-8 lg:w-8 lg:h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
+
+                  <i data-lucide="wallet-cards" class="w-4 h-4 lg:w-4 lg:h-4"></i>
+
+                </div>
+
+              </div>
+
+              <!-- Back -->
+              <div class="budget-back bg-gradient-to-b from-emerald-50 to-emerald-100 border border-emerald-100 p-2 text-center rounded-[22px] w-full h-full flex flex-col justify-center items-center">
+
+                <p id="ui-peek-title-row" class="text-[10px] font-black tracking-wide text-emerald-600 uppercase"></p>
+
+                <p id="ui-peek-notes-row" class="text-[9px] font-semibold text-emerald-600/90 truncate w-full mt-0.5"></p>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Spent -->
+        <!-- Mobile height matched to Code 2 -->
+        <div id="ui-spent-hero-card" onclick="toggleLedger()" class="w-full h-[calc(50%-6px)] lg:h-[calc(50%-5px)] bg-rose-50/70 border border-rose-100/80 shadow-sm px-3.5 py-2 lg:px-4 rounded-[22px] flex items-center justify-between cursor-pointer transition-all duration-300 hover:bg-rose-50 active:scale-[0.98]">
+
+          <div class="flex flex-col justify-center text-left">
+
+            <div class="flex items-center gap-1 mb-0.5">
+
+              <p id="ui-spent-label" class="text-[8px] lg:text-[9.5px] font-black text-rose-500 uppercase tracking-wider">
+                Spent
+              </p>
+
+              <i data-lucide="receipt" class="w-2.5 h-2.5 text-rose-500"></i>
+
+            </div>
+
+            <p id="stat-spent" class="text-sm lg:text-xl font-black text-rose-600">
+              ₹0
+            </p>
+
+          </div>
+
+          <div class="w-8 h-8 lg:w-8 lg:h-8 rounded-xl bg-rose-100/60 flex items-center justify-center text-rose-500 shrink-0">
+
+            <i data-lucide="trending-up" class="w-4 h-4 lg:w-4 lg:h-4"></i>
+
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
+  </div>
+
     
 
     <!-- NEW EXPENSE ENTRY FORM -->
