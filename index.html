@@ -1202,10 +1202,11 @@
   </div>
 
 
- <!-- =========================================
-       SCENIC EXPEDITION APP HEADER (Sticky Mode with Dissolve Fade)
+ 
+  <!-- =========================================
+       SCENIC EXPEDITION APP HEADER (Sticky on Desktop Only)
        ========================================= -->
-  <header id="main-app-header" class="relative lg:relative w-full overflow-hidden bg-cover bg-center shadow-sm select-none z-30 transition-all duration-200" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');">
+  <header id="main-app-header" class="relative lg:sticky lg:top-0 w-full overflow-hidden bg-cover bg-center shadow-sm select-none z-30 transition-all duration-200" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');">
     
     <!-- Soft Sunlight & Sky Gradient Overlay -->
     <div class="absolute inset-0 bg-gradient-to-b from-sky-400/25 via-sky-100/10 to-transparent backdrop-blur-[0.5px]"></div>
@@ -2155,55 +2156,46 @@
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab')); 
       
       // Reset mobile navigation styling
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active')); 
       
       // Reset desktop sidebar button styling
       document.querySelectorAll('.desktop-nav-btn').forEach(b => {
-        b.classList.remove('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100');
-        b.classList.add('text-slate-500');
+        b.classList.remove('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100'); 
+        b.classList.add('text-slate-500'); 
       });
 
       // Show the selected view
-      const targetView = document.getElementById('view-' + tabId);
-      if (targetView) targetView.classList.add('active-tab');
+      const targetView = document.getElementById('view-' + tabId); 
+      if (targetView) targetView.classList.add('active-tab'); 
 
-      // Sticky Header & Mobile Scroll-Lock Control
-      const header = document.getElementById('main-app-header');
-      if (header) {
-        if (tabId === 'spend') {
-          // Unstick header & lock body on main Spend tab (Mobile only)
-          header.classList.remove('sticky', 'top-0');
-          header.classList.add('relative');
-          if (window.innerWidth < 1024) {
-            document.body.classList.add('overflow-hidden', 'touch-none');
-          }
-        } else {
-          // Stick header & unlock body on all other tabs
-          header.classList.remove('relative');
-          header.classList.add('sticky', 'top-0');
-          document.body.classList.remove('overflow-hidden', 'touch-none');
+      // Mobile Scroll-Lock Control for Main Spend Tab
+      if (tabId === 'spend') {
+        if (window.innerWidth < 1024) {
+          document.body.classList.add('overflow-hidden', 'touch-none');
         }
+      } else {
+        document.body.classList.remove('overflow-hidden', 'touch-none');
       }
 
       // Sync active state for Desktop Sidebar button
-      const desktopBtn = document.querySelector(`.desktop-nav-btn[data-tab="${tabId}"]`);
+      const desktopBtn = document.querySelector(`.desktop-nav-btn[data-tab="${tabId}"]`); 
       if (desktopBtn) {
-        desktopBtn.classList.remove('text-slate-500');
-        desktopBtn.classList.add('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100');
+        desktopBtn.classList.remove('text-slate-500'); 
+        desktopBtn.classList.add('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100'); 
       }
 
       // Sync mobile active state if clicked from mobile
       if (el && el.classList.contains('nav-btn')) {
-        el.classList.add('nav-active');
+        el.classList.add('nav-active'); 
       }
       
       // Contextual Logic: Reset UI states specific to the SPEND tab
       if (tabId === 'spend') {
-        const flipper = document.getElementById('card-flipper-engine');
-        if (flipper) flipper.classList.remove('flipper-rotated');
-        if (isLedgerActive) toggleLedger(); // close ledger if it was open
-        currentLedgerFilter = "All";
-        renderLedgerList();
+        const flipper = document.getElementById('card-flipper-engine'); 
+        if (flipper) flipper.classList.remove('flipper-rotated'); 
+        if (isLedgerActive) toggleLedger(); // close ledger if it was open[cite: 1]
+        currentLedgerFilter = "All"; 
+        renderLedgerList(); 
       }
       
       // Contextual Logic: Trigger stagger animations in SQUAD tab
@@ -2213,61 +2205,61 @@
       
       // Contextual Logic: Restart timeline animations in ROUTE tab
       if (tabId === 'places') {
-        const tLine = document.getElementById('ui-timeline-container');
+        const tLine = document.getElementById('ui-timeline-container'); 
         if (tLine) {
-          tLine.classList.remove('play-places-anim');
-          void tLine.offsetWidth; // Force layout recalculation
-          tLine.classList.add('play-places-anim');
+          tLine.classList.remove('play-places-anim'); 
+          void tLine.offsetWidth; // Force layout recalculation[cite: 1]
+          tLine.classList.add('play-places-anim'); 
         }
 
         setTimeout(() => {
-          const lockVault = document.getElementById('route-lock-vault');
+          const lockVault = document.getElementById('route-lock-vault'); 
           if (lockVault && !lockVault.classList.contains('hidden')) return; 
           
-          const nodes = Array.from(document.querySelectorAll('.tracker-node'));
-          if (nodes.length === 0) return;
+          const nodes = Array.from(document.querySelectorAll('.tracker-node')); 
+          if (nodes.length === 0) return; 
 
-          const activeNodes = nodes.filter(n => n.getAttribute('data-cancelled') !== 'true');
-          const lastNode = activeNodes[activeNodes.length - 1];
-          const isTripFinished = lastNode && lastNode.getAttribute('data-ata');
+          const activeNodes = nodes.filter(n => n.getAttribute('data-cancelled') !== 'true'); 
+          const lastNode = activeNodes[activeNodes.length - 1]; 
+          const isTripFinished = lastNode && lastNode.getAttribute('data-ata'); 
 
           if (isTripFinished) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            if (window.popupDelayTimeout) clearTimeout(window.popupDelayTimeout);
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+            if (window.popupDelayTimeout) clearTimeout(window.popupDelayTimeout); 
             
             window.popupDelayTimeout = setTimeout(() => {
-              const modal = document.getElementById('trip-complete-popup');
-              const card = document.getElementById('trip-complete-card');
+              const modal = document.getElementById('trip-complete-popup'); 
+              const card = document.getElementById('trip-complete-card'); 
               
               if (modal && card) {
-                modal.classList.remove('hidden');
+                modal.classList.remove('hidden'); 
                 lucide.createIcons(); 
-                void modal.offsetHeight;
-                modal.classList.remove('opacity-0');
-                card.classList.remove('scale-75', 'opacity-0');
-                card.classList.add('scale-100', 'opacity-100');
+                void modal.offsetHeight; 
+                modal.classList.remove('opacity-0'); 
+                card.classList.remove('scale-75', 'opacity-0'); 
+                card.classList.add('scale-100', 'opacity-100'); 
               }
-            }, 900);
+            }, 900); 
             
           } else {
-            let activeNode = null;
+            let activeNode = null; 
             for (let i = 0; i < nodes.length; i++) {
               if (nodes[i].getAttribute('data-ata')) {
                 activeNode = nodes[i + 1] && nodes[i + 1].getAttribute('data-cancelled') !== 'true' 
                   ? nodes[i + 1] 
-                  : nodes[i];
+                  : nodes[i]; 
               }
             }
 
             if (!activeNode && nodes.length > 0) {
-              activeNode = nodes.find(n => n.getAttribute('data-cancelled') !== 'true');
+              activeNode = nodes.find(n => n.getAttribute('data-cancelled') !== 'true'); 
             }
 
             if (activeNode) {
-              activeNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              activeNode.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
             }
           }
-        }, 250);
+        }, 250); 
       }
     }
 
