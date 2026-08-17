@@ -1203,15 +1203,15 @@
 
 
  <!-- =========================================
-       SCENIC EXPEDITION APP HEADER (Padded & Fixed Spacing)
+       SCENIC APP HEADER (Clean Spacing & Banner Fix)
        ========================================= -->
   <header class="relative w-full overflow-hidden bg-cover bg-center shadow-sm select-none" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');">
     
     <!-- Soft Sunlight & Sky Gradient Overlay -->
     <div class="absolute inset-0 bg-gradient-to-b from-sky-400/25 via-sky-100/10 to-slate-100/70 backdrop-blur-[0.5px]"></div>
 
-    <!-- Increased height and bottom padding so nothing overlaps the notice banner -->
-    <div class="relative z-10 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-3 pb-12 lg:pb-6 flex flex-col justify-between min-h-[240px] sm:min-h-[250px] lg:min-h-[210px]">
+    <!-- Header Container with Bottom Padding for Card Rise -->
+    <div class="relative z-10 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-3 pb-14 lg:pb-6 flex flex-col justify-between min-h-[250px] lg:min-h-[220px]">
       
       <!-- Top Action Bar: Floating Chat Button -->
       <div class="flex items-center justify-end w-full">
@@ -1221,28 +1221,28 @@
         </button>
       </div>
 
-      <!-- Center Space: Dynamic Trip Title (Padded from top & bottom) -->
-      <div class="flex flex-col items-center justify-center my-auto py-2">
-        <div class="headline-scene h-9 sm:h-10 flex items-center justify-center w-full px-2">
+      <!-- Center Space: Dynamic Trip Title -->
+      <div class="flex flex-col items-center justify-center my-auto py-1">
+        <div class="headline-scene h-9 flex items-center justify-center w-full px-2">
           <div id="ui-headline-flipper" class="headline-flipper">
             <div class="headline-front flex items-center justify-center">
-              <h1 id="ui-title-1" class="font-black text-emerald-950 text-xl sm:text-2xl lg:text-3xl tracking-wider uppercase drop-shadow-sm whitespace-nowrap text-center">Loading...</h1>
+              <h1 id="ui-title-1" class="font-black text-emerald-950 text-2xl sm:text-3xl tracking-wide uppercase drop-shadow-sm whitespace-nowrap text-center">Loading...</h1>
             </div>
             <div class="headline-back flex items-center justify-center">
-              <h1 id="ui-title-2" class="font-black text-emerald-950 text-xl sm:text-2xl lg:text-3xl tracking-wider uppercase drop-shadow-sm whitespace-nowrap text-center">Valley of Flowers</h1>
+              <h1 id="ui-title-2" class="font-black text-emerald-950 text-2xl sm:text-3xl tracking-wide uppercase drop-shadow-sm whitespace-nowrap text-center">Valley of Flowers</h1>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Bottom Frosted Notice & Warning Bar -->
+      <!-- Bottom Notice & Warning Bar (Positioned Cleanly Above Cards) -->
       <div id="notice-container" class="w-full mb-1">
         <div class="overflow-hidden w-full">
           <div id="notice-slider" class="carousel-track">
             <!-- Notice Slot -->
             <div class="carousel-item px-1">
-              <div class="bg-white/85 backdrop-blur-md border border-white/90 rounded-full px-3.5 py-2 flex items-center justify-between shadow-sm cursor-pointer hover:bg-white/95 transition-all">
-                <div class="flex items-center gap-2 min-w-0 pr-2">
+              <div class="bg-white/90 backdrop-blur-md border border-white/90 rounded-full px-4 py-2 flex items-center justify-between shadow-sm cursor-pointer hover:bg-white transition-all">
+                <div class="flex items-center gap-2.5 min-w-0 pr-2">
                   <div class="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
                     <i data-lucide="alert-circle" class="w-3.5 h-3.5 stroke-[2.5]"></i>
                   </div>
@@ -1253,8 +1253,8 @@
             </div>
             <!-- Warning Notice Slot -->
             <div class="carousel-item px-1">
-              <div class="bg-rose-50/90 backdrop-blur-md border border-rose-200 rounded-full px-3.5 py-2 flex items-center justify-between shadow-sm cursor-pointer">
-                <div class="flex items-center gap-2 min-w-0 pr-2">
+              <div class="bg-rose-50/90 backdrop-blur-md border border-rose-200 rounded-full px-4 py-2 flex items-center justify-between shadow-sm cursor-pointer">
+                <div class="flex items-center gap-2.5 min-w-0 pr-2">
                   <div class="w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-sm">
                     <i data-lucide="alert-triangle" class="w-3.5 h-3.5 stroke-[2.5]"></i>
                   </div>
