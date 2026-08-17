@@ -1682,6 +1682,58 @@
 
   </main>
 
+    <!-- =========================================
+       TAB 6: ABOUT US FULL VIEW
+       Clean Plain Text & Minimal Responsive Page
+       ========================================= -->
+  <main id="view-about" class="tab-content w-full max-w-md lg:max-w-3xl mx-auto p-4 lg:p-8 space-y-6">
+    <div class="bg-white rounded-[28px] lg:rounded-[32px] p-6 lg:p-10 border border-slate-200/80 shadow-sm space-y-6 text-left">
+      
+      <!-- Top Title Header -->
+      <div class="flex items-center gap-3 border-b border-slate-100 pb-5">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shadow-inner shrink-0">
+          <i data-lucide="info" class="w-6 h-6 stroke-[2.5]"></i>
+        </div>
+        <div>
+          <h2 class="text-xl lg:text-2xl font-black text-slate-800 tracking-tight uppercase">About Squad Goals</h2>
+          <p class="text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-0.5">Expedition Companion & Group Management</p>
+        </div>
+      </div>
+
+      <!-- Plain Text Content Body -->
+      <div class="space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+        <p>
+          <strong class="text-slate-900 font-black">Squad Goals</strong> is an all-in-one expedition companion built to make group travel organized, transparent, and hassle-free. It unites team coordination, finances, and route tracking into a single real-time dashboard.
+        </p>
+
+        <div class="space-y-2 pt-2">
+          <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">Key Features</h3>
+          <ul class="list-disc pl-5 space-y-1.5 text-slate-600">
+            <li><strong class="text-slate-800 font-bold">Live Expense Ledger:</strong> Real-time group budget tracking, category limits, and receipt verification.</li>
+            <li><strong class="text-slate-800 font-bold">Smart Route Tracker:</strong> Milestone progress and arrival timestamps without battery-draining GPS.</li>
+            <li><strong class="text-slate-800 font-bold">Digital E-ID Passes:</strong> Verified member identity cards with coordinator credentials.</li>
+            <li><strong class="text-slate-800 font-bold">Squad Chat:</strong> Centralized messaging with polls, replies, and admin escalation.</li>
+            <li><strong class="text-slate-800 font-bold">Trip Archives:</strong> One-tap access to past expedition reports and galleries.</li>
+          </ul>
+        </div>
+
+        <div class="pt-2">
+          <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider mb-1">Our Mission</h3>
+          <p>
+            To handle the logistics—expenses, schedules, and passes—so you can focus entirely on the journey.
+          </p>
+        </div>
+
+        <!-- Footer / Copyright -->
+        <div class="pt-6 border-t border-slate-100 text-center sm:text-left text-[11px] text-slate-400 space-y-1">
+          <p>© 2026 Squad Goals. All rights reserved.</p>
+          <p>Made with ❤️ by <strong class="text-slate-700 font-black">Anch Technologies LTD</strong></p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
     
  <!-- =========================================
        BOTTOM NAVIGATION BAR
@@ -1780,18 +1832,41 @@
         </div>
       </a>
 
-      <!-- 3. Past Archives (Full Width Below) -->
-      <div onclick="toggleMoreMenu(); showTab('archives', null);"
-        class="col-span-2 flex items-center p-3.5 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
-        <div
-          class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mr-3 shrink-0 border border-indigo-100">
-          <i data-lucide="archive" class="w-5 h-5"></i>
+    <!-- Middle Rows: About Us (20%) + Past Archive (80%) Split & Google Drive Gallery -->
+      <div class="space-y-3">
+        
+        <!-- 20% / 80% Split Row -->
+        <div class="flex items-center gap-3">
+          <!-- About Us Button (20% Width) -->
+          <button type="button" onclick="showTab('about', this)" class="w-1/5 py-4 bg-indigo-50/70 hover:bg-indigo-100/70 border border-indigo-100/80 rounded-2xl flex flex-col items-center justify-center text-indigo-600 active:scale-95 transition-all outline-none" title="About Us">
+            <i data-lucide="info" class="w-5 h-5"></i>
+            <span class="text-[9px] font-black uppercase tracking-wider mt-1">About</span>
+          </button>
+
+          <!-- Past Trips Archive Button (80% Width) -->
+          <div onclick="showTab('archives', this)" class="flex-1 flex items-center p-4 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-2xl cursor-pointer transition-all">
+            <div class="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mr-4 shrink-0">
+              <i data-lucide="archive" class="w-5 h-5"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-black text-slate-800 uppercase tracking-wider truncate">PAST TRIPS ARCHIVE</p>
+              <p class="text-[10px] text-slate-400 font-bold mt-0.5 truncate">Previous trip reports & photos</p>
+            </div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300"></i>
+          </div>
         </div>
-        <div class="flex-1">
-          <p class="text-sm font-black text-slate-800 uppercase tracking-wide">Past Trips Archive</p>
-          <p class="text-[7px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Previous trip reports & photos</p>
-        </div>
-        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+
+        <!-- Trip Gallery -->
+        <a href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank" class="flex items-center p-4 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-2xl cursor-pointer transition-all">
+          <div class="w-11 h-11 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center mr-4 shrink-0">
+            <i data-lucide="camera" class="w-5 h-5"></i>
+          </div>
+          <div class="flex-1">
+            <p class="text-xs font-black text-slate-800 uppercase tracking-wider">TRIP GALLERY</p>
+            <p class="text-[10px] text-slate-400 font-bold mt-0.5">Upload photos & receipts to Drive</p>
+          </div>
+          <i data-lucide="external-link" class="w-4 h-4 text-slate-300"></i>
+        </a>
       </div>
 
       <!-- 4. Google Drive Trip Gallery (Full Width Below) -->
