@@ -1203,14 +1203,14 @@
 
 
  <!-- =========================================
-       SCENIC EXPEDITION APP HEADER (With Trip Title)
+       SCENIC EXPEDITION APP HEADER
        ========================================= -->
   <header class="relative w-full overflow-hidden bg-cover bg-center shadow-sm select-none" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');">
     
     <!-- Soft Sunlight & Sky Gradient Overlay -->
     <div class="absolute inset-0 bg-gradient-to-b from-sky-400/25 via-sky-100/10 to-slate-100/70 backdrop-blur-[0.5px]"></div>
 
-    <div class="relative z-10 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-3 pb-10 sm:pb-12 flex flex-col justify-between min-h-[230px] sm:min-h-[250px]">
+    <div class="relative z-10 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-3 pb-3 flex flex-col justify-between h-[180px] sm:h-[200px]">
       
       <!-- Top Action Bar: Floating Chat Button -->
       <div class="flex items-center justify-end w-full">
@@ -1220,9 +1220,8 @@
         </button>
       </div>
 
-      <!-- Center Space: Trip Title Flipper & Status Pill -->
-      <div class="flex flex-col items-center justify-center my-auto space-y-2">
-        <!-- Dynamic Trip Title Flipper -->
+      <!-- Center Space: Dynamic Trip Title -->
+      <div class="flex flex-col items-center justify-center my-auto">
         <div class="headline-scene h-8 sm:h-10 flex items-center justify-center w-full px-2">
           <div id="ui-headline-flipper" class="headline-flipper">
             <div class="headline-front flex items-center justify-center">
@@ -1232,15 +1231,6 @@
               <h1 id="ui-title-2" class="font-black text-emerald-950 text-xl sm:text-2xl lg:text-3xl tracking-wider uppercase drop-shadow-sm whitespace-nowrap text-center">Valley of Flowers</h1>
             </div>
           </div>
-        </div>
-
-        <!-- Trip Status Pill -->
-        <div class="inline-flex items-center gap-1.5 px-3.5 py-1 bg-white/80 backdrop-blur-md border border-white/75 rounded-full shadow-sm">
-          <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          <span id="ui-trip-status-badge" class="text-[10px] font-black text-emerald-950 uppercase tracking-widest leading-none">Trip Active</span>
         </div>
       </div>
 
@@ -1280,15 +1270,15 @@
   </header>
 
   <!-- =========================================
-       TAB 1: SPEND VIEW (Overlapping Mobile Sheet Design)
+       TAB 1: SPEND VIEW (More Elevated Mobile Overlap)
        ========================================= -->
-  <main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-5xl mx-auto -mt-6 lg:mt-0 pt-4 lg:pt-8 px-4 lg:px-8 space-y-4 lg:space-y-6 relative z-20">
+  <main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-5xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-8 px-4 lg:px-8 space-y-4 lg:space-y-6 relative z-20">
 
-    <!-- 3D BENTO GRID (Raised Floating Bento Sheet on Mobile) -->
-    <div id="ui-top-cards-wrapper" class="bg-white/95 lg:bg-transparent backdrop-blur-md p-3.5 lg:p-0 rounded-[32px] lg:rounded-none shadow-[0_-10px_30px_rgba(0,0,0,0.06)] lg:shadow-none border border-white/80 lg:border-none transition-all duration-500 overflow-hidden opacity-100 origin-top">
+    <!-- 3D BENTO GRID (Higher Elevation & Smooth Corner Sheet on Mobile) -->
+    <div id="ui-top-cards-wrapper" class="bg-white/95 lg:bg-transparent backdrop-blur-md p-3.5 lg:p-0 rounded-[34px] lg:rounded-none shadow-[0_-14px_35px_rgba(0,0,0,0.08)] lg:shadow-none border border-white/80 lg:border-none transition-all duration-500 overflow-hidden opacity-100 origin-top">
       <div class="flex flex-row gap-2.5 lg:gap-6 h-[160px] lg:h-[180px] w-full relative">
 
-        <!-- Left Column: Flippable Balance Card (Rounded Inner Face) -->
+        <!-- Left Column: Flippable Balance Card -->
         <div id="balance-col" class="transition-all duration-[600ms] ease-[cubic-bezier(0.25,1,0.5,1)] h-full z-20 w-[calc(50%-5px)] lg:w-7/12">
           <div class="card-scene h-full w-full">
             <div id="card-flipper-engine" onclick="flipBalanceCard()" class="card-flipper cursor-pointer select-none">
@@ -1315,7 +1305,7 @@
                 </div>
               </div>
 
-              <!-- Back of Balance Card (Allocations List) -->
+              <!-- Back of Balance Card -->
               <div class="face-back w-full h-full p-4 rounded-[26px] lg:rounded-[28px] border border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 shadow-xl text-slate-100 flex flex-col justify-between">
                 <div class="flex justify-between items-center w-full border-b border-slate-700/80 pb-1.5 px-1">
                   <p class="text-[10px] lg:text-xs font-black uppercase tracking-widest text-indigo-400">Budget Allocations</p>
