@@ -134,9 +134,12 @@ async function dashboard() {
   const rotationLines = text(setting(3, 'd')) || 'dual';          // options: dual (flippable), single (static)
   const titleVisibility = text(setting(3, 'e')) || 'VISIBLE';     // options: VISIBLE, HIDDEN
 
-  // Header Images for Mobile & Desktop
-  const headerImgMobile = text(setting(25, 'b')) || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80';
-  const headerImgDesktop = text(setting(25, 'c')) || headerImgMobile;
+  
+  // 4 Dual Crossfade Header Images (Mobile & Desktop)
+  const headerImgMob1 = text(setting(25, 'b')) || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80';
+  const headerImgDesk1 = text(setting(25, 'c')) || headerImgMob1;
+  const headerImgMob2 = text(setting(26, 'b')) || '';
+  const headerImgDesk2 = text(setting(26, 'c')) || '';
 
   const tripNotice = text(setting(7, 'b'));
   const warningNotice = text(setting(8, 'b'));
@@ -288,7 +291,7 @@ async function dashboard() {
     securityStatus: meta.security_status || 'normal',
     chiefCoordinatorSignature, eidStampImage, rawEidStamp, tripName, secondaryTitle,
     // Add Design Configuration Pack
-    styles: { titleColor, subtitleColor, titleFontSize, titlePosition, rotationLines, titleVisibility, headerImgMobile, headerImgDesktop },
+    styles: { titleColor, subtitleColor, titleFontSize, titlePosition, rotationLines, titleVisibility, headerImgMob1, headerImgDesk1, headerImgMob2, headerImgDesk2 },
     guidelinesUrl, rawGuidelines, tripReportUrl, rawTripReport, tripReportSubheading, eidSubheading, eidHeading,
     rawCoordinatorBg, rawMemberBg, coordinatorBg, memberBg,
     tripNotice, warningNotice,
