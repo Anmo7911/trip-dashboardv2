@@ -4487,9 +4487,58 @@ const places = payload.places.filter(p => p.tripDay || p.location);
                 </span>`}
 
               ${hasGallery ? `
-                <a href="${trip.galleryUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] font-black uppercase tracking-widest py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all">
-                  <i data-lucide="image" class="w-3.5 h-3.5"></i> Gallery
-                </a>` : ''}
+                <button type="button" onclick="openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] font-black uppercase tracking-widest py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+                  <i data-lucide="camera" class="w-3.5 h-3.5"></i> Gallery
+                </button>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+      
+      lucide.createIcons();
+    }
+
+    function renderArchivesPageList(trips) {
+      const container = document.getElementById('archives-page-content');
+      if (!container) return;
+
+      if (!trips || trips.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full bg-white rounded-[24px] p-8 text-center border border-slate-200 shadow-sm">
+            <i data-lucide="search-x" class="w-10 h-10 text-slate-300 mx-auto mb-2.5"></i>
+            <p class="text-xs font-black text-slate-400 uppercase tracking-widest">No matching trips found</p>
+          </div>`;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = trips.map(trip => {
+        const hasReport = trip.reportUrl && trip.reportUrl.trim() !== "" && trip.reportUrl !== "#";
+        const hasGallery = trip.galleryUrl && trip.galleryUrl.trim() !== "" && trip.galleryUrl !== "#";
+        const spentText = trip.totalSpent ? `₹${Math.round(trip.totalSpent).toLocaleString('en-IN')}` : '';
+
+        return `
+          <div class="bg-white p-5 lg:p-6 rounded-[24px] border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-4">
+            <div class="flex justify-between items-start gap-2">
+              <div class="min-w-0 flex-1">
+                <h3 class="text-sm lg:text-base font-black text-slate-800 uppercase tracking-wide truncate">${trip.name || 'Past Trip'}</h3>
+                ${trip.dates ? `<p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">${trip.dates}</p>` : ''}
+              </div>
+              ${spentText ? `<span class="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-black px-3 py-1.5 rounded-full uppercase shrink-0">Spent: ${spentText}</span>` : ''}
+            </div>
+            
+            <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100">
+              ${hasReport ? `
+                <a href="${trip.reportUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm">
+                  <i data-lucide="file-text" class="w-4 h-4"></i> View Report
+                </a>` : `
+                <span class="flex-1 bg-slate-100 text-slate-400 text-[10px] lg:text-[11px] font-bold uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed border border-slate-200/60">
+                  <i data-lucide="file-x" class="w-4 h-4"></i> No Report
+                </span>`}
+
+              ${hasGallery ? `
+                <button type="button" onclick="openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all">
+                  <i data-lucide="camera" class="w-4 h-4"></i> Gallery
+                </button>` : ''}
             </div>
           </div>`;
       }).join('');
@@ -5120,9 +5169,24 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
 
     // ==========================================
-    // GOOGLE DRIVE GALLERY MODAL CONTROLLER
+    // GOOGLE DRIVE GALLERY MODAL CONTROLLER (Dynamic URL Support)
     // ==========================================
-    function openDriveGallery() {
+    function openDriveGallery(customUrl) {
+      const defaultUrl = "https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0";
+      const rawUrl = customUrl || defaultUrl;
+      const iframe = document.getElementById('drive-preview-iframe');
+      const extBtn = document.getElementById('drive-external-link-btn');
+
+      // Extract Google Drive Folder ID if applicable
+      let embedUrl = rawUrl;
+      const folderMatch = rawUrl.match(/folders\/([a-zA-Z0-9_-]+)/);
+      if (folderMatch) {
+        embedUrl = `https://drive.google.com/embeddedfolderview?id=${folderMatch[1]}#grid`;
+      }
+
+      if (iframe) iframe.src = embedUrl;
+      if (extBtn) extBtn.href = rawUrl;
+
       const modal = document.getElementById('drive-gallery-modal');
       if (modal) {
         modal.classList.remove('hidden');
@@ -5130,7 +5194,6 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         lucide.createIcons();
       }
     }
-
     function closeDriveGallery() {
       const modal = document.getElementById('drive-gallery-modal');
       if (modal) {
@@ -5405,7 +5468,8 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
         <div class="flex items-center gap-2 shrink-0">
           <!-- Open in Drive App Link -->
-          <a href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank" rel="noopener noreferrer" class="px-2.5 sm:px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-colors flex items-center gap-1 shadow-sm active:scale-95">
+         
+          <a id="drive-external-link-btn" href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank" rel="noopener noreferrer" class="px-2.5 sm:px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-colors flex items-center gap-1 shadow-sm active:scale-95">
             <i data-lucide="external-link" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
             <span>Open App</span>
           </a>
