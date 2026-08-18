@@ -2239,6 +2239,7 @@
       }
       
       // Contextual Logic: Restart timeline animations in ROUTE tab
+      // Contextual Logic: Restart timeline animations in ROUTE tab
       if (tabId === 'places') {
         const tLine = document.getElementById('ui-timeline-container');
         if (tLine) {
@@ -2250,7 +2251,6 @@
         // Delay checks for auto-scrolling to the active GPS node
         setTimeout(() => {
           const lockVault = document.getElementById('route-lock-vault');
-          // Abort auto-scrolling if security vault is visible
           if (lockVault && !lockVault.classList.contains('hidden')) return; 
           
           const nodes = Array.from(document.querySelectorAll('.tracker-node'));
@@ -2261,7 +2261,6 @@
           const isTripFinished = lastNode && lastNode.getAttribute('data-ata');
 
           if (isTripFinished) {
-            // Trigger beautiful spring-pop complete modal if at end of timeline
             window.scrollTo({ top: 0, behavior: 'smooth' });
             if (window.popupDelayTimeout) clearTimeout(window.popupDelayTimeout);
             
@@ -2272,7 +2271,7 @@
               if (modal && card) {
                 modal.classList.remove('hidden');
                 lucide.createIcons(); 
-                void modal.offsetHeight; // Reflow
+                void modal.offsetHeight;
                 modal.classList.remove('opacity-0');
                 card.classList.remove('scale-75', 'opacity-0');
                 card.classList.add('scale-100', 'opacity-100');
@@ -2280,7 +2279,7 @@
             }, 900);
             
           } else {
-            // Standard scroll-to-active node alignment
+            // Find the current in-progress or next milestone node
             let activeNode = null;
             for (let i = 0; i < nodes.length; i++) {
               if (nodes[i].getAttribute('data-ata')) {
@@ -2295,28 +2294,27 @@
             }
 
             if (activeNode) {
-              activeNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              // Measure exact header height dynamically
+              const header = document.getElementById('app-header');
+              const headerHeight = header ? header.offsetHeight : 0;
+              const isDesktop = window.innerWidth >= 1024;
+              
+              // Calculate target Y coordinate offset below the header
+              const nodeRect = activeNode.getBoundingClientRect();
+              const absoluteNodeTop = nodeRect.top + window.scrollY;
+              
+              // Mobile: offset by header height + 24px padding; Desktop: offset by header height + 36px
+              const safetyOffset = isDesktop ? 36 : 24;
+              const targetScrollY = Math.max(0, absoluteNodeTop - headerHeight - safetyOffset);
+
+              window.scrollTo({
+                top: targetScrollY,
+                behavior: 'smooth'
+              });
             }
           }
         }, 250);
       }
-    }
-
-    // Dismisses the Trip Complete modal gracefully
-    function closeTripCompletePopup() {
-      const modal = document.getElementById('trip-complete-popup');
-      const card = document.getElementById('trip-complete-card');
-      
-      if (modal && card) {
-        modal.classList.add('opacity-0');
-        card.classList.replace('scale-100', 'scale-75');
-        card.classList.replace('opacity-100', 'opacity-0');
-        
-        setTimeout(() => {
-          modal.classList.add('hidden');
-        }, 500); 
-      }
-    }
 
     // Handles the Bento layout transition when flipping the Balance Card
    function flipBalanceCard() { 
