@@ -1274,15 +1274,14 @@
   </header>
 
     
-  <!-- =========================================
-     TAB 1: SPEND VIEW
-     Elevated Mobile Cards — No Outer Background
-     ========================================= -->
-<main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-5xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-8 px-4 lg:px-8 space-y-4 lg:space-y-6 relative z-20">
+ <!-- =========================================
+       TAB 1: SPEND VIEW (Brought to Front)
+       ========================================= -->
+  <main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-5xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-8 px-4 lg:px-8 space-y-4 lg:space-y-6 relative z-40 overflow-hidden lg:overflow-visible overscroll-none touch-none lg:touch-auto">
 
-  <!-- 3D BENTO GRID -->
-  <!-- Mobile: no outer background, cards stay elevated -->
-  <div id="ui-top-cards-wrapper" class="transition-all duration-500 overflow-hidden opacity-100 origin-top">
+    <!-- 3D BENTO GRID (Elevated Z-Index to Front) -->
+    <div id="ui-top-cards-wrapper" class="relative z-50 bg-white/95 lg:bg-transparent backdrop-blur-md p-3.5 lg:p-0 rounded-[34px] lg:rounded-none shadow-[0_-14px_35px_rgba(0,0,0,0.12)] lg:shadow-none border border-white/90 lg:border-none transition-all duration-500 overflow-hidden opacity-100 origin-top">
+      <div class="flex flex-row gap-2.5 lg:gap-6 h-[160px] lg:h-[180px] w-full relative z-50">
     
     <!-- Mobile height matched to Code 2: 150px -->
     <div class="flex flex-row gap-2.5 lg:gap-6 h-[150px] lg:h-[180px] w-full relative">
