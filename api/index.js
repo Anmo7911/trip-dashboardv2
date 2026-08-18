@@ -122,8 +122,17 @@ async function dashboard() {
   const meta = appMetaResult?.data || {};
   const memberMeta = memberMetaResult?.data || {};
 
+  // Primary layout strings
   const tripName = text(setting(2, 'b')) || 'App by Anmol';
   const secondaryTitle = text(setting(2, 'c')) || 'Zantar Mantar, Dilli';
+  
+  // Custom Typography & Position Design Controls
+  const titleColor = text(setting(2, 'd')) || '#064e3b';         // Default: Emerald 950 hex
+  const subtitleColor = text(setting(2, 'e')) || '#047857';      // Default: Emerald 700 hex
+  const titleFontSize = text(setting(3, 'b')) || 'xl';            // options: xl, 2xl, 3xl, 4xl
+  const titlePosition = text(setting(3, 'c')) || 'justify-center'; // options: justify-center, justify-start, justify-end
+  const rotationLines = text(setting(3, 'd')) || 'dual';          // options: dual (flippable), single (static)
+
   const tripNotice = text(setting(7, 'b'));
   const warningNotice = text(setting(8, 'b'));
   const startDate = setting(4, 'b') ? new Date(setting(4, 'b')).getTime() : null;
@@ -273,6 +282,8 @@ async function dashboard() {
     appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus,
     securityStatus: meta.security_status || 'normal',
     chiefCoordinatorSignature, eidStampImage, rawEidStamp, tripName, secondaryTitle,
+    // Add Design Configuration Pack
+    styles: { titleColor, subtitleColor, titleFontSize, titlePosition, rotationLines },
     guidelinesUrl, rawGuidelines, tripReportUrl, rawTripReport, tripReportSubheading, eidSubheading, eidHeading,
     rawCoordinatorBg, rawMemberBg, coordinatorBg, memberBg,
     tripNotice, warningNotice,
