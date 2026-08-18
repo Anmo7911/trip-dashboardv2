@@ -137,7 +137,7 @@ async function dashboard() {
   
   // 4 Dual Crossfade Header Images (Mobile & Desktop)
   const headerImgMob1 = text(setting(25, 'b')) || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhEqmG8J5YSs5q-OPIiWD6Ths2iNc9yvnjReNjEDAeP1BFB_zXxwplZakAiXPA-RVUxcvAWDhQQIuREiM8KsaUWKbzKmQ_UFZXbZ14Jg3Fpo8MMbZHHrN3OwQgNCfZ3Mby0wz2gnCVQ3Etduep3yfwmpFlshJWASHVRHDyJBnqU5uzgQe1Jsle8R9ityME2/s0/@bharatway.png';
-  const headerImgDesk1 = text(setting(25, 'c')) || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhEqmG8J5YSs5q-OPIiWD6Ths2iNc9yvnjReNjEDAeP1BFB_zXxwplZakAiXPA-RVUxcvAWDhQQIuREiM8KsaUWKbzKmQ_UFZXbZ14Jg3Fpo8MMbZHHrN3OwQgNCfZ3Mby0wz2gnCVQ3Etduep3yfwmpFlshJWASHVRHDyJBnqU5uzgQe1Jsle8R9ityME2/s0/@bharatway.png':
+  const headerImgDesk1 = text(setting(25, 'c')) || headerImgMob1;
   const headerImgMob2 = text(setting(26, 'b')) || '';
   const headerImgDesk2 = text(setting(26, 'c')) || '';
 
