@@ -4480,17 +4480,18 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         return;
       }
 
-      container.innerHTML = trips.map(trip => {
+      container.innerHTML = trips.map((trip, index) => {
         const hasReport = trip.reportUrl && trip.reportUrl.trim() !== "" && trip.reportUrl !== "#";
         const hasGallery = trip.galleryUrl && trip.galleryUrl.trim() !== "" && trip.galleryUrl !== "#";
         const spentText = trip.totalSpent ? `₹${Math.round(trip.totalSpent).toLocaleString('en-IN')}` : '';
+        const displayCode = trip.tripCode && trip.tripCode.trim() !== "" ? trip.tripCode : `BW-${String(index + 1).padStart(2, '0')}`;
 
         return `
           <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col justify-between gap-3 hover:border-slate-300 transition-all shadow-sm">
             <div class="flex flex-col gap-1.5">
               <div class="flex justify-between items-start gap-2">
                 <div class="flex flex-wrap items-center gap-1.5 flex-1 min-w-0">
-                  ${trip.tripCode ? `<span class="bg-indigo-100 border border-indigo-200 text-indigo-700 text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider shrink-0">${trip.tripCode}</span>` : ''}
+                  <span class="bg-indigo-100 border border-indigo-200 text-indigo-700 text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider shrink-0">${displayCode}</span>
                   <h3 class="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wide break-words whitespace-normal leading-snug">${trip.name || 'Past Trip'}</h3>
                 </div>
                 ${spentText ? `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase shrink-0">${spentText}</span>` : ''}
@@ -4518,28 +4519,6 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       lucide.createIcons();
     }
 
-    function closeArchivesModal() {
-      const modal = document.getElementById('archives-modal');
-      if (modal) {
-        modal.classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
-      }
-    }
-
-    function filterArchivesPage(searchTerm) {
-      if (!globalActiveDataPayloadBackup || !globalActiveDataPayloadBackup.pastTrips) return;
-      
-      const term = searchTerm.toLowerCase().trim();
-      const filtered = globalActiveDataPayloadBackup.pastTrips.filter(trip => {
-        const nameMatch = trip.name ? trip.name.toLowerCase().includes(term) : false;
-        const codeMatch = trip.tripCode ? trip.tripCode.toLowerCase().includes(term) : false;
-        const dateMatch = trip.dates ? trip.dates.toLowerCase().includes(term) : false;
-        return nameMatch || codeMatch || dateMatch;
-      });
-
-      renderArchivesPageList(filtered);
-    }
-
     function renderArchivesPageList(trips) {
       const container = document.getElementById('archives-page-content');
       if (!container) return;
@@ -4554,17 +4533,18 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         return;
       }
 
-      container.innerHTML = trips.map(trip => {
+      container.innerHTML = trips.map((trip, index) => {
         const hasReport = trip.reportUrl && trip.reportUrl.trim() !== "" && trip.reportUrl !== "#";
         const hasGallery = trip.galleryUrl && trip.galleryUrl.trim() !== "" && trip.galleryUrl !== "#";
         const spentText = trip.totalSpent ? `₹${Math.round(trip.totalSpent).toLocaleString('en-IN')}` : '';
+        const displayCode = trip.tripCode && trip.tripCode.trim() !== "" ? trip.tripCode : `BW-${String(index + 1).padStart(2, '0')}`;
 
         return `
           <div class="bg-white p-5 lg:p-6 rounded-[24px] border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-4">
             <div class="flex flex-col gap-2">
               <div class="flex justify-between items-start gap-2">
                 <div class="flex flex-wrap items-center gap-2 flex-1 min-w-0">
-                  ${trip.tripCode ? `<span class="bg-indigo-50 border border-indigo-100 text-indigo-700 text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider shrink-0">${trip.tripCode}</span>` : ''}
+                  <span class="bg-indigo-50 border border-indigo-100 text-indigo-700 text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider shrink-0">${displayCode}</span>
                   <h3 class="text-sm lg:text-base font-black text-slate-800 uppercase tracking-wide break-words whitespace-normal leading-snug">${trip.name || 'Past Trip'}</h3>
                 </div>
                 ${spentText ? `<span class="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-black px-3 py-1.5 rounded-full uppercase shrink-0">${spentText}</span>` : ''}
