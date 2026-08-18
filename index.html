@@ -1752,7 +1752,7 @@
       <!-- Quick Search Bar -->
       <div class="relative w-full">
         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-        <input type="text" id="archive-page-search-input" oninput="filterArchivesPage(this.value)" placeholder="Search trips by name, code or date..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3 text-xs lg:text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
+        <input type="text" id="archive-page-search-input" oninput="filterArchivesPage(this.value)" placeholder="Search trips by name or date..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3 text-xs lg:text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
       </div>
 
     </div>
@@ -3295,7 +3295,7 @@
                   <div id="time-block-${p.rowId}" class="absolute -left-[84px] top-0 text-right w-16 anim-card" style="animation-delay: ${cardDelay}ms;">
                     ${timeBlock}
                   </div>
-                  <div class="absolute -left-[9px] top-1.5 w-4 h-4 ${dotClass} rounded-full border-4 border-slate-50 shadow-sm anim-node z-20" style="animation-delay: ${nodeDelay}ms;"></div>
+                  <div id="timeline-dot-${p.rowId}" class="absolute -left-[9px] top-1.5 w-4 h-4 ${dotClass} rounded-full border-4 border-slate-50 shadow-sm anim-node z-20" style="animation-delay: ${nodeDelay}ms;"></div>
                   <div ${clickAction} class="${cardClass} anim-card relative z-10" style="animation-delay: ${cardDelay}ms;">
                     <p class="${titleClass}">${p.location || "Location TBD"}</p>
                     ${badgeHtml ? `<div class="mt-2.5 ${isCancelled ? 'opacity-70 grayscale' : ''}">${badgeHtml}</div>` : ''}
@@ -3597,54 +3597,47 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     // ATA TAPPING / RECORDING LOGIC
     // ==========================================
     function recordLiveATA(rowId) {
-      const timeBlock = document.getElementById(`time-block-${rowId}`);
-      const node = document.querySelector(`.tracker-node[data-rowid="${rowId}"]`);
-      
-      // Blocks double-firing if already stamped
-      if (!timeBlock || !node || timeBlock.innerHTML.includes('ATA')) return;
+  const timeBlock = document.getElementById(`time-block-${rowId}`);
+  const node = document.querySelector(`.tracker-node[data-rowid="${rowId}"]`);
 
-      // Swap hollow dot for solid active fill dot
-      const targetNode = document.getElementById(`timeline-dot-${rowId}`);
-      if (targetNode) {
-          targetNode.className = "absolute -left-[9px] top-1.5 w-4 h-4 bg-indigo-500 border-4 border-slate-50 rounded-full shadow-sm anim-node z-20";
-      }
+  // If already clicked, do nothing
+  if (!node || node.getAttribute('data-ata')) return;
 
-      // Generate precise timestamp array string
-      const now = new Date();
-      const instantAta = new Intl.DateTimeFormat('en-GB', { 
-  hour: '2-digit', 
-  minute: '2-digit', 
-  hour12: false, 
-  timeZone: 'Asia/Kolkata' 
-}).format(now);
+  // 1. Get current time in India timezone
+  const now = new Date();
+  const instantAta = new Intl.DateTimeFormat('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'Asia/Kolkata'
+  }).format(now);
 
-      // Drop in the new visual timestamp with 3-second blinking FX
-      timeBlock.innerHTML += `<p class="text-[11px] font-black text-indigo-600 mt-0.5 animate-blink-3">ATA ${instantAta}</p>`;
+  // 2. Show ATA immediately on the screen
+  if (timeBlock) {
+    timeBlock.innerHTML += `<p class="text-[11px] font-black text-indigo-600 mt-0.5 animate-blink-3">ATA ${instantAta}</p>`;
+  }
 
-      // Modifies the local element payload
-      node.setAttribute('data-ata', instantAta);
-      if (typeof updateLiveTimelineEngine === 'function') {
-          updateLiveTimelineEngine();
-      }
+  // 3. Turn the circle dot purple
+  const targetNode = document.getElementById(`timeline-dot-${rowId}`);
+  if (targetNode) {
+    targetNode.className = "absolute -left-[9px] top-1.5 w-4 h-4 bg-indigo-500 border-4 border-slate-50 rounded-full shadow-sm anim-node z-20";
+  }
 
-      if (typeof positionLiveMarker === 'function') {
-          positionLiveMarker(rowId, rowId, 0);
-      }
+  node.setAttribute('data-ata', instantAta);
 
-      // Asynchronously post to Google Sheet without blocking the UI
-      apiRequest('ata', { rowId })
-        .then((freshData) => {
-          globalActiveDataPayloadBackup = freshData;
-          if (typeof startLiveGPS === 'function') {
-              startLiveGPS(freshData);
-          }
-        })
-        .catch(error => {
-          console.error(error);
-          showToast("Unable to stamp arrival time.");
-        });
-    }
+  // 4. Update the tracker line right away
+  updateLiveTimelineEngine();
 
+  // 5. Save to database
+  apiRequest('ata', { rowId })
+    .then((freshData) => {
+      globalActiveDataPayloadBackup = freshData;
+    })
+    .catch((error) => {
+      console.error(error);
+      showToast("Unable to stamp arrival time.");
+    });
+}
     // ==========================================
     // LEDGER / LIST VIEW TOGGLE ENGINE
     // ==========================================
@@ -4038,28 +4031,17 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
   const now = new Date().getTime();
 
-  function setHeightSmooth(el, newPct) {
-    if (el.style.height === '0%' || el.style.height === '') {
-      el.style.transition = 'none';
-      el.style.height = newPct;
-      void el.offsetHeight;
-      el.style.transition = '';
-    } else {
-      el.style.height = newPct;
-    }
-  }
-
   nodesArray.forEach((node, index) => {
     const rowId = node.getAttribute('data-rowid');
     const currentEta = node.getAttribute('data-eta');
     const currentAta = node.getAttribute('data-ata');
     const isCancelled = node.getAttribute('data-cancelled') === 'true';
-    
+
     const fillEl = document.getElementById(`live-fill-${rowId}`);
     const dotEl = document.getElementById(`live-dot-${rowId}`);
-    
     if (!fillEl) return;
 
+    // Find the next active stop
     let nextValidNode = null;
     for (let j = index + 1; j < nodesArray.length; j++) {
       if (nodesArray[j].getAttribute('data-cancelled') !== 'true') {
@@ -4069,81 +4051,68 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     }
 
     if (isCancelled) {
-      setHeightSmooth(fillEl, '100%');
+      fillEl.style.height = '100%';
       fillEl.classList.replace('bg-indigo-500', 'bg-slate-300');
       if (dotEl) dotEl.classList.add('hidden');
       return;
     }
 
+    // Stop has not been reached yet
     if (!currentAta || currentAta.trim() === "") {
-      setHeightSmooth(fillEl, '0%');
+      fillEl.style.height = '0%';
       if (dotEl) dotEl.classList.add('hidden');
       return;
     }
 
+    // Next stop already reached
     const nextAta = nextValidNode ? nextValidNode.getAttribute('data-ata') : null;
     if (nextAta && nextAta.trim() !== "") {
-      setHeightSmooth(fillEl, '100%');
+      fillEl.style.height = '100%';
       if (dotEl) dotEl.classList.add('hidden');
       return;
     }
 
     const nextEta = nextValidNode ? nextValidNode.getAttribute('data-eta') : null;
-    
-    // Parse start and end timestamps
+
     let startTimestamp = parseTimelineTime(currentAta);
-    let expectedStart = parseTimelineTime(currentEta);
+    let expectedStart = parseTimelineTime(currentEta) || startTimestamp;
     let expectedEnd = parseTimelineTime(nextEta);
 
-    // FIX: If the start time is currently ahead of 'now' (e.g. stamped 20:00 yesterday, now is 01:40 AM today),
-    // shift startTimestamp back by 1 day (86,400,000 ms).
+    // FIX FOR MIDNIGHT: If start time looks in the future, it was yesterday
     if (startTimestamp && startTimestamp > now) {
       startTimestamp -= 86400000;
     }
-    if (expectedStart && startTimestamp && expectedStart > startTimestamp + 43200000) {
-      expectedStart -= 86400000;
-    }
 
-    let scheduledDuration = 3600000; // 1 hour fallback
+    let scheduledDuration = 3600000; // 1 hr default
     if (expectedStart && expectedEnd) {
       if (expectedEnd <= expectedStart) {
-        expectedEnd += 86400000; // Account for overnight crossing into next day
+        expectedEnd += 86400000; // Next day crossing
       }
       scheduledDuration = expectedEnd - expectedStart;
     }
 
     const elapsed = now - startTimestamp;
+    let pct = Math.min(85, Math.max(5, (elapsed / scheduledDuration) * 100));
 
-    if (elapsed < 0) {
-      setHeightSmooth(fillEl, '0%');
-      if (dotEl) dotEl.classList.add('hidden');
-    } else {
-      let pct = (elapsed / scheduledDuration) * 100;
-      if (pct > 85) pct = 85; // Respect holding cap
-      setHeightSmooth(fillEl, `${pct}%`);
-      if (dotEl) dotEl.classList.remove('hidden');
-    }
+    fillEl.style.height = `${pct}%`;
+    if (dotEl) dotEl.classList.remove('hidden');
   });
 }
     
     // Fallback simple Time Parser for timeline
-function parseTimeStrToday(timeStr) {
-  if (!timeStr) return null;
-  const now = new Date();
-  let match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)?/i);
-  if (match) {
-    let hours = parseInt(match[1], 10);
-    let mins = parseInt(match[2], 10);
-    if (match[3]) {
-      if (match[3].toUpperCase() === 'PM' && hours < 12) hours += 12;
-      if (match[3].toUpperCase() === 'AM' && hours === 12) hours = 0;
-    }
-    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, mins, 0).getTime();
-  }
-  return now.getTime();
+    function parseTimelineTime(timeStr) {
+  if (!timeStr || String(timeStr).trim() === "") return null;
+  const match = String(timeStr).trim().match(/(\d{1,2}):(\d{2})/);
+  if (!match) return null;
+
+  const hours = parseInt(match[1], 10);
+  const mins = parseInt(match[2], 10);
+
+  const target = new Date();
+  target.setHours(hours, mins, 0, 0);
+  return target.getTime();
 }
 
-    
     // ==========================================
     // LEDGER FILTER ENGINE (Tags like "Food", "Travel")
     // ==========================================
@@ -4466,9 +4435,8 @@ function parseTimeStrToday(timeStr) {
       const term = searchTerm.toLowerCase().trim();
       const filtered = globalActiveDataPayloadBackup.pastTrips.filter(trip => {
         const nameMatch = trip.name ? trip.name.toLowerCase().includes(term) : false;
-        const codeMatch = trip.tripCode ? trip.tripCode.toLowerCase().includes(term) : false;
         const dateMatch = trip.dates ? trip.dates.toLowerCase().includes(term) : false;
-        return nameMatch || codeMatch || dateMatch;
+        return nameMatch || dateMatch;
       });
 
       renderArchivesList(filtered);
@@ -4488,23 +4456,19 @@ function parseTimeStrToday(timeStr) {
         return;
       }
 
-      container.innerHTML = trips.map((trip, index) => {
+      container.innerHTML = trips.map(trip => {
         const hasReport = trip.reportUrl && trip.reportUrl.trim() !== "" && trip.reportUrl !== "#";
         const hasGallery = trip.galleryUrl && trip.galleryUrl.trim() !== "" && trip.galleryUrl !== "#";
         const spentText = trip.totalSpent ? `₹${Math.round(trip.totalSpent).toLocaleString('en-IN')}` : '';
-        const displayCode = trip.tripCode && trip.tripCode.trim() !== "" ? trip.tripCode : `BW-${String(index + 1).padStart(2, '0')}`;
 
         return `
           <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col justify-between gap-3 hover:border-slate-300 transition-all shadow-sm">
-            <div class="flex flex-col gap-1.5">
-              <div class="flex justify-between items-start gap-2">
-                <div class="flex flex-wrap items-center gap-1.5 flex-1 min-w-0">
-                  <span class="bg-indigo-100 border border-indigo-200 text-indigo-700 text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider shrink-0">${displayCode}</span>
-                  <h3 class="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wide break-words whitespace-normal leading-snug">${trip.name || 'Past Trip'}</h3>
-                </div>
-                ${spentText ? `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase shrink-0">${spentText}</span>` : ''}
+            <div class="flex justify-between items-start gap-2">
+              <div class="min-w-0">
+                <h3 class="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wide truncate">${trip.name || 'Past Trip'}</h3>
+                ${trip.dates ? `<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${trip.dates}</p>` : ''}
               </div>
-              ${trip.dates ? `<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${trip.dates}</p>` : ''}
+              ${spentText ? `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase shrink-0">Spent: ${spentText}</span>` : ''}
             </div>
             
             <div class="flex gap-2 pt-2 border-t border-slate-200/80">
@@ -4517,7 +4481,7 @@ function parseTimeStrToday(timeStr) {
                 </span>`}
 
               ${hasGallery ? `
-                <button type="button" onclick="closeArchivesModal(); openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] font-black uppercase tracking-widest py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+                <button type="button" onclick="openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] font-black uppercase tracking-widest py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all">
                   <i data-lucide="camera" class="w-3.5 h-3.5"></i> Gallery
                 </button>` : ''}
             </div>
@@ -4541,23 +4505,19 @@ function parseTimeStrToday(timeStr) {
         return;
       }
 
-      container.innerHTML = trips.map((trip, index) => {
+      container.innerHTML = trips.map(trip => {
         const hasReport = trip.reportUrl && trip.reportUrl.trim() !== "" && trip.reportUrl !== "#";
         const hasGallery = trip.galleryUrl && trip.galleryUrl.trim() !== "" && trip.galleryUrl !== "#";
         const spentText = trip.totalSpent ? `₹${Math.round(trip.totalSpent).toLocaleString('en-IN')}` : '';
-        const displayCode = trip.tripCode && trip.tripCode.trim() !== "" ? trip.tripCode : `BW-${String(index + 1).padStart(2, '0')}`;
 
         return `
           <div class="bg-white p-5 lg:p-6 rounded-[24px] border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-4">
-            <div class="flex flex-col gap-2">
-              <div class="flex justify-between items-start gap-2">
-                <div class="flex flex-wrap items-center gap-2 flex-1 min-w-0">
-                  <span class="bg-indigo-50 border border-indigo-100 text-indigo-700 text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider shrink-0">${displayCode}</span>
-                  <h3 class="text-sm lg:text-base font-black text-slate-800 uppercase tracking-wide break-words whitespace-normal leading-snug">${trip.name || 'Past Trip'}</h3>
-                </div>
-                ${spentText ? `<span class="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-black px-3 py-1.5 rounded-full uppercase shrink-0">${spentText}</span>` : ''}
+            <div class="flex justify-between items-start gap-2">
+              <div class="min-w-0 flex-1">
+                <h3 class="text-sm lg:text-base font-black text-slate-800 uppercase tracking-wide truncate">${trip.name || 'Past Trip'}</h3>
+                ${trip.dates ? `<p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">${trip.dates}</p>` : ''}
               </div>
-              ${trip.dates ? `<p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">${trip.dates}</p>` : ''}
+              ${spentText ? `<span class="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-black px-3 py-1.5 rounded-full uppercase shrink-0">Spent: ${spentText}</span>` : ''}
             </div>
             
             <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100">
@@ -4572,6 +4532,79 @@ function parseTimeStrToday(timeStr) {
               ${hasGallery ? `
                 <button type="button" onclick="openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all">
                   <i data-lucide="camera" class="w-4 h-4"></i> Gallery
+                </button>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+      
+      lucide.createIcons();
+    }
+
+    function closeArchivesModal() {
+      const modal = document.getElementById('archives-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+      }
+    }
+
+
+    // ==========================================
+    // PAST TRIPS FULL PAGE CONTROLLER
+    // ==========================================
+    function filterArchivesPage(searchTerm) {
+      if (!globalActiveDataPayloadBackup || !globalActiveDataPayloadBackup.pastTrips) return;
+      
+      const term = searchTerm.toLowerCase().trim();
+      const filtered = globalActiveDataPayloadBackup.pastTrips.filter(trip => {
+        const nameMatch = trip.name ? trip.name.toLowerCase().includes(term) : false;
+        const dateMatch = trip.dates ? trip.dates.toLowerCase().includes(term) : false;
+        return nameMatch || dateMatch;
+      });
+
+      renderArchivesPageList(filtered);
+    }
+
+    function renderArchivesPageList(trips) {
+      const container = document.getElementById('archives-page-content');
+      if (!container) return;
+
+      if (!trips || trips.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full bg-white rounded-[24px] p-8 text-center border border-slate-200 shadow-sm">
+            <i data-lucide="search-x" class="w-10 h-10 text-slate-300 mx-auto mb-2.5"></i>
+            <p class="text-xs font-black text-slate-400 uppercase tracking-widest">No matching trips found</p>
+          </div>`;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = trips.map(trip => {
+        const hasReport = trip.reportUrl && trip.reportUrl.trim() !== "" && trip.reportUrl !== "#";
+        const hasGallery = trip.galleryUrl && trip.galleryUrl.trim() !== "" && trip.galleryUrl !== "#";
+        const spentText = trip.totalSpent ? `₹${Math.round(trip.totalSpent).toLocaleString('en-IN')}` : '';
+
+        return `
+          <div class="bg-white p-5 lg:p-6 rounded-[24px] border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-4">
+            <div class="flex justify-between items-start gap-2">
+              <div class="min-w-0 flex-1">
+                <h3 class="text-sm lg:text-base font-black text-slate-800 uppercase tracking-wide truncate">${trip.name || 'Past Trip'}</h3>
+                ${trip.dates ? `<p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">${trip.dates}</p>` : ''}
+              </div>
+              ${spentText ? `<span class="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-black px-3 py-1.5 rounded-full uppercase shrink-0">Spent: ${spentText}</span>` : ''}
+            </div>
+            
+            <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100">
+              ${hasReport ? `
+                <a href="${trip.reportUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm">
+                  <i data-lucide="file-text" class="w-4 h-4"></i> View Report
+                </a>` : `
+                <span class="flex-1 bg-slate-100 text-slate-400 text-[10px] lg:text-[11px] font-bold uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed border border-slate-200/60">
+                  <i data-lucide="file-x" class="w-4 h-4"></i> No Report
+                </span>`}
+
+              ${hasGallery ? `
+                <button type="button" onclick="closeArchivesModal(); openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] font-black uppercase tracking-widest py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+                  <i data-lucide="camera" class="w-3.5 h-3.5"></i> Gallery
                 </button>` : ''}
             </div>
           </div>`;
@@ -5362,7 +5395,7 @@ function parseTimeStrToday(timeStr) {
       <!-- Search Input -->
       <div class="relative mb-4 shrink-0 max-w-xl mx-auto w-full">
         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-        <input type="text" id="archive-search-input" oninput="filterArchivesList(this.value)" placeholder="Search trips by name, code or date..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
+        <input type="text" id="archive-search-input" oninput="filterArchivesList(this.value)" placeholder="Search trips by name or date..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
       </div>
 
       <!-- Responsive Grid for Past Trips -->
