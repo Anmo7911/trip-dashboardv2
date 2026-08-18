@@ -123,12 +123,9 @@ async function dashboard() {
   const memberMeta = memberMetaResult?.data || {};
 
   // Primary layout strings
-  // Preserve newline formatting for multi-line title breaks
-  const rawTripName = setting(2, 'b');
-  const tripName = rawTripName ? String(rawTripName).trim() : 'App by Anmol';
+  const tripName = text(setting(2, 'b')) || 'App by Anmol';
   const secondaryTitle = text(setting(2, 'c')) || 'Zantar Mantar, Dilli';
   
-  // Custom Typography & Position Design Controls
   // Custom Typography & Position Design Controls
   const titleColor = text(setting(2, 'd')) || '#064e3b';         // Default: Emerald 950 hex
   const subtitleColor = text(setting(2, 'e')) || '#047857';      // Default: Emerald 700 hex
@@ -136,6 +133,10 @@ async function dashboard() {
   const titlePosition = text(setting(3, 'c')) || 'justify-center'; // options: justify-center, justify-start, justify-end
   const rotationLines = text(setting(3, 'd')) || 'dual';          // options: dual (flippable), single (static)
   const titleVisibility = text(setting(3, 'e')) || 'VISIBLE';     // options: VISIBLE, HIDDEN
+
+  // Header Images for Mobile & Desktop
+  const headerImgMobile = text(setting(25, 'b')) || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80';
+  const headerImgDesktop = text(setting(25, 'c')) || headerImgMobile;
 
   const tripNotice = text(setting(7, 'b'));
   const warningNotice = text(setting(8, 'b'));
@@ -287,7 +288,7 @@ async function dashboard() {
     securityStatus: meta.security_status || 'normal',
     chiefCoordinatorSignature, eidStampImage, rawEidStamp, tripName, secondaryTitle,
     // Add Design Configuration Pack
-    styles: { titleColor, subtitleColor, titleFontSize, titlePosition, rotationLines, titleVisibility },
+    styles: { titleColor, subtitleColor, titleFontSize, titlePosition, rotationLines, titleVisibility, headerImgMobile, headerImgDesktop },
     guidelinesUrl, rawGuidelines, tripReportUrl, rawTripReport, tripReportSubheading, eidSubheading, eidHeading,
     rawCoordinatorBg, rawMemberBg, coordinatorBg, memberBg,
     tripNotice, warningNotice,
