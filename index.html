@@ -4510,7 +4510,9 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       isChatOpen = true;
       const modal = document.getElementById('squad-chat-modal');
       const unreadDot = document.getElementById('chat-unread-dot');
+      const mobileUnreadDot = document.getElementById('chat-mobile-unread-dot');
       if (unreadDot) unreadDot.classList.add('hidden');
+      if (mobileUnreadDot) mobileUnreadDot.classList.add('hidden');
       
       modal.classList.remove('hidden');
       
@@ -4663,7 +4665,9 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
       if (messages.length > lastMessageCount && !isChatOpen && lastMessageCount !== 0) {
         const unreadDot = document.getElementById('chat-unread-dot');
+        const mobileUnreadDot = document.getElementById('chat-mobile-unread-dot');
         if (unreadDot) unreadDot.classList.remove('hidden');
+        if (mobileUnreadDot) mobileUnreadDot.classList.remove('hidden');
       }
       lastMessageCount = messages.length;
 
