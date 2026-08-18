@@ -39,26 +39,14 @@ function formatMonthDay(v, timeZone = 'Asia/Kolkata') {
 function formatHHMM(v, timeZone = 'Asia/Kolkata') {
   if (!v) return '';
   const raw = String(v).trim();
-
-  // If the value is already a plain HH:mm string (e.g., "22:42" or "22:42:00")
   if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(raw)) {
     const parts = raw.split(':');
     return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
   }
-
-  // Handle Supabase UTC timestamptz strings (e.g., "2026-08-18 17:12:15.07")
-  const isoString = raw.endsWith('Z') ? raw : raw.replace(' ', 'T') + 'Z';
-  const d = new Date(isoString);
-
+  const d = new Date(raw);
   if (!Number.isNaN(d.getTime())) {
-    return new Intl.DateTimeFormat('en-GB', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-      timeZone
-    }).format(d);
+    return new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone }).format(d);
   }
-
   return raw.length >= 5 ? raw.slice(0, 5) : raw;
 }
 
@@ -362,7 +350,14 @@ async function stampATA(rowId) {
   if (rows.error) throw rows.error;
   const row = rows.data?.[Number(rowId) - 1];
   if (row) {
-    await supabase.from('places_sheet').update({ col_k: new Date().toISOString() }).eq('id', row.id);
+    const istTime = new Intl.DateTimeFormat('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Kolkata'
+    }).format(new Date());
+
+    await supabase.from('places_sheet').update({ col_k: istTime }).eq('id', row.id);
   }
   return dashboard();
 }
