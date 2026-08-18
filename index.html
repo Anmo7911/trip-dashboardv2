@@ -1214,8 +1214,9 @@
     <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-100 via-slate-100/60 to-transparent pointer-events-none z-10"></div>
 
     <!-- Outer header container height locked so cards below never shift -->
-    <div class="h-9 sm:h-10 w-full shrink-0"></div>
-
+    <div class="relative z-20 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-2.5 pb-8 flex flex-col justify-start h-[190px] sm:h-[210px]">
+      
+      <!-- Desktop Floating Chat Button (Bottom-Right, Large) -->
       <button type="button" onclick="openChatModal()" class="hidden lg:flex fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xl items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 outline-none border-2 border-white/80" title="Trip Messenger">
         <i data-lucide="message-circle" class="w-7 h-7 stroke-[2.2]"></i>
         <span id="chat-unread-dot" class="absolute top-0 right-0 w-3.5 h-3.5 bg-rose-500 border-2 border-white rounded-full hidden shadow-md"></span>
@@ -4509,9 +4510,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       isChatOpen = true;
       const modal = document.getElementById('squad-chat-modal');
       const unreadDot = document.getElementById('chat-unread-dot');
-      const mobileUnreadDot = document.getElementById('chat-mobile-unread-dot');
       if (unreadDot) unreadDot.classList.add('hidden');
-      if (mobileUnreadDot) mobileUnreadDot.classList.add('hidden');
       
       modal.classList.remove('hidden');
       
@@ -4664,9 +4663,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
       if (messages.length > lastMessageCount && !isChatOpen && lastMessageCount !== 0) {
         const unreadDot = document.getElementById('chat-unread-dot');
-        const mobileUnreadDot = document.getElementById('chat-mobile-unread-dot');
         if (unreadDot) unreadDot.classList.remove('hidden');
-        if (mobileUnreadDot) mobileUnreadDot.classList.remove('hidden');
       }
       lastMessageCount = messages.length;
 
