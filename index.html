@@ -2293,13 +2293,20 @@
             
           } else {
             // Find in-progress milestone node
+           // Focus on the current active departure milestone (where the tracker is originating from)
             let activeNode = null;
             for (let i = 0; i < nodes.length; i++) {
               if (nodes[i].getAttribute('data-ata')) {
-                activeNode = nodes[i + 1] && nodes[i + 1].getAttribute('data-cancelled') !== 'true' 
-                  ? nodes[i + 1] 
-                  : nodes[i];
+                activeNode = nodes[i]; // Keep focus on the active stamped stop
               }
+            }
+
+            if (!activeNode && nodes.length > 0) {
+              activeNode = nodes.find(n => n.getAttribute('data-cancelled') !== 'true');
+            }
+
+            if (activeNode) {
+              activeNode.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
 
             if (!activeNode && nodes.length > 0) {
