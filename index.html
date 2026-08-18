@@ -4518,6 +4518,14 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       lucide.createIcons();
     }
 
+    function closeArchivesModal() {
+      const modal = document.getElementById('archives-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+      }
+    }
+
     function filterArchivesPage(searchTerm) {
       if (!globalActiveDataPayloadBackup || !globalActiveDataPayloadBackup.pastTrips) return;
       
@@ -4576,114 +4584,6 @@ const places = payload.places.filter(p => p.tripDay || p.location);
               ${hasGallery ? `
                 <button type="button" onclick="openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all">
                   <i data-lucide="camera" class="w-4 h-4"></i> Gallery
-                </button>` : ''}
-            </div>
-          </div>`;
-      }).join('');
-      
-      lucide.createIcons();
-    }
-
-      container.innerHTML = trips.map(trip => {
-        const hasReport = trip.reportUrl && trip.reportUrl.trim() !== "" && trip.reportUrl !== "#";
-        const hasGallery = trip.galleryUrl && trip.galleryUrl.trim() !== "" && trip.galleryUrl !== "#";
-        const spentText = trip.totalSpent ? `₹${Math.round(trip.totalSpent).toLocaleString('en-IN')}` : '';
-
-        return `
-          <div class="bg-white p-5 lg:p-6 rounded-[24px] border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-4">
-            <div class="flex justify-between items-start gap-2">
-              <div class="min-w-0 flex-1">
-                <h3 class="text-sm lg:text-base font-black text-slate-800 uppercase tracking-wide truncate">${trip.name || 'Past Trip'}</h3>
-                ${trip.dates ? `<p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">${trip.dates}</p>` : ''}
-              </div>
-              ${spentText ? `<span class="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-black px-3 py-1.5 rounded-full uppercase shrink-0">Spent: ${spentText}</span>` : ''}
-            </div>
-            
-            <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100">
-              ${hasReport ? `
-                <a href="${trip.reportUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm">
-                  <i data-lucide="file-text" class="w-4 h-4"></i> View Report
-                </a>` : `
-                <span class="flex-1 bg-slate-100 text-slate-400 text-[10px] lg:text-[11px] font-bold uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed border border-slate-200/60">
-                  <i data-lucide="file-x" class="w-4 h-4"></i> No Report
-                </span>`}
-
-              ${hasGallery ? `
-                <button type="button" onclick="openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all">
-                  <i data-lucide="camera" class="w-4 h-4"></i> Gallery
-                </button>` : ''}
-            </div>
-          </div>`;
-      }).join('');
-      
-      lucide.createIcons();
-    }
-
-    function closeArchivesModal() {
-      const modal = document.getElementById('archives-modal');
-      if (modal) {
-        modal.classList.add('hidden');
-      }
-    }
-
-
-    // ==========================================
-    // PAST TRIPS FULL PAGE CONTROLLER
-    // ==========================================
-    function filterArchivesPage(searchTerm) {
-      if (!globalActiveDataPayloadBackup || !globalActiveDataPayloadBackup.pastTrips) return;
-      
-      const term = searchTerm.toLowerCase().trim();
-      const filtered = globalActiveDataPayloadBackup.pastTrips.filter(trip => {
-        const nameMatch = trip.name ? trip.name.toLowerCase().includes(term) : false;
-        const dateMatch = trip.dates ? trip.dates.toLowerCase().includes(term) : false;
-        return nameMatch || dateMatch;
-      });
-
-      renderArchivesPageList(filtered);
-    }
-
-    function renderArchivesPageList(trips) {
-      const container = document.getElementById('archives-page-content');
-      if (!container) return;
-
-      if (!trips || trips.length === 0) {
-        container.innerHTML = `
-          <div class="col-span-full bg-white rounded-[24px] p-8 text-center border border-slate-200 shadow-sm">
-            <i data-lucide="search-x" class="w-10 h-10 text-slate-300 mx-auto mb-2.5"></i>
-            <p class="text-xs font-black text-slate-400 uppercase tracking-widest">No matching trips found</p>
-          </div>`;
-        lucide.createIcons();
-        return;
-      }
-
-      container.innerHTML = trips.map(trip => {
-        const hasReport = trip.reportUrl && trip.reportUrl.trim() !== "" && trip.reportUrl !== "#";
-        const hasGallery = trip.galleryUrl && trip.galleryUrl.trim() !== "" && trip.galleryUrl !== "#";
-        const spentText = trip.totalSpent ? `₹${Math.round(trip.totalSpent).toLocaleString('en-IN')}` : '';
-
-        return `
-          <div class="bg-white p-5 lg:p-6 rounded-[24px] border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-4">
-            <div class="flex justify-between items-start gap-2">
-              <div class="min-w-0 flex-1">
-                <h3 class="text-sm lg:text-base font-black text-slate-800 uppercase tracking-wide truncate">${trip.name || 'Past Trip'}</h3>
-                ${trip.dates ? `<p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">${trip.dates}</p>` : ''}
-              </div>
-              ${spentText ? `<span class="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-black px-3 py-1.5 rounded-full uppercase shrink-0">Spent: ${spentText}</span>` : ''}
-            </div>
-            
-            <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100">
-              ${hasReport ? `
-                <a href="${trip.reportUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm">
-                  <i data-lucide="file-text" class="w-4 h-4"></i> View Report
-                </a>` : `
-                <span class="flex-1 bg-slate-100 text-slate-400 text-[10px] lg:text-[11px] font-bold uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed border border-slate-200/60">
-                  <i data-lucide="file-x" class="w-4 h-4"></i> No Report
-                </span>`}
-
-              ${hasGallery ? `
-                <button type="button" onclick="closeArchivesModal(); openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] font-black uppercase tracking-widest py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all">
-                  <i data-lucide="camera" class="w-3.5 h-3.5"></i> Gallery
                 </button>` : ''}
             </div>
           </div>`;
