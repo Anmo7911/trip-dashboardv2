@@ -1752,7 +1752,7 @@
       <!-- Quick Search Bar -->
       <div class="relative w-full">
         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-        <input type="text" id="archive-page-search-input" oninput="filterArchivesPage(this.value)" placeholder="Search trips by name or date..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3 text-xs lg:text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
+        <input type="text" id="archive-page-search-input" oninput="filterArchivesPage(this.value)" placeholder="Search trips by name, code or date..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3 text-xs lg:text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
       </div>
 
     </div>
@@ -4458,8 +4458,9 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       const term = searchTerm.toLowerCase().trim();
       const filtered = globalActiveDataPayloadBackup.pastTrips.filter(trip => {
         const nameMatch = trip.name ? trip.name.toLowerCase().includes(term) : false;
+        const codeMatch = trip.tripCode ? trip.tripCode.toLowerCase().includes(term) : false;
         const dateMatch = trip.dates ? trip.dates.toLowerCase().includes(term) : false;
-        return nameMatch || dateMatch;
+        return nameMatch || codeMatch || dateMatch;
       });
 
       renderArchivesList(filtered);
@@ -4486,12 +4487,15 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
         return `
           <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col justify-between gap-3 hover:border-slate-300 transition-all shadow-sm">
-            <div class="flex justify-between items-start gap-2">
-              <div class="min-w-0">
-                <h3 class="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wide truncate">${trip.name || 'Past Trip'}</h3>
-                ${trip.dates ? `<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${trip.dates}</p>` : ''}
+            <div class="flex flex-col gap-1.5">
+              <div class="flex justify-between items-start gap-2">
+                <div class="flex flex-wrap items-center gap-1.5 flex-1 min-w-0">
+                  ${trip.tripCode ? `<span class="bg-indigo-100 border border-indigo-200 text-indigo-700 text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider shrink-0">${trip.tripCode}</span>` : ''}
+                  <h3 class="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wide break-words whitespace-normal leading-snug">${trip.name || 'Past Trip'}</h3>
+                </div>
+                ${spentText ? `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase shrink-0">${spentText}</span>` : ''}
               </div>
-              ${spentText ? `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase shrink-0">Spent: ${spentText}</span>` : ''}
+              ${trip.dates ? `<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${trip.dates}</p>` : ''}
             </div>
             
             <div class="flex gap-2 pt-2 border-t border-slate-200/80">
@@ -4504,7 +4508,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
                 </span>`}
 
               ${hasGallery ? `
-                <button type="button" onclick="openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] font-black uppercase tracking-widest py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+                <button type="button" onclick="closeArchivesModal(); openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] font-black uppercase tracking-widest py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all">
                   <i data-lucide="camera" class="w-3.5 h-3.5"></i> Gallery
                 </button>` : ''}
             </div>
@@ -4512,6 +4516,20 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       }).join('');
       
       lucide.createIcons();
+    }
+
+    function filterArchivesPage(searchTerm) {
+      if (!globalActiveDataPayloadBackup || !globalActiveDataPayloadBackup.pastTrips) return;
+      
+      const term = searchTerm.toLowerCase().trim();
+      const filtered = globalActiveDataPayloadBackup.pastTrips.filter(trip => {
+        const nameMatch = trip.name ? trip.name.toLowerCase().includes(term) : false;
+        const codeMatch = trip.tripCode ? trip.tripCode.toLowerCase().includes(term) : false;
+        const dateMatch = trip.dates ? trip.dates.toLowerCase().includes(term) : false;
+        return nameMatch || codeMatch || dateMatch;
+      });
+
+      renderArchivesPageList(filtered);
     }
 
     function renderArchivesPageList(trips) {
@@ -4527,6 +4545,44 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         lucide.createIcons();
         return;
       }
+
+      container.innerHTML = trips.map(trip => {
+        const hasReport = trip.reportUrl && trip.reportUrl.trim() !== "" && trip.reportUrl !== "#";
+        const hasGallery = trip.galleryUrl && trip.galleryUrl.trim() !== "" && trip.galleryUrl !== "#";
+        const spentText = trip.totalSpent ? `₹${Math.round(trip.totalSpent).toLocaleString('en-IN')}` : '';
+
+        return `
+          <div class="bg-white p-5 lg:p-6 rounded-[24px] border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-4">
+            <div class="flex flex-col gap-2">
+              <div class="flex justify-between items-start gap-2">
+                <div class="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+                  ${trip.tripCode ? `<span class="bg-indigo-50 border border-indigo-100 text-indigo-700 text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider shrink-0">${trip.tripCode}</span>` : ''}
+                  <h3 class="text-sm lg:text-base font-black text-slate-800 uppercase tracking-wide break-words whitespace-normal leading-snug">${trip.name || 'Past Trip'}</h3>
+                </div>
+                ${spentText ? `<span class="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-black px-3 py-1.5 rounded-full uppercase shrink-0">${spentText}</span>` : ''}
+              </div>
+              ${trip.dates ? `<p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">${trip.dates}</p>` : ''}
+            </div>
+            
+            <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100">
+              ${hasReport ? `
+                <a href="${trip.reportUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm">
+                  <i data-lucide="file-text" class="w-4 h-4"></i> View Report
+                </a>` : `
+                <span class="flex-1 bg-slate-100 text-slate-400 text-[10px] lg:text-[11px] font-bold uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed border border-slate-200/60">
+                  <i data-lucide="file-x" class="w-4 h-4"></i> No Report
+                </span>`}
+
+              ${hasGallery ? `
+                <button type="button" onclick="openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all">
+                  <i data-lucide="camera" class="w-4 h-4"></i> Gallery
+                </button>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+      
+      lucide.createIcons();
+    }
 
       container.innerHTML = trips.map(trip => {
         const hasReport = trip.reportUrl && trip.reportUrl.trim() !== "" && trip.reportUrl !== "#";
@@ -5418,7 +5474,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       <!-- Search Input -->
       <div class="relative mb-4 shrink-0 max-w-xl mx-auto w-full">
         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-        <input type="text" id="archive-search-input" oninput="filterArchivesList(this.value)" placeholder="Search trips by name or date..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
+        <input type="text" id="archive-search-input" oninput="filterArchivesList(this.value)" placeholder="Search trips by name, code or date..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
       </div>
 
       <!-- Responsive Grid for Past Trips -->
