@@ -2354,15 +2354,25 @@
     // 3D flips the title text in the navbar every 8 seconds
     function runHeadlineCarousel(t1, t2) {
       titleText1 = t1; titleText2 = t2;
-      document.getElementById('ui-title-1').innerText = titleText1;
-      document.getElementById('ui-title-2').innerText = titleText2;
+      
+      const el1 = document.getElementById('ui-title-1');
+      const el2 = document.getElementById('ui-title-2');
+      
+      if (el1) el1.innerText = titleText1;
+      if (el2) el2.innerText = titleText2;
+      
       if (headlineLoopTimer) clearInterval(headlineLoopTimer);
       currentTitleState = 0;
-      document.getElementById('ui-headline-flipper').classList.remove('headline-rotated');
+      
+      const flipper = document.getElementById('ui-headline-flipper');
+      if (flipper) flipper.classList.remove('headline-rotated');
+      
       headlineLoopTimer = setInterval(() => {
         currentTitleState = currentTitleState === 0 ? 1 : 0;
-        const flipper = document.getElementById('ui-headline-flipper');
-        if (flipper) { if (currentTitleState === 1) flipper.classList.add('headline-rotated'); else flipper.classList.remove('headline-rotated'); }
+        if (flipper) { 
+          if (currentTitleState === 1) flipper.classList.add('headline-rotated'); 
+          else flipper.classList.remove('headline-rotated'); 
+        }
       }, 8000);
     }
 
