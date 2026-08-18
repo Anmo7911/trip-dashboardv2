@@ -1278,11 +1278,11 @@
      TAB 1: SPEND VIEW
      Elevated Mobile Cards — No Outer Background
      ========================================= -->
-<main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-5xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-8 px-4 lg:px-8 space-y-4 lg:space-y-6 relative z-30">
+<main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-5xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-8 px-4 lg:px-8 space-y-4 lg:space-y-6 relative z-40 lg:z-20">
 
   <!-- 3D BENTO GRID -->
   <!-- Mobile: no outer background, cards stay elevated -->
-  <div id="ui-top-cards-wrapper" class="relative z-50 lg:z-auto transition-all duration-500 overflow-hidden opacity-100 origin-top">
+  <div id="ui-top-cards-wrapper" class="transition-all duration-500 overflow-hidden opacity-100 origin-top">
     
     <!-- Mobile height matched to Code 2: 150px -->
     <div class="flex flex-row gap-2.5 lg:gap-6 h-[150px] lg:h-[180px] w-full relative">
@@ -1511,7 +1511,7 @@
    
 
     <!-- TRANSACTION LEDGER -->
-   <div id="ui-ledger-container" class="hidden opacity-0 translate-y-10 transition-all duration-500 pb-10 relative z-10">
+   <div id="ui-ledger-container" class="hidden opacity-0 translate-y-10 transition-all duration-500 pb-10">
       <div class="flex items-center justify-between mb-3 px-2">
         <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Transaction Ledger</h3>
         <div class="flex items-center gap-2">
@@ -3500,6 +3500,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     function toggleLedger() {
       isLedgerActive = !isLedgerActive;
       
+      const mainView = document.getElementById('view-spend');
       const topCards = document.getElementById('ui-top-cards-wrapper');
       const formWrap = document.getElementById('ui-form-wrapper');
       const ledgerBox = document.getElementById('ui-ledger-container');
@@ -3509,34 +3510,46 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         // Expand the ledger
         renderLedgerList();
 
-        // Make header sticky on mobile when ledger is open
+        // 1. Move the view behind the sticky header so ledger scrolls underneath
+        if (mainView) {
+          mainView.classList.remove('z-40');
+          mainView.classList.add('z-20');
+        }
+
+        // 2. Make header sticky on mobile
         if (header) {
           header.classList.remove('relative');
           header.classList.add('sticky');
         }
 
-        // Compress and hide standard Spend UI layout
+        // 3. Hide standard cards & form
         topCards.classList.add('hidden');
         formWrap.classList.add('hidden');
         
-        // Show and animate ledger entrance
+        // 4. Show and animate ledger
         ledgerBox.classList.remove('hidden');
         setTimeout(() => {
           ledgerBox.classList.remove('opacity-0', 'translate-y-10');
         }, 50);
 
       } else {
-        // Restore non-sticky header for standard Spend form on mobile
+        // 1. Restore container layer above header so cards sit in front
+        if (mainView) {
+          mainView.classList.remove('z-20');
+          mainView.classList.add('z-40');
+        }
+
+        // 2. Restore non-sticky header for standard Spend form on mobile
         if (header) {
           header.classList.remove('sticky');
           header.classList.add('relative');
         }
 
-        // Hide ledger and animate exit
+        // 3. Hide ledger
         ledgerBox.classList.add('opacity-0', 'translate-y-10');
         setTimeout(() => { ledgerBox.classList.add('hidden'); }, 300);
 
-        // Bring back standard Spend UI elements
+        // 4. Bring back standard Spend cards & form
         topCards.classList.remove('hidden');
         formWrap.classList.remove('hidden');
         
