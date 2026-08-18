@@ -1493,11 +1493,12 @@
     // Archives (Newest on Top)
     function renderArchives(trips) {
       const container = document.getElementById('archivesAdminCards');
-      container.innerHTML = (trips || []).map(t => `
+      if (!container) return;
+      container.innerHTML = (trips || []).map((t, idx) => `
         <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-2">
-              ${t.tripCode ? `<span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[9px] font-black uppercase tracking-wider">${t.tripCode}</span>` : ''}
+              <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[9px] font-black uppercase tracking-wider">${t.tripCode || 'NO CODE'}</span>
               <span class="text-xs font-black text-white break-words">${t.name}</span>
               ${t.totalSpent ? `<span class="text-[10px] font-bold text-emerald-400">₹${t.totalSpent.toLocaleString('en-IN')}</span>` : ''}
             </div>
@@ -1509,7 +1510,7 @@
               ${t.galleryUrl ? `<a href="${t.galleryUrl}" target="_blank" class="text-[10px] text-indigo-400 font-bold underline">Photo</a>` : ''}
             </div>
             <div class="flex gap-1">
-              <button onclick='editArchive(${JSON.stringify(t)})' class="p-1.5 bg-slate-950 text-slate-300 rounded-lg hover:bg-slate-800"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+              <button onclick='editArchiveByIndex(${idx})' class="p-1.5 bg-slate-950 text-slate-300 rounded-lg hover:bg-slate-800"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
               <button onclick="deleteArchive(${t.id})" class="p-1.5 bg-rose-500/10 text-rose-400 rounded-lg hover:bg-rose-500/20"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
             </div>
           </div>
@@ -1530,7 +1531,9 @@
       lucide.createIcons();
     }
 
-    function editArchive(t) {
+    function editArchiveByIndex(idx) {
+      if (!globalData || !globalData.pastTrips || !globalData.pastTrips[idx]) return;
+      const t = globalData.pastTrips[idx];
       document.getElementById('archiveModalTitle').innerText = 'Edit Past Trip';
       document.getElementById('archId').value = t.id || '';
       document.getElementById('archName').value = t.name || '';
@@ -1550,11 +1553,12 @@
 
     async function saveArchiveForm(e) {
       e.preventDefault();
+      const codeVal = document.getElementById('archCode').value.trim().toUpperCase();
       const payload = {
         id: document.getElementById('archId').value ? Number(document.getElementById('archId').value) : null,
-        name: document.getElementById('archName').value,
-        tripCode: document.getElementById('archCode').value.trim().toUpperCase(),
-        dates: document.getElementById('archDates').value,
+        name: document.getElementById('archName').value.trim(),
+        tripCode: codeVal,
+        dates: document.getElementById('archDates').value.trim(),
         totalSpent: document.getElementById('archSpent').value,
         reportUrl: document.getElementById('archReport').value,
         galleryUrl: document.getElementById('archGallery').value
@@ -1565,7 +1569,7 @@
         globalData = fresh;
         renderArchives(fresh.pastTrips);
         closeArchiveModal();
-        showAlert("Past Trip Saved", `${payload.name} saved at top of archives`);
+        showAlert("Past Trip Saved", `${payload.name} (${codeVal || 'No Code'}) saved`);
       } catch (err) {
         showAlert("Failed", err.message, true);
       }
