@@ -1227,8 +1227,8 @@
       </div>
 
       <!-- Dynamic Trip Title (Locked in Clear Sky) -->
-      <div class="flex flex-col items-center justify-center -mt-2">
-        <div class="headline-scene h-7 sm:h-9 flex items-center justify-center w-full px-2">
+     <div class="flex flex-col items-center justify-center -mt-2">
+        <div id="ui-title-alignment-box" class="headline-scene h-7 sm:h-9 flex items-center justify-center w-full px-2">
           <div id="ui-headline-flipper" class="headline-flipper">
             <div class="headline-front flex items-center justify-center">
               <h1 id="ui-title-1" class="font-black text-emerald-950 text-xl sm:text-2xl lg:text-3xl tracking-wider uppercase drop-shadow-sm whitespace-nowrap text-center">Loading...</h1>
@@ -2768,7 +2768,7 @@
     function renderApp(data) { 
       document.title = data.tripName || "Bharat Way";
       refreshMenuSignOffButton(data);
-      
+
       // 1. VIP Wristband & Login Check - Stops flow if user not authenticated
       const currentUser = localStorage.getItem('trekLoggedInUser');
       const currentPIN = localStorage.getItem('trekLoggedInPIN');
@@ -2790,6 +2790,48 @@
         return; // App tab rendering halts until login completes
       } else {
         loginOverlay.classList.add('hidden');
+      }
+
+
+      // =============================================================
+      // DYNAMIC GRAPHICS ENGINE & DESIGN CONTROLLER INJECTION
+      // =============================================================
+      if (data.styles) {
+        const alignBox = document.getElementById('ui-title-alignment-box');
+        const titleFlipper = document.getElementById('ui-headline-flipper');
+        const h1Title1 = document.getElementById('ui-title-1');
+        const h1Title2 = document.getElementById('ui-title-2');
+
+        // 1. Position Control Layer
+        if (alignBox) {
+          // Reset default layout positioning rows
+          alignBox.classList.remove('justify-center', 'justify-start', 'justify-end');
+          // Inject custom position class rule from server
+          alignBox.classList.add(data.styles.titlePosition || 'justify-center');
+        }
+
+        // 2. Sizing Config Allocation
+        const textScaleClass = 'text-' + (data.styles.titleFontSize || 'xl');
+        if (h1Title1 && h1Title2) {
+          h1Title1.className = `font-black tracking-wider uppercase drop-shadow-sm whitespace-nowrap text-center ${textScaleClass}`;
+          h1Title2.className = `font-black tracking-wider uppercase drop-shadow-sm whitespace-nowrap text-center ${textScaleClass}`;
+          
+          // 3. Color Management Rules Injection
+          h1Title1.style.color = data.styles.titleColor || '#064e3b';
+          h1Title2.style.color = data.styles.subtitleColor || '#047857';
+        }
+
+        // 4. Line Rotation Rules Interceptor
+        if (data.styles.rotationLines === 'single') {
+          // Terminate flipper 3D rotation system transformations
+          if (titleFlipper) titleFlipper.classList.remove('headline-rotated');
+          if (window.headlineLoopTimer) {
+            clearInterval(window.headlineLoopTimer);
+            window.headlineLoopTimer = null;
+          }
+          // Force single fixed string configuration manually
+          if (h1Title1) h1Title1.innerText = data.tripName;
+        }
       }
       
       // 2. Check the global trip live status
