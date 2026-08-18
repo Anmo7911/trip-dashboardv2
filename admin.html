@@ -191,16 +191,35 @@
           </div>
         </div>
 
-        <!-- Header Images Config (Mobile & Desktop) -->
-          <div class="space-y-2 pt-2 border-t border-slate-800">
-            <h4 class="text-[10px] font-black uppercase tracking-wider text-indigo-400">Header Background Images (URL)</h4>
-            <div>
-              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Mobile Header Image URL</label>
-              <input type="text" id="setHeaderMobile" placeholder="https://..." onchange="saveSetting(25, 'b', this.value, 'Mobile header image updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+        <!-- Dual Header Images Config (Mobile & Desktop) -->
+          <div class="space-y-3 pt-3 border-t border-slate-800">
+            <div class="flex items-center justify-between">
+              <h4 class="text-[10px] font-black uppercase tracking-wider text-indigo-400">Header Background Images (6s Dissolve)</h4>
+              <span class="text-[8px] text-slate-500 font-bold">Image 2 is optional</span>
             </div>
-            <div>
-              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Desktop Header Image URL</label>
-              <input type="text" id="setHeaderDesktop" placeholder="https://..." onchange="saveSetting(25, 'c', this.value, 'Desktop header image updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+
+            <!-- Image 1 Row -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div>
+                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Mobile Image 1 URL</label>
+                <input type="text" id="setHeaderMob1" placeholder="https://..." onchange="saveSetting(25, 'b', this.value, 'Mobile Header 1 saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+              </div>
+              <div>
+                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Desktop Image 1 URL</label>
+                <input type="text" id="setHeaderDesk1" placeholder="https://..." onchange="saveSetting(25, 'c', this.value, 'Desktop Header 1 saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+              </div>
+            </div>
+
+            <!-- Image 2 Row -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div>
+                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Mobile Image 2 URL</label>
+                <input type="text" id="setHeaderMob2" placeholder="https://..." onchange="saveSetting(26, 'b', this.value, 'Mobile Header 2 saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+              </div>
+              <div>
+                <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Desktop Image 2 URL</label>
+                <input type="text" id="setHeaderDesk2" placeholder="https://..." onchange="saveSetting(26, 'c', this.value, 'Desktop Header 2 saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+              </div>
             </div>
           </div>
 
@@ -951,8 +970,10 @@
         document.getElementById('setTitlePos').value = d.styles.titlePosition || 'justify-center';
         document.getElementById('setRotationLines').value = d.styles.rotationLines || 'dual';
         document.getElementById('setTitleVisibility').value = d.styles.titleVisibility || 'VISIBLE';
-        document.getElementById('setHeaderMobile').value = d.styles.headerImgMobile || '';
-        document.getElementById('setHeaderDesktop').value = d.styles.headerImgDesktop || '';
+        document.getElementById('setHeaderMob1').value = d.styles.headerImgMob1 || '';
+        document.getElementById('setHeaderDesk1').value = d.styles.headerImgDesk1 || '';
+        document.getElementById('setHeaderMob2').value = d.styles.headerImgMob2 || '';
+        document.getElementById('setHeaderDesk2').value = d.styles.headerImgDesk2 || '';
       }
     }
     async function saveSetting(row, col, val, msg = "Setting Saved") {
