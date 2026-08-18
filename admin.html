@@ -763,9 +763,15 @@
       <form id="archiveForm" onsubmit="saveArchiveForm(event)" class="space-y-3 text-left">
         <input type="hidden" id="archId">
         
-        <div>
-          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Name</label>
-          <input type="text" id="archName" placeholder="e.g. Manali Expedition 2025" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div class="sm:col-span-2">
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Name</label>
+            <input type="text" id="archName" placeholder="e.g. Manali Expedition" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+          </div>
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Code</label>
+            <input type="text" id="archCode" placeholder="e.g. BW-2025" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-indigo-400 font-bold mt-1 uppercase">
+          </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
@@ -1487,16 +1493,17 @@
     // Archives (Newest on Top)
     function renderArchives(trips) {
       const container = document.getElementById('archivesAdminCards');
-      container.innerHTML = trips.map(t => `
+      container.innerHTML = (trips || []).map(t => `
         <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-black text-white">${t.name}</span>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-2">
+              ${t.tripCode ? `<span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[9px] font-black uppercase tracking-wider">${t.tripCode}</span>` : ''}
+              <span class="text-xs font-black text-white break-words">${t.name}</span>
               ${t.totalSpent ? `<span class="text-[10px] font-bold text-emerald-400">₹${t.totalSpent.toLocaleString('en-IN')}</span>` : ''}
             </div>
-            <p class="text-[10px] text-slate-400">${t.dates || '-'}</p>
+            <p class="text-[10px] text-slate-400 mt-0.5">${t.dates || '-'}</p>
           </div>
-          <div class="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+          <div class="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800 shrink-0">
             <div class="flex gap-2">
               ${t.reportUrl ? `<a href="${t.reportUrl}" target="_blank" class="text-[10px] text-indigo-400 font-bold underline">Report Doc</a>` : ''}
               ${t.galleryUrl ? `<a href="${t.galleryUrl}" target="_blank" class="text-[10px] text-indigo-400 font-bold underline">Photo</a>` : ''}
@@ -1515,6 +1522,7 @@
       document.getElementById('archiveModalTitle').innerText = 'Add Past Trip';
       document.getElementById('archiveForm').reset();
       document.getElementById('archId').value = '';
+      document.getElementById('archCode').value = '';
       document.getElementById('archReport').value = '';
       document.getElementById('archGallery').value = '';
       document.getElementById('archReportPreview').innerHTML = '<i data-lucide="file-text" class="w-5 h-5 text-slate-500 mb-0.5"></i><p class="text-[10px] font-bold text-slate-400">Select PDF or Image Report</p>';
@@ -1526,6 +1534,7 @@
       document.getElementById('archiveModalTitle').innerText = 'Edit Past Trip';
       document.getElementById('archId').value = t.id || '';
       document.getElementById('archName').value = t.name || '';
+      document.getElementById('archCode').value = t.tripCode || '';
       document.getElementById('archDates').value = t.dates || '';
       document.getElementById('archSpent').value = t.totalSpent || '';
       document.getElementById('archReport').value = t.rawReport || t.reportUrl || '';
@@ -1544,6 +1553,7 @@
       const payload = {
         id: document.getElementById('archId').value ? Number(document.getElementById('archId').value) : null,
         name: document.getElementById('archName').value,
+        tripCode: document.getElementById('archCode').value.trim().toUpperCase(),
         dates: document.getElementById('archDates').value,
         totalSpent: document.getElementById('archSpent').value,
         reportUrl: document.getElementById('archReport').value,
