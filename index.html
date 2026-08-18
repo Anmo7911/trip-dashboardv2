@@ -1205,7 +1205,7 @@
  <!-- =========================================
        SCENIC EXPEDITION APP HEADER (Sticky Mode with Dissolve Fade)
        ========================================= -->
-  <header class="sticky top-0 z-30 w-full overflow-hidden bg-cover bg-center shadow-sm select-none" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');">
+  <header id="app-header" class="relative lg:sticky top-0 z-30 w-full overflow-hidden bg-cover bg-center shadow-sm select-none" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');">
     
     <!-- Soft Sunlight & Sky Gradient Overlay -->
     <div class="absolute inset-0 bg-gradient-to-b from-sky-400/25 via-sky-100/10 to-transparent backdrop-blur-[0.5px]"></div>
@@ -2156,8 +2156,20 @@
     // --- TAB SWITCHING MANAGER ---
     // Controls toggling between Spend, Squad, and Places views
     function showTab(tabId, el) { 
+      // Toggle sticky header on mobile: non-sticky for 'spend', sticky for others
+      const header = document.getElementById('app-header');
+      if (header) {
+        if (tabId === 'spend') {
+          header.classList.remove('sticky');
+          header.classList.add('relative');
+        } else {
+          header.classList.remove('relative');
+          header.classList.add('sticky');
+        }
+      }
+
       // Reset all tab content
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab')); 
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
       
       // Reset mobile navigation styling
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
