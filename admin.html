@@ -792,17 +792,10 @@
           <input type="hidden" id="archReport">
         </div>
 
-        <!-- File Upload: Past Trip Photo / Gallery Cover -->
+       <!-- Direct URL Input: Past Trip Drive Gallery -->
         <div>
-          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Gallery Cover / Photo (Image)</label>
-          <div onclick="document.getElementById('archGalleryFile').click()" class="mt-1 border-2 border-dashed border-slate-800 hover:border-indigo-500 rounded-xl p-3 text-center cursor-pointer bg-slate-950 transition">
-            <input type="file" id="archGalleryFile" accept="image/*" class="hidden" onchange="handleArchiveFileUpload(this, 'archGallery', 'archGalleryPreview')">
-            <div id="archGalleryPreview" class="flex flex-col items-center">
-              <i data-lucide="image" class="w-5 h-5 text-slate-500 mb-0.5"></i>
-              <p class="text-[10px] font-bold text-slate-400">Select Trip Photo / Cover Image</p>
-            </div>
-          </div>
-          <input type="hidden" id="archGallery">
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Drive Gallery Folder / Media URL</label>
+          <input type="text" id="archGallery" placeholder="https://drive.google.com/drive/folders/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1 outline-none focus:border-indigo-500">
         </div>
 
         <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest">
@@ -1525,7 +1518,6 @@
       document.getElementById('archReport').value = '';
       document.getElementById('archGallery').value = '';
       document.getElementById('archReportPreview').innerHTML = '<i data-lucide="file-text" class="w-5 h-5 text-slate-500 mb-0.5"></i><p class="text-[10px] font-bold text-slate-400">Select PDF or Image Report</p>';
-      document.getElementById('archGalleryPreview').innerHTML = '<i data-lucide="image" class="w-5 h-5 text-slate-500 mb-0.5"></i><p class="text-[10px] font-bold text-slate-400">Select Trip Photo / Cover Image</p>';
       document.getElementById('archiveModal').classList.remove('hidden');
       lucide.createIcons();
     }
@@ -1541,9 +1533,6 @@
       
       if (t.reportUrl) {
         document.getElementById('archReportPreview').innerHTML = `<p class="text-[10px] font-black text-emerald-400">Attached File Saved</p>`;
-      }
-      if (t.galleryUrl) {
-        document.getElementById('archGalleryPreview').innerHTML = `<img src="${t.galleryUrl}" class="w-10 h-10 rounded object-cover mx-auto">`;
       }
       document.getElementById('archiveModal').classList.remove('hidden');
     }
