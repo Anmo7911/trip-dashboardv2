@@ -1745,15 +1745,18 @@
        TAB 5: PAST TRIPS ARCHIVE FULL VIEW
        Desktop Wide Grid & Mobile Responsive
        ========================================= -->
-  <main id="view-archives" class="tab-content w-full max-w-md lg:max-w-5xl mx-auto p-4 lg:p-8 space-y-6">
+  <main id="view-archives" class="tab-content w-full max-w-md lg:max-w-5xl mx-auto pt-6 px-4 lg:p-8 space-y-6">
 
-    <!-- Top Card Header -->
+    <!-- Top Card Header with Back Button -->
     <div class="bg-white rounded-[28px] lg:rounded-[32px] p-6 lg:p-8 border border-slate-200/80 shadow-sm space-y-5">
       
       <div class="flex items-center justify-between border-b border-slate-100 pb-5">
         <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shadow-inner shrink-0">
-            <i data-lucide="archive" class="w-6 h-6 stroke-[2.5]"></i>
+          <button type="button" onclick="showTab('spend', document.querySelector('.nav-btn'))" class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center active:scale-95 transition-all outline-none" title="Back">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+          </button>
+          <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shadow-inner shrink-0">
+            <i data-lucide="archive" class="w-5 h-5 stroke-[2.5]"></i>
           </div>
           <div>
             <h2 class="text-xl lg:text-2xl font-black text-slate-800 tracking-tight uppercase">Past Trips Archive</h2>
@@ -1781,14 +1784,17 @@
        TAB 6: ABOUT US PAGE
        Clean, Responsive Plain Text Layout
        ========================================= -->
-  <main id="view-about" class="tab-content w-full max-w-md lg:max-w-4xl mx-auto p-4 lg:p-8 space-y-6 pb-20">
+  <main id="view-about" class="tab-content w-full max-w-md lg:max-w-4xl mx-auto pt-6 px-4 lg:p-8 space-y-6 pb-20">
     <div class="bg-white rounded-[28px] lg:rounded-[32px] p-6 lg:p-10 border border-slate-200/80 shadow-sm space-y-6">
 
-      <!-- Header -->
+      <!-- Header with Back Button -->
       <div class="border-b border-slate-100 pb-5">
         <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shadow-inner shrink-0">
-            <i data-lucide="mountain-snow" class="w-6 h-6 stroke-[2]"></i>
+          <button type="button" onclick="showTab('spend', document.querySelector('.nav-btn'))" class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center active:scale-95 transition-all outline-none" title="Back">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+          </button>
+          <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shadow-inner shrink-0">
+            <i data-lucide="mountain-snow" class="w-5 h-5 stroke-[2]"></i>
           </div>
           <div>
             <h2 class="text-xl lg:text-2xl font-black text-slate-800 tracking-tight uppercase">About Squad Goals</h2>
@@ -2196,17 +2202,21 @@
     
     // --- TAB SWITCHING MANAGER ---
     // Controls toggling between Spend, Squad, and Places views
-    // --- TAB SWITCHING MANAGER ---
-    function showTab(tabId, el) { 
-      // Toggle sticky header on mobile: non-sticky for 'spend', sticky for others
+   function showTab(tabId, el) { 
+      // Hide header completely on Archives and About tabs; show on all other tabs
       const header = document.getElementById('app-header');
       if (header) {
-        if (tabId === 'spend') {
-          header.classList.remove('sticky');
-          header.classList.add('relative');
+        if (tabId === 'archives' || tabId === 'about') {
+          header.classList.add('hidden');
         } else {
-          header.classList.remove('relative');
-          header.classList.add('sticky');
+          header.classList.remove('hidden');
+          if (tabId === 'spend') {
+            header.classList.remove('sticky');
+            header.classList.add('relative');
+          } else {
+            header.classList.remove('relative');
+            header.classList.add('sticky');
+          }
         }
       }
 
