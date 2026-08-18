@@ -3518,11 +3518,13 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         topCards.classList.add('hidden');
         formWrap.classList.add('hidden');
         
-        // Show and animate ledger entrance
+        // Show and animate ledger entrance cleanly below header
         ledgerBox.classList.remove('hidden');
         setTimeout(() => {
           ledgerBox.classList.remove('opacity-0', 'translate-y-10');
         }, 50);
+
+      }
 
       } else {
         // Restore non-sticky header for standard Spend form on mobile
