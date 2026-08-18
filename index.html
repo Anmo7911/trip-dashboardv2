@@ -1216,13 +1216,11 @@
     <!-- Outer header container height locked so cards below never shift -->
     <div class="relative z-20 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-2.5 pb-8 flex flex-col justify-start h-[190px] sm:h-[210px]">
       
-      <!-- Top Action Bar: Floating Chat Button -->
-      <div class="flex items-center justify-end w-full">
-        <button type="button" onclick="openChatModal()" class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/80 hover:bg-white/95 backdrop-blur-md border border-white/80 shadow-md flex items-center justify-center text-slate-800 active:scale-95 transition-all outline-none" title="Trip Messenger">
-          <i data-lucide="message-circle" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-800 stroke-[2.2]"></i>
-          <span id="chat-unread-dot" class="absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full hidden shadow-sm"></span>
-        </button>
-      </div>
+      <!-- Desktop Floating Chat Button (Bottom-Right, Large) -->
+      <button type="button" onclick="openChatModal()" class="hidden lg:flex fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xl items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 outline-none border-2 border-white/80" title="Trip Messenger">
+        <i data-lucide="message-circle" class="w-7 h-7 stroke-[2.2]"></i>
+        <span id="chat-unread-dot" class="absolute top-0 right-0 w-3.5 h-3.5 bg-rose-500 border-2 border-white rounded-full hidden shadow-md"></span>
+      </button>
 
       <!-- Dynamic Trip Title (Locked in Clear Sky) -->
       <div class="flex flex-col items-center justify-center -mt-2">
@@ -1821,6 +1819,13 @@
     <button id="nav-btn-route" onclick="showTab('places', this)" class="nav-btn group outline-none">
       <i data-lucide="map-pin" class="w-5 h-5 nav-anim-icon group-active:scale-90 transition-transform"></i>
       <span class="nav-text">Route</span>
+    </button>
+
+    <!-- Chat Tab Button (Mobile Only) -->
+    <button type="button" onclick="openChatModal()" class="nav-btn group outline-none relative">
+      <i data-lucide="message-circle" class="w-5 h-5 nav-anim-icon group-active:scale-90 transition-transform"></i>
+      <span class="nav-text">Chat</span>
+      <span id="chat-mobile-unread-dot" class="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full hidden border border-white"></span>
     </button>
 
     <!-- Triggers the expanded 'More' bottom sheet menu -->
