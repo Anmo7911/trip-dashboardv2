@@ -3503,10 +3503,17 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       const topCards = document.getElementById('ui-top-cards-wrapper');
       const formWrap = document.getElementById('ui-form-wrapper');
       const ledgerBox = document.getElementById('ui-ledger-container');
+      const header = document.getElementById('app-header');
 
       if (isLedgerActive) {
         // Expand the ledger
         renderLedgerList();
+
+        // Make header sticky on mobile when ledger is open
+        if (header) {
+          header.classList.remove('relative');
+          header.classList.add('sticky');
+        }
 
         // Compress and hide standard Spend UI layout
         topCards.classList.add('hidden');
@@ -3519,6 +3526,12 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         }, 50);
 
       } else {
+        // Restore non-sticky header for standard Spend form on mobile
+        if (header) {
+          header.classList.remove('sticky');
+          header.classList.add('relative');
+        }
+
         // Hide ledger and animate exit
         ledgerBox.classList.add('opacity-0', 'translate-y-10');
         setTimeout(() => { ledgerBox.classList.add('hidden'); }, 300);
