@@ -130,8 +130,11 @@
           </h3>
 
           <div>
-            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Name</label>
-            <input type="text" id="setTripName" onchange="saveSetting(2, 'b', this.value, 'Trip name updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+            <div class="flex justify-between items-center">
+              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Name</label>
+              <span class="text-[8px] text-slate-500 font-bold">Press Enter for multi-line split</span>
+            </div>
+            <textarea id="setTripName" rows="2" placeholder="e.g. Valley of&#10;Flowers" onchange="saveSetting(2, 'b', this.value, 'Trip name updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1 outline-none focus:border-indigo-500"></textarea>
           </div>
 
          <div>
