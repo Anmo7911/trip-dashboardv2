@@ -4609,9 +4609,9 @@ const places = payload.places.filter(p => p.tripDay || p.location);
                 </span>`}
 
               ${hasGallery ? `
-                <a href="${trip.galleryUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all">
-                  <i data-lucide="image" class="w-4 h-4"></i> Gallery
-                </a>` : ''}
+                <button type="button" onclick="closeArchivesModal(); openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] font-black uppercase tracking-widest py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+                  <i data-lucide="camera" class="w-3.5 h-3.5"></i> Gallery
+                </button>` : ''}
             </div>
           </div>`;
       }).join('');
@@ -5177,7 +5177,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       const iframe = document.getElementById('drive-preview-iframe');
       const extBtn = document.getElementById('drive-external-link-btn');
 
-      // Extract Google Drive Folder ID if applicable
+      // Convert Google Drive folder link into embedded folderview URL
       let embedUrl = rawUrl;
       const folderMatch = rawUrl.match(/folders\/([a-zA-Z0-9_-]+)/);
       if (folderMatch) {
@@ -5194,6 +5194,8 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         lucide.createIcons();
       }
     }
+
+    
     function closeDriveGallery() {
       const modal = document.getElementById('drive-gallery-modal');
       if (modal) {
