@@ -119,21 +119,9 @@
        ========================================= -->
   <main class="flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6">
 
-    <!-- 1. SWITCHES & SETTINGS (LEFT: TRIP HEADER, RIGHT: SWITCHES) -->
+    <!-- 1. SWITCHES & SETTINGS (LEFT: TRIP HEADER & DESIGN, RIGHT: GLOBAL SWITCHES) -->
     <section id="pane-settings" class="tab-pane active space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-
-        <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
-            <div class="pr-2">
-              <p class="text-xs font-bold text-white">Header Title Visibility</p>
-              <p class="text-[9px] text-slate-400 mt-0.5">Show or hide trip title in header</p>
-            </div>
-            <select onchange="saveSetting(3, 'e', this.value, 'Header title visibility updated')" id="setTitleVisibility" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
-              <option value="VISIBLE">SHOW (Visible)</option>
-              <option value="HIDDEN">HIDE (Hidden)</option>
-            </select>
-          </div>
         
         <!-- LEFT COLUMN: TRIP HEADER & BANNERS -->
         <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
@@ -149,45 +137,45 @@
             <textarea id="setTripName" rows="2" placeholder="e.g. Valley of&#10;Flowers" onchange="saveSetting(2, 'b', this.value, 'Trip name updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1 outline-none focus:border-indigo-500"></textarea>
           </div>
 
-         <div>
+          <div>
             <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Destination Subtitle</label>
             <input type="text" id="setTripSub" onchange="saveSetting(2, 'c', this.value, 'Subtitle updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
           </div>
 
-          <div class="grid grid-cols-2 gap-2 pt-1">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
             <div>
-              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Title Color (Hex/Tailwind)</label>
+              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Title Color (Hex)</label>
               <input type="text" id="setTitleColor" placeholder="#064e3b" onchange="saveSetting(2, 'd', this.value, 'Primary title color saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
             </div>
             <div>
-              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Subtitle Color (Hex/Tailwind)</label>
+              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Subtitle Color (Hex)</label>
               <input type="text" id="setSubColor" placeholder="#047857" onchange="saveSetting(2, 'e', this.value, 'Subtitle color saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
             </div>
           </div>
 
-          <div class="grid grid-cols-3 gap-2 pt-1">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
             <div>
               <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Font Size</label>
-              <select id="setTitleSize" onchange="saveSetting(3, 'b', this.value, 'Title layout scaling updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-indigo-400 font-bold mt-1">
+              <select id="setTitleSize" onchange="saveSetting(3, 'b', this.value, 'Title layout scaling updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-indigo-400 font-bold mt-1 outline-none">
                 <option value="xl">Small (XL)</option>
                 <option value="2xl">Medium (2XL)</option>
-                <option value="3xl">Large (33XL)</option>
+                <option value="3xl">Large (3XL)</option>
                 <option value="4xl">Massive (4XL)</option>
               </select>
             </div>
             <div>
-              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Horizontal Position</label>
-              <select id="setTitlePos" onchange="saveSetting(3, 'c', this.value, 'Horizontal alignment shifted')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-indigo-400 font-bold mt-1">
+              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Alignment</label>
+              <select id="setTitlePos" onchange="saveSetting(3, 'c', this.value, 'Horizontal alignment shifted')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-indigo-400 font-bold mt-1 outline-none">
                 <option value="justify-center">Center</option>
                 <option value="justify-start">Left</option>
                 <option value="justify-end">Right</option>
               </select>
             </div>
             <div>
-              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Line Layout (Mode)</label>
-              <select id="setRotationLines" onchange="saveSetting(3, 'd', this.value, 'Animation layout structure altered')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-indigo-400 font-bold mt-1">
-                <option value="dual">Rotating (Flippable)</option>
-                <option value="single">Static (Single Title)</option>
+              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Line Mode</label>
+              <select id="setRotationLines" onchange="saveSetting(3, 'd', this.value, 'Animation layout structure altered')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-indigo-400 font-bold mt-1 outline-none">
+                <option value="dual">Rotating</option>
+                <option value="single">Static</option>
               </select>
             </div>
           </div>
@@ -209,6 +197,19 @@
             <i data-lucide="toggle-left" class="w-4 h-4"></i> Global App Switches
           </h3>
 
+          <!-- Header Title Visibility Switch -->
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
+            <div class="pr-2">
+              <p class="text-xs font-bold text-white">Header Title Visibility</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Show or hide trip title in header</p>
+            </div>
+            <select onchange="saveSetting(3, 'e', this.value, 'Header title visibility updated')" id="setTitleVisibility" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+              <option value="VISIBLE">SHOW (Visible)</option>
+              <option value="HIDDEN">HIDE (Hidden)</option>
+            </select>
+          </div>
+
+          <!-- Individual Contribution -->
           <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
             <div class="pr-2">
               <p class="text-xs font-bold text-white">Individual Contribution</p>
@@ -220,6 +221,7 @@
             </select>
           </div>
 
+          <!-- Member Security Mode -->
           <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
             <div class="pr-2">
               <p class="text-xs font-bold text-white">Member Security Mode</p>
@@ -231,6 +233,7 @@
             </select>
           </div>
 
+          <!-- Signing Off Period -->
           <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
             <div class="pr-2">
               <p class="text-xs font-bold text-white">Signing Off Period</p>
@@ -242,6 +245,7 @@
             </select>
           </div>
 
+          <!-- Trip Finished Lock -->
           <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
             <div class="pr-2">
               <p class="text-xs font-bold text-white">Trip Finished Lock</p>
@@ -253,6 +257,7 @@
             </select>
           </div>
 
+          <!-- Expense Logging -->
           <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
             <div class="pr-2">
               <p class="text-xs font-bold text-white">Expense Logging</p>
@@ -264,6 +269,7 @@
             </select>
           </div>
 
+          <!-- Route & GPS Status -->
           <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
             <div class="pr-2">
               <p class="text-xs font-bold text-white">Route & GPS Status</p>
