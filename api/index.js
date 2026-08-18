@@ -123,7 +123,9 @@ async function dashboard() {
   const memberMeta = memberMetaResult?.data || {};
 
   // Primary layout strings
-  const tripName = text(setting(2, 'b')) || 'App by Anmol';
+  // Preserve newline formatting for multi-line title breaks
+  const rawTripName = setting(2, 'b');
+  const tripName = rawTripName ? String(rawTripName).trim() : 'App by Anmol';
   const secondaryTitle = text(setting(2, 'c')) || 'Zantar Mantar, Dilli';
   
   // Custom Typography & Position Design Controls
