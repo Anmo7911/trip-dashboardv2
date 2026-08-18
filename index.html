@@ -2807,13 +2807,26 @@
       // DYNAMIC GRAPHICS ENGINE & DESIGN CONTROLLER INJECTION
       // =============================================================
       if (data.styles) {
+        const headerEl = document.getElementById('app-header');
         const titleContainer = document.getElementById('ui-header-title-container');
         const alignBox = document.getElementById('ui-title-alignment-box');
         const titleFlipper = document.getElementById('ui-headline-flipper');
         const h1Title1 = document.getElementById('ui-title-1');
         const h1Title2 = document.getElementById('ui-title-2');
 
-        // 1. Title Visibility Toggle (Desktop & Mobile)
+        // Dynamic Header Image (Mobile vs Desktop)
+        if (headerEl) {
+          const isDesktop = window.innerWidth >= 1024;
+          const targetImg = isDesktop 
+            ? (data.styles.headerImgDesktop || data.styles.headerImgMobile) 
+            : (data.styles.headerImgMobile || data.styles.headerImgDesktop);
+            
+          if (targetImg) {
+            headerEl.style.backgroundImage = `url('${targetImg}')`;
+          }
+        }
+
+        // Title Visibility Toggle (Desktop & Mobile)
         if (titleContainer) {
           if (data.styles.titleVisibility === 'HIDDEN') {
             titleContainer.classList.add('invisible');
@@ -2822,24 +2835,23 @@
           }
         }
 
-        // 2. Position Control Layer
+        // Position Control Layer
         if (alignBox) {
           alignBox.classList.remove('justify-center', 'justify-start', 'justify-end');
           alignBox.classList.add(data.styles.titlePosition || 'justify-center');
         }
 
-        // 3. Sizing & Multi-line Configuration
+        // Sizing & Multi-line Configuration
         const textScaleClass = 'text-' + (data.styles.titleFontSize || 'xl');
         if (h1Title1 && h1Title2) {
           h1Title1.className = `font-black tracking-wider uppercase drop-shadow-sm whitespace-pre-line text-center leading-none -mt-1 ${textScaleClass}`;
           h1Title2.className = `font-black tracking-wider uppercase drop-shadow-sm whitespace-pre-line text-center leading-none -mt-1 ${textScaleClass}`;
           
-          // Color Management Rules Injection
           h1Title1.style.color = data.styles.titleColor || '#064e3b';
           h1Title2.style.color = data.styles.subtitleColor || '#047857';
         }
 
-        // 4. Line Rotation Rules Interceptor
+        // Line Rotation Rules Interceptor
         if (data.styles.rotationLines === 'single') {
           if (titleFlipper) titleFlipper.classList.remove('headline-rotated');
           if (window.headlineLoopTimer) {
