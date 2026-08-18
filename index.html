@@ -1227,14 +1227,14 @@
       </div>
 
       <!-- Dynamic Trip Title (Locked in Clear Sky with Multi-Line Support) -->
-      <div class="flex flex-col items-center justify-center -mt-2">
-        <div id="ui-title-alignment-box" class="headline-scene min-h-[36px] sm:min-h-[44px] h-auto flex items-center justify-center w-full px-2">
-          <div id="ui-headline-flipper" class="headline-flipper">
-            <div class="headline-front flex items-center justify-center">
-              <h1 id="ui-title-1" class="font-black text-emerald-950 text-lg sm:text-2xl lg:text-3xl tracking-wider uppercase drop-shadow-sm whitespace-pre-line text-center leading-tight">Loading...</h1>
+      <div class="flex flex-col items-center justify-center -mt-2 relative">
+        <div id="ui-title-alignment-box" class="headline-scene h-10 w-full flex items-center justify-center px-2 overflow-visible">
+          <div id="ui-headline-flipper" class="headline-flipper w-full h-full">
+            <div class="headline-front flex items-center justify-center w-full h-full">
+              <h1 id="ui-title-1" class="font-black text-emerald-950 text-lg sm:text-2xl lg:text-3xl tracking-wider uppercase drop-shadow-sm whitespace-pre-line text-center leading-none -mt-1">Loading...</h1>
             </div>
-            <div class="headline-back flex items-center justify-center">
-              <h1 id="ui-title-2" class="font-black text-emerald-950 text-lg sm:text-2xl lg:text-3xl tracking-wider uppercase drop-shadow-sm whitespace-pre-line text-center leading-tight">Valley of Flowers</h1>
+            <div class="headline-back flex items-center justify-center w-full h-full">
+              <h1 id="ui-title-2" class="font-black text-emerald-950 text-lg sm:text-2xl lg:text-3xl tracking-wider uppercase drop-shadow-sm whitespace-pre-line text-center leading-none -mt-1">Valley of Flowers</h1>
             </div>
           </div>
         </div>
@@ -2822,9 +2822,15 @@
 
         // 2. Sizing Config Allocation
         const textScaleClass = 'text-' + (data.styles.titleFontSize || 'xl');
-        if (h1Title1 && h1Title2) {
-          h1Title1.className = `font-black tracking-wider uppercase drop-shadow-sm whitespace-nowrap text-center ${textScaleClass}`;
-          h1Title2.className = `font-black tracking-wider uppercase drop-shadow-sm whitespace-nowrap text-center ${textScaleClass}`;
+       if (h1Title1 && h1Title2) {
+          // Explicitly maintains leading-none and -mt-1 properties to safeguard external element positions
+          h1Title1.className = `font-black tracking-wider uppercase drop-shadow-sm whitespace-pre-line text-center leading-none -mt-1 ${textScaleClass}`;
+          h1Title2.className = `font-black tracking-wider uppercase drop-shadow-sm whitespace-pre-line text-center leading-none -mt-1 ${textScaleClass}`;
+          
+          // Color Management Rules Injection
+          h1Title1.style.color = data.styles.titleColor || '#064e3b';
+          h1Title2.style.color = data.styles.subtitleColor || '#047857';
+        }
           
           // 3. Color Management Rules Injection
           h1Title1.style.color = data.styles.titleColor || '#064e3b';
