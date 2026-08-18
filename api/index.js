@@ -542,19 +542,27 @@ async function adminDeleteTx(txId) {
 }
 
 async function adminSaveArchive(archiveData) {
+  const cleanSpent = text(archiveData.totalSpent).replace(/[^0-9.]/g, '');
   const payload = {
-    col_a: archiveData.name || '',
-    col_b: archiveData.dates || '',
-    col_c: archiveData.totalSpent ? `₹${archiveData.totalSpent}` : '₹0',
-    col_d: archiveData.reportUrl || '',
-    col_e: archiveData.galleryUrl || '',
-    col_f: archiveData.tripCode || ''
+    col_a: text(archiveData.name),
+    col_b: text(archiveData.dates),
+    col_c: cleanSpent ? `₹${cleanSpent}` : '₹0',
+    col_d: text(archiveData.reportUrl),
+    col_e: text(archiveData.galleryUrl),
+    col_f: text(archiveData.tripCode).toUpperCase()
   };
 
   if (archiveData.id) {
-    await supabase.from('archives_sheet').update(payload).eq('id', archiveData.id);
+    const { error } = await supabase
+      .from('archives_sheet')
+      .update(payload)
+      .eq('id', Number(archiveData.id));
+    if (error) throw error;
   } else {
-    await supabase.from('archives_sheet').insert(payload);
+    const { error } = await supabase
+      .from('archives_sheet')
+      .insert(payload);
+    if (error) throw error;
   }
   return dashboard();
 }
