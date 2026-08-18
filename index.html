@@ -4033,109 +4033,117 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     // Parses nodes and calculates pixel heights dynamically for progress fill
     // ==========================================
     function updateLiveTimelineEngine() {
-        const nodesArray = Array.from(document.querySelectorAll('.tracker-node'));
-        if(nodesArray.length === 0) return;
+  const nodesArray = Array.from(document.querySelectorAll('.tracker-node'));
+  if (nodesArray.length === 0) return;
 
-        const now = new Date().getTime();
+  const now = new Date().getTime();
 
-        // Safe css transition height manipulator
-        function setHeightSmooth(el, newPct) {
-            if (el.style.height === '0%' || el.style.height === '') {
-                el.style.transition = 'none'; // Temporarily disable animation
-                el.style.height = newPct;     
-                void el.offsetHeight;         // Reflow
-                el.style.transition = '';     // Restore
-            } else {
-                el.style.height = newPct;     // Animate normal
-            }
-        }
-
-        nodesArray.forEach((node, index) => {
-            const rowId = node.getAttribute('data-rowid');
-            const currentEta = node.getAttribute('data-eta');
-            const currentAta = node.getAttribute('data-ata');
-            const isCancelled = node.getAttribute('data-cancelled') === 'true';
-            
-            const fillEl = document.getElementById(`live-fill-${rowId}`);
-            const dotEl = document.getElementById(`live-dot-${rowId}`);
-            
-            if(!fillEl) return; 
-
-            // Find the next available non-cancelled node to measure against
-            let nextValidNode = null;
-            for(let j = index + 1; j < nodesArray.length; j++) {
-                if(nodesArray[j].getAttribute('data-cancelled') !== 'true') {
-                    nextValidNode = nodesArray[j];
-                    break;
-                }
-            }
-
-            // UI adjustments for node conditions
-            if(isCancelled) {
-                setHeightSmooth(fillEl, '100%');
-                fillEl.classList.replace('bg-indigo-500', 'bg-slate-300'); // Grey out
-                if(dotEl) dotEl.classList.add('hidden');
-                return;
-            }
-
-            if(!currentAta || currentAta.trim() === "") {
-                setHeightSmooth(fillEl, '0%'); // Not started
-                if(dotEl) dotEl.classList.add('hidden');
-                return;
-            }
-
-            // It has ATA. Where do we put the line?
-            const nextAta = nextValidNode ? nextValidNode.getAttribute('data-ata') : null;
-            if(nextAta && nextAta.trim() !== "") {
-                // Next node is already reached. Set line to 100% solid
-                setHeightSmooth(fillEl, '100%');
-                if(dotEl) dotEl.classList.add('hidden');
-                return;
-            }
-
-            // Core tracker arithmetic based on node intervals
-            const nextEta = nextValidNode ? nextValidNode.getAttribute('data-eta') : null;
-            const startTimestamp = parseTimelineTime(currentAta); 
-            const expectedStart = parseTimelineTime(currentEta);
-            let expectedEnd = parseTimelineTime(nextEta);
-
-            let scheduledDuration = 3600000; // default 1hr fallback
-            if(expectedStart && expectedEnd) {
-                if(expectedEnd < expectedStart) expectedEnd += 86400000; // Account for Midnight boundary crossover
-                scheduledDuration = expectedEnd - expectedStart;
-            }
-
-            const projectedArrival = startTimestamp + scheduledDuration;
-            
-            if (now < startTimestamp) {
-                setHeightSmooth(fillEl, '0%');
-                if(dotEl) dotEl.classList.add('hidden');
-            } else {
-                const elapsed = now - startTimestamp;
-                let pct = (elapsed / scheduledDuration) * 100;
-                
-                // Do not allow the tracking line to overlap the next node UI completely
-                if(pct > 85) pct = 85; 
-                
-                setHeightSmooth(fillEl, `${pct}%`);
-                if(dotEl) dotEl.classList.remove('hidden');
-            }
-        });
+  function setHeightSmooth(el, newPct) {
+    if (el.style.height === '0%' || el.style.height === '') {
+      el.style.transition = 'none';
+      el.style.height = newPct;
+      void el.offsetHeight;
+      el.style.transition = '';
+    } else {
+      el.style.height = newPct;
     }
+  }
+
+  nodesArray.forEach((node, index) => {
+    const rowId = node.getAttribute('data-rowid');
+    const currentEta = node.getAttribute('data-eta');
+    const currentAta = node.getAttribute('data-ata');
+    const isCancelled = node.getAttribute('data-cancelled') === 'true';
+    
+    const fillEl = document.getElementById(`live-fill-${rowId}`);
+    const dotEl = document.getElementById(`live-dot-${rowId}`);
+    
+    if (!fillEl) return;
+
+    let nextValidNode = null;
+    for (let j = index + 1; j < nodesArray.length; j++) {
+      if (nodesArray[j].getAttribute('data-cancelled') !== 'true') {
+        nextValidNode = nodesArray[j];
+        break;
+      }
+    }
+
+    if (isCancelled) {
+      setHeightSmooth(fillEl, '100%');
+      fillEl.classList.replace('bg-indigo-500', 'bg-slate-300');
+      if (dotEl) dotEl.classList.add('hidden');
+      return;
+    }
+
+    if (!currentAta || currentAta.trim() === "") {
+      setHeightSmooth(fillEl, '0%');
+      if (dotEl) dotEl.classList.add('hidden');
+      return;
+    }
+
+    const nextAta = nextValidNode ? nextValidNode.getAttribute('data-ata') : null;
+    if (nextAta && nextAta.trim() !== "") {
+      setHeightSmooth(fillEl, '100%');
+      if (dotEl) dotEl.classList.add('hidden');
+      return;
+    }
+
+    const nextEta = nextValidNode ? nextValidNode.getAttribute('data-eta') : null;
+    
+    // Parse start and end timestamps
+    let startTimestamp = parseTimelineTime(currentAta);
+    let expectedStart = parseTimelineTime(currentEta);
+    let expectedEnd = parseTimelineTime(nextEta);
+
+    // FIX: If the start time is currently ahead of 'now' (e.g. stamped 20:00 yesterday, now is 01:40 AM today),
+    // shift startTimestamp back by 1 day (86,400,000 ms).
+    if (startTimestamp && startTimestamp > now) {
+      startTimestamp -= 86400000;
+    }
+    if (expectedStart && startTimestamp && expectedStart > startTimestamp + 43200000) {
+      expectedStart -= 86400000;
+    }
+
+    let scheduledDuration = 3600000; // 1 hour fallback
+    if (expectedStart && expectedEnd) {
+      if (expectedEnd <= expectedStart) {
+        expectedEnd += 86400000; // Account for overnight crossing into next day
+      }
+      scheduledDuration = expectedEnd - expectedStart;
+    }
+
+    const elapsed = now - startTimestamp;
+
+    if (elapsed < 0) {
+      setHeightSmooth(fillEl, '0%');
+      if (dotEl) dotEl.classList.add('hidden');
+    } else {
+      let pct = (elapsed / scheduledDuration) * 100;
+      if (pct > 85) pct = 85; // Respect holding cap
+      setHeightSmooth(fillEl, `${pct}%`);
+      if (dotEl) dotEl.classList.remove('hidden');
+    }
+  });
+}
     
     // Fallback simple Time Parser for timeline
-    function parseTimelineTime(timeStr) {
-        if(!timeStr || timeStr.trim() === "") return null;
-        const match = timeStr.trim().match(/(\d{1,2}):(\d{2})/);
-        if(!match) return null;
-        const hours = parseInt(match[1], 10);
-        const mins = parseInt(match[2], 10);
-        
-        const target = new Date();
-        target.setHours(hours, mins, 0, 0);
-        return target.getTime();
+function parseTimeStrToday(timeStr) {
+  if (!timeStr) return null;
+  const now = new Date();
+  let match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+  if (match) {
+    let hours = parseInt(match[1], 10);
+    let mins = parseInt(match[2], 10);
+    if (match[3]) {
+      if (match[3].toUpperCase() === 'PM' && hours < 12) hours += 12;
+      if (match[3].toUpperCase() === 'AM' && hours === 12) hours = 0;
     }
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, mins, 0).getTime();
+  }
+  return now.getTime();
+}
 
+    
     // ==========================================
     // LEDGER FILTER ENGINE (Tags like "Food", "Travel")
     // ==========================================
