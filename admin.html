@@ -122,6 +122,18 @@
     <!-- 1. SWITCHES & SETTINGS (LEFT: TRIP HEADER, RIGHT: SWITCHES) -->
     <section id="pane-settings" class="tab-pane active space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
+        <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
+            <div class="pr-2">
+              <p class="text-xs font-bold text-white">Header Title Visibility</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Show or hide trip title in header</p>
+            </div>
+            <select onchange="saveSetting(3, 'e', this.value, 'Header title visibility updated')" id="setTitleVisibility" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+              <option value="VISIBLE">SHOW (Visible)</option>
+              <option value="HIDDEN">HIDE (Hidden)</option>
+            </select>
+          </div>
         
         <!-- LEFT COLUMN: TRIP HEADER & BANNERS -->
         <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
