@@ -1226,8 +1226,9 @@
         </button>
       </div>
 
-      <!-- Dynamic Trip Title (Vertically centered in sky area) -->
-      <div class="flex flex-col items-center justify-center mt-1 sm:mt-2 relative">
+      
+    <!-- Dynamic Trip Title -->
+      <div id="ui-header-title-container" class="flex flex-col items-center justify-center mt-1 sm:mt-2 relative">
         <div id="ui-title-alignment-box" class="headline-scene h-12 w-full flex items-center justify-center px-2">
           <div id="ui-headline-flipper" class="headline-flipper w-full h-full">
             <div class="headline-front flex items-center justify-center w-full h-full">
@@ -2806,24 +2807,34 @@
       // DYNAMIC GRAPHICS ENGINE & DESIGN CONTROLLER INJECTION
       // =============================================================
       if (data.styles) {
+        const titleContainer = document.getElementById('ui-header-title-container');
         const alignBox = document.getElementById('ui-title-alignment-box');
         const titleFlipper = document.getElementById('ui-headline-flipper');
         const h1Title1 = document.getElementById('ui-title-1');
         const h1Title2 = document.getElementById('ui-title-2');
 
-        // 1. Position Control Layer
+        // 1. Title Visibility Toggle (Desktop & Mobile)
+        if (titleContainer) {
+          if (data.styles.titleVisibility === 'HIDDEN') {
+            titleContainer.classList.add('invisible');
+          } else {
+            titleContainer.classList.remove('invisible');
+          }
+        }
+
+        // 2. Position Control Layer
         if (alignBox) {
           alignBox.classList.remove('justify-center', 'justify-start', 'justify-end');
           alignBox.classList.add(data.styles.titlePosition || 'justify-center');
         }
 
-        // 2. Sizing & Multi-line Configuration
+        // 3. Sizing & Multi-line Configuration
         const textScaleClass = 'text-' + (data.styles.titleFontSize || 'xl');
         if (h1Title1 && h1Title2) {
           h1Title1.className = `font-black tracking-wider uppercase drop-shadow-sm whitespace-pre-line text-center leading-none -mt-1 ${textScaleClass}`;
           h1Title2.className = `font-black tracking-wider uppercase drop-shadow-sm whitespace-pre-line text-center leading-none -mt-1 ${textScaleClass}`;
           
-          // 3. Color Management Rules Injection
+          // Color Management Rules Injection
           h1Title1.style.color = data.styles.titleColor || '#064e3b';
           h1Title2.style.color = data.styles.subtitleColor || '#047857';
         }
