@@ -1205,7 +1205,7 @@
  <!-- =========================================
        SCENIC EXPEDITION APP HEADER (Sticky Mode with Dissolve Fade)
        ========================================= -->
-  <header id="main-app-header" class="relative lg:relative w-full overflow-hidden bg-cover bg-center shadow-sm select-none z-30 transition-all duration-200" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');">
+  <header class="sticky top-0 z-30 w-full overflow-hidden bg-cover bg-center shadow-sm select-none" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');">
     
     <!-- Soft Sunlight & Sky Gradient Overlay -->
     <div class="absolute inset-0 bg-gradient-to-b from-sky-400/25 via-sky-100/10 to-transparent backdrop-blur-[0.5px]"></div>
@@ -1278,7 +1278,7 @@
      TAB 1: SPEND VIEW
      Elevated Mobile Cards — No Outer Background
      ========================================= -->
-<main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-5xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-8 px-4 lg:px-8 space-y-4 lg:space-y-6 relative z-20 overflow-hidden lg:overflow-visible overscroll-none touch-none lg:touch-auto">
+<main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-5xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-8 px-4 lg:px-8 space-y-4 lg:space-y-6 relative z-20">
 
   <!-- 3D BENTO GRID -->
   <!-- Mobile: no outer background, cards stay elevated -->
@@ -2154,6 +2154,7 @@
     });
     
     // --- TAB SWITCHING MANAGER ---
+    // Controls toggling between Spend, Squad, and Places views
     function showTab(tabId, el) { 
       // Reset all tab content
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab')); 
@@ -2170,24 +2171,6 @@
       // Show the selected view
       const targetView = document.getElementById('view-' + tabId);
       if (targetView) targetView.classList.add('active-tab');
-
-      // Sticky Header & Mobile Scroll-Lock Control
-      const header = document.getElementById('main-app-header');
-      if (header) {
-        if (tabId === 'spend') {
-          // Unstick header & lock body on main Spend tab (Mobile only)
-          header.classList.remove('sticky', 'top-0');
-          header.classList.add('relative');
-          if (window.innerWidth < 1024) {
-            document.body.classList.add('overflow-hidden', 'touch-none');
-          }
-        } else {
-          // Stick header & unlock body on all other tabs
-          header.classList.remove('relative');
-          header.classList.add('sticky', 'top-0');
-          document.body.classList.remove('overflow-hidden', 'touch-none');
-        }
-      }
 
       // Sync active state for Desktop Sidebar button
       const desktopBtn = document.querySelector(`.desktop-nav-btn[data-tab="${tabId}"]`);
@@ -2224,8 +2207,10 @@
           tLine.classList.add('play-places-anim');
         }
 
+        // Delay checks for auto-scrolling to the active GPS node
         setTimeout(() => {
           const lockVault = document.getElementById('route-lock-vault');
+          // Abort auto-scrolling if security vault is visible
           if (lockVault && !lockVault.classList.contains('hidden')) return; 
           
           const nodes = Array.from(document.querySelectorAll('.tracker-node'));
@@ -2236,6 +2221,7 @@
           const isTripFinished = lastNode && lastNode.getAttribute('data-ata');
 
           if (isTripFinished) {
+            // Trigger beautiful spring-pop complete modal if at end of timeline
             window.scrollTo({ top: 0, behavior: 'smooth' });
             if (window.popupDelayTimeout) clearTimeout(window.popupDelayTimeout);
             
@@ -2246,7 +2232,7 @@
               if (modal && card) {
                 modal.classList.remove('hidden');
                 lucide.createIcons(); 
-                void modal.offsetHeight;
+                void modal.offsetHeight; // Reflow
                 modal.classList.remove('opacity-0');
                 card.classList.remove('scale-75', 'opacity-0');
                 card.classList.add('scale-100', 'opacity-100');
@@ -2254,6 +2240,7 @@
             }, 900);
             
           } else {
+            // Standard scroll-to-active node alignment
             let activeNode = null;
             for (let i = 0; i < nodes.length; i++) {
               if (nodes[i].getAttribute('data-ata')) {
