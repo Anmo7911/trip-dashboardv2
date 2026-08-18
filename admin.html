@@ -191,6 +191,19 @@
           </div>
         </div>
 
+        <!-- Header Images Config (Mobile & Desktop) -->
+          <div class="space-y-2 pt-2 border-t border-slate-800">
+            <h4 class="text-[10px] font-black uppercase tracking-wider text-indigo-400">Header Background Images (URL)</h4>
+            <div>
+              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Mobile Header Image URL</label>
+              <input type="text" id="setHeaderMobile" placeholder="https://..." onchange="saveSetting(25, 'b', this.value, 'Mobile header image updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+            </div>
+            <div>
+              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Desktop Header Image URL</label>
+              <input type="text" id="setHeaderDesktop" placeholder="https://..." onchange="saveSetting(25, 'c', this.value, 'Desktop header image updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
+            </div>
+          </div>
+
         <!-- RIGHT COLUMN: GLOBAL APP SWITCHES -->
         <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
           <h3 class="text-xs font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
@@ -938,6 +951,8 @@
         document.getElementById('setTitlePos').value = d.styles.titlePosition || 'justify-center';
         document.getElementById('setRotationLines').value = d.styles.rotationLines || 'dual';
         document.getElementById('setTitleVisibility').value = d.styles.titleVisibility || 'VISIBLE';
+        document.getElementById('setHeaderMobile').value = d.styles.headerImgMobile || '';
+        document.getElementById('setHeaderDesktop').value = d.styles.headerImgDesktop || '';
       }
     }
     async function saveSetting(row, col, val, msg = "Setting Saved") {
