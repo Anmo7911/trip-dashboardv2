@@ -2,7 +2,6 @@
 <!-- Declare document type as HTML5 -->
 <html lang="en">
 
-
 <head>
 
   <!-- Mobile Responsive Viewport Setup (Fixes Mobile Scaling) -->
@@ -1203,10 +1202,10 @@
   </div>
 
 
-<!-- =========================================
-       SCENIC EXPEDITION APP HEADER (Sticky on Desktop Only)
+ <!-- =========================================
+       SCENIC EXPEDITION APP HEADER (Sticky Mode with Dissolve Fade)
        ========================================= -->
-  <header id="main-app-header" class="relative lg:sticky lg:top-0 w-full overflow-hidden bg-cover bg-center shadow-sm select-none z-30 transition-all duration-200" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');">
+  <header class="sticky top-0 z-30 w-full overflow-hidden bg-cover bg-center shadow-sm select-none" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');">
     
     <!-- Soft Sunlight & Sky Gradient Overlay -->
     <div class="absolute inset-0 bg-gradient-to-b from-sky-400/25 via-sky-100/10 to-transparent backdrop-blur-[0.5px]"></div>
@@ -1275,14 +1274,15 @@
   </header>
 
     
- <!-- =========================================
-       TAB 1: SPEND VIEW (Brought to Front)
-       ========================================= -->
-  <main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-5xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-8 px-4 lg:px-8 space-y-4 lg:space-y-6 relative z-40 overflow-hidden lg:overflow-visible overscroll-none touch-none lg:touch-auto">
+  <!-- =========================================
+     TAB 1: SPEND VIEW
+     Elevated Mobile Cards — No Outer Background
+     ========================================= -->
+<main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-5xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-8 px-4 lg:px-8 space-y-4 lg:space-y-6 relative z-20">
 
-    <!-- 3D BENTO GRID (Elevated Z-Index to Front) -->
-    <div id="ui-top-cards-wrapper" class="relative z-50 bg-white/95 lg:bg-transparent backdrop-blur-md p-3.5 lg:p-0 rounded-[34px] lg:rounded-none shadow-[0_-14px_35px_rgba(0,0,0,0.12)] lg:shadow-none border border-white/90 lg:border-none transition-all duration-500 overflow-hidden opacity-100 origin-top">
-      <div class="flex flex-row gap-2.5 lg:gap-6 h-[160px] lg:h-[180px] w-full relative z-50">
+  <!-- 3D BENTO GRID -->
+  <!-- Mobile: no outer background, cards stay elevated -->
+  <div id="ui-top-cards-wrapper" class="transition-all duration-500 overflow-hidden opacity-100 origin-top">
     
     <!-- Mobile height matched to Code 2: 150px -->
     <div class="flex flex-row gap-2.5 lg:gap-6 h-[150px] lg:h-[180px] w-full relative">
@@ -2154,51 +2154,43 @@
     });
     
     // --- TAB SWITCHING MANAGER ---
+    // Controls toggling between Spend, Squad, and Places views
     function showTab(tabId, el) { 
       // Reset all tab content
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab')); 
       
       // Reset mobile navigation styling
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active')); 
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
       
       // Reset desktop sidebar button styling
       document.querySelectorAll('.desktop-nav-btn').forEach(b => {
-        b.classList.remove('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100'); 
-        b.classList.add('text-slate-500'); 
+        b.classList.remove('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100');
+        b.classList.add('text-slate-500');
       });
 
       // Show the selected view
-      const targetView = document.getElementById('view-' + tabId); 
-      if (targetView) targetView.classList.add('active-tab'); 
-
-      // Mobile Scroll-Lock Control for Main Spend Tab
-      if (tabId === 'spend') {
-        if (window.innerWidth < 1024) {
-          document.body.classList.add('overflow-hidden', 'touch-none');
-        }
-      } else {
-        document.body.classList.remove('overflow-hidden', 'touch-none');
-      }
+      const targetView = document.getElementById('view-' + tabId);
+      if (targetView) targetView.classList.add('active-tab');
 
       // Sync active state for Desktop Sidebar button
-      const desktopBtn = document.querySelector(`.desktop-nav-btn[data-tab="${tabId}"]`); 
+      const desktopBtn = document.querySelector(`.desktop-nav-btn[data-tab="${tabId}"]`);
       if (desktopBtn) {
-        desktopBtn.classList.remove('text-slate-500'); 
-        desktopBtn.classList.add('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100'); 
+        desktopBtn.classList.remove('text-slate-500');
+        desktopBtn.classList.add('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100');
       }
 
       // Sync mobile active state if clicked from mobile
       if (el && el.classList.contains('nav-btn')) {
-        el.classList.add('nav-active'); 
+        el.classList.add('nav-active');
       }
       
       // Contextual Logic: Reset UI states specific to the SPEND tab
       if (tabId === 'spend') {
-        const flipper = document.getElementById('card-flipper-engine'); 
-        if (flipper) flipper.classList.remove('flipper-rotated'); 
-        if (isLedgerActive) toggleLedger(); // close ledger if it was open[cite: 1]
-        currentLedgerFilter = "All"; 
-        renderLedgerList(); 
+        const flipper = document.getElementById('card-flipper-engine');
+        if (flipper) flipper.classList.remove('flipper-rotated');
+        if (isLedgerActive) toggleLedger(); // close ledger if it was open
+        currentLedgerFilter = "All";
+        renderLedgerList();
       }
       
       // Contextual Logic: Trigger stagger animations in SQUAD tab
@@ -2208,61 +2200,65 @@
       
       // Contextual Logic: Restart timeline animations in ROUTE tab
       if (tabId === 'places') {
-        const tLine = document.getElementById('ui-timeline-container'); 
+        const tLine = document.getElementById('ui-timeline-container');
         if (tLine) {
-          tLine.classList.remove('play-places-anim'); 
-          void tLine.offsetWidth; // Force layout recalculation[cite: 1]
-          tLine.classList.add('play-places-anim'); 
+          tLine.classList.remove('play-places-anim');
+          void tLine.offsetWidth; // Force layout recalculation
+          tLine.classList.add('play-places-anim');
         }
 
+        // Delay checks for auto-scrolling to the active GPS node
         setTimeout(() => {
-          const lockVault = document.getElementById('route-lock-vault'); 
+          const lockVault = document.getElementById('route-lock-vault');
+          // Abort auto-scrolling if security vault is visible
           if (lockVault && !lockVault.classList.contains('hidden')) return; 
           
-          const nodes = Array.from(document.querySelectorAll('.tracker-node')); 
-          if (nodes.length === 0) return; 
+          const nodes = Array.from(document.querySelectorAll('.tracker-node'));
+          if (nodes.length === 0) return;
 
-          const activeNodes = nodes.filter(n => n.getAttribute('data-cancelled') !== 'true'); 
-          const lastNode = activeNodes[activeNodes.length - 1]; 
-          const isTripFinished = lastNode && lastNode.getAttribute('data-ata'); 
+          const activeNodes = nodes.filter(n => n.getAttribute('data-cancelled') !== 'true');
+          const lastNode = activeNodes[activeNodes.length - 1];
+          const isTripFinished = lastNode && lastNode.getAttribute('data-ata');
 
           if (isTripFinished) {
-            window.scrollTo({ top: 0, behavior: 'smooth' }); 
-            if (window.popupDelayTimeout) clearTimeout(window.popupDelayTimeout); 
+            // Trigger beautiful spring-pop complete modal if at end of timeline
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (window.popupDelayTimeout) clearTimeout(window.popupDelayTimeout);
             
             window.popupDelayTimeout = setTimeout(() => {
-              const modal = document.getElementById('trip-complete-popup'); 
-              const card = document.getElementById('trip-complete-card'); 
+              const modal = document.getElementById('trip-complete-popup');
+              const card = document.getElementById('trip-complete-card');
               
               if (modal && card) {
-                modal.classList.remove('hidden'); 
+                modal.classList.remove('hidden');
                 lucide.createIcons(); 
-                void modal.offsetHeight; 
-                modal.classList.remove('opacity-0'); 
-                card.classList.remove('scale-75', 'opacity-0'); 
-                card.classList.add('scale-100', 'opacity-100'); 
+                void modal.offsetHeight; // Reflow
+                modal.classList.remove('opacity-0');
+                card.classList.remove('scale-75', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
               }
-            }, 900); 
+            }, 900);
             
           } else {
-            let activeNode = null; 
+            // Standard scroll-to-active node alignment
+            let activeNode = null;
             for (let i = 0; i < nodes.length; i++) {
               if (nodes[i].getAttribute('data-ata')) {
                 activeNode = nodes[i + 1] && nodes[i + 1].getAttribute('data-cancelled') !== 'true' 
                   ? nodes[i + 1] 
-                  : nodes[i]; 
+                  : nodes[i];
               }
             }
 
             if (!activeNode && nodes.length > 0) {
-              activeNode = nodes.find(n => n.getAttribute('data-cancelled') !== 'true'); 
+              activeNode = nodes.find(n => n.getAttribute('data-cancelled') !== 'true');
             }
 
             if (activeNode) {
-              activeNode.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+              activeNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
           }
-        }, 250); 
+        }, 250);
       }
     }
 
