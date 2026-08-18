@@ -36,6 +36,19 @@
   <meta name="theme-color" content="#4f46e5">
 
   <style>
+
+    /* Ensures auto-scrolling always stops cleanly below the sticky header */
+    .tracker-node {
+      scroll-margin-top: 220px; /* Mobile header offset */
+    }
+
+    @media (min-width: 1024px) {
+      .tracker-node {
+        scroll-margin-top: 240px; /* Desktop header offset */
+      }
+    }
+
+    
     /* =========================================
        CUSTOM CSS & ANIMATIONS ENGINE
        ========================================= */
@@ -2183,6 +2196,7 @@
     
     // --- TAB SWITCHING MANAGER ---
     // Controls toggling between Spend, Squad, and Places views
+    // --- TAB SWITCHING MANAGER ---
     function showTab(tabId, el) { 
       // Toggle sticky header on mobile: non-sticky for 'spend', sticky for others
       const header = document.getElementById('app-header');
@@ -2228,7 +2242,7 @@
       if (tabId === 'spend') {
         const flipper = document.getElementById('card-flipper-engine');
         if (flipper) flipper.classList.remove('flipper-rotated');
-        if (isLedgerActive) toggleLedger(); // close ledger if it was open
+        if (isLedgerActive) toggleLedger();
         currentLedgerFilter = "All";
         renderLedgerList();
       }
@@ -2238,17 +2252,16 @@
         triggerSequentialWaveEffects(globalActiveDataPayloadBackup, true); 
       }
       
-      // Contextual Logic: Restart timeline animations in ROUTE tab
-      // Contextual Logic: Restart timeline animations in ROUTE tab
+      // Contextual Logic: Restart timeline animations & auto-scroll in ROUTE tab
       if (tabId === 'places') {
         const tLine = document.getElementById('ui-timeline-container');
         if (tLine) {
           tLine.classList.remove('play-places-anim');
-          void tLine.offsetWidth; // Force layout recalculation
+          void tLine.offsetWidth;
           tLine.classList.add('play-places-anim');
         }
 
-        // Delay checks for auto-scrolling to the active GPS node
+        // Delay to allow DOM display rendering
         setTimeout(() => {
           const lockVault = document.getElementById('route-lock-vault');
           if (lockVault && !lockVault.classList.contains('hidden')) return; 
@@ -2279,7 +2292,7 @@
             }, 900);
             
           } else {
-            // Find the current in-progress or next milestone node
+            // Find in-progress milestone node
             let activeNode = null;
             for (let i = 0; i < nodes.length; i++) {
               if (nodes[i].getAttribute('data-ata')) {
@@ -2294,26 +2307,11 @@
             }
 
             if (activeNode) {
-              // Measure exact header height dynamically
-              const header = document.getElementById('app-header');
-              const headerHeight = header ? header.offsetHeight : 0;
-              const isDesktop = window.innerWidth >= 1024;
-              
-              // Calculate target Y coordinate offset below the header
-              const nodeRect = activeNode.getBoundingClientRect();
-              const absoluteNodeTop = nodeRect.top + window.scrollY;
-              
-              // Mobile: offset by header height + 24px padding; Desktop: offset by header height + 36px
-              const safetyOffset = isDesktop ? 36 : 24;
-              const targetScrollY = Math.max(0, absoluteNodeTop - headerHeight - safetyOffset);
-
-              window.scrollTo({
-                top: targetScrollY,
-                behavior: 'smooth'
-              });
+              // Scrolls cleanly using scroll-margin-top to sit right below the header
+              activeNode.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
           }
-        }, 250);
+        }, 200);
       }
     }
 
