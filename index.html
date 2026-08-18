@@ -1690,16 +1690,17 @@
         </div>
 
         <!-- Trip Gallery -->
-        <a href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank" class="flex items-center p-4 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-2xl cursor-pointer transition-all">
+        
+        <div onclick="openDriveGallery()" class="flex items-center p-4 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-2xl cursor-pointer transition-all">
           <div class="w-11 h-11 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center mr-4 shrink-0">
             <i data-lucide="camera" class="w-5 h-5"></i>
           </div>
           <div class="flex-1">
             <p class="text-xs font-black text-slate-800 uppercase tracking-wider">TRIP GALLERY</p>
-            <p class="text-[10px] text-slate-400 font-bold mt-0.5">Upload photos & receipts to Drive</p>
+            <p class="text-[10px] text-slate-400 font-bold mt-0.5">Preview & upload photos in Drive</p>
           </div>
-          <i data-lucide="external-link" class="w-4 h-4 text-slate-300"></i>
-        </a>
+          <i data-lucide="maximize-2" class="w-4 h-4 text-slate-300"></i>
+        </div>
       </div>
 
       <!-- Bottom Action: Change PIN & Logout -->
@@ -1924,8 +1925,8 @@
         </div>
       </div>
 
-      <!-- 4. Google Drive Trip Gallery (Full Width Below) -->
-      <a href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank"
+     <!-- 4. Google Drive Trip Gallery (Full Width Below) -->
+      <div onclick="toggleMoreMenu(); openDriveGallery();"
         class="col-span-2 flex items-center p-3.5 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
         <div
           class="w-10 h-10 rounded-full bg-slate-50 text-slate-600 flex items-center justify-center mr-3 shrink-0 border border-slate-100">
@@ -1933,10 +1934,10 @@
         </div>
         <div class="flex-1">
           <p class="text-sm font-black text-slate-800 uppercase tracking-wide">Trip Gallery</p>
-          <p class="text-[7px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Upload photos & receipts to Drive</p>
+          <p class="text-[7px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Preview & upload photos in Drive</p>
         </div>
-        <i data-lucide="external-link" class="w-4 h-4 text-slate-300"></i>
-      </a>
+        <i data-lucide="maximize-2" class="w-4 h-4 text-slate-300"></i>
+      </div>
     </div>
 
     <!-- Footer: Change PIN (Small) / Log Out (Large) -->
@@ -5117,6 +5118,27 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       });
     }
 
+
+    // ==========================================
+    // GOOGLE DRIVE GALLERY MODAL CONTROLLER
+    // ==========================================
+    function openDriveGallery() {
+      const modal = document.getElementById('drive-gallery-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden', 'touch-none');
+        lucide.createIcons();
+      }
+    }
+
+    function closeDriveGallery() {
+      const modal = document.getElementById('drive-gallery-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden', 'touch-none');
+      }
+    }
+
   </script>
 
   <!-- =========================================
@@ -5359,6 +5381,51 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     </div>
   </div>
     </div>
+
+  <!-- =========================================
+       GOOGLE DRIVE GALLERY PREVIEW MODAL
+       ========================================= -->
+  <div id="drive-gallery-modal" class="hidden fixed inset-0 z-[10000] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 font-sans transition-all duration-300">
+    <div class="w-full max-w-4xl h-[85vh] sm:h-[80vh] bg-white rounded-[28px] lg:rounded-[32px] shadow-2xl border border-slate-200 flex flex-col overflow-hidden relative">
+      
+      <!-- Modal Header -->
+      <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shadow-inner shrink-0">
+            <i data-lucide="camera" class="w-4 h-4 stroke-[2.5]"></i>
+          </div>
+          <div>
+            <h3 class="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wide">Trip Gallery Preview</h3>
+            <p class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">Google Drive Folder</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Open Directly in Native Drive App Link -->
+          <a href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 rounded-xl text-[10px] font-black uppercase tracking-wider transition-colors flex items-center gap-1.5">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline">Open in Drive</span>
+          </a>
+
+          <!-- Close Modal Button -->
+          <button type="button" onclick="closeDriveGallery()" class="w-9 h-9 bg-slate-200/70 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center active:scale-90 transition-all outline-none">
+            <i data-lucide="x" class="w-4 h-4 stroke-[2.5]"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Google Drive Embedded Viewer Container -->
+      <div class="flex-1 w-full bg-slate-100 relative">
+        <iframe 
+          id="drive-preview-iframe"
+          src="https://drive.google.com/embeddedfolderview?id=1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0#grid" 
+          class="w-full h-full border-0" 
+          allow="autoplay">
+        </iframe>
+      </div>
+
+    </div>
+  </div>
 
 
     
