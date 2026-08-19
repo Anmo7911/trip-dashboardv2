@@ -97,10 +97,36 @@
     }
 
     /* =====================================================
+       EDITORIAL LUXURY: SHIMMER / GRADIENT MASK TYPOGRAPHY
+    ====================================================== */
+    .shimmer-text {
+      background: linear-gradient(
+        110deg,
+        #D2D3D8 0%,
+        #FFFFFF 28%,
+        #D4AF37 46%,
+        #FFFFFF 64%,
+        #CBCDD4 100%
+      );
+      background-size: 240% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: textShimmer 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    @keyframes textShimmer {
+      0% {
+        background-position: 120% 0;
+      }
+      100% {
+        background-position: -120% 0;
+      }
+    }
+
+    /* =====================================================
        ANIMATED GREETING WORD ONLY
     ====================================================== */
     #greeting-word {
-      color: #EEEEEF;
       font-family: "Inter", "Noto Sans Devanagari", sans-serif;
       font-size: clamp(28px, 5vw, 39px);
       font-weight: 400;
@@ -118,7 +144,6 @@
        STATIC USER NAME (No Motion)
     ====================================================== */
     #user-name-display {
-      color: #EEEEEF;
       font-family: "Inter", sans-serif;
       font-size: clamp(28px, 5vw, 39px);
       font-weight: 400;
@@ -195,28 +220,55 @@
     }
 
     .brand-name {
-      color: #EEEEEF;
       font-family: "Inter", sans-serif;
       font-size: clamp(29px, 5vw, 40px);
       font-weight: 400;
       line-height: 1;
       letter-spacing: -0.8px;
       white-space: nowrap;
+      position: relative;
     }
 
+    /* Subtle soft bloom glow behind the brand */
+    .brand-name::before {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      color: rgba(255, 235, 190, 0.45);
+      filter: blur(12px);
+      opacity: 0;
+      transition: opacity 350ms ease;
+    }
+
+    /* Dynamic divider line that draws outward */
     .brand-line {
-      width: 20px;
+      width: 0;
       height: 1px;
       margin: 12px auto 0;
-      background: #EEEEEF;
-      opacity: 0.4;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(238, 238, 239, 0.8) 50%,
+        transparent 100%
+      );
+      opacity: 0;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
     }
 
     /* =====================================================
-       BRAND REVEAL
+       BRAND REVEAL & POLISH
     ====================================================== */
     #brand.show {
       animation: brandReveal 220ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    #brand.show .brand-name::before {
+      opacity: 1;
+    }
+
+    #brand.show .brand-line {
+      animation: lineDraw 380ms cubic-bezier(0.25, 1, 0.5, 1) 90ms forwards;
     }
 
     @keyframes brandReveal {
@@ -227,6 +279,20 @@
       100% {
         opacity: 1;
         transform: translate(-50%, -50%);
+      }
+    }
+
+    @keyframes lineDraw {
+      0% {
+        width: 0;
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.9;
+      }
+      100% {
+        width: 48px;
+        opacity: 0.7;
       }
     }
 
@@ -264,7 +330,9 @@
     ====================================================== */
     @media (prefers-reduced-motion: reduce) {
       #greeting-word,
-      #brand {
+      #brand,
+      .shimmer-text,
+      .brand-line {
         animation: none !important;
       }
     }
@@ -280,13 +348,13 @@
 
     <!-- GREETING -->
     <div id="greeting-wrap" class="greeting-wrap">
-      <div id="greeting-word"></div>
-      <div id="user-name-display"></div>
+      <div id="greeting-word" class="shimmer-text"></div>
+      <div id="user-name-display" class="shimmer-text"></div>
     </div>
 
     <!-- FINAL BRAND -->
     <div id="brand">
-      <div class="brand-name">
+      <div class="brand-name shimmer-text" data-text="Bharat Way">
         Bharat Way
       </div>
       <div class="brand-line"></div>
@@ -442,4 +510,3 @@
   </script>
 </body>
 </html>
-```[cite: 1]
