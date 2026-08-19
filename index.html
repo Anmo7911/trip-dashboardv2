@@ -1139,7 +1139,7 @@
        Forces user to authenticate before viewing data
        ========================================= -->
   <div id="login-overlay"
-    class="hidden fixed inset-0 z-[250] bg-slate-900/50 backdrop-blur-xl flex items-center justify-center p-4 font-sans">
+  class="hidden fixed inset-0 z-[10000] bg-slate-900/50 backdrop-blur-xl flex items-center justify-center p-4 font-sans">
     <div id="login-card"
       class="max-w-sm w-full bg-white/95 rounded-3xl shadow-2xl p-6 border border-slate-200 text-center">
       <div
@@ -2319,50 +2319,6 @@
     // Simple helper to format numbers as Indian Rupees string
     function formatINR(num) { return '₹' + Math.round(num).toLocaleString('en-IN'); } 
 
-
-    // Fetch member names specifically for the login dropdown
-async function fetchLoginMembers() {
-  try {
-    const data = await apiRequest('members'); // or 'dashboard' if your endpoint allows public member reads
-    if (data && data.members) {
-      cachedMembersList = data.members;
-      populateLoginDropdown(data.members);
-    }
-  } catch (err) {
-    console.error("Could not fetch member list for login:", err);
-  } finally {
-    attemptCustomSplashHide();
-  }
-}
-
-function populateLoginDropdown(members) {
-  const selectDropdown = document.getElementById('login-name-select');
-  if (selectDropdown && members && members.length > 0) {
-    selectDropdown.innerHTML = members
-      .map(m => `<option value="${m.name}">${m.name}</option>`)
-      .join('');
-  }
-}
-
-// Core data fetching for logged-in users
-async function fetchInitialData() {
-  const currentUser = localStorage.getItem('trekLoggedInUser');
-  
-  if (!currentUser) {
-    const loginOverlay = document.getElementById('login-overlay');
-    if (loginOverlay) loginOverlay.classList.remove('hidden');
-    fetchLoginMembers();
-    return;
-  }
-
-  try {
-    const data = await apiRequest('dashboard');
-    renderApp(data);
-  } catch (error) {
-    console.error(error);
-    showToast("Unable to sync latest data.");
-  }
-}
     
     // Dynamically builds the category spending bars on the back of the Balance Card
     function renderBackCategoryBars() { 
@@ -5182,11 +5138,12 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     }
 
 
-    let isSplashFinished = false;
+    // ==========================================
+// SPLASH ANIMATION & SYNCHRONIZATION ENGINE
+// ==========================================
+let isSplashFinished = false;
 let pendingSplashHide = false;
 
-
-    // Function to show and restart the splash animation
 function showCustomSplash() {
   isSplashFinished = false;
   pendingSplashHide = false;
@@ -5200,8 +5157,6 @@ function showCustomSplash() {
   if (splash) {
     splash.classList.remove('hidden', 'iris-reveal-exit');
     splash.style.opacity = '1';
-    splash.style.webkitMaskImage = '';
-    splash.style.maskImage = '';
     splash.style.pointerEvents = 'auto';
   }
 
@@ -5209,44 +5164,39 @@ function showCustomSplash() {
     iframe.src = `/loader.html?name=${encodeURIComponent(firstName)}`;
   }
 
+  // Safety timer
   setTimeout(() => {
     hideCustomSplash();
-  }, 4500);
+  }, 3000);
 }
 
-    
-
-// 1. Hide Helper
 function hideCustomSplash() {
   const splash = document.getElementById('custom-splash-screen');
   if (splash && !splash.classList.contains('hidden')) {
-    // Triggers the feathered circular expansion
     splash.classList.add('iris-reveal-exit');
-
-    // Cleanly hide after the 850ms wipe finishes
     setTimeout(() => {
       splash.classList.add('hidden');
       splash.classList.remove('iris-reveal-exit');
+      splash.style.pointerEvents = 'none';
     }, 850);
   }
 }
 
-// 2. Synchronization gate
 function attemptCustomSplashHide() {
-  if (isSplashFinished) {
+  // If splash finished or loader is unavailable, hide immediately
+  if (isSplashFinished || !document.getElementById('loader-iframe')) {
     hideCustomSplash();
   } else {
     pendingSplashHide = true;
+    // Dismiss after at most 1.2s if no message received
+    setTimeout(hideCustomSplash, 1200);
   }
 }
 
-// 3. Listen for completion message from public/loader.html
 window.addEventListener('message', (event) => {
   if (event.data === 'ANIMATION_COMPLETE') {
     isSplashFinished = true;
-    if (pendingSplashHide) {
-      hideCustomSplash();
-    }
+    hideCustomSplash();
   }
 });
 
