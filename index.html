@@ -531,19 +531,16 @@
       transform: rotateY(180deg);
     }
 
-/* Layout classes for notice sliding carousel */
+    /* Layout classes for notice sliding carousel */
     .carousel-track {
       display: flex;
-      width: 100%;
+      width: 200%;
       transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .carousel-item {
-      width: 100% !important;
-      min-width: 100% !important;
-      max-width: 100% !important;
-      flex: 0 0 100% !important;
-      box-sizing: border-box;
+      width: 50%;
+      flex-shrink: 0;
     }
 
     /* 3D Scene setup for Header Text Carousel */
@@ -1237,11 +1234,12 @@
 
     <!-- Soft Sunlight & Sky Gradient Overlay -->
     <div class="absolute inset-0 bg-gradient-to-b from-sky-400/25 via-sky-100/10 to-transparent backdrop-blur-[0.5px] z-[1]"></div>
+    
 
     <!-- Bottom Dissolve / Fade Overlay -->
     <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-100 via-slate-100/60 to-transparent pointer-events-none z-10"></div>
 
-    <!-- Title and Action Bar Container -->
+    <!-- Outer header container height locked so cards below never shift -->
     <div class="relative z-20 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-2.5 pb-8 flex flex-col justify-start h-[190px] sm:h-[210px]">
       
       <!-- Top Action Bar: Floating Chat Button (Mobile Only) -->
@@ -1252,8 +1250,9 @@
         </button>
       </div>
 
-      <!-- Dynamic Trip Title -->
-      <div id="ui-header-title-container" class="flex flex-col items-center justify-center -mt-2.5 sm:mt-2 relative">
+      
+    <!-- Dynamic Trip Title -->
+<div id="ui-header-title-container" class="flex flex-col items-center justify-center -mt-2.5 sm:mt-2 relative">
         <div id="ui-title-alignment-box" class="headline-scene h-14 w-full flex items-center justify-center px-2">
           <div id="ui-headline-flipper" class="headline-flipper w-full h-full">
             <div class="headline-front flex items-center justify-center w-full h-full">
@@ -1269,41 +1268,39 @@
           </div>
         </div>
       </div>
-
-    </div>
-
-    <!-- Full-Width Edge-to-Edge Notice Container -->
-    <div id="notice-container" class="absolute bottom-8 left-0 right-0 w-full px-3 lg:px-8 z-30 pointer-events-auto">
-      <div class="overflow-hidden w-full">
-        <div id="notice-slider" class="carousel-track">
-          <!-- Notice Slot -->
-          <div class="carousel-item">
-            <div class="bg-white/85 backdrop-blur-md border border-white/90 rounded-full px-3.5 py-1.5 flex items-center justify-between shadow-sm cursor-pointer hover:bg-white/95 transition-all">
-              <div class="flex items-center gap-2 min-w-0 pr-2">
-                <div class="w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
-                  <i data-lucide="alert-circle" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+      
+      <!-- Frosted Notice & Warning Bar (Anchored at exact original position) -->
+     <!-- Moved slightly downward using bottom-9 -->
+<div id="notice-container" class="absolute bottom-9 left-0 right-0 max-w-md lg:max-w-5xl mx-auto px-4 w-full">
+        <div class="overflow-hidden w-full">
+          <div id="notice-slider" class="carousel-track">
+            <!-- Notice Slot -->
+            <div class="carousel-item px-1">
+              <div class="bg-white/85 backdrop-blur-md border border-white/90 rounded-full px-3.5 py-1.5 flex items-center justify-between shadow-sm cursor-pointer hover:bg-white/95 transition-all">
+                <div class="flex items-center gap-2 min-w-0 pr-2">
+                  <div class="w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                    <i data-lucide="alert-circle" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+                  </div>
+                  <p id="ui-trip-notice" class="text-[10.5px] font-black text-rose-900 truncate tracking-wide"></p>
                 </div>
-                <p id="ui-trip-notice" class="text-[10.5px] font-black text-rose-900 truncate tracking-wide"></p>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
               </div>
-              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
             </div>
-          </div>
-          <!-- Warning Notice Slot -->
-          <div class="carousel-item">
-            <div class="bg-rose-50/90 backdrop-blur-md border border-rose-200 rounded-full px-3.5 py-1.5 flex items-center justify-between shadow-sm cursor-pointer">
-              <div class="flex items-center gap-2 min-w-0 pr-2">
-                <div class="w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-                  <i data-lucide="alert-triangle" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+            <!-- Warning Notice Slot -->
+            <div class="carousel-item px-1">
+              <div class="bg-rose-50/90 backdrop-blur-md border border-rose-200 rounded-full px-3.5 py-1.5 flex items-center justify-between shadow-sm cursor-pointer">
+                <div class="flex items-center gap-2 min-w-0 pr-2">
+                  <div class="w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                    <i data-lucide="alert-triangle" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+                  </div>
+                  <p id="ui-warning-notice" class="text-[10.5px] font-black text-rose-900 truncate tracking-wide"></p>
                 </div>
-                <p id="ui-warning-notice" class="text-[10.5px] font-black text-rose-900 truncate tracking-wide"></p>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-rose-400 shrink-0"></i>
               </div>
-              <i data-lucide="chevron-right" class="w-4 h-4 text-rose-400 shrink-0"></i>
             </div>
           </div>
         </div>
       </div>
-    </div>
-
   </header>
 
     
@@ -2405,19 +2402,13 @@
     }
 
     // Manages the sliding carousel in the top navbar (General notices vs warnings)
-   function runNoticeCarousel() {
+    function runNoticeCarousel() {
       if (carouselInterval) clearInterval(carouselInterval);
-      const slider = document.getElementById('notice-slider');
-      if (!slider) return;
-      
-      currentSlide = 0;
-      slider.style.transform = 'translateX(0%)';
-      
-      if (activeNotices.length <= 1) return;
-      
+      if (activeNotices.length <= 1) { document.getElementById('notice-slider').style.transform = 'translateX(0%)'; return; }
       carouselInterval = setInterval(() => {
         currentSlide = (currentSlide + 1) % activeNotices.length;
-        slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+        const targetX = activeNotices[currentSlide] === 'warning' ? '-50%' : '0%';
+        document.getElementById('notice-slider').style.transform = `translateX(${targetX})`;
       }, 4500);
     }
 
