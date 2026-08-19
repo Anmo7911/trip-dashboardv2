@@ -965,6 +965,12 @@
     </div>
   </div>
 
+
+    <!-- STANDALONE SPLASH ANIMATION OVERLAY -->
+<div id="custom-splash-screen" class="fixed inset-0 z-[9999] bg-white transition-opacity duration-500 ease-out flex items-center justify-center">
+  <iframe src="/loader.html" class="w-full h-full border-0 pointer-events-none" id="loader-iframe"></iframe>
+</div>
+
   <!-- =========================================
        SIGNATURE CAPTURE MODAL
        Used for members to sign off on final expenses
@@ -2004,10 +2010,12 @@
     });
 
     window.onload = () => { 
+  isSplashFinished = false;
+  pendingSplashHide = false;
+  
   fetchInitialData(); 
   startPolling(); 
 };
-
     // --- PULL TO REFRESH LOGIC ---
     let touchStartY = 0;
     
@@ -3180,9 +3188,11 @@
       }
       
       // --- POPULATE ARCHIVES MODAL DATA ---
-renderArchivesList(data.pastTrips);
+       renderArchivesList(data.pastTrips);
       // --- POPULATE ARCHIVES FULL PAGE DATA ---
       renderArchivesPageList(data.pastTrips);
+      // Tells the loader the dashboard data has finished loading
+        attemptCustomSplashHide();
       attemptSplashHide();
    }
     
@@ -4995,6 +5005,42 @@ fetchInitialData();
         document.body.classList.remove('overflow-hidden', 'touch-none');
       }
     }
+
+
+    let isSplashFinished = false;
+let pendingSplashHide = false;
+
+// 1. Hide Helper
+function hideCustomSplash() {
+  const splash = document.getElementById('custom-splash-screen');
+  if (splash) {
+    splash.classList.add('opacity-0');
+    setTimeout(() => {
+      splash.classList.add('hidden');
+    }, 500);
+  }
+}
+
+// 2. Synchronization gate (called by data fetch and animation completion)
+function attemptCustomSplashHide() {
+  if (isSplashFinished) {
+    hideCustomSplash();
+  } else {
+    pendingSplashHide = true;
+  }
+}
+
+// 3. Listen for completion message from public/loader.html
+window.addEventListener('message', (event) => {
+  if (event.data === 'ANIMATION_COMPLETE') {
+    isSplashFinished = true;
+    if (pendingSplashHide) {
+      hideCustomSplash();
+    }
+  }
+});
+
+    
 
   </script>
 
