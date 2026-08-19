@@ -3225,7 +3225,7 @@ if (!currentUser) {
             let clickAction = "";
             
             // Determine active/cancelled/arrived state
-            iif (isCancelled) {
+            if (isCancelled) {
               timeBlock = `<p class="text-[11px] font-black italic text-red-500 mt-1">Cancelled</p>`;
               dotClass = "bg-slate-300"; 
               cardClass += " bg-red-50 border-red-200 opacity-60"; 
@@ -5240,6 +5240,19 @@ function getEtaAtaStatusHtml(etaStr, ataStr) {
     return `<p class="text-[8.5px] font-normal italic text-emerald-600 mt-0.5 leading-tight">(Arrived early by ${formatDuration(Math.abs(diff))})</p>`;
   } else {
     return `<p class="text-[8.5px] font-normal italic text-emerald-600 mt-0.5 leading-tight">(On time)</p>`;
+  }
+}
+
+    function closeTripCompletePopup() {
+  const modal = document.getElementById('trip-complete-popup');
+  const card = document.getElementById('trip-complete-card');
+  if (modal && card) {
+    modal.classList.add('opacity-0');
+    card.classList.replace('scale-100', 'scale-75');
+    card.classList.replace('opacity-100', 'opacity-0');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 400);
   }
 }
 
