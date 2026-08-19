@@ -3193,7 +3193,6 @@
       renderArchivesPageList(data.pastTrips);
       // Tells the loader the dashboard data has finished loading
         attemptCustomSplashHide();
-      attemptSplashHide();
    }
     
     // ==========================================
@@ -5014,19 +5013,17 @@ let pendingSplashHide = false;
 function hideCustomSplash() {
   const splash = document.getElementById('custom-splash-screen');
   if (splash) {
-    // Smooth fade out + subtle zoom out
     splash.style.opacity = '0';
     splash.style.transform = 'scale(1.04)';
     splash.style.pointerEvents = 'none';
 
-    // Remove from layout once the 700ms transition finishes
     setTimeout(() => {
       splash.classList.add('hidden');
     }, 700);
   }
 }
 
-// 2. Synchronization gate (called by data fetch and animation completion)
+// 2. Synchronization gate
 function attemptCustomSplashHide() {
   if (isSplashFinished) {
     hideCustomSplash();
@@ -5044,6 +5041,11 @@ window.addEventListener('message', (event) => {
     }
   }
 });
+
+// 4. Failsafe: Automatically dismiss loader after 4.5 seconds if stuck
+setTimeout(() => {
+  hideCustomSplash();
+}, 4500);
 
     
 
