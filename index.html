@@ -2056,12 +2056,14 @@
     fetchInitialData(); 
     startPolling();
   } else {
-    // Show login overlay directly
     const loginOverlay = document.getElementById('login-overlay');
     if (loginOverlay) loginOverlay.classList.remove('hidden');
-    attemptCustomSplashHide();
+    fetchLoginMembers();
   }
 };
+
+
+    
     // --- PULL TO REFRESH LOGIC ---
     let touchStartY = 0;
     
@@ -2265,9 +2267,55 @@
     showToast("Unable to sync latest data.");
   }
 }
+
     
     // Simple helper to format numbers as Indian Rupees string
     function formatINR(num) { return '₹' + Math.round(num).toLocaleString('en-IN'); } 
+
+
+    // Fetch member names specifically for the login dropdown
+async function fetchLoginMembers() {
+  try {
+    const data = await apiRequest('members'); // or 'dashboard' if your endpoint allows public member reads
+    if (data && data.members) {
+      cachedMembersList = data.members;
+      populateLoginDropdown(data.members);
+    }
+  } catch (err) {
+    console.error("Could not fetch member list for login:", err);
+  } finally {
+    attemptCustomSplashHide();
+  }
+}
+
+function populateLoginDropdown(members) {
+  const selectDropdown = document.getElementById('login-name-select');
+  if (selectDropdown && members && members.length > 0) {
+    selectDropdown.innerHTML = members
+      .map(m => `<option value="${m.name}">${m.name}</option>`)
+      .join('');
+  }
+}
+
+// Core data fetching for logged-in users
+async function fetchInitialData() {
+  const currentUser = localStorage.getItem('trekLoggedInUser');
+  
+  if (!currentUser) {
+    const loginOverlay = document.getElementById('login-overlay');
+    if (loginOverlay) loginOverlay.classList.remove('hidden');
+    fetchLoginMembers();
+    return;
+  }
+
+  try {
+    const data = await apiRequest('dashboard');
+    renderApp(data);
+  } catch (error) {
+    console.error(error);
+    showToast("Unable to sync latest data.");
+  }
+}
     
     // Dynamically builds the category spending bars on the back of the Balance Card
     function renderBackCategoryBars() { 
@@ -2734,18 +2782,18 @@
       const deskMoreUser = document.getElementById('desktop-more-user-heading');
       if (deskMoreUser) deskMoreUser.innerText = loggedUser;
       
-      if (!currentUser) {
-        loginOverlay.classList.remove('hidden');
-        const selectDropdown = document.getElementById('login-name-select');
-        // Populate names list
-        if (selectDropdown && selectDropdown.options.length === 0) {
-          selectDropdown.innerHTML = data.members.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
-        }
-        attemptSplashHide();
-        return; // App tab rendering halts until login completes
-      } else {
-        loginOverlay.classList.add('hidden');
-      }
+      // Inside renderApp(data):
+if (!currentUser) {
+  loginOverlay.classList.remove('hidden');
+  const selectDropdown = document.getElementById('login-name-select');
+  if (selectDropdown && selectDropdown.options.length === 0 && data.members) {
+    selectDropdown.innerHTML = data.members.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
+  }
+  attemptCustomSplashHide(); // <-- Fixed typo here
+  return;
+} else {
+  loginOverlay.classList.add('hidden');
+}
 
 
       // =============================================================
