@@ -2024,8 +2024,11 @@
 
     // Starts background pinging to Google Apps Script (refresh every 30s)
     function startPolling() {
-      if (!autoFetchInterval) autoFetchInterval = setInterval(fetchInitialData, 30000);
-    }
+  const currentUser = localStorage.getItem('trekLoggedInUser');
+  if (!currentUser) return; // Do not poll if user is logged out
+
+  if (!autoFetchInterval) autoFetchInterval = setInterval(fetchInitialData, 30000);
+}
 
     function stopPolling() {
       if (autoFetchInterval) {
@@ -2048,8 +2051,16 @@
   isSplashFinished = false;
   pendingSplashHide = false;
   
-  fetchInitialData(); 
-  startPolling(); 
+  const currentUser = localStorage.getItem('trekLoggedInUser');
+  if (currentUser) {
+    fetchInitialData(); 
+    startPolling();
+  } else {
+    // Show login overlay directly
+    const loginOverlay = document.getElementById('login-overlay');
+    if (loginOverlay) loginOverlay.classList.remove('hidden');
+    attemptCustomSplashHide();
+  }
 };
     // --- PULL TO REFRESH LOGIC ---
     let touchStartY = 0;
@@ -2235,15 +2246,25 @@
     }
 
     // Core data fetching - Calls Google Apps Script backend 'getDashboardData'
-    async function fetchInitialData() {
-      try {
-        const data = await apiRequest('dashboard');
-        renderApp(data);
-      } catch (error) {
-        console.error(error);
-        showToast("Unable to sync latest data.");
-      }
-    } 
+   async function fetchInitialData() {
+  const currentUser = localStorage.getItem('trekLoggedInUser');
+  
+  // If not logged in, stop here and show the login screen cleanly
+  if (!currentUser) {
+    const loginOverlay = document.getElementById('login-overlay');
+    if (loginOverlay) loginOverlay.classList.remove('hidden');
+    attemptCustomSplashHide();
+    return;
+  }
+
+  try {
+    const data = await apiRequest('dashboard');
+    renderApp(data);
+  } catch (error) {
+    console.error(error);
+    showToast("Unable to sync latest data.");
+  }
+}
     
     // Simple helper to format numbers as Indian Rupees string
     function formatINR(num) { return '₹' + Math.round(num).toLocaleString('en-IN'); } 
