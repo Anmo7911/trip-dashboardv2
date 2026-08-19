@@ -844,11 +844,11 @@
           <span>Trip Archives</span>
         </button>
 
-        <!-- Trip Gallery Button (Desktop Sidebar - Triggers In-App Preview) -->
-        <button type="button" onclick="openDriveGallery()" class="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 active:scale-95 outline-none">
-          <i data-lucide="camera" class="w-4 h-4"></i>
-          <span>Trip Gallery</span>
-        </button>
+        <!-- Desktop Sidebar Trip Gallery Button -->
+<button onclick="showTab('gallery', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="gallery">
+  <i data-lucide="camera" class="w-4 h-4"></i>
+  <span>Trip Gallery</span>
+</button>
 
         <!-- More Tab Trigger -->
         <button onclick="showTab('more', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="more">
@@ -1708,10 +1708,7 @@
     </div>
   </main>
 
-    <!-- =========================================
-       TAB 5: PAST TRIPS ARCHIVE FULL VIEW
-       Desktop Wide Grid & Mobile Responsive
-       ========================================= -->
+
   <!-- =========================================
        TAB 5: PAST TRIPS ARCHIVE FULL VIEW
        ========================================= -->
@@ -1751,6 +1748,45 @@
     </div>
 
   </main>
+
+    <!-- =========================================
+     TAB 7: TRIP GALLERY (Full Desktop View)
+     ========================================= -->
+<main id="view-gallery" class="tab-content w-full max-w-5xl mx-auto pt-4 px-4 lg:p-8 space-y-6 pb-12">
+  <div class="bg-white rounded-[28px] lg:rounded-[32px] p-6 lg:p-8 border border-slate-200/80 shadow-sm space-y-5 relative flex flex-col">
+    
+    <!-- Top Header -->
+    <div class="flex items-center justify-between border-b border-slate-100 pb-5">
+      <div class="flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shadow-inner shrink-0">
+          <i data-lucide="camera" class="w-6 h-6 stroke-[2.5]"></i>
+        </div>
+        <div>
+          <h2 class="text-xl lg:text-2xl font-black text-slate-800 tracking-tight uppercase">Trip Gallery</h2>
+          <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mt-0.5">Google Drive Media Vault</p>
+        </div>
+      </div>
+
+      <!-- Direct External Link Button -->
+      <a href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 shadow-sm active:scale-95">
+        <i data-lucide="external-link" class="w-4 h-4"></i>
+        <span>Open in Drive</span>
+      </a>
+    </div>
+
+    <!-- Embedded Google Drive Folder Container -->
+    <div class="w-full h-[72vh] bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 relative">
+      <iframe 
+        id="desktop-gallery-iframe"
+        src="https://drive.google.com/embeddedfolderview?id=1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0#grid" 
+        class="w-full h-full border-0" 
+        allow="autoplay">
+      </iframe>
+    </div>
+
+  </div>
+</main>
+    
 
     <!-- =========================================
        TAB 6: ABOUT US PAGE
@@ -2095,133 +2131,42 @@
     
     // --- TAB SWITCHING MANAGER ---
     // Controls toggling between Spend, Squad, and Places views
-   function showTab(tabId, el) { 
-      // Hide header completely on Archives and About tabs; show on all other tabs
-      const header = document.getElementById('app-header');
-      if (header) {
-        if (tabId === 'archives' || tabId === 'about') {
-          header.classList.add('hidden');
-        } else {
-          header.classList.remove('hidden');
-          if (tabId === 'spend') {
-            header.classList.remove('sticky');
-            header.classList.add('relative');
-          } else {
-            header.classList.remove('relative');
-            header.classList.add('sticky');
+   function openDriveGallery(customUrl) {
+      const isDesktop = window.innerWidth >= 1024;
+      
+      // On desktop, navigate directly to the dedicated full-page view
+      if (isDesktop) {
+        showTab('gallery', null);
+        if (customUrl) {
+          const iframe = document.getElementById('desktop-gallery-iframe');
+          const folderMatch = customUrl.match(/folders\/([a-zA-Z0-9_-]+)/);
+          if (iframe && folderMatch) {
+            iframe.src = `https://drive.google.com/embeddedfolderview?id=${folderMatch[1]}#grid`;
           }
         }
+        return;
       }
 
-      // Reset all tab content
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
-      
-      // Reset mobile navigation styling
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
-      
-      // Reset desktop sidebar button styling
-      document.querySelectorAll('.desktop-nav-btn').forEach(b => {
-        b.classList.remove('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100');
-        b.classList.add('text-slate-500');
-      });
+      // Mobile: Open popup modal preview
+      const defaultUrl = "https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0";
+      const rawUrl = customUrl || defaultUrl;
+      const iframe = document.getElementById('drive-preview-iframe');
+      const extBtn = document.getElementById('drive-external-link-btn');
 
-      // Show the selected view
-      const targetView = document.getElementById('view-' + tabId);
-      if (targetView) targetView.classList.add('active-tab');
-
-      // Sync active state for Desktop Sidebar button
-      const desktopBtn = document.querySelector(`.desktop-nav-btn[data-tab="${tabId}"]`);
-      if (desktopBtn) {
-        desktopBtn.classList.remove('text-slate-500');
-        desktopBtn.classList.add('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100');
+      let embedUrl = rawUrl;
+      const folderMatch = rawUrl.match(/folders\/([a-zA-Z0-9_-]+)/);
+      if (folderMatch) {
+        embedUrl = `https://drive.google.com/embeddedfolderview?id=${folderMatch[1]}#grid`;
       }
 
-      // Sync mobile active state if clicked from mobile
-      if (el && el.classList.contains('nav-btn')) {
-        el.classList.add('nav-active');
-      }
-      
-      // Contextual Logic: Reset UI states specific to the SPEND tab
-      if (tabId === 'spend') {
-        const flipper = document.getElementById('card-flipper-engine');
-        if (flipper) flipper.classList.remove('flipper-rotated');
-        if (isLedgerActive) toggleLedger();
-        currentLedgerFilter = "All";
-        renderLedgerList();
-      }
-      
-      // Contextual Logic: Trigger stagger animations in SQUAD tab
-      if (tabId === 'squad' && globalActiveDataPayloadBackup) { 
-        triggerSequentialWaveEffects(globalActiveDataPayloadBackup, true); 
-      }
-      
-      // Contextual Logic: Restart timeline animations & auto-scroll in ROUTE tab
-      if (tabId === 'places') {
-        const tLine = document.getElementById('ui-timeline-container');
-        if (tLine) {
-          tLine.classList.remove('play-places-anim');
-          void tLine.offsetWidth;
-          tLine.classList.add('play-places-anim');
-        }
+      if (iframe) iframe.src = embedUrl;
+      if (extBtn) extBtn.href = rawUrl;
 
-        // Delay to allow DOM display rendering
-        setTimeout(() => {
-          const lockVault = document.getElementById('route-lock-vault');
-          if (lockVault && !lockVault.classList.contains('hidden')) return; 
-          
-          const nodes = Array.from(document.querySelectorAll('.tracker-node'));
-          if (nodes.length === 0) return;
-
-          const activeNodes = nodes.filter(n => n.getAttribute('data-cancelled') !== 'true');
-          const lastNode = activeNodes[activeNodes.length - 1];
-          const isTripFinished = lastNode && lastNode.getAttribute('data-ata');
-
-          if (isTripFinished) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            if (window.popupDelayTimeout) clearTimeout(window.popupDelayTimeout);
-            
-            window.popupDelayTimeout = setTimeout(() => {
-              const modal = document.getElementById('trip-complete-popup');
-              const card = document.getElementById('trip-complete-card');
-              
-              if (modal && card) {
-                modal.classList.remove('hidden');
-                lucide.createIcons(); 
-                void modal.offsetHeight;
-                modal.classList.remove('opacity-0');
-                card.classList.remove('scale-75', 'opacity-0');
-                card.classList.add('scale-100', 'opacity-100');
-              }
-            }, 900);
-            
-          } else {
-            // Find in-progress milestone node
-           // Focus on the current active departure milestone (where the tracker is originating from)
-            let activeNode = null;
-            for (let i = 0; i < nodes.length; i++) {
-              if (nodes[i].getAttribute('data-ata')) {
-                activeNode = nodes[i]; // Keep focus on the active stamped stop
-              }
-            }
-
-            if (!activeNode && nodes.length > 0) {
-              activeNode = nodes.find(n => n.getAttribute('data-cancelled') !== 'true');
-            }
-
-            if (activeNode) {
-              activeNode.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-
-            if (!activeNode && nodes.length > 0) {
-              activeNode = nodes.find(n => n.getAttribute('data-cancelled') !== 'true');
-            }
-
-            if (activeNode) {
-              // Scrolls cleanly using scroll-margin-top to sit right below the header
-              activeNode.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          }
-        }, 200);
+      const modal = document.getElementById('drive-gallery-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden', 'touch-none');
+        lucide.createIcons();
       }
     }
 
@@ -5080,12 +5025,27 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     // GOOGLE DRIVE GALLERY MODAL CONTROLLER (Dynamic URL Support)
     // ==========================================
     function openDriveGallery(customUrl) {
+      const isDesktop = window.innerWidth >= 1024;
+      
+      // On desktop, navigate directly to the dedicated full-page view
+      if (isDesktop) {
+        showTab('gallery', null);
+        if (customUrl) {
+          const iframe = document.getElementById('desktop-gallery-iframe');
+          const folderMatch = customUrl.match(/folders\/([a-zA-Z0-9_-]+)/);
+          if (iframe && folderMatch) {
+            iframe.src = `https://drive.google.com/embeddedfolderview?id=${folderMatch[1]}#grid`;
+          }
+        }
+        return;
+      }
+
+      // Mobile: Open popup modal preview
       const defaultUrl = "https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0";
       const rawUrl = customUrl || defaultUrl;
       const iframe = document.getElementById('drive-preview-iframe');
       const extBtn = document.getElementById('drive-external-link-btn');
 
-      // Convert Google Drive folder link into embedded folderview URL
       let embedUrl = rawUrl;
       const folderMatch = rawUrl.match(/folders\/([a-zA-Z0-9_-]+)/);
       if (folderMatch) {
