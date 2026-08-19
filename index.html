@@ -4,6 +4,11 @@
 
 <head>
 
+  <!-- Google Fonts for Multi-language Indian Greetings -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Sans+Gurmukhi:wght@400;500;600&family=Noto+Sans+Kannada:wght@400;500;600&family=Noto+Sans+Malayalam:wght@400;500;600&family=Noto+Sans+Tamil:wght@400;500;600&family=Noto+Sans+Telugu:wght@400;500;600&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+
   <link rel="apple-touch-icon" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG">
 
   <!-- Mobile Responsive Viewport Setup (Fixes Mobile Scaling) -->
@@ -322,49 +327,127 @@
     }
 
     /* =========================================
-       SPLASH SCREEN MORPHING ENGINE
+       BHARAT WAY MULTILINGUAL SPLASH ENGINE
        ========================================= */
-    .morph-wrapper {
+    .splash-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      color: #30356f;
+      overflow: hidden;
+      z-index: 200;
+      transition: opacity 0.5s ease-out;
+    }
+
+    .greeting-window {
       position: relative;
-      width: 64px;
-      height: 64px;
-      margin: 0 auto;
-    }
-
-    /* Base styling for morphing icons */
-    .morph-icon {
-      position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
-      height: 100%;
-      transition: all 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
 
-    /* State when an icon is leaving (shrinks, rotates, blurs) */
-    .morph-out {
-      opacity: 0;
-      transform: scale(0.2) rotate(90deg);
-      filter: blur(2px);
-    }
-
-    /* State when an icon is entering (normal size, clear) */
-    .morph-in {
+    .greeting {
+      position: absolute;
+      font-size: clamp(42px, 11vw, 64px);
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: -1px;
+      color: #30356f;
+      white-space: nowrap;
+      transform: translateY(0);
       opacity: 1;
-      transform: scale(1) rotate(0);
-      filter: blur(0px);
+      will-change: transform, opacity;
     }
 
-    /* Transitions for text fading in the splash screen */
-    .text-fade {
-      transition: opacity 0.15s ease, transform 0.15s ease;
+    .greeting.out {
+      animation: greetingOut 220ms cubic-bezier(0.55, 0, 1, 0.45) forwards;
     }
 
-    /* Hidden state for splash text */
-    .text-hidden {
+    .greeting.in {
+      animation: greetingIn 220ms cubic-bezier(0, 0.55, 0.45, 1) forwards;
+    }
+
+    @keyframes greetingOut {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-80px) scale(0.96);
+        opacity: 0;
+      }
+    }
+
+    @keyframes greetingIn {
+      0% {
+        transform: translateY(80px) scale(0.96);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .brand {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) translateY(15px);
+      text-align: center;
       opacity: 0;
-      transform: translateY(4px);
+      pointer-events: none;
     }
+
+    .brand-name {
+      font-size: clamp(24px, 6vw, 34px);
+      font-weight: 600;
+      letter-spacing: 5px;
+      color: #30356f;
+      white-space: nowrap;
+    }
+
+    .tagline {
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 1.5px;
+      color: #30356f;
+      opacity: 0.55;
+      white-space: nowrap;
+    }
+
+    .brand.show {
+      animation: brandReveal 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes brandReveal {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) translateY(18px) scale(0.96);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) translateY(0) scale(1);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .greeting-window { height: 80px; }
+      .greeting { font-size: 48px; }
+      .brand-name { letter-spacing: 4px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .greeting, .brand { animation: none !important; }
+    }
+    
 
     /* =========================================
        GLOBAL UTILITIES & 3D CSS
@@ -1192,38 +1275,19 @@
     </div>
   </div>
 
-  <!-- =========================================
-       SPLASH SCREEN (Compass Ring Loader)
-       Hides the UI while heavy data is fetched
+ <!-- =========================================
+       BHARAT WAY MULTILINGUAL SPLASH SCREEN
        ========================================= -->
-  <div id="app-splash-screen"
-    class="fixed inset-0 bg-slate-50 z-[200] flex flex-col items-center justify-center p-6 transition-opacity duration-500 ease-out">
-    <div class="flex flex-col items-center max-w-xs w-full">
+  <div id="app-splash-screen" class="splash-overlay">
+    <!-- Greeting animation window -->
+    <div id="greeting-window" class="greeting-window">
+      <div id="greeting" class="greeting">नमस्ते</div>
+    </div>
 
-      <!-- The Ring Container -->
-      <div class="relative w-24 h-24 flex items-center justify-center mb-5">
-
-        <!-- SVG Compass Progress Ring -->
-        <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="46" fill="none" stroke="#f1f5f9" stroke-width="2.5" />
-          <circle id="splash-progress-ring" cx="50" cy="50" r="46" fill="none" stroke="#6366f1" stroke-width="2.5"
-            stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289"
-            class="transition-all duration-[300ms] ease-linear drop-shadow-[0_0_4px_rgba(99,102,241,0.4)]" />
-        </svg>
-
-        <!-- Morphing Icons swapping in the center -->
-        <div id="splash-icon-container" class="morph-wrapper text-indigo-600 !w-10 !h-10">
-          <i id="splash-icon-a" data-lucide="users" class="morph-icon morph-in stroke-[1.5]"></i>
-          <i id="splash-icon-b" data-lucide="users" class="morph-icon morph-out stroke-[1.5]"></i>
-        </div>
-      </div>
-
-      <!-- Updating Action Text (e.g., "Boarding bus...") -->
-      <div class="w-full flex justify-center">
-        <p id="splash-micro-text"
-          class="text-[9px] font-bold text-slate-400 tracking-[0.25em] uppercase text-center text-fade"></p>
-      </div>
-
+    <!-- Final brand reveal -->
+    <div id="brand" class="brand">
+      <div class="brand-name">BHARAT WAY</div>
+      <div class="tagline">One Bharat. Endless Journeys.</div>
     </div>
   </div>
 
@@ -2028,103 +2092,7 @@
     let cachedMembersList = []; 
     
     // Splash screen configuration data
-    const journeySequence = [
-      { text: "Assembling the squad...", icon: "users" },
-      { text: "Packing gear...", icon: "backpack" },
-      { text: "Taking the train...", icon: "train-front" },
-      { text: "Boarding the bus...", icon: "bus-front" },
-      { text: "Taking a taxi...", icon: "car-taxi-front" },
-      { text: "Mapping routes...", icon: "map-pinned" },
-      { text: "Reached the Destination", icon: "mountain-snow" }
-    ];
-
-    // Splash animation tracking variables
-    let splashStep = 0;
-    let useIconA = true;
-    let splashSequenceInterval = null;
-    let isSplashFinished = false; 
-    let pendingSplashHide = false; 
-
-    // Initializes the circular compass splash animation loop
-    function runSplashSequence() {
-      splashStep = 0;
-      isSplashFinished = false;
-      pendingSplashHide = false;
-      useIconA = true;
-      
-      // Resets the circular path fill
-      const progressRing = document.getElementById('splash-progress-ring');
-      if (progressRing) {
-        progressRing.style.strokeDashoffset = '289'; // 289 is roughly the circumference
-      }
-
-      if(splashSequenceInterval) clearInterval(splashSequenceInterval);
-      
-      doSplashStep(); 
-      splashSequenceInterval = setInterval(doSplashStep, 300); // Progresses frame every 300ms
-    }
-
-    // Handles the actual frame transition in the splash screen
-    function doSplashStep() {
-      if (splashStep >= journeySequence.length) {
-        clearInterval(splashSequenceInterval);
-        isSplashFinished = true;
-        // If data loaded before animation finished, hide it now
-        if (pendingSplashHide) hideSplashScreenNow(); 
-        return;
-      }
-
-      const iconA = document.getElementById('splash-icon-a');
-      const iconB = document.getElementById('splash-icon-b');
-      const textEl = document.getElementById('splash-micro-text');
-      const progressRing = document.getElementById('splash-progress-ring');
-      const currentStepData = journeySequence[splashStep];
-
-      // Quick text dip/replace animation
-      textEl.classList.add('text-hidden');
-      setTimeout(() => {
-        textEl.innerText = currentStepData.text;
-        textEl.classList.remove('text-hidden');
-      }, 80);
-
-      // Icon Morphing logic (swaps between two element layers)
-      const activeIcon = useIconA ? iconB : iconA;
-      const fadingIcon = useIconA ? iconA : iconB;
-      
-      activeIcon.setAttribute('data-lucide', currentStepData.icon);
-      lucide.createIcons({ root: document.getElementById('splash-icon-container') });
-      
-      fadingIcon.classList.replace('morph-in', 'morph-out');
-      activeIcon.classList.replace('morph-out', 'morph-in');
-      
-      useIconA = !useIconA;
-
-      // Moves the circle stroke forward
-      if (progressRing) {
-        const progressPct = (splashStep + 1) / journeySequence.length;
-        const offset = 289 - (289 * progressPct);
-        progressRing.style.strokeDashoffset = offset;
-      }
-      
-      splashStep++;
-    }
-
-    // Controls hiding splash only when animation finishes completely
-    function attemptSplashHide() {
-      if (isSplashFinished) {
-        hideSplashScreenNow();
-      } else {
-        pendingSplashHide = true;
-      }
-    }
-
-    function hideSplashScreenNow() {
-      const splash = document.getElementById('app-splash-screen');
-      if (splash) {
-        splash.classList.add('opacity-0');
-        setTimeout(() => splash.classList.add('hidden'), 500); // Wait for transition
-      }
-    }
+    const journeySequenc
 
     // Carousel and App State Timers
     // Carousel and App State Timers
@@ -3827,7 +3795,6 @@ const places = payload.places.filter(p => p.tripDay || p.location);
             const splash = document.getElementById('app-splash-screen');
             if (splash) {
               splash.classList.remove('hidden', 'opacity-0');
-              document.getElementById('splash-micro-text').innerText = "Decrypting squad ledger...";
             }
 
             fetchInitialData();
