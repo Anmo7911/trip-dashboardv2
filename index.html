@@ -5020,6 +5020,10 @@ function showCustomSplash() {
 
   const splash = document.getElementById('custom-splash-screen');
   const iframe = document.getElementById('loader-iframe');
+  
+  // Retrieve the logged-in user's name (or get first name only)
+  const loggedUser = localStorage.getItem('trekLoggedInUser') || '';
+  const firstName = loggedUser.trim().split(' ')[0]; // Uses first name for cleaner look
 
   if (splash) {
     splash.classList.remove('hidden');
@@ -5028,12 +5032,11 @@ function showCustomSplash() {
     splash.style.pointerEvents = 'auto';
   }
 
-  // Reload iframe so the multi-language greeting restarts from frame 1
+  // Pass name into query string
   if (iframe) {
-    iframe.src = '/loader.html';
+    iframe.src = `/loader.html?name=${encodeURIComponent(firstName)}`;
   }
 
-  // Failsafe timeout in case of network stall
   setTimeout(() => {
     hideCustomSplash();
   }, 4500);
