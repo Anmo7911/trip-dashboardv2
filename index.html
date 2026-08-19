@@ -3651,18 +3651,10 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         .then((result) => {
           if (result.success) {
             localStorage.setItem('trekLoggedInUser', result.name);
-            localStorage.setItem('trekLoggedInPIN', typedPin);
-            document.getElementById('login-overlay').classList.add('hidden');
+localStorage.setItem('trekLoggedInPIN', typedPin);
+document.getElementById('login-overlay').classList.add('hidden');
 
-            const splash = document.getElementById('app-splash-screen');
-            if (splash) {
-              splash.classList.remove('hidden', 'opacity-0');
-              document.getElementById('splash-micro-text').innerText = "Decrypting squad ledger...";
-            }
-
-            fetchInitialData();
-            document.getElementById('app-splash-screen').classList.remove('hidden', 'opacity-0');
-            runSplashSequence();
+fetchInitialData();
           } else {
             btn.innerText = "Unlock App";
             triggerLoginError();
