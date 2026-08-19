@@ -37,6 +37,40 @@
 
   <style>
 
+    /* =========================================
+       FEATHERED CIRCLE IRIS REVEAL ENGINE
+       ========================================= */
+    .iris-reveal-exit {
+      pointer-events: none !important;
+      animation: irisCircleWipe 0.85s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+    }
+
+    @keyframes irisCircleWipe {
+      0% {
+        -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 0%, black 0%);
+        mask-image: radial-gradient(circle at 50% 50%, transparent 0%, black 0%);
+        opacity: 1;
+      }
+      20% {
+        -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 12%, black 28%);
+        mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 12%, black 28%);
+      }
+      45% {
+        -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 35%, black 58%);
+        mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 35%, black 58%);
+      }
+      70% {
+        -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 65%, black 95%);
+        mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 65%, black 95%);
+      }
+      100% {
+        -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 120%, black 160%);
+        mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 120%, black 160%);
+        opacity: 0;
+      }
+    }
+    
+
     /* Ensures auto-scrolling always stops cleanly below the sticky header */
     .tracker-node {
       scroll-margin-top: 220px; /* Mobile header offset */
@@ -5021,18 +5055,17 @@ function showCustomSplash() {
   const splash = document.getElementById('custom-splash-screen');
   const iframe = document.getElementById('loader-iframe');
   
-  // Retrieve the logged-in user's name (or get first name only)
   const loggedUser = localStorage.getItem('trekLoggedInUser') || '';
-  const firstName = loggedUser.trim().split(' ')[0]; // Uses first name for cleaner look
+  const firstName = loggedUser.trim().split(' ')[0];
 
   if (splash) {
-    splash.classList.remove('hidden');
+    splash.classList.remove('hidden', 'iris-reveal-exit');
     splash.style.opacity = '1';
-    splash.style.transform = 'scale(1)';
+    splash.style.webkitMaskImage = '';
+    splash.style.maskImage = '';
     splash.style.pointerEvents = 'auto';
   }
 
-  // Pass name into query string
   if (iframe) {
     iframe.src = `/loader.html?name=${encodeURIComponent(firstName)}`;
   }
@@ -5047,14 +5080,15 @@ function showCustomSplash() {
 // 1. Hide Helper
 function hideCustomSplash() {
   const splash = document.getElementById('custom-splash-screen');
-  if (splash) {
-    splash.style.opacity = '0';
-    splash.style.transform = 'scale(1.04)';
-    splash.style.pointerEvents = 'none';
+  if (splash && !splash.classList.contains('hidden')) {
+    // Triggers the feathered circular expansion
+    splash.classList.add('iris-reveal-exit');
 
+    // Cleanly hide after the 850ms wipe finishes
     setTimeout(() => {
       splash.classList.add('hidden');
-    }, 700);
+      splash.classList.remove('iris-reveal-exit');
+    }, 850);
   }
 }
 
