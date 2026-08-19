@@ -24,11 +24,13 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
 
-  <!-- Import Bebas Neue, Teko (multi-language/Hindi support), and Inter -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Teko:wght@600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
+  
+<!-- Import Ultra-Bold Display Fonts (Anton, Bebas Neue, Teko) and Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Teko:wght@700&family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+  
+  
   <!-- Define a Web App Manifest inline using a Data URI to allow the app to be installed (PWA) -->
   <link rel="manifest"
     href="data:application/json;charset=utf-8,%7B%22name%22%3A%22Squad%20Goals%22%2C%22short_name%22%3A%22Squad%20Goals%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f8fafc%22%2C%22theme_color%22%3A%22%234f46e5%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fblogger.googleusercontent.com%2Fimg%2Fb%2FR29vZ2xl%2FAVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-%2Fs1254%2FIMG_6004.PNG%22%2C%22sizes%22%3A%221254x1254%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
@@ -41,19 +43,23 @@
   <style>
 
 
-    /* Title Display Typography Engine */
-.expedition-title-font {
-  font-family: 'Bebas Neue', 'Teko', sans-serif;
-  letter-spacing: 0.04em;
-  line-height: 0.88;
-}
+ /* Ultra-Bold Title Display Engine */
+    .expedition-title-font {
+      font-family: 'Anton', 'Bebas Neue', 'Teko', sans-serif;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      line-height: 0.92;
+      color: #0f172a; /* Deep Charcoal/Black */
+      text-transform: uppercase;
+    }
 
-.title-accent-gradient {
-  color: #6366f1;
-  background: linear-gradient(180deg, #818cf8 0%, #6366f1 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+    .title-accent-gradient {
+      display: inline-block;
+      background: linear-gradient(180deg, #818cf8 0%, #6366f1 50%, #4f46e5 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.25));
+    }
 
     
 
@@ -2949,21 +2955,24 @@ if (!currentUser) {
 
         // Sizing & Multi-line Configuration
         // Sizing & Multi-line Configuration
+        // Sizing & Typography Configuration
         if (h1Title1 && h1Title2) {
-          h1Title1.className = "expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none";
-          h1Title2.className = "expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none";
-          h1Title1.style.color = data.styles.titleColor || '#0f172a';
-          h1Title2.style.color = data.styles.subtitleColor || '#0f172a';
+          h1Title1.className = "expedition-title-font text-[44px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none tracking-wide";
+          h1Title2.className = "expedition-title-font text-[44px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none tracking-wide";
+          
+          // Clear any conflicting inline styles
+          h1Title1.style.color = "";
+          h1Title2.style.color = "";
         }
 
         // Line Rotation Rules Interceptor
         if (data.styles.rotationLines === 'single') {
           if (titleFlipper) titleFlipper.classList.remove('headline-rotated');
-          if (window.headlineLoopTimer) {
-            clearInterval(window.headlineLoopTimer);
-            window.headlineLoopTimer = null;
+          if (headlineLoopTimer) {
+            clearInterval(headlineLoopTimer);
+            headlineLoopTimer = null;
           }
-          if (h1Title1) h1Title1.innerText = data.tripName;
+          if (h1Title1) h1Title1.innerHTML = formatTitleWithGradient(data.tripName);
         }
       }
       
@@ -5346,14 +5355,27 @@ function getEtaAtaStatusHtml(etaStr, ataStr) {
 
 
     function formatTitleWithGradient(text) {
-  if (!text) return "";
-  const words = text.trim().split(/\s+/);
-  if (words.length === 1) {
-    return `<span class="title-accent-gradient">${words[0]}</span>`;
-  }
-  const lastWord = words.pop();
-  return `${words.join(' ')}<br><span class="title-accent-gradient">${lastWord}</span>`;
-}
+      if (!text) return "";
+      const trimmed = text.trim();
+      
+      // If text contains a manual newline
+      if (trimmed.includes('\n')) {
+        const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
+        if (lines.length > 1) {
+          const firstPart = lines.slice(0, -1).join(' ');
+          const lastPart = lines[lines.length - 1];
+          return `${firstPart}<br><span class="title-accent-gradient">${lastPart}</span>`;
+        }
+      }
+
+      // Default split by words
+      const words = trimmed.split(/\s+/);
+      if (words.length === 1) {
+        return `<span class="title-accent-gradient">${words[0]}</span>`;
+      }
+      const lastWord = words.pop();
+      return `${words.join(' ')}<br><span class="title-accent-gradient">${lastWord}</span>`;
+    }
 
     
 
