@@ -1713,37 +1713,68 @@
        ========================================= -->
   <main id="view-archives" class="tab-content w-full max-w-md lg:max-w-5xl mx-auto pt-4 px-4 lg:p-8 space-y-6">
 
-    <!-- Top Card Header with Floating Cut Icon on Right -->
-    <div class="bg-white rounded-[28px] lg:rounded-[32px] p-6 lg:p-8 border border-slate-200/80 shadow-sm space-y-5 relative">
-      
-      <!-- Floating Cut/Close Button (Top-Right) -->
-      <button type="button" onclick="showTab('spend', document.querySelector('.nav-btn'))" class="absolute top-5 right-5 sm:top-6 sm:right-6 w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center active:scale-90 transition-all outline-none border border-slate-200 z-10" title="Close">
-        <i data-lucide="x" class="w-4 h-4 stroke-[2.5]"></i>
-      </button>
+    <!-- 1. ARCHIVES LIST VIEW -->
+    <div id="archives-list-view" class="space-y-6">
+      <div class="bg-white rounded-[28px] lg:rounded-[32px] p-6 lg:p-8 border border-slate-200/80 shadow-sm space-y-5 relative">
+        
+        <!-- Close Button -->
+        <button type="button" onclick="showTab('spend', document.querySelector('.nav-btn'))" class="absolute top-5 right-5 sm:top-6 sm:right-6 w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center active:scale-90 transition-all outline-none border border-slate-200 z-10" title="Close">
+          <i data-lucide="x" class="w-4 h-4 stroke-[2.5]"></i>
+        </button>
 
-      <div class="flex items-center justify-between border-b border-slate-100 pb-5 pr-10">
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shadow-inner shrink-0">
-            <i data-lucide="archive" class="w-6 h-6 stroke-[2.5]"></i>
-          </div>
-          <div>
-            <h2 class="text-xl lg:text-2xl font-black text-slate-800 tracking-tight uppercase">Past Trips Archive</h2>
-            <p class="text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-0.5">Historical Reports & Media Folders</p>
+        <div class="flex items-center justify-between border-b border-slate-100 pb-5 pr-10">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shadow-inner shrink-0">
+              <i data-lucide="archive" class="w-6 h-6 stroke-[2.5]"></i>
+            </div>
+            <div>
+              <h2 class="text-xl lg:text-2xl font-black text-slate-800 tracking-tight uppercase">Past Trips Archive</h2>
+              <p class="text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-0.5">Historical Reports & Media Folders</p>
+            </div>
           </div>
         </div>
+
+        <!-- Quick Search Bar -->
+        <div class="relative w-full">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input type="text" id="archive-page-search-input" oninput="filterArchivesPage(this.value)" placeholder="Search trips by name or date..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3 text-xs lg:text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
+        </div>
+
       </div>
 
-      <!-- Quick Search Bar -->
-      <div class="relative w-full">
-        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-        <input type="text" id="archive-page-search-input" oninput="filterArchivesPage(this.value)" placeholder="Search trips by name or date..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3 text-xs lg:text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
-      </div>
-
+      <!-- Grid for Past Trips -->
+      <div id="archives-page-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 pb-12"></div>
     </div>
 
-    <!-- Responsive Grid for Past Trips -->
-    <div id="archives-page-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 pb-12">
-      <!-- Dynamic Archive Cards Rendered by JS -->
+    <!-- 2. INLINE ARCHIVE GALLERY PAGE VIEW -->
+    <div id="archives-gallery-view" class="hidden bg-white rounded-[28px] lg:rounded-[32px] p-6 lg:p-8 border border-slate-200/80 shadow-sm space-y-5 relative flex-col pb-12">
+      
+      <div class="flex items-center justify-between border-b border-slate-100 pb-5">
+        <div class="flex items-center gap-3">
+          <button type="button" onclick="closeArchiveGalleryPage()" class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all active:scale-95 border border-slate-200 shrink-0" title="Back to Trips">
+            <i data-lucide="arrow-left" class="w-5 h-5 stroke-[2.5]"></i>
+          </button>
+          <div>
+            <h2 id="archive-gallery-title" class="text-base lg:text-2xl font-black text-slate-800 tracking-tight uppercase truncate">Trip Gallery</h2>
+            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mt-0.5">Google Drive Media Vault</p>
+          </div>
+        </div>
+
+        <a id="archive-gallery-ext-link" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 shadow-sm active:scale-95 shrink-0">
+          <i data-lucide="external-link" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">Open in Drive</span>
+        </a>
+      </div>
+
+      <div class="w-full h-[72vh] bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 relative">
+        <iframe 
+          id="archive-gallery-iframe"
+          src="" 
+          class="w-full h-full border-0" 
+          allow="autoplay">
+        </iframe>
+      </div>
+
     </div>
 
   </main>
@@ -2131,6 +2162,9 @@
     // --- TAB SWITCHING MANAGER ---
     // Controls toggling between Spend, Squad, Places, Archives, About, and Gallery views
     function showTab(tabId, el) { 
+      if (tabId !== 'archives') {
+        closeArchiveGalleryPage();
+      }
       // Hide header completely on Archives, About, and Gallery tabs; show on all other tabs
       const header = document.getElementById('app-header');
       if (header) {
@@ -4503,6 +4537,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         const hasGallery = trip.galleryUrl && trip.galleryUrl.trim() !== "" && trip.galleryUrl !== "#";
         const spentText = trip.totalSpent ? `₹${Math.round(trip.totalSpent).toLocaleString('en-IN')}` : '';
         const tripCodeText = trip.tripCode ? `<span class="bg-indigo-50 text-indigo-700 border border-indigo-100 text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider">${trip.tripCode}</span>` : '';
+        const safeName = (trip.name || 'Trip').replace(/'/g, "\\'");
 
         return `
           <div class="bg-white p-5 lg:p-6 rounded-[24px] border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-4">
@@ -4527,13 +4562,53 @@ const places = payload.places.filter(p => p.tripDay || p.location);
                 </span>`}
 
               ${hasGallery ? `
-                <button type="button" onclick="openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all">
+                <button type="button" onclick="openArchiveGalleryPage('${safeName}', '${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all">
                   <i data-lucide="camera" class="w-4 h-4"></i> Gallery
                 </button>` : ''}
             </div>
           </div>`;
       }).join('');
       
+      lucide.createIcons();
+    }
+
+    function openArchiveGalleryPage(tripName, galleryUrl) {
+      const listView = document.getElementById('archives-list-view');
+      const galleryView = document.getElementById('archives-gallery-view');
+      const iframe = document.getElementById('archive-gallery-iframe');
+      const title = document.getElementById('archive-gallery-title');
+      const extLink = document.getElementById('archive-gallery-ext-link');
+
+      if (!galleryUrl || !galleryView || !listView) return;
+
+      let embedUrl = galleryUrl;
+      const folderMatch = galleryUrl.match(/folders\/([a-zA-Z0-9_-]+)/);
+      if (folderMatch) {
+        embedUrl = `https://drive.google.com/embeddedfolderview?id=${folderMatch[1]}#grid`;
+      }
+
+      if (title) title.innerText = `${tripName} Gallery`;
+      if (iframe) iframe.src = embedUrl;
+      if (extLink) extLink.href = galleryUrl;
+
+      listView.classList.add('hidden');
+      galleryView.classList.remove('hidden');
+      galleryView.classList.add('flex');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      lucide.createIcons();
+    }
+
+    function closeArchiveGalleryPage() {
+      const listView = document.getElementById('archives-list-view');
+      const galleryView = document.getElementById('archives-gallery-view');
+      const iframe = document.getElementById('archive-gallery-iframe');
+
+      if (iframe) iframe.src = "";
+      if (galleryView) {
+        galleryView.classList.add('hidden');
+        galleryView.classList.remove('flex');
+      }
+      if (listView) listView.classList.remove('hidden');
       lucide.createIcons();
     }
 
