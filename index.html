@@ -544,51 +544,42 @@
     }
 
     /* 3D Scene setup for Header Text Carousel */
-    /* 3D Scene setup for Header Text Carousel */
-.headline-scene {
-  perspective: 1000px;
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
+    .headline-scene {
+      perspective: 600px;
+      width: 100%;
+      height: 28px;
+    }
 
-.headline-flipper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  -webkit-transform-style: preserve-3d;
-  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
+    .headline-flipper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-.headline-rotated {
-  transform: rotateX(-180deg);
-}
+    .headline-rotated {
+      transform: rotateX(-180deg);
+    }
 
-.headline-front,
+   .headline-front,
 .headline-back {
   position: absolute;
   width: 100%;
   height: 100%;
-  top: 0;
-  left: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+  left: 0;
+  top: 0;
 }
 
-.headline-front {
-  transform: rotateX(0deg);
-  z-index: 2;
-}
-
-.headline-back {
-  transform: rotateX(180deg);
-  z-index: 1;
-}
+    .headline-back {
+      transform: rotateX(180deg);
+    }
 
     /* Staggered entry animations for squad members */
     @keyframes waveSlideDown {
@@ -1261,22 +1252,23 @@
 
       
     <!-- Dynamic Trip Title -->
-<div id="ui-header-title-container" class="flex flex-col items-center justify-center mt-1 sm:mt-2 relative w-full">
-  <div id="ui-title-alignment-box" class="headline-scene min-h-[70px] sm:min-h-[85px] w-full flex items-center justify-center px-2">
-    <div id="ui-headline-flipper" class="headline-flipper w-full h-full">
-      <div class="headline-front flex items-center justify-center w-full h-full">
-        <h1 id="ui-title-1" class="expedition-title-font text-[38px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
-          VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
-        </h1>
+      <!-- Dynamic Trip Title -->
+      <div id="ui-header-title-container" class="flex flex-col items-center justify-center mt-1 sm:mt-2 relative">
+        <div id="ui-title-alignment-box" class="headline-scene h-14 w-full flex items-center justify-center px-2">
+          <div id="ui-headline-flipper" class="headline-flipper w-full h-full">
+            <div class="headline-front flex items-center justify-center w-full h-full">
+              <h1 id="ui-title-1" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
+                VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
+              </h1>
+            </div>
+            <div class="headline-back flex items-center justify-center w-full h-full">
+              <h1 id="ui-title-2" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
+                VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
+              </h1>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="headline-back flex items-center justify-center w-full h-full">
-        <h1 id="ui-title-2" class="expedition-title-font text-[38px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
-          VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
-        </h1>
-      </div>
-    </div>
-  </div>
-</div>
       
       <!-- Frosted Notice & Warning Bar (Anchored at exact original position) -->
      <!-- Moved slightly downward using bottom-9 -->
@@ -2422,38 +2414,41 @@
     }
 
     // 3D flips the title text in the navbar every 8 seconds
-   function runHeadlineCarousel(t1, t2) {
-  titleText1 = t1 || ""; 
-  titleText2 = t2 || "";
+    function runHeadlineCarousel(t1, t2) {
+  titleText1 = t1; 
+  titleText2 = t2;
   
   const el1 = document.getElementById('ui-title-1');
   const el2 = document.getElementById('ui-title-2');
-  const flipper = document.getElementById('ui-headline-flipper');
   
   if (el1) el1.innerHTML = formatTitleWithGradient(titleText1);
   if (el2) el2.innerHTML = formatTitleWithGradient(titleText2 || titleText1);
   
+  const flipper = document.getElementById('ui-headline-flipper');
+  if (!flipper) return;
+
+  // Clear existing timer before creating a new one
   if (headlineLoopTimer) {
     clearInterval(headlineLoopTimer);
     headlineLoopTimer = null;
   }
   
-  currentTitleState = 0;
-  if (flipper) flipper.classList.remove('headline-rotated');
-  
-  // Rotate only when a valid, distinct secondary title exists
-  if (titleText2 && titleText2.trim() !== "" && titleText2.trim() !== titleText1.trim()) {
-    headlineLoopTimer = setInterval(() => {
-      currentTitleState = currentTitleState === 0 ? 1 : 0;
-      if (flipper) { 
-        if (currentTitleState === 1) {
-          flipper.classList.add('headline-rotated'); 
-        } else {
-          flipper.classList.remove('headline-rotated'); 
-        }
-      }
-    }, 6000); // Rotates every 6 seconds
+  // If secondary title is absent or identical, reset to front face
+  if (!t2 || t2.trim() === "" || t2.trim() === t1.trim()) {
+    flipper.classList.remove('headline-rotated');
+    currentTitleState = 0;
+    return;
   }
+
+  // Infinite flip loop every 4 seconds
+  headlineLoopTimer = setInterval(() => {
+    currentTitleState = currentTitleState === 0 ? 1 : 0;
+    if (currentTitleState === 1) {
+      flipper.classList.add('headline-rotated');
+    } else {
+      flipper.classList.remove('headline-rotated');
+    }
+  }, 6000);
 }
 
     // API call handler for marking miscellaneous "places" as Visited/Pending
@@ -2980,16 +2975,10 @@ if (!currentUser) {
           h1Title2.style.color = "";
         }
 
-        // Line Rotation Rules Interceptor
-        if (data.styles.rotationLines === 'single') {
-          if (titleFlipper) titleFlipper.classList.remove('headline-rotated');
-          if (headlineLoopTimer) {
-            clearInterval(headlineLoopTimer);
-            headlineLoopTimer = null;
-          }
-          if (h1Title1) h1Title1.innerHTML = formatTitleWithGradient(data.tripName);
-        }
-      }
+       // Update the carousel invocation near the bottom of renderApp():
+if (!headlineLoopTimer || titleText1 !== data.tripName || titleText2 !== data.secondaryTitle) {
+  runHeadlineCarousel(data.tripName, data.secondaryTitle);
+}
       
       // 2. Check the global trip live status
       const lockScreen = document.getElementById('live-lock-screen');
