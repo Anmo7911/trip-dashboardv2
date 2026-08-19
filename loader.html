@@ -992,7 +992,12 @@
         ==============================================
       */
 
-      splash.remove();
+splash.remove();
+
+      /* Notify the main app that loader animation has completed */
+      if (window.parent) {
+        window.parent.postMessage('ANIMATION_COMPLETE', '*');
+      }
 
     }
 
