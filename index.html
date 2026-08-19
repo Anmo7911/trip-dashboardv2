@@ -3655,14 +3655,17 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       
       // Send to the Vercel API to evaluate against the Supabase member PIN DB
       apiRequest('login', { name: selectedName, pin: typedPin })
-        .then((result) => {
-          if (result.success) {
-            localStorage.setItem('trekLoggedInUser', result.name);
-localStorage.setItem('trekLoggedInPIN', typedPin);
-document.getElementById('login-overlay').classList.add('hidden');
+  .then((result) => {
+    if (result.success) {
+      localStorage.setItem('trekLoggedInUser', result.name);
+      localStorage.setItem('trekLoggedInPIN', typedPin);
+      document.getElementById('login-overlay').classList.add('hidden');
 
-fetchInitialData();
-          } else {
+      // 👉 Trigger the splash loader animation
+      showCustomSplash();
+
+      fetchInitialData();
+    } else {
             btn.innerText = "Unlock App";
             triggerLoginError();
           }
@@ -5008,6 +5011,35 @@ fetchInitialData();
 
     let isSplashFinished = false;
 let pendingSplashHide = false;
+
+
+    // Function to show and restart the splash animation
+function showCustomSplash() {
+  isSplashFinished = false;
+  pendingSplashHide = false;
+
+  const splash = document.getElementById('custom-splash-screen');
+  const iframe = document.getElementById('loader-iframe');
+
+  if (splash) {
+    splash.classList.remove('hidden');
+    splash.style.opacity = '1';
+    splash.style.transform = 'scale(1)';
+    splash.style.pointerEvents = 'auto';
+  }
+
+  // Reload iframe so the multi-language greeting restarts from frame 1
+  if (iframe) {
+    iframe.src = '/loader.html';
+  }
+
+  // Failsafe timeout in case of network stall
+  setTimeout(() => {
+    hideCustomSplash();
+  }, 4500);
+}
+
+    
 
 // 1. Hide Helper
 function hideCustomSplash() {
