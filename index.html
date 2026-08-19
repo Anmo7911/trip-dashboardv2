@@ -966,9 +966,9 @@
   </div>
 
 
-    <!-- STANDALONE SPLASH ANIMATION OVERLAY -->
-<div id="custom-splash-screen" class="fixed inset-0 z-[9999] bg-white transition-opacity duration-500 ease-out flex items-center justify-center">
-  <iframe src="/loader.html" class="w-full h-full border-0 pointer-events-none" id="loader-iframe"></iframe>
+   <!-- STANDALONE SPLASH ANIMATION OVERLAY -->
+<div id="custom-splash-screen" class="fixed inset-0 z-[9999] bg-[#25262B] transition-all duration-700 ease-in-out flex items-center justify-center pointer-events-auto">
+  <iframe src="/loader.html" class="w-full h-full border-0" id="loader-iframe"></iframe>
 </div>
 
   <!-- =========================================
@@ -5014,10 +5014,15 @@ let pendingSplashHide = false;
 function hideCustomSplash() {
   const splash = document.getElementById('custom-splash-screen');
   if (splash) {
-    splash.classList.add('opacity-0');
+    // Smooth fade out + subtle zoom out
+    splash.style.opacity = '0';
+    splash.style.transform = 'scale(1.04)';
+    splash.style.pointerEvents = 'none';
+
+    // Remove from layout once the 700ms transition finishes
     setTimeout(() => {
       splash.classList.add('hidden');
-    }, 500);
+    }, 700);
   }
 }
 
