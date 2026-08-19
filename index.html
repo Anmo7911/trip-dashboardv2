@@ -2230,17 +2230,16 @@
             }, 900);
             
           } else {
+            // Find the most recently stamped node with an ATA
             let activeNode = null;
             for (let i = 0; i < nodes.length; i++) {
-              if (nodes[i].getAttribute('data-ata')) {
+              const ataVal = nodes[i].getAttribute('data-ata');
+              if (ataVal && ataVal.trim() !== '') {
                 activeNode = nodes[i];
               }
             }
 
-            if (!activeNode && nodes.length > 0) {
-              activeNode = nodes.find(n => n.getAttribute('data-cancelled') !== 'true');
-            }
-
+            // Only auto-scroll if at least one stamp (ATA) exists
             if (activeNode) {
               activeNode.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
