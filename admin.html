@@ -156,16 +156,7 @@
             <input type="text" id="setTripSub" onchange="saveSetting(2, 'c', this.value, 'Subtitle updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-            <div>
-              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Title Color (Hex)</label>
-              <input type="text" id="setTitleColor" placeholder="#064e3b" onchange="saveSetting(2, 'd', this.value, 'Primary title color saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
-            </div>
-            <div>
-              <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Subtitle Color (Hex)</label>
-              <input type="text" id="setSubColor" placeholder="#047857" onchange="saveSetting(2, 'e', this.value, 'Subtitle color saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
-            </div>
-          </div>
+          
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
             <div>
@@ -976,9 +967,8 @@
       document.getElementById('setSecurityStatus').value = d.securityStatus || 'normal';
       
       // Load custom typography pack values safely from nested style response payload
+      // Load custom typography pack values safely from nested style response payload
       if (d.styles) {
-        document.getElementById('setTitleColor').value = d.styles.titleColor || '';
-        document.getElementById('setSubColor').value = d.styles.subtitleColor || '';
         document.getElementById('setTitleSize').value = d.styles.titleFontSize || 'xl';
         document.getElementById('setTitlePos').value = d.styles.titlePosition || 'justify-center';
         document.getElementById('setRotationLines').value = d.styles.rotationLines || 'dual';
