@@ -74,18 +74,12 @@
 
     /* Ensures auto-scrolling always stops cleanly below the sticky header */
     .tracker-node {
-      scroll-margin-top: 240px; /* Mobile header & notice bar clearance */
-    }
-
-    @media (min-width: 640px) {
-      .tracker-node {
-        scroll-margin-top: 255px; /* Tablet clearance */
-      }
+      scroll-margin-top: 220px; /* Mobile header offset */
     }
 
     @media (min-width: 1024px) {
       .tracker-node {
-        scroll-margin-top: 250px; /* Desktop clearance */
+        scroll-margin-top: 240px; /* Desktop header offset */
       }
     }
 
@@ -2198,7 +2192,6 @@
       }
       
       // Contextual Logic: Restart timeline animations & auto-scroll in ROUTE tab
-      // Contextual Logic: Restart timeline animations in ROUTE tab (no auto-scroll on tab open)
       if (tabId === 'places') {
         const tLine = document.getElementById('ui-timeline-container');
         if (tLine) {
@@ -2219,6 +2212,7 @@
           const isTripFinished = lastNode && lastNode.getAttribute('data-ata');
 
           if (isTripFinished) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             if (window.popupDelayTimeout) clearTimeout(window.popupDelayTimeout);
             
             window.popupDelayTimeout = setTimeout(() => {
@@ -2234,6 +2228,22 @@
                 card.classList.add('scale-100', 'opacity-100');
               }
             }, 900);
+            
+          } else {
+            let activeNode = null;
+            for (let i = 0; i < nodes.length; i++) {
+              if (nodes[i].getAttribute('data-ata')) {
+                activeNode = nodes[i];
+              }
+            }
+
+            if (!activeNode && nodes.length > 0) {
+              activeNode = nodes.find(n => n.getAttribute('data-cancelled') !== 'true');
+            }
+
+            if (activeNode) {
+              activeNode.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
           }
         }, 200);
       }
@@ -3600,52 +3610,47 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     // ATA TAPPING / RECORDING LOGIC
     // ==========================================
     function recordLiveATA(rowId) {
-      const timeBlock = document.getElementById(`time-block-${rowId}`);
-      const node = document.querySelector(`.tracker-node[data-rowid="${rowId}"]`);
+  const timeBlock = document.getElementById(`time-block-${rowId}`);
+  const node = document.querySelector(`.tracker-node[data-rowid="${rowId}"]`);
 
-      // If already clicked, do nothing
-      if (!node || node.getAttribute('data-ata')) return;
+  // If already clicked, do nothing
+  if (!node || node.getAttribute('data-ata')) return;
 
-      // 1. Get current time in India timezone
-      const now = new Date();
-      const instantAta = new Intl.DateTimeFormat('en-GB', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-        timeZone: 'Asia/Kolkata'
-      }).format(now);
+  // 1. Get current time in India timezone
+  const now = new Date();
+  const instantAta = new Intl.DateTimeFormat('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'Asia/Kolkata'
+  }).format(now);
 
-      // 2. Show ATA immediately on the screen
-      if (timeBlock) {
-        timeBlock.innerHTML += `<p class="text-[11px] font-black text-indigo-600 mt-0.5 animate-blink-3">ATA ${instantAta}</p>`;
-      }
+  // 2. Show ATA immediately on the screen
+  if (timeBlock) {
+    timeBlock.innerHTML += `<p class="text-[11px] font-black text-indigo-600 mt-0.5 animate-blink-3">ATA ${instantAta}</p>`;
+  }
 
-      // 3. Turn the circle dot purple
-      const targetNode = document.getElementById(`timeline-dot-${rowId}`);
-      if (targetNode) {
-        targetNode.className = "absolute -left-[9px] top-1.5 w-4 h-4 bg-indigo-500 border-4 border-slate-50 rounded-full shadow-sm anim-node z-20";
-      }
+  // 3. Turn the circle dot purple
+  const targetNode = document.getElementById(`timeline-dot-${rowId}`);
+  if (targetNode) {
+    targetNode.className = "absolute -left-[9px] top-1.5 w-4 h-4 bg-indigo-500 border-4 border-slate-50 rounded-full shadow-sm anim-node z-20";
+  }
 
-      node.setAttribute('data-ata', instantAta);
+  node.setAttribute('data-ata', instantAta);
 
-      // 4. Smoothly scroll to the stamped stop
-      node.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // 4. Update the tracker line right away
+  updateLiveTimelineEngine();
 
-      // 5. Update the tracker line right away
-      updateLiveTimelineEngine();
-
-      // 6. Save to database
-      apiRequest('ata', { rowId })
-        .then((freshData) => {
-          globalActiveDataPayloadBackup = freshData;
-        })
-        .catch((error) => {
-          console.error(error);
-          showToast("Unable to stamp arrival time.");
-        });
-    }
-
-    
+  // 5. Save to database
+  apiRequest('ata', { rowId })
+    .then((freshData) => {
+      globalActiveDataPayloadBackup = freshData;
+    })
+    .catch((error) => {
+      console.error(error);
+      showToast("Unable to stamp arrival time.");
+    });
+}
     // ==========================================
     // LEDGER / LIST VIEW TOGGLE ENGINE
     // ==========================================
