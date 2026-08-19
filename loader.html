@@ -949,50 +949,27 @@
       );
 
 
-      /*
+     /*
         ==============================================
-        FINAL FADE
+        FINAL FADE & HANDOFF
         ==============================================
       */
+      await wait(BRAND_HOLD);
 
-      splash.animate(
+      // Signal parent index.html to start fading the overlay
+      if (window.parent) {
+        window.parent.postMessage('ANIMATION_COMPLETE', '*');
+      }
 
-        [
-          {
-            opacity: 1
-          },
-
-          {
-            opacity: 0
-          }
-
-        ],
-
-        {
-          duration:
-            FINAL_FADE,
-
-          easing:
-            "ease-out",
-
-          fill:
-            "forwards"
-        }
-      );
-
-
-      await wait(
-        FINAL_FADE
-      );
-
+      await wait(700); // Allow parent fade transition to complete
 
       /*
         ==============================================
         REMOVE SPLASH
         ==============================================
       */
-
-splash.remove();
+      splash.remove();
+    }
 
       /* Notify the main app that loader animation has completed */
       if (window.parent) {
