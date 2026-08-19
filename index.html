@@ -72,17 +72,16 @@
     }
     
 
-    /* Ensures auto-scrolling always stops cleanly below the sticky header */
+   /* Ensures auto-scrolling stops with comfortable breathing room below the header */
     .tracker-node {
-      scroll-margin-top: 220px; /* Mobile header offset */
+      scroll-margin-top: 260px; /* Mobile: scrolls less down, gives clear spacing */
     }
 
     @media (min-width: 1024px) {
       .tracker-node {
-        scroll-margin-top: 240px; /* Desktop header offset */
+        scroll-margin-top: 280px; /* Desktop: balanced offset */
       }
     }
-
     
     /* =========================================
        CUSTOM CSS & ANIMATIONS ENGINE
