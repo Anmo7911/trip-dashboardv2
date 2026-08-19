@@ -2003,12 +2003,10 @@
       }
     });
 
-    // Main App Initialization
     window.onload = () => { 
-      runSplashSequence(); 
-      fetchInitialData(); 
-      startPolling(); 
-    };
+  fetchInitialData(); 
+  startPolling(); 
+};
 
     // --- PULL TO REFRESH LOGIC ---
     let touchStartY = 0;
