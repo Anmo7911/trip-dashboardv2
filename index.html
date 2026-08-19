@@ -2085,18 +2085,103 @@
       return data;
     }
 
-    // Global State Management Objects
-    let globalAllocations = { limits: {}, spent: {} };
-    let globalLedgerDataBackup = [];
-    let currentLedgerFilter = "All";
-    let cachedMembersList = []; 
-    
-    // Splash screen configuration data
-    const journeySequenc
+    // =========================================
+    // MULTILINGUAL GREETINGS SPLASH ENGINE
+    // =========================================
+    const greetings = [
+      "नमस्ते",
+      "வணக்கம்",
+      "নমস্কার",
+      "నమస్కారం",
+      "سلام",
+      "ਨਮਸਕਾਰ",
+      "നമസ്കാരം"
+    ];
 
-    // Carousel and App State Timers
-    // Carousel and App State Timers
-    let carouselInterval = null;
+    let splashIndex = 0;
+    let isSplashFinished = false;
+    let pendingSplashHide = false;
+    let splashGreetingTimer = null;
+
+    function runSplashSequence() {
+      splashIndex = 0;
+      isSplashFinished = false;
+      pendingSplashHide = false;
+
+      const greetingEl = document.getElementById('greeting');
+      const greetingWin = document.getElementById('greeting-window');
+      const brandEl = document.getElementById('brand');
+      const splashEl = document.getElementById('app-splash-screen');
+
+      if (splashEl) {
+        splashEl.classList.remove('hidden', 'opacity-0');
+      }
+      if (greetingWin) greetingWin.classList.remove('hidden');
+      if (brandEl) {
+        brandEl.classList.remove('show');
+        brandEl.style.opacity = '0';
+      }
+      if (greetingEl) {
+        greetingEl.className = 'greeting';
+        greetingEl.innerText = greetings[0];
+      }
+
+      cycleNextGreeting();
+    }
+
+    function cycleNextGreeting() {
+      const greetingEl = document.getElementById('greeting');
+      const greetingWin = document.getElementById('greeting-window');
+      const brandEl = document.getElementById('brand');
+
+      if (!greetingEl) return;
+
+      splashGreetingTimer = setTimeout(() => {
+        greetingEl.classList.add('out');
+
+        setTimeout(() => {
+          splashIndex++;
+
+          if (splashIndex < greetings.length) {
+            greetingEl.innerText = greetings[splashIndex];
+            greetingEl.className = 'greeting in';
+
+            setTimeout(() => {
+              greetingEl.className = 'greeting';
+              cycleNextGreeting();
+            }, 220);
+          } else {
+            // All greetings finished -> Reveal Brand
+            if (greetingWin) greetingWin.classList.add('hidden');
+            if (brandEl) brandEl.classList.add('show');
+
+            setTimeout(() => {
+              isSplashFinished = true;
+              if (pendingSplashHide) {
+                hideSplashScreenNow();
+              }
+            }, 650);
+          }
+        }, 220);
+      }, 340);
+    }
+
+    function attemptSplashHide() {
+      if (isSplashFinished) {
+        hideSplashScreenNow();
+      } else {
+        pendingSplashHide = true;
+      }
+    }
+
+    function hideSplashScreenNow() {
+      const splash = document.getElementById('app-splash-screen');
+      if (splash) {
+        splash.classList.add('opacity-0');
+        setTimeout(() => splash.classList.add('hidden'), 500);
+      }
+    }
+    
     let currentSlide = 0;
     let activeNotices = [];
     let headlineLoopTimer = null;
