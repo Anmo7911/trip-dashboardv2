@@ -5090,22 +5090,6 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     // GOOGLE DRIVE GALLERY MODAL CONTROLLER (Dynamic URL Support)
     // ==========================================
     function openDriveGallery(customUrl) {
-      const isDesktop = window.innerWidth >= 1024;
-      
-      // On desktop, navigate directly to the dedicated full-page view
-      if (isDesktop) {
-        showTab('gallery', null);
-        if (customUrl) {
-          const iframe = document.getElementById('desktop-gallery-iframe');
-          const folderMatch = customUrl.match(/folders\/([a-zA-Z0-9_-]+)/);
-          if (iframe && folderMatch) {
-            iframe.src = `https://drive.google.com/embeddedfolderview?id=${folderMatch[1]}#grid`;
-          }
-        }
-        return;
-      }
-
-      // Mobile: Open popup modal preview
       const defaultUrl = "https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0";
       const rawUrl = customUrl || defaultUrl;
       const iframe = document.getElementById('drive-preview-iframe');
