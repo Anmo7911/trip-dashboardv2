@@ -23,8 +23,11 @@
   <!-- Include Lucide icons library for modern, scalable SVG icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Import Google Font 'Inter' for a clean, modern typography scheme -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Import Bebas Neue, Teko (multi-language/Hindi support), and Inter -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Teko:wght@600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
   <!-- Define a Web App Manifest inline using a Data URI to allow the app to be installed (PWA) -->
   <link rel="manifest"
@@ -36,6 +39,23 @@
   <meta name="theme-color" content="#4f46e5">
 
   <style>
+
+
+    /* Title Display Typography Engine */
+.expedition-title-font {
+  font-family: 'Bebas Neue', 'Teko', sans-serif;
+  letter-spacing: 0.04em;
+  line-height: 0.88;
+}
+
+.title-accent-gradient {
+  color: #6366f1;
+  background: linear-gradient(180deg, #818cf8 0%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+    
 
    /* =========================================
        FEATHERED CORNER IRIS REVEAL ENGINE
@@ -1226,13 +1246,17 @@
       
     <!-- Dynamic Trip Title -->
       <div id="ui-header-title-container" class="flex flex-col items-center justify-center mt-1 sm:mt-2 relative">
-        <div id="ui-title-alignment-box" class="headline-scene h-12 w-full flex items-center justify-center px-2">
+        <div id="ui-title-alignment-box" class="headline-scene h-14 w-full flex items-center justify-center px-2">
           <div id="ui-headline-flipper" class="headline-flipper w-full h-full">
             <div class="headline-front flex items-center justify-center w-full h-full">
-              <h1 id="ui-title-1" class="font-black text-emerald-950 text-lg sm:text-2xl lg:text-3xl tracking-wider uppercase drop-shadow-sm whitespace-pre-line text-center leading-tight">Loading...</h1>
+              <h1 id="ui-title-1" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
+                VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
+              </h1>
             </div>
             <div class="headline-back flex items-center justify-center w-full h-full">
-              <h1 id="ui-title-2" class="font-black text-emerald-950 text-lg sm:text-2xl lg:text-3xl tracking-wider uppercase drop-shadow-sm whitespace-pre-line text-center leading-tight">Valley of Flowers</h1>
+              <h1 id="ui-title-2" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
+                VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
+              </h1>
             </div>
           </div>
         </div>
@@ -2383,28 +2407,32 @@
 
     // 3D flips the title text in the navbar every 8 seconds
     function runHeadlineCarousel(t1, t2) {
-      titleText1 = t1; titleText2 = t2;
-      
-      const el1 = document.getElementById('ui-title-1');
-      const el2 = document.getElementById('ui-title-2');
-      
-      if (el1) el1.innerText = titleText1;
-      if (el2) el2.innerText = titleText2;
-      
-      if (headlineLoopTimer) clearInterval(headlineLoopTimer);
-      currentTitleState = 0;
-      
-      const flipper = document.getElementById('ui-headline-flipper');
-      if (flipper) flipper.classList.remove('headline-rotated');
-      
-      headlineLoopTimer = setInterval(() => {
-        currentTitleState = currentTitleState === 0 ? 1 : 0;
-        if (flipper) { 
-          if (currentTitleState === 1) flipper.classList.add('headline-rotated'); 
-          else flipper.classList.remove('headline-rotated'); 
-        }
-      }, 8000);
-    }
+  titleText1 = t1; 
+  titleText2 = t2;
+  
+  const el1 = document.getElementById('ui-title-1');
+  const el2 = document.getElementById('ui-title-2');
+  
+  if (el1) el1.innerHTML = formatTitleWithGradient(titleText1);
+  if (el2) el2.innerHTML = formatTitleWithGradient(titleText2 || titleText1);
+  
+  if (headlineLoopTimer) clearInterval(headlineLoopTimer);
+  currentTitleState = 0;
+  
+  const flipper = document.getElementById('ui-headline-flipper');
+  if (flipper) flipper.classList.remove('headline-rotated');
+  
+  // Only rotate if secondary title is provided and distinct
+  if (t2 && t2.trim() !== "" && t2 !== t1) {
+    headlineLoopTimer = setInterval(() => {
+      currentTitleState = currentTitleState === 0 ? 1 : 0;
+      if (flipper) { 
+        if (currentTitleState === 1) flipper.classList.add('headline-rotated'); 
+        else flipper.classList.remove('headline-rotated'); 
+      }
+    }, 8000);
+  }
+}
 
     // API call handler for marking miscellaneous "places" as Visited/Pending
     function triggerPlaceCheck(rowId, currentStatus) {
@@ -2921,8 +2949,9 @@ if (!currentUser) {
         // Sizing & Multi-line Configuration
         const textScaleClass = 'text-' + (data.styles.titleFontSize || 'xl');
         if (h1Title1 && h1Title2) {
-          h1Title1.className = `font-black tracking-wider uppercase drop-shadow-sm whitespace-pre-line text-center leading-none -mt-1 ${textScaleClass}`;
-          h1Title2.className = `font-black tracking-wider uppercase drop-shadow-sm whitespace-pre-line text-center leading-none -mt-1 ${textScaleClass}`;
+  h1Title1.className = "expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none";
+  h1Title2.className = "expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none";
+}
           
           h1Title1.style.color = data.styles.titleColor || '#064e3b';
           h1Title2.style.color = data.styles.subtitleColor || '#047857';
@@ -5313,6 +5342,18 @@ function getEtaAtaStatusHtml(etaStr, ataStr) {
       modal.classList.add('hidden');
     }, 400);
   }
+}
+
+
+
+    function formatTitleWithGradient(text) {
+  if (!text) return "";
+  const words = text.trim().split(/\s+/);
+  if (words.length === 1) {
+    return `<span class="title-accent-gradient">${words[0]}</span>`;
+  }
+  const lastWord = words.pop();
+  return `${words.join(' ')}<br><span class="title-accent-gradient">${lastWord}</span>`;
 }
 
     
