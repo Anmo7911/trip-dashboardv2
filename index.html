@@ -3269,14 +3269,17 @@ if (!currentUser) {
             let clickAction = "";
             
             // Determine active/cancelled/arrived state
-            if (isCancelled) {
+            iif (isCancelled) {
               timeBlock = `<p class="text-[11px] font-black italic text-red-500 mt-1">Cancelled</p>`;
               dotClass = "bg-slate-300"; 
               cardClass += " bg-red-50 border-red-200 opacity-60"; 
               titleClass += " text-red-800 line-through decoration-red-400"; 
             } else {
               if (p.eta) timeBlock += `<p class="text-[9px] font-bold text-slate-400">ETA ${p.eta}</p>`;
-              if (p.ata) timeBlock += `<p class="text-[11px] font-black text-indigo-600 mt-0.5">ATA ${p.ata}</p>`;
+              if (p.ata) {
+                timeBlock += `<p class="text-[11px] font-black text-indigo-600 mt-0.5">ATA ${p.ata}</p>`;
+                timeBlock += getEtaAtaStatusHtml(p.eta, p.ata);
+              }
               cardClass += " bg-white border-slate-200 active:scale-95 cursor-pointer hover:border-indigo-200";
               titleClass += " text-slate-800";
               clickAction = `onclick="recordLiveATA(${p.rowId})"`; // Register tap
@@ -3624,8 +3627,12 @@ const places = payload.places.filter(p => p.tripDay || p.location);
   }).format(now);
 
   // 2. Show ATA immediately on the screen
+  // 2. Show ATA and Delay/Early status immediately on the screen
+  const etaVal = node.getAttribute('data-eta');
+  const statusHtml = getEtaAtaStatusHtml(etaVal, instantAta);
+
   if (timeBlock) {
-    timeBlock.innerHTML += `<p class="text-[11px] font-black text-indigo-600 mt-0.5 animate-blink-3">ATA ${instantAta}</p>`;
+    timeBlock.innerHTML += `<p class="text-[11px] font-black text-indigo-600 mt-0.5 animate-blink-3">ATA ${instantAta}</p>${statusHtml}`;
   }
 
   // 3. Turn the circle dot purple
@@ -5247,6 +5254,46 @@ window.addEventListener('message', (event) => {
 setTimeout(() => {
   hideCustomSplash();
 }, 4500);
+
+
+    // Helper to calculate time difference between ETA and ATA
+function getEtaAtaStatusHtml(etaStr, ataStr) {
+  if (!etaStr || !ataStr) return '';
+  
+  const parseMin = (t) => {
+    const match = String(t).trim().match(/(\d{1,2}):(\d{2})/);
+    if (!match) return null;
+    return parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+  };
+
+  const etaMin = parseMin(etaStr);
+  const ataMin = parseMin(ataStr);
+
+  if (etaMin === null || ataMin === null) return '';
+
+  let diff = ataMin - etaMin;
+  // Handle overnight crossover (e.g. ETA 23:50, ATA 00:10)
+  if (diff < -720) diff += 1440;
+  if (diff > 720) diff -= 1440;
+
+  const formatDuration = (mins) => {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    if (h > 0 && m > 0) return `${h}h ${m}m`;
+    if (h > 0) return `${h}h`;
+    return `${m}m`;
+  };
+
+  if (diff > 0) {
+    return `<p class="text-[8.5px] font-normal italic text-rose-500 mt-0.5 leading-tight">(Delayed by ${formatDuration(diff)})</p>`;
+  } else if (diff < 0) {
+    return `<p class="text-[8.5px] font-normal italic text-emerald-600 mt-0.5 leading-tight">(Arrived early by ${formatDuration(Math.abs(diff))})</p>`;
+  } else {
+    return `<p class="text-[8.5px] font-normal italic text-emerald-600 mt-0.5 leading-tight">(On time)</p>`;
+  }
+}
+
+    
 
     
 
