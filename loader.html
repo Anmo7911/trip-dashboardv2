@@ -968,39 +968,20 @@
         REMOVE SPLASH
         ==============================================
       */
-      splash.remove();
-    }
-
-      /* Notify the main app that loader animation has completed */
-      if (window.parent) {
-        window.parent.postMessage('ANIMATION_COMPLETE', '*');
+      if (splash) {
+        splash.remove();
       }
-
     }
-
 
     /* =====================================================
        START
     ====================================================== */
 
-    if (
-      document.readyState ===
-      "loading"
-    ) {
-
-      document.addEventListener(
-        "DOMContentLoaded",
-        startSplash
-      );
-
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", startSplash);
     } else {
-
       startSplash();
-
     }
-
   </script>
-
 </body>
-
 </html>
