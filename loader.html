@@ -654,24 +654,18 @@
 
 
 
-    /* =====================================================
-       ELEMENTS
+   /* =====================================================
+       ELEMENTS & PARAMS
     ====================================================== */
 
-    const greeting =
-      document.getElementById(
-        "greeting"
-      );
+    const greeting = document.getElementById("greeting");
+    const brand = document.getElementById("brand");
+    const splash = document.getElementById("splash");
 
-    const brand =
-      document.getElementById(
-        "brand"
-      );
-
-    const splash =
-      document.getElementById(
-        "splash"
-      );
+    // Extract user name from query parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawName = urlParams.get('name') || '';
+    const cleanName = rawName.trim();
 
 
     /* =====================================================
@@ -693,14 +687,17 @@
     }
 
 
-    /* =====================================================
+  /* =====================================================
        SET GREETING
     ====================================================== */
 
     function setGreeting(item) {
-
-      greeting.textContent =
-        item.text;
+      if (cleanName) {
+        // Appends English name after the greeting word
+        greeting.textContent = `${item.text}, ${cleanName}`;
+      } else {
+        greeting.textContent = item.text;
+      }
 
       greeting.setAttribute(
         "lang",
