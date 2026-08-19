@@ -37,35 +37,36 @@
 
   <style>
 
-    /* =========================================
-       FEATHERED CIRCLE IRIS REVEAL ENGINE
+   /* =========================================
+       FEATHERED CORNER IRIS REVEAL ENGINE
        ========================================= */
     .iris-reveal-exit {
       pointer-events: none !important;
-      animation: irisCircleWipe 0.85s cubic-bezier(0.25, 1, 0.35, 1) forwards;
+      /* Origin: 0% 0% (Top-Left Corner) - expands across the entire diagonal */
+      animation: irisCornerWipe 0.95s cubic-bezier(0.25, 1, 0.35, 1) forwards;
     }
 
-    @keyframes irisCircleWipe {
+    @keyframes irisCornerWipe {
       0% {
-        -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 0%, black 0%);
-        mask-image: radial-gradient(circle at 50% 50%, transparent 0%, black 0%);
+        -webkit-mask-image: radial-gradient(circle at 0% 0%, transparent 0%, black 0%);
+        mask-image: radial-gradient(circle at 0% 0%, transparent 0%, black 0%);
         opacity: 1;
       }
-      20% {
-        -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 12%, black 28%);
-        mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 12%, black 28%);
+      25% {
+        -webkit-mask-image: radial-gradient(circle at 0% 0%, transparent 0%, transparent 20%, black 45%);
+        mask-image: radial-gradient(circle at 0% 0%, transparent 0%, transparent 20%, black 45%);
       }
-      45% {
-        -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 35%, black 58%);
-        mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 35%, black 58%);
+      55% {
+        -webkit-mask-image: radial-gradient(circle at 0% 0%, transparent 0%, transparent 60%, black 95%);
+        mask-image: radial-gradient(circle at 0% 0%, transparent 0%, transparent 60%, black 95%);
       }
-      70% {
-        -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 65%, black 95%);
-        mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 65%, black 95%);
+      80% {
+        -webkit-mask-image: radial-gradient(circle at 0% 0%, transparent 0%, transparent 110%, black 150%);
+        mask-image: radial-gradient(circle at 0% 0%, transparent 0%, transparent 110%, black 150%);
       }
       100% {
-        -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 120%, black 160%);
-        mask-image: radial-gradient(circle at 50% 50%, transparent 0%, transparent 120%, black 160%);
+        -webkit-mask-image: radial-gradient(circle at 0% 0%, transparent 0%, transparent 170%, black 220%);
+        mask-image: radial-gradient(circle at 0% 0%, transparent 0%, transparent 170%, black 220%);
         opacity: 0;
       }
     }
