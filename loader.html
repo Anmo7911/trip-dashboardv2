@@ -312,11 +312,11 @@
     ];
 
     /* =====================================================
-       SPEED SETTINGS
+       SPEED SETTINGS (Uniform Fastest Speed)
     ====================================================== */
-    const FIRST_HOLD = 180;
+    const FIRST_HOLD = 80;
     const NORMAL_HOLD = 80;
-    const FINAL_HOLD = 150;
+    const FINAL_HOLD = 80;
     const ENTER_TIME = 75;
     const EXIT_TIME = 75;
     const GAP_TIME = 10;
@@ -396,13 +396,12 @@
     async function startSplash() {
       // FIRST GREETING
       await enterGreeting(greetings[0]);
-      await wait(FIRST_HOLD);
+      await wait(NORMAL_HOLD);
 
       // GREETING LOOP
       for (let i = 1; i < greetings.length; i++) {
         await changeGreeting(greetings[i]);
-        const isLastThree = i >= greetings.length - 3;
-        await wait(isLastThree ? FINAL_HOLD : NORMAL_HOLD);
+        await wait(NORMAL_HOLD);
       }
 
       // FINAL GREETING EXIT
@@ -443,3 +442,4 @@
   </script>
 </body>
 </html>
+```[cite: 1]
