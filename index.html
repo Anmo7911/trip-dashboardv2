@@ -2947,14 +2947,12 @@ if (!currentUser) {
         }
 
         // Sizing & Multi-line Configuration
-        const textScaleClass = 'text-' + (data.styles.titleFontSize || 'xl');
+        // Sizing & Multi-line Configuration
         if (h1Title1 && h1Title2) {
-  h1Title1.className = "expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none";
-  h1Title2.className = "expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none";
-}
-          
-          h1Title1.style.color = data.styles.titleColor || '#064e3b';
-          h1Title2.style.color = data.styles.subtitleColor || '#047857';
+          h1Title1.className = "expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none";
+          h1Title2.className = "expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none";
+          h1Title1.style.color = data.styles.titleColor || '#0f172a';
+          h1Title2.style.color = data.styles.subtitleColor || '#0f172a';
         }
 
         // Line Rotation Rules Interceptor
