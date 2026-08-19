@@ -2130,48 +2130,129 @@
     });
     
     // --- TAB SWITCHING MANAGER ---
-    // Controls toggling between Spend, Squad, and Places views
-   function openDriveGallery(customUrl) {
-      const isDesktop = window.innerWidth >= 1024;
-      
-      // On desktop, navigate directly to the dedicated full-page view
-      if (isDesktop) {
-        showTab('gallery', null);
-        if (customUrl) {
-          const iframe = document.getElementById('desktop-gallery-iframe');
-          const folderMatch = customUrl.match(/folders\/([a-zA-Z0-9_-]+)/);
-          if (iframe && folderMatch) {
-            iframe.src = `https://drive.google.com/embeddedfolderview?id=${folderMatch[1]}#grid`;
+    // Controls toggling between Spend, Squad, Places, Archives, About, and Gallery views
+    function showTab(tabId, el) { 
+      // Hide header completely on Archives, About, and Gallery tabs; show on all other tabs
+      const header = document.getElementById('app-header');
+      if (header) {
+        if (tabId === 'archives' || tabId === 'about' || tabId === 'gallery') {
+          header.classList.add('hidden');
+        } else {
+          header.classList.remove('hidden');
+          if (tabId === 'spend') {
+            header.classList.remove('sticky');
+            header.classList.add('relative');
+          } else {
+            header.classList.remove('relative');
+            header.classList.add('sticky');
           }
         }
-        return;
       }
 
-      // Mobile: Open popup modal preview
-      const defaultUrl = "https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0";
-      const rawUrl = customUrl || defaultUrl;
-      const iframe = document.getElementById('drive-preview-iframe');
-      const extBtn = document.getElementById('drive-external-link-btn');
+      // Reset all tab content
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+      
+      // Reset mobile navigation styling
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
+      
+      // Reset desktop sidebar button styling
+      document.querySelectorAll('.desktop-nav-btn').forEach(b => {
+        b.classList.remove('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100');
+        b.classList.add('text-slate-500');
+      });
 
-      let embedUrl = rawUrl;
-      const folderMatch = rawUrl.match(/folders\/([a-zA-Z0-9_-]+)/);
-      if (folderMatch) {
-        embedUrl = `https://drive.google.com/embeddedfolderview?id=${folderMatch[1]}#grid`;
+      // Show the selected view
+      const targetView = document.getElementById('view-' + tabId);
+      if (targetView) targetView.classList.add('active-tab');
+
+      // Sync active state for Desktop Sidebar button
+      const desktopBtn = document.querySelector(`.desktop-nav-btn[data-tab="${tabId}"]`);
+      if (desktopBtn) {
+        desktopBtn.classList.remove('text-slate-500');
+        desktopBtn.classList.add('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100');
       }
 
-      if (iframe) iframe.src = embedUrl;
-      if (extBtn) extBtn.href = rawUrl;
-
-      const modal = document.getElementById('drive-gallery-modal');
-      if (modal) {
-        modal.classList.remove('hidden');
-        document.body.classList.add('overflow-hidden', 'touch-none');
-        lucide.createIcons();
+      // Sync mobile active state if clicked from mobile
+      if (el && el.classList.contains('nav-btn')) {
+        el.classList.add('nav-active');
       }
+      
+      // Contextual Logic: Reset UI states specific to the SPEND tab
+      if (tabId === 'spend') {
+        const flipper = document.getElementById('card-flipper-engine');
+        if (flipper) flipper.classList.remove('flipper-rotated');
+        if (isLedgerActive) toggleLedger();
+        currentLedgerFilter = "All";
+        renderLedgerList();
+      }
+      
+      // Contextual Logic: Trigger stagger animations in SQUAD tab
+      if (tabId === 'squad' && globalActiveDataPayloadBackup) { 
+        triggerSequentialWaveEffects(globalActiveDataPayloadBackup, true); 
+      }
+      
+      // Contextual Logic: Restart timeline animations & auto-scroll in ROUTE tab
+      if (tabId === 'places') {
+        const tLine = document.getElementById('ui-timeline-container');
+        if (tLine) {
+          tLine.classList.remove('play-places-anim');
+          void tLine.offsetWidth;
+          tLine.classList.add('play-places-anim');
+        }
+
+        setTimeout(() => {
+          const lockVault = document.getElementById('route-lock-vault');
+          if (lockVault && !lockVault.classList.contains('hidden')) return; 
+          
+          const nodes = Array.from(document.querySelectorAll('.tracker-node'));
+          if (nodes.length === 0) return;
+
+          const activeNodes = nodes.filter(n => n.getAttribute('data-cancelled') !== 'true');
+          const lastNode = activeNodes[activeNodes.length - 1];
+          const isTripFinished = lastNode && lastNode.getAttribute('data-ata');
+
+          if (isTripFinished) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (window.popupDelayTimeout) clearTimeout(window.popupDelayTimeout);
+            
+            window.popupDelayTimeout = setTimeout(() => {
+              const modal = document.getElementById('trip-complete-popup');
+              const card = document.getElementById('trip-complete-card');
+              
+              if (modal && card) {
+                modal.classList.remove('hidden');
+                lucide.createIcons(); 
+                void modal.offsetHeight;
+                modal.classList.remove('opacity-0');
+                card.classList.remove('scale-75', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+              }
+            }, 900);
+            
+          } else {
+            let activeNode = null;
+            for (let i = 0; i < nodes.length; i++) {
+              if (nodes[i].getAttribute('data-ata')) {
+                activeNode = nodes[i];
+              }
+            }
+
+            if (!activeNode && nodes.length > 0) {
+              activeNode = nodes.find(n => n.getAttribute('data-cancelled') !== 'true');
+            }
+
+            if (activeNode) {
+              activeNode.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        }, 200);
+      }
+      
+      lucide.createIcons();
     }
 
     // Handles the Bento layout transition when flipping the Balance Card
-   function flipBalanceCard() { 
+    function flipBalanceCard() { 
       const flipper = document.getElementById('card-flipper-engine'); 
       const balanceCol = document.getElementById('balance-col');
       const statsCol = document.getElementById('stats-col');
@@ -2192,26 +2273,49 @@
       }
     }
 
-    // Core data fetching - Calls Google Apps Script backend 'getDashboardData'
-   async function fetchInitialData() {
-  const currentUser = localStorage.getItem('trekLoggedInUser');
-  
-  // If not logged in, stop here and show the login screen cleanly
-  if (!currentUser) {
-    const loginOverlay = document.getElementById('login-overlay');
-    if (loginOverlay) loginOverlay.classList.remove('hidden');
-    attemptCustomSplashHide();
-    return;
-  }
+    // Fetch member names specifically for the login dropdown
+    async function fetchLoginMembers() {
+      try {
+        const data = await apiRequest('members');
+        if (data && data.members) {
+          cachedMembersList = data.members;
+          populateLoginDropdown(data.members);
+        }
+      } catch (err) {
+        console.error("Could not fetch member list for login:", err);
+      } finally {
+        attemptCustomSplashHide();
+      }
+    }
 
-  try {
-    const data = await apiRequest('dashboard');
-    renderApp(data);
-  } catch (error) {
-    console.error(error);
-    showToast("Unable to sync latest data.");
-  }
-}
+    function populateLoginDropdown(members) {
+      const selectDropdown = document.getElementById('login-name-select');
+      if (selectDropdown && members && members.length > 0) {
+        selectDropdown.innerHTML = members
+          .map(m => `<option value="${m.name}">${m.name}</option>`)
+          .join('');
+      }
+    }
+
+    // Core data fetching for logged-in users
+    async function fetchInitialData() {
+      const currentUser = localStorage.getItem('trekLoggedInUser');
+      
+      if (!currentUser) {
+        const loginOverlay = document.getElementById('login-overlay');
+        if (loginOverlay) loginOverlay.classList.remove('hidden');
+        fetchLoginMembers();
+        return;
+      }
+
+      try {
+        const data = await apiRequest('dashboard');
+        renderApp(data);
+      } catch (error) {
+        console.error(error);
+        showToast("Unable to sync latest data.");
+      }
+    }
 
     
     // Simple helper to format numbers as Indian Rupees string
