@@ -321,7 +321,7 @@
       }
     }
 
-    
+    /* =========================================
        
 
     /* =========================================
@@ -1150,7 +1150,8 @@
     </div>
   </div>
 
-  
+  <!-- =========================================
+       
 
 
  <!-- =========================================
@@ -1952,9 +1953,10 @@
     let currentLedgerFilter = "All";
     let cachedMembersList = []; 
     
-   
+    // Splash screen configuration data
+    
 
-   
+    // Carousel and App State Timers
     // Carousel and App State Timers
     let carouselInterval = null;
     let currentSlide = 0;
@@ -2001,7 +2003,12 @@
       }
     });
 
-   
+    // Main App Initialization
+    window.onload = () => { 
+      runSplashSequence(); 
+      fetchInitialData(); 
+      startPolling(); 
+    };
 
     // --- PULL TO REFRESH LOGIC ---
     let touchStartY = 0;
@@ -3644,10 +3651,18 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         .then((result) => {
           if (result.success) {
             localStorage.setItem('trekLoggedInUser', result.name);
-localStorage.setItem('trekLoggedInPIN', typedPin);
-document.getElementById('login-overlay').classList.add('hidden');
+            localStorage.setItem('trekLoggedInPIN', typedPin);
+            document.getElementById('login-overlay').classList.add('hidden');
 
-fetchInitialData();
+            const splash = document.getElementById('app-splash-screen');
+            if (splash) {
+              splash.classList.remove('hidden', 'opacity-0');
+              document.getElementById('splash-micro-text').innerText = "Decrypting squad ledger...";
+            }
+
+            fetchInitialData();
+            document.getElementById('app-splash-screen').classList.remove('hidden', 'opacity-0');
+            runSplashSequence();
           } else {
             btn.innerText = "Unlock App";
             triggerLoginError();
