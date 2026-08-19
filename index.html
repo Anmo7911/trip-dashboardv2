@@ -74,12 +74,18 @@
 
     /* Ensures auto-scrolling always stops cleanly below the sticky header */
     .tracker-node {
-      scroll-margin-top: 220px; /* Mobile header offset */
+      scroll-margin-top: 240px; /* Mobile header & notice bar clearance */
+    }
+
+    @media (min-width: 640px) {
+      .tracker-node {
+        scroll-margin-top: 255px; /* Tablet clearance */
+      }
     }
 
     @media (min-width: 1024px) {
       .tracker-node {
-        scroll-margin-top: 240px; /* Desktop header offset */
+        scroll-margin-top: 250px; /* Desktop clearance */
       }
     }
 
