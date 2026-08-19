@@ -42,6 +42,35 @@
 
   <style>
 
+    /* =========================================
+   STATIC FEATHERED TITLE HALO
+   ========================================= */
+.title-dynamic-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 92%;
+  max-width: 500px;
+  height: 90px;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 9999px;
+  filter: blur(16px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.9;
+}
+
+/* When image is dark -> Soft white/frost glow to elevate dark title text */
+.halo-light-glow {
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.35) 50%, transparent 75%);
+}
+
+/* When image is bright/light -> Soft dark vignette for clear contrast */
+.halo-dark-vignette {
+  background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0.55) 0%, rgba(15, 23, 42, 0.2) 50%, transparent 75%);
+}
+
 
  /* Ultra-Bold Title Display Engine */
     .expedition-title-font {
@@ -1252,23 +1281,26 @@
 
       
     <!-- Dynamic Trip Title -->
-      <!-- Dynamic Trip Title -->
-      <div id="ui-header-title-container" class="flex flex-col items-center justify-center mt-1 sm:mt-2 relative">
-        <div id="ui-title-alignment-box" class="headline-scene h-14 w-full flex items-center justify-center px-2">
-          <div id="ui-headline-flipper" class="headline-flipper w-full h-full">
-            <div class="headline-front flex items-center justify-center w-full h-full">
-              <h1 id="ui-title-1" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
-                VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
-              </h1>
-            </div>
-            <div class="headline-back flex items-center justify-center w-full h-full">
-              <h1 id="ui-title-2" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
-                VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
-              </h1>
-            </div>
-          </div>
-        </div>
+<div id="ui-header-title-container" class="flex flex-col items-center justify-center mt-1 sm:mt-2 relative">
+  
+  <!-- Feathered Static Halo Glow (Behind Flipper) -->
+  <div id="title-halo" class="title-dynamic-halo halo-light-glow"></div>
+
+  <div id="ui-title-alignment-box" class="headline-scene h-14 w-full flex items-center justify-center px-2 relative z-10">
+    <div id="ui-headline-flipper" class="headline-flipper w-full h-full">
+      <div class="headline-front flex items-center justify-center w-full h-full">
+        <h1 id="ui-title-1" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
+          VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
+        </h1>
       </div>
+      <div class="headline-back flex items-center justify-center w-full h-full">
+        <h1 id="ui-title-2" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
+          VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
+        </h1>
+      </div>
+    </div>
+  </div>
+</div>
       
       <!-- Frosted Notice & Warning Bar (Anchored at exact original position) -->
      <!-- Moved slightly downward using bottom-9 -->
@@ -2918,17 +2950,23 @@
             layer2.classList.remove('opacity-100');
             layer2.classList.add('opacity-0');
 
-            headerDissolveTimer = setInterval(() => {
-              if (headerActiveLayer === 1) {
-                layer1.classList.replace('opacity-100', 'opacity-0');
-                layer2.classList.replace('opacity-0', 'opacity-100');
-                headerActiveLayer = 2;
-              } else {
-                layer2.classList.replace('opacity-100', 'opacity-0');
-                layer1.classList.replace('opacity-0', 'opacity-100');
-                headerActiveLayer = 1;
-              }
-            }, 6000);
+            // Initial load halo detection
+adaptHaloToImage(img1);
+
+// Inside the 6-second dissolve setInterval loop:
+headerDissolveTimer = setInterval(() => {
+  if (headerActiveLayer === 1) {
+    layer1.classList.replace('opacity-100', 'opacity-0');
+    layer2.classList.replace('opacity-0', 'opacity-100');
+    headerActiveLayer = 2;
+    adaptHaloToImage(img2); // Sync halo with image 2
+  } else {
+    layer2.classList.replace('opacity-100', 'opacity-0');
+    layer1.classList.replace('opacity-0', 'opacity-100');
+    headerActiveLayer = 1;
+    adaptHaloToImage(img1); // Sync halo with image 1
+  }
+}, 6000);
           }
         }
 
@@ -5327,6 +5365,51 @@ function getEtaAtaStatusHtml(etaStr, ataStr) {
       return `${words.join(' ')}<br><span class="title-accent-gradient">${lastWord}</span>`;
     }
 
+    // Automatically samples image brightness to switch between light/dark halo
+function adaptHaloToImage(imgUrl) {
+  const halo = document.getElementById('title-halo');
+  if (!halo || !imgUrl) return;
+
+  const img = new Image();
+  img.crossOrigin = "Anonymous";
+  img.src = imgUrl;
+
+  img.onload = () => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 40;
+      canvas.height = 40;
+      const ctx = canvas.getContext('2d');
+      // Draw a small crop of top-middle portion where the title sits
+      ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight * 0.4, 0, 0, 40, 40);
+      
+      const imgData = ctx.getImageData(0, 0, 40, 40).data;
+      let totalLuminance = 0;
+      let count = 0;
+
+      for (let i = 0; i < imgData.length; i += 4) {
+        // Standard perceived luminance formula: 0.299R + 0.587G + 0.114B
+        const lum = (0.299 * imgData[i]) + (0.587 * imgData[i + 1]) + (0.114 * imgData[i + 2]);
+        totalLuminance += lum;
+        count++;
+      }
+
+      const avgLuminance = totalLuminance / count;
+
+      // If average brightness < 128 (Dark background) -> Use Light Glow; Otherwise Dark Vignette
+      if (avgLuminance < 128) {
+        halo.classList.remove('halo-dark-vignette');
+        halo.classList.add('halo-light-glow');
+      } else {
+        halo.classList.remove('halo-light-glow');
+        halo.classList.add('halo-dark-vignette');
+      }
+    } catch (e) {
+      // Fallback to light glow if image CORS restricts pixel access
+      halo.classList.add('halo-light-glow');
+    }
+  };
+}
     
 
     
