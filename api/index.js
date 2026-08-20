@@ -160,6 +160,12 @@ async function dashboard() {
   const checklistVisibility = text(setting(24, 'b')).toUpperCase() || 'VISIBLE';
   const checklistRevokeVisibility = text(setting(24, 'c')).toUpperCase() || 'VISIBLE';
 
+  // 10-Second Dynamic Broadcast Popup Settings (Row 28)
+  const popupType = text(setting(28, 'b')).toUpperCase() || 'NOTIFICATION';
+  const popupTitle = text(setting(28, 'c'));
+  const popupMessage = text(setting(28, 'd'));
+  const popupStatus = text(setting(28, 'e')).toUpperCase() || 'DISABLED';
+
   const categoryBudgets = { Food: 0, 'Entry Fee': 0, Fare: 0, Stay: 0, Water: 0, Other: 0 };
   let calculatedTotalBudget = 0;
   const budgetRawList = [];
@@ -298,6 +304,7 @@ async function dashboard() {
   const totalExpenses = Object.values(categorySpent).reduce((a, b) => a + b, 0);
   return {
     appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus, checklistVisibility, checklistRevokeVisibility,
+    popupConfig: { type: popupType, title: popupTitle, message: popupMessage, status: popupStatus },
     securityStatus: meta.security_status || 'normal',
     chiefCoordinatorSignature, eidStampImage, rawEidStamp, tripName, secondaryTitle,
     styles: { titleColor, subtitleColor, titleFontSize, titlePosition, rotationLines, titleVisibility, headerImgMob1, headerImgDesk1, headerImgMob2, headerImgDesk2 },
