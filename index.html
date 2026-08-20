@@ -5718,13 +5718,19 @@ async function executePendingChecklistAction() {
     // DYNAMIC 10-SECOND BROADCAST POPUP ENGINE
     // ==========================================
     let broadcastTimer = null;
+    let currentBroadcastKey = null;
 
     function evaluateBroadcastPopup(config) {
-      if (!config || config.status !== 'ENABLED') return;
+      if (!config || (config.status || '').toUpperCase() !== 'ENABLED') return;
       if (!config.message && !config.title) return;
 
-      // Session storage prevents popping up on every tab switch
-      if (sessionStorage.getItem('hasSeenBroadcastAlert')) return;
+      // Unique hash/key for this specific message instance
+      const broadcastSignature = `${config.type}_${config.title}_${config.message}`;
+      
+      // If user has already dismissed this exact broadcast version, don't show it again
+      if (sessionStorage.getItem('dismissedBroadcastKey') === broadcastSignature) return;
+
+      currentBroadcastKey = broadcastSignature;
 
       if (broadcastTimer) clearTimeout(broadcastTimer);
 
@@ -5768,7 +5774,7 @@ async function executePendingChecklistAction() {
         lucide.createIcons();
 
         modal.classList.remove('hidden');
-        void modal.offsetHeight; // Force layout recalculation
+        void modal.offsetHeight; // Force layout reflow
         modal.classList.remove('opacity-0');
         card.classList.replace('scale-90', 'scale-100');
       }, 10000);
@@ -5777,7 +5783,10 @@ async function executePendingChecklistAction() {
     function closeBroadcastPopup() {
       const modal = document.getElementById('broadcast-popup-modal');
       const card = document.getElementById('broadcast-card');
-      sessionStorage.setItem('hasSeenBroadcastAlert', 'true');
+      
+      if (currentBroadcastKey) {
+        sessionStorage.setItem('dismissedBroadcastKey', currentBroadcastKey);
+      }
 
       if (modal && card) {
         modal.classList.add('opacity-0');
