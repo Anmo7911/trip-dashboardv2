@@ -1745,43 +1745,63 @@
   <main id="view-archives" class="tab-content w-full max-w-md lg:max-w-5xl mx-auto pt-4 px-4 lg:p-8 space-y-6">
 
    <!-- 1. ARCHIVES LIST VIEW -->
-    <div id="archives-list-view" class="space-y-6">
+    <div id="archives-list-view" class="space-y-5">
       
-      <!-- Sticky Title & Search Card -->
-      <div class="sticky top-2 sm:top-4 z-30 bg-white/95 backdrop-blur-md rounded-[28px] lg:rounded-[32px] p-5 sm:p-6 lg:p-8 border border-slate-200/80 shadow-md space-y-4 sm:space-y-5 transition-all">
+      <!-- Premium Sticky Header Card -->
+      <div class="sticky top-2 sm:top-4 z-30 bg-slate-900/95 backdrop-blur-xl rounded-[28px] lg:rounded-[32px] p-5 sm:p-6 lg:p-7 border border-slate-800 shadow-[0_15px_35px_-10px_rgba(15,23,42,0.4)] space-y-4 text-white overflow-hidden relative">
         
-        <!-- Close Button (Returns to spend tab) -->
-        <button type="button" onclick="showTab('spend', document.querySelector('.nav-btn'))" class="absolute top-5 right-5 sm:top-6 sm:right-6 w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center active:scale-90 transition-all outline-none border border-slate-200 z-10" title="Close">
-          <i data-lucide="x" class="w-4 h-4 stroke-[2.5]"></i>
-        </button>
-
-        <div class="flex items-center justify-between border-b border-slate-100 pb-4 sm:pb-5 pr-10">
-          <div class="flex items-center gap-3">
-            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shadow-inner shrink-0">
-              <i data-lucide="archive" class="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]"></i>
-            </div>
-            <div>
-              <h2 class="text-lg sm:text-xl lg:text-2xl font-black text-slate-800 tracking-tight uppercase">Past Trips Archive</h2>
-              <p class="text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-0.5">Historical Reports & Media Folders</p>
-            </div>
-          </div>
+        <!-- Decorative Ambient Glow & Watermark Icon -->
+        <div class="absolute -right-6 -top-6 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="absolute right-12 top-1/2 -translate-y-1/2 pointer-events-none opacity-5">
+          <i data-lucide="archive" class="w-36 h-36 text-white stroke-[1]"></i>
         </div>
 
-        <!-- Quick Search Bar -->
-        <div class="relative w-full">
-          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-          <input type="text" id="archive-page-search-input" oninput="filterArchivesPage(this.value)" placeholder="Search trips by name or date..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-2.5 sm:py-3 text-xs lg:text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition-all placeholder-slate-400">
+        <!-- Top Title & Navigation Row -->
+        <div class="flex items-center justify-between relative z-10">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-indigo-600/80 border border-indigo-400/30 flex items-center justify-center text-white shadow-inner shadow-white/20 shrink-0">
+              <i data-lucide="archive" class="w-5 h-5 stroke-[2.5]"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-base sm:text-lg lg:text-xl font-black uppercase tracking-tight text-white leading-none">
+                  Past Trips Archive
+                </h2>
+                <span class="bg-indigo-500/25 border border-indigo-400/30 text-indigo-300 text-[8.5px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  Vault
+                </span>
+              </div>
+              <p class="text-slate-400 text-[9.5px] sm:text-[10px] font-bold uppercase tracking-widest mt-1">
+                Historical Reports & Media Folders
+              </p>
+            </div>
+          </div>
+
+          <!-- Close / Back Button -->
+          <button type="button" onclick="showTab('spend', document.querySelector('.nav-btn'))" class="w-8 h-8 sm:w-9 sm:h-9 bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white rounded-full flex items-center justify-center active:scale-90 transition-all outline-none border border-white/10 shrink-0" title="Close">
+            <i data-lucide="x" class="w-4 h-4 stroke-[2.5]"></i>
+          </button>
+        </div>
+
+        <!-- Integrated Search Bar -->
+        <div class="relative w-full z-10">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input 
+            type="text" 
+            id="archive-page-search-input" 
+            oninput="filterArchivesPage(this.value)" 
+            placeholder="Search trips by name, date or code..." 
+            class="w-full bg-slate-800/80 hover:bg-slate-800 focus:bg-slate-800/95 border border-slate-700/80 focus:border-indigo-400 rounded-2xl pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-100 placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all shadow-inner"
+          >
         </div>
 
       </div>
 
-      <!-- Grid for Past Trips (Scrolls underneath the sticky card) -->
+      <!-- Grid for Past Trips -->
       <div id="archives-page-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 pb-12 relative z-10"></div>
     </div>
 
-      <!-- Grid for Past Trips -->
-      <div id="archives-page-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 pb-12"></div>
-    </div>
+      
 
     <!-- 2. ARCHIVE GALLERY VIEW (2-Column Grid on Mobile & Full Desktop Support) -->
     <div id="archives-gallery-view" class="hidden bg-white rounded-[28px] lg:rounded-[32px] p-4 sm:p-6 lg:p-8 border border-slate-200/80 shadow-sm flex-col space-y-4 pb-8">
