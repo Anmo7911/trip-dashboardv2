@@ -1544,15 +1544,35 @@
 
    
 
-    <!-- TRANSACTION LEDGER -->
+   <!-- TRANSACTION LEDGER -->
 <div id="ui-ledger-container" class="hidden opacity-0 translate-y-10 transition-all duration-500 pb-10">
-  
-  <!-- Header row moved down by 5px on mobile view via pt-[5px] lg:pt-0 -->
-  <div class="flex items-center justify-between mb-3 px-2 pt-[15px] lg:pt-0">
+  <div class="flex items-center justify-between mb-3 px-2 -mt-[15px] lg:mt-0">
     <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Transaction Ledger</h3>
     <div class="flex items-center gap-2">
-      <button type="button" onclick="toggleLedgerFilter()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors active:scale-90 outline-none"><i data-lucide="filter" class="w-4 h-4 stroke-[2.5]"></i></button>
-      <button type="button" onclick="downloadLedgerCSV()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors active:scale-90 outline-none"><i data-lucide="download" class="w-4 h-4 stroke-[2.5]"></i></button>
+      <!-- Search Button Toggle -->
+      <button type="button" onclick="toggleLedgerSearch()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors active:scale-90 outline-none" title="Search Transactions">
+        <i data-lucide="search" class="w-4 h-4 stroke-[2.5]"></i>
+      </button>
+      <button type="button" onclick="toggleLedgerFilter()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors active:scale-90 outline-none" title="Filter by Category">
+        <i data-lucide="filter" class="w-4 h-4 stroke-[2.5]"></i>
+      </button>
+      <button type="button" onclick="downloadLedgerCSV()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors active:scale-90 outline-none" title="Download CSV">
+        <i data-lucide="download" class="w-4 h-4 stroke-[2.5]"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Expandable Search Input -->
+  <div id="ledger-search-bar" class="hidden mb-3 px-2">
+    <div class="relative w-full">
+      <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+      <input 
+        type="text" 
+        id="ledger-search-input" 
+        oninput="handleLedgerSearch(this.value)" 
+        placeholder="Search notes, category, UTR, or amount..." 
+        class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 rounded-2xl pl-10 pr-4 py-2 text-xs font-bold text-slate-700 outline-none transition-all placeholder-slate-400"
+      >
     </div>
   </div>
 
@@ -3704,6 +3724,38 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     // LEDGER / LIST VIEW TOGGLE ENGINE
     // ==========================================
     let isLedgerActive = false;
+
+    // ==========================================
+    // LEDGER SEARCH ENGINE
+    // ==========================================
+    let currentLedgerSearchQuery = "";
+
+    function toggleLedgerSearch() {
+      const searchBar = document.getElementById('ledger-search-bar');
+      const searchInput = document.getElementById('ledger-search-input');
+      
+      if (searchBar.classList.contains('hidden')) {
+        searchBar.classList.remove('hidden');
+        if (searchInput) searchInput.focus();
+      } else {
+        searchBar.classList.add('hidden');
+        if (currentLedgerSearchQuery !== "") {
+          currentLedgerSearchQuery = "";
+          if (searchInput) searchInput.value = "";
+          renderLedgerList();
+        }
+      }
+      lucide.createIcons();
+    }
+
+    function handleLedgerSearch(query) {
+      currentLedgerSearchQuery = query.toLowerCase().trim();
+      visibleLedgerCount = 15;
+      renderLedgerList();
+    }
+
+
+    
     
     function toggleLedger() {
       isLedgerActive = !isLedgerActive;
@@ -4225,26 +4277,35 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       const listContainer = document.getElementById('txList');
       if (!listContainer || !globalLedgerDataBackup) return;
       
-      // Strip items not matching the pill filter
-      const filteredData = currentLedgerFilter === "All" 
-        ? globalLedgerDataBackup 
-        : globalLedgerDataBackup.filter(t => String(t.category).trim() === currentLedgerFilter);
+      // Filter by Category and Search Query simultaneously
+      const filteredData = globalLedgerDataBackup.filter(t => {
+        const matchesCategory = currentLedgerFilter === "All" || String(t.category).trim() === currentLedgerFilter;
+        
+        if (!matchesCategory) return false;
+        if (!currentLedgerSearchQuery) return true;
 
-      // Handle null state
+        const notesMatch = t.notes ? t.notes.toLowerCase().includes(currentLedgerSearchQuery) : false;
+        const catMatch = t.category ? t.category.toLowerCase().includes(currentLedgerSearchQuery) : false;
+        const utrMatch = t.utr ? String(t.utr).toLowerCase().includes(currentLedgerSearchQuery) : false;
+        const amountMatch = t.amount ? String(t.amount).includes(currentLedgerSearchQuery) : false;
+
+        return notesMatch || catMatch || utrMatch || amountMatch;
+      });
+
+      // Handle empty state
       if (filteredData.length === 0) {
         listContainer.innerHTML = `
           <div class="w-full py-8 text-center animate-pulse">
             <i data-lucide="receipt-indian-rupee" class="w-8 h-8 text-slate-200 mx-auto mb-2"></i>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">No expenses found</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">No matching expenses found</p>
           </div>`;
         lucide.createIcons();
         return;
       }
 
-      // Chunk array against our lazy loader var limit
+      // Chunk array against lazy loader slice limit
       const itemsToRender = filteredData.slice(0, visibleLedgerCount);
 
-      // DOM Generator Loop
       let htmlOutput = itemsToRender.map(t => { 
         let dateTimeString = "";
         if (t.date) { 
@@ -4265,18 +4326,15 @@ const places = payload.places.filter(p => p.tripDay || p.location);
           } catch(e) { dateTimeString = t.date; } 
         }
         
-        // Setup overbudget logic coloring
         const txCardBg = t.overBudget ? 'bg-rose-50 border-rose-200' : 'bg-white border-slate-100';
         const amountColor = t.overBudget ? 'text-rose-600' : 'text-slate-900';
 
-        // Sanitizing inputs before outputting inside HTML onClick triggers
         const safeNotes = String(t.notes || 'Expense').replace(/['"`]/g, '').replace(/[\n\r]/g, ' ');
         const safeCat = String(t.category || 'Other').replace(/['"`]/g, '').replace(/[\n\r]/g, ' ');
         const safeUtr = t.utr && t.utr !== 'undefined' ? String(t.utr).replace(/['"`]/g, '') : 'N/A';
 
         const opacityClass = t.isVerified ? "opacity-100" : "opacity-60"; 
         
-        // Inline layout for verified vs unverified small tags
         const statusUI = t.isVerified 
           ? `<div class="flex items-center justify-end gap-1 text-[8px] font-black text-emerald-500 uppercase tracking-widest mt-1 whitespace-nowrap"><i data-lucide="badge-check" class="w-3 h-3"></i> Verified</div>`
           : `<div class="flex items-center justify-end gap-1 text-[8px] font-black text-amber-500 uppercase tracking-widest mt-1 whitespace-nowrap"><i data-lucide="badge-x" class="w-3 h-3"></i> Unverified</div>`;
@@ -4298,7 +4356,6 @@ const places = payload.places.filter(p => p.tripDay || p.location);
           </div>`; 
       }).join('');
       
-      // Inject "Load More" button at bottom of stack if there is remainder
       if (filteredData.length > visibleLedgerCount) {
         htmlOutput += `
           <button onclick="loadMoreLedger()" class="w-full py-4 mt-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black rounded-xl text-[10px] uppercase tracking-widest transition-colors active:scale-95 border border-slate-200 shadow-sm">
