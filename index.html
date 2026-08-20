@@ -3050,132 +3050,133 @@
 
 
    // ==========================================
-    // THE MASTER RENDER ENGINE
-    // Receives fresh data from Google Apps Script and updates the DOM
-    // ==========================================
-    function renderApp(data) { 
-      document.title = data.tripName || "Bharat Way";
-      refreshMenuSignOffButton(data);
+   // THE MASTER RENDER ENGINE
+   // Receives fresh data and updates the DOM
+   // ==========================================
+   function renderApp(data) { 
+     if (!data) return;
 
-      // 1. VIP Wristband & Login Check - Stops flow if user not authenticated
-      const currentUser = localStorage.getItem('trekLoggedInUser');
-      const currentPIN = localStorage.getItem('trekLoggedInPIN');
-      const loginOverlay = document.getElementById('login-overlay');
-      const loggedUser = currentUser || "Squad Member";
-      const deskUser = document.getElementById('desktop-header-username');
-      if (deskUser) deskUser.innerText = loggedUser;
-      const deskMoreUser = document.getElementById('desktop-more-user-heading');
-      if (deskMoreUser) deskMoreUser.innerText = loggedUser;
-      
-      if (!currentUser) {
-        loginOverlay.classList.remove('hidden');
-        const selectDropdown = document.getElementById('login-name-select');
-        if (selectDropdown && selectDropdown.options.length === 0 && data.members) {
-          selectDropdown.innerHTML = data.members.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
-        }
-        attemptCustomSplashHide();
-        return;
-      } else {
-        loginOverlay.classList.add('hidden');
-      }
+     document.title = data.tripName || "Bharat Way";
+     refreshMenuSignOffButton(data);
 
-      if (data.popupConfig) {
-    evaluateBroadcastPopup(data.popupConfig);
-  }
-}
+     // 1. VIP Wristband & Login Check - Stops flow if user not authenticated
+     const currentUser = localStorage.getItem('trekLoggedInUser');
+     const currentPIN = localStorage.getItem('trekLoggedInPIN');
+     const loginOverlay = document.getElementById('login-overlay');
+     const loggedUser = currentUser || "Squad Member";
+     
+     const deskUser = document.getElementById('desktop-header-username');
+     if (deskUser) deskUser.innerText = loggedUser;
+     const deskMoreUser = document.getElementById('desktop-more-user-heading');
+     if (deskMoreUser) deskMoreUser.innerText = loggedUser;
+     
+     if (!currentUser) {
+       if (loginOverlay) loginOverlay.classList.remove('hidden');
+       const selectDropdown = document.getElementById('login-name-select');
+       if (selectDropdown && selectDropdown.options.length === 0 && data.members) {
+         selectDropdown.innerHTML = data.members.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
+       }
+       attemptCustomSplashHide();
+       return;
+     } else {
+       if (loginOverlay) loginOverlay.classList.add('hidden');
+     }
 
-      // =============================================================
-      // DYNAMIC GRAPHICS ENGINE & DESIGN CONTROLLER INJECTION
-      // =============================================================
-      if (data.styles) {
-        const headerEl = document.getElementById('app-header');
-        const titleContainer = document.getElementById('ui-header-title-container');
-        const alignBox = document.getElementById('ui-title-alignment-box');
-        const titleFlipper = document.getElementById('ui-headline-flipper');
-        const h1Title1 = document.getElementById('ui-title-1');
-        const h1Title2 = document.getElementById('ui-title-2');
+     if (data.popupConfig) {
+       evaluateBroadcastPopup(data.popupConfig);
+     }
 
-        // -------------------------------------------------------------
-        // DUAL HEADER 0.9s DISSOLVE ENGINE (6-second loop with fallback)
-        // -------------------------------------------------------------
-        const layer1 = document.getElementById('header-bg-layer-1');
-        const layer2 = document.getElementById('header-bg-layer-2');
-        
-        if (layer1 && layer2) {
-          const isDesktop = window.innerWidth >= 1024;
-          const img1 = isDesktop ? (data.styles.headerImgDesk1 || data.styles.headerImgMob1) : (data.styles.headerImgMob1 || data.styles.headerImgDesk1);
-          const img2 = isDesktop ? (data.styles.headerImgDesk2 || data.styles.headerImgMob2) : (data.styles.headerImgMob2 || data.styles.headerImgDesk2);
+     // =============================================================
+     // DYNAMIC GRAPHICS ENGINE & DESIGN CONTROLLER INJECTION
+     // =============================================================
+     if (data.styles) {
+       const headerEl = document.getElementById('app-header');
+       const titleContainer = document.getElementById('ui-header-title-container');
+       const alignBox = document.getElementById('ui-title-alignment-box');
+       const titleFlipper = document.getElementById('ui-headline-flipper');
+       const h1Title1 = document.getElementById('ui-title-1');
+       const h1Title2 = document.getElementById('ui-title-2');
 
-          if (img1) layer1.style.backgroundImage = `url('${img1}')`;
-          if (img2) layer2.style.backgroundImage = `url('${img2}')`;
+       // -------------------------------------------------------------
+       // DUAL HEADER 0.9s DISSOLVE ENGINE (6-second loop with fallback)
+       // -------------------------------------------------------------
+       const layer1 = document.getElementById('header-bg-layer-1');
+       const layer2 = document.getElementById('header-bg-layer-2');
+       
+       if (layer1 && layer2) {
+         const isDesktop = window.innerWidth >= 1024;
+         const img1 = isDesktop ? (data.styles.headerImgDesk1 || data.styles.headerImgMob1) : (data.styles.headerImgMob1 || data.styles.headerImgDesk1);
+         const img2 = isDesktop ? (data.styles.headerImgDesk2 || data.styles.headerImgMob2) : (data.styles.headerImgMob2 || data.styles.headerImgDesk2);
 
-          if (headerDissolveTimer) {
-            clearInterval(headerDissolveTimer);
-            headerDissolveTimer = null;
-          }
+         if (img1) layer1.style.backgroundImage = `url('${img1}')`;
+         if (img2) layer2.style.backgroundImage = `url('${img2}')`;
 
-          if (!img2 || img2.trim() === '') {
-            layer1.classList.remove('opacity-0');
-            layer1.classList.add('opacity-100');
-            layer2.classList.remove('opacity-100');
-            layer2.classList.add('opacity-0');
-          } else {
-            headerActiveLayer = 1;
-            layer1.classList.remove('opacity-0');
-            layer1.classList.add('opacity-100');
-            layer2.classList.remove('opacity-100');
-            layer2.classList.add('opacity-0');
+         if (headerDissolveTimer) {
+           clearInterval(headerDissolveTimer);
+           headerDissolveTimer = null;
+         }
 
-            headerDissolveTimer = setInterval(() => {
-              if (headerActiveLayer === 1) {
-                layer1.classList.replace('opacity-100', 'opacity-0');
-                layer2.classList.replace('opacity-0', 'opacity-100');
-                headerActiveLayer = 2;
-              } else {
-                layer2.classList.replace('opacity-100', 'opacity-0');
-                layer1.classList.replace('opacity-0', 'opacity-100');
-                headerActiveLayer = 1;
-              }
-            }, 6000);
-          }
-        }
+         if (!img2 || img2.trim() === '') {
+           layer1.classList.remove('opacity-0');
+           layer1.classList.add('opacity-100');
+           layer2.classList.remove('opacity-100');
+           layer2.classList.add('opacity-0');
+         } else {
+           headerActiveLayer = 1;
+           layer1.classList.remove('opacity-0');
+           layer1.classList.add('opacity-100');
+           layer2.classList.remove('opacity-100');
+           layer2.classList.add('opacity-0');
 
-        // Dynamic Header Image (Mobile vs Desktop)
-        if (headerEl) {
-          const isDesktop = window.innerWidth >= 1024;
-          const targetImg = isDesktop 
-            ? (data.styles.headerImgDesktop || data.styles.headerImgMobile) 
-            : (data.styles.headerImgMobile || data.styles.headerImgDesktop);
-            
-          if (targetImg) {
-            headerEl.style.backgroundImage = `url('${targetImg}')`;
-          }
-        }
+           headerDissolveTimer = setInterval(() => {
+             if (headerActiveLayer === 1) {
+               layer1.classList.replace('opacity-100', 'opacity-0');
+               layer2.classList.replace('opacity-0', 'opacity-100');
+               headerActiveLayer = 2;
+             } else {
+               layer2.classList.replace('opacity-100', 'opacity-0');
+               layer1.classList.replace('opacity-0', 'opacity-100');
+               headerActiveLayer = 1;
+             }
+           }, 6000);
+         }
+       }
 
-        // Title Visibility Toggle
-        if (titleContainer) {
-          if (data.styles.titleVisibility === 'HIDDEN') {
-            titleContainer.classList.add('invisible');
-          } else {
-            titleContainer.classList.remove('invisible');
-          }
-        }
+       // Dynamic Header Image (Mobile vs Desktop)
+       if (headerEl) {
+         const isDesktop = window.innerWidth >= 1024;
+         const targetImg = isDesktop 
+           ? (data.styles.headerImgDesktop || data.styles.headerImgMobile) 
+           : (data.styles.headerImgMobile || data.styles.headerImgDesktop);
+           
+         if (targetImg) {
+           headerEl.style.backgroundImage = `url('${targetImg}')`;
+         }
+       }
 
-        // Position Control Layer
-        if (alignBox) {
-          alignBox.classList.remove('justify-center', 'justify-start', 'justify-end');
-          alignBox.classList.add(data.styles.titlePosition || 'justify-center');
-        }
+       // Title Visibility Toggle
+       if (titleContainer) {
+         if (data.styles.titleVisibility === 'HIDDEN') {
+           titleContainer.classList.add('invisible');
+         } else {
+           titleContainer.classList.remove('invisible');
+         }
+       }
 
-        // Typography Configuration
-        if (h1Title1 && h1Title2) {
-          h1Title1.className = "expedition-title-font text-[44px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none tracking-wide";
-          h1Title2.className = "expedition-title-font text-[44px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none tracking-wide";
-          
-          h1Title1.style.color = "";
-          h1Title2.style.color = "";
-        }
-      } // <-- Properly closing if (data.styles)
+       // Position Control Layer
+       if (alignBox) {
+         alignBox.classList.remove('justify-center', 'justify-start', 'justify-end');
+         alignBox.classList.add(data.styles.titlePosition || 'justify-center');
+       }
+
+       // Typography Configuration
+       if (h1Title1 && h1Title2) {
+         h1Title1.className = "expedition-title-font text-[44px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none tracking-wide";
+         h1Title2.className = "expedition-title-font text-[44px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none tracking-wide";
+         h1Title1.style.color = "";
+         h1Title2.style.color = "";
+       }
+     }// <-- Properly closing if (data.styles)
       
       // 2. Check the global trip live status
       const lockScreen = document.getElementById('live-lock-screen');
