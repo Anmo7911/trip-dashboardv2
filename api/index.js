@@ -161,10 +161,11 @@ async function dashboard() {
   const checklistRevokeVisibility = text(setting(24, 'c')).toUpperCase() || 'VISIBLE';
 
   // 10-Second Dynamic Broadcast Popup Settings (Row 28)
-  const popupType = text(setting(28, 'b')).toUpperCase() || 'NOTIFICATION';
+const popupType = text(setting(28, 'b')).toUpperCase() || 'NOTIFICATION';
   const popupTitle = text(setting(28, 'c'));
   const popupMessage = text(setting(28, 'd'));
   const popupStatus = text(setting(28, 'e')).toUpperCase() || 'DISABLED';
+  const popupPushedAt = text(setting(28, 'f'));
 
   const categoryBudgets = { Food: 0, 'Entry Fee': 0, Fare: 0, Stay: 0, Water: 0, Other: 0 };
   let calculatedTotalBudget = 0;
@@ -304,7 +305,7 @@ async function dashboard() {
   const totalExpenses = Object.values(categorySpent).reduce((a, b) => a + b, 0);
   return {
     appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus, checklistVisibility, checklistRevokeVisibility,
-    popupConfig: { type: popupType, title: popupTitle, message: popupMessage, status: popupStatus },
+    popupConfig: { type: popupType, title: popupTitle, message: popupMessage, status: popupStatus, pushedAt: popupPushedAt },
     securityStatus: meta.security_status || 'normal',
     chiefCoordinatorSignature, eidStampImage, rawEidStamp, tripName, secondaryTitle,
     styles: { titleColor, subtitleColor, titleFontSize, titlePosition, rotationLines, titleVisibility, headerImgMob1, headerImgDesk1, headerImgMob2, headerImgDesk2 },
@@ -481,7 +482,8 @@ async function adminPushBroadcast(payload) {
     col_b: type || 'NOTIFICATION',
     col_c: title || '',
     col_d: message || '',
-    col_e: status || 'ENABLED'
+    col_e: status || 'ENABLED',
+    col_f: String(Date.now()) // Unique instant trigger key
   };
 
   const { data: rows } = await supabase.from('settings_sheet').select('*').eq('row_number', 28);
@@ -491,13 +493,7 @@ async function adminPushBroadcast(payload) {
     await supabase.from('settings_sheet').insert({ row_number: 28, ...patch });
   }
 
-  const chatNotice = `📢 [${(type || 'NOTIFICATION').toUpperCase()}] ${title ? title + ': ' : ''}${message || ''}`.trim();
-  await supabase.from('messages_sheet').insert({
-    col_a: new Date().toISOString(),
-    col_b: 'Admin',
-    col_c: chatNotice
-  });
-
+  // Chat message insertion removed completely
   return dashboard();
 }
 
