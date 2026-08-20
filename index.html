@@ -1738,7 +1738,7 @@
   </main>
 
 
-   <!-- =========================================
+  <!-- =========================================
      TAB: ITINERARY CHECKLIST VIEW
      ========================================= -->
 <main id="view-checklist" class="tab-content w-full max-w-md lg:max-w-3xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-8 px-4 lg:px-8 space-y-6 pb-24 relative z-20">
@@ -1754,21 +1754,21 @@
   </div>
 
   <!-- Important Tasks Group -->
-  <div class="space-y-2">
+  <div class="space-y-2.5">
     <div class="flex items-center gap-2 px-1">
-      <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-      <h3 class="text-[11px] font-black uppercase tracking-widest text-slate-800">Important</h3>
+      <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+      <h3 class="text-sm sm:text-base font-black uppercase tracking-wider text-slate-900">Important</h3>
     </div>
-    <div id="checklist-important-container" class="space-y-1.5 px-1"></div>
+    <div id="checklist-important-container" class="space-y-1 px-1"></div>
   </div>
 
   <!-- Optional Tasks Group -->
-  <div class="space-y-2 pt-2">
+  <div class="space-y-2.5 pt-3">
     <div class="flex items-center gap-2 px-1">
-      <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-      <h3 class="text-[11px] font-black uppercase tracking-widest text-slate-800">Optional</h3>
+      <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+      <h3 class="text-sm sm:text-base font-black uppercase tracking-wider text-slate-900">Optional</h3>
     </div>
-    <div id="checklist-optional-container" class="space-y-1.5 px-1"></div>
+    <div id="checklist-optional-container" class="space-y-1 px-1"></div>
   </div>
 
 </main>
@@ -5612,12 +5612,11 @@ function renderChecklistTab(items) {
     const isClaimed = item.isDone;
     const isMyClaim = isClaimed && item.claimedBy && item.claimedBy.toLowerCase() === currentUser.toLowerCase();
 
-    // Dark grey for unclaimed, Indigo for claimed
     const textColor = isClaimed ? 'text-indigo-600 font-black' : 'text-slate-700 font-semibold';
     const pointerDot = isClaimed ? 'bg-indigo-600 ring-4 ring-indigo-100' : 'bg-slate-400';
 
     return `
-      <div class="py-2 px-1 flex items-start justify-between gap-3 border-b border-slate-200/50 last:border-0 transition-colors">
+      <div class="py-2.5 px-1 flex items-start justify-between gap-3 border-b border-slate-200/50 last:border-0 transition-colors">
         <div class="flex items-start gap-2.5 min-w-0 flex-1">
           <!-- Pointer bullet -->
           <span class="w-1.5 h-1.5 rounded-full ${pointerDot} mt-1.5 shrink-0 transition-all"></span>
@@ -5625,7 +5624,7 @@ function renderChecklistTab(items) {
           <div class="min-w-0 flex-1">
             <p class="text-xs sm:text-sm ${textColor} leading-snug break-words">${item.title}</p>
             ${isClaimed ? `
-              <p class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest mt-0.5">
+              <p class="text-[10px] italic font-normal text-black mt-0.5">
                 Claimed by: ${item.claimedBy || 'Member'}
               </p>` : ''}
           </div>
