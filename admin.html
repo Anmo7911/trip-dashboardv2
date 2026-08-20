@@ -555,7 +555,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
+       <div class="grid grid-cols-3 gap-2">
           <div>
             <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">4-Digit PIN</label>
             <input type="text" id="memPin" maxlength="4" placeholder="1234" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1 tracking-widest">
@@ -565,6 +565,16 @@
             <select id="memVerification" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-indigo-400 font-bold mt-1">
               <option value="Verified">Verified</option>
               <option value="Unverified">Unverified</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Attendance</label>
+            <select id="memAttendance" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-emerald-400 font-bold mt-1">
+              <option value="Attendance Confirmed">Attendance Confirmed</option>
+              <option value="Awaiting Confirmation">Awaiting Confirmation</option>
+              <option value="Invitation Sent">Invitation Sent</option>
+              <option value="Stand By">Stand By</option>
+              <option value="Not Attending">Not Attending</option>
             </select>
           </div>
         </div>
@@ -1098,10 +1108,12 @@
             <img src="${m.img || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.name)}" class="w-10 h-10 rounded-xl object-cover border border-slate-800 bg-slate-950 shrink-0">
             <div class="min-w-0">
               <p class="text-xs font-black text-white truncate">${m.rawName || m.name}</p>
-              <div class="flex items-center gap-1.5 mt-0.5">
-                <span class="text-[9px] font-bold text-indigo-400 uppercase truncate">${m.role || 'Member'}</span>
-                <span class="text-[8px] font-black px-1.5 py-0.2 rounded uppercase ${m.verification === 'Verified' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${m.verification || 'Verified'}</span>
-              </div>
+              // Replace inside renderMembers template string:
+<div class="flex items-center gap-1.5 mt-0.5">
+  <span class="text-[9px] font-bold text-indigo-400 uppercase truncate">${m.role || 'Member'}</span>
+  <span class="text-[8px] font-black px-1.5 py-0.2 rounded uppercase ${m.verification === 'Verified' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${m.verification || 'Verified'}</span>
+  <span class="text-[8px] font-black px-1.5 py-0.2 rounded uppercase bg-slate-800 text-slate-300 truncate">${m.attendance || 'Confirmed'}</span>
+</div>
               <p class="text-[9px] font-mono text-slate-500">PIN: ${m.pin}</p>
             </div>
           </div>
@@ -1115,59 +1127,62 @@
     }
 
     function openMemberModal() {
-      document.getElementById('memberModalTitle').innerText = 'Add Member';
-      document.getElementById('memberForm').reset();
-      document.getElementById('memId').value = '';
-      document.getElementById('memImgUrl').value = '';
-      document.getElementById('memVerification').value = 'Verified';
-      document.getElementById('uploadPreview').innerHTML = '<i data-lucide="user" class="w-7 h-7 text-slate-500 mb-0.5"></i><p class="text-[8px] font-bold text-slate-400 text-center">Upload Photo</p>';
-      document.getElementById('memberModal').classList.remove('hidden');
-      lucide.createIcons();
-    }
+  document.getElementById('memberModalTitle').innerText = 'Add Member';
+  document.getElementById('memberForm').reset();
+  document.getElementById('memId').value = '';
+  document.getElementById('memImgUrl').value = '';
+  document.getElementById('memVerification').value = 'Verified';
+  document.getElementById('memAttendance').value = 'Attendance Confirmed'; // <-- ADD THIS
+  document.getElementById('uploadPreview').innerHTML = '<i data-lucide="user" class="w-7 h-7 text-slate-500 mb-0.5"></i><p class="text-[8px] font-bold text-slate-400 text-center">Upload Photo</p>';
+  document.getElementById('memberModal').classList.remove('hidden');
+  lucide.createIcons();
+}
 
     function editMember(m) {
-      document.getElementById('memberModalTitle').innerText = 'Edit Member';
-      document.getElementById('memId').value = m.id || '';
-      document.getElementById('memName').value = m.rawName || m.name;
-      document.getElementById('memRole').value = m.role || 'Member';
-      document.getElementById('memPin').value = m.pin || '1234';
-      document.getElementById('memVerification').value = m.verification || 'Verified';
-      document.getElementById('memMobile').value = m.mobile || '';
-      document.getElementById('memEmail').value = m.email || '';
-      document.getElementById('memRoleDetail').value = m.assignedRoleDetail || '';
-      document.getElementById('memImgUrl').value = m.rawImg || m.img || '';
-      if (m.img) {
-        document.getElementById('uploadPreview').innerHTML = `<img src="${m.img}" class="w-full h-full rounded-2xl object-cover">`;
-      }
-      document.getElementById('memberModal').classList.remove('hidden');
-    }
+  document.getElementById('memberModalTitle').innerText = 'Edit Member';
+  document.getElementById('memId').value = m.id || '';
+  document.getElementById('memName').value = m.rawName || m.name;
+  document.getElementById('memRole').value = m.role || 'Member';
+  document.getElementById('memPin').value = m.pin || '1234';
+  document.getElementById('memVerification').value = m.verification || 'Verified';
+  document.getElementById('memAttendance').value = m.attendance || 'Attendance Confirmed'; // <-- ADD THIS
+  document.getElementById('memMobile').value = m.mobile || '';
+  document.getElementById('memEmail').value = m.email || '';
+  document.getElementById('memRoleDetail').value = m.assignedRoleDetail || '';
+  document.getElementById('memImgUrl').value = m.rawImg || m.img || '';
+  if (m.img) {
+    document.getElementById('uploadPreview').innerHTML = `<img src="${m.img}" class="w-full h-full rounded-2xl object-cover">`;
+  }
+  document.getElementById('memberModal').classList.remove('hidden');
+}
 
     function closeMemberModal() { document.getElementById('memberModal').classList.add('hidden'); }
 
     async function saveMemberForm(e) {
-      e.preventDefault();
-      const payload = {
-        id: document.getElementById('memId').value ? Number(document.getElementById('memId').value) : null,
-        name: document.getElementById('memName').value,
-        role: document.getElementById('memRole').value,
-        pin: document.getElementById('memPin').value,
-        verification: document.getElementById('memVerification').value,
-        img: document.getElementById('memImgUrl').value,
-        mobile: document.getElementById('memMobile').value,
-        email: document.getElementById('memEmail').value,
-        assignedRoleDetail: document.getElementById('memRoleDetail').value
-      };
+  e.preventDefault();
+  const payload = {
+    id: document.getElementById('memId').value ? Number(document.getElementById('memId').value) : null,
+    name: document.getElementById('memName').value,
+    role: document.getElementById('memRole').value,
+    pin: document.getElementById('memPin').value,
+    verification: document.getElementById('memVerification').value,
+    attendance: document.getElementById('memAttendance').value, // <-- ADD THIS
+    img: document.getElementById('memImgUrl').value,
+    mobile: document.getElementById('memMobile').value,
+    email: document.getElementById('memEmail').value,
+    assignedRoleDetail: document.getElementById('memRoleDetail').value
+  };
 
-      try {
-        const fresh = await adminApi('admin-save-member', payload);
-        globalData = fresh;
-        renderMembers(fresh.members);
-        closeMemberModal();
-        showAlert("Member Saved", `${payload.name} updated in squad`);
-      } catch (err) {
-        showAlert("Failed", err.message, true);
-      }
-    }
+  try {
+    const fresh = await adminApi('admin-save-member', payload);
+    globalData = fresh;
+    renderMembers(fresh.members);
+    closeMemberModal();
+    showAlert("Member Saved", `${payload.name} updated in squad`);
+  } catch (err) {
+    showAlert("Failed", err.message, true);
+  }
+}
 
     async function deleteMember(id) {
       if (!confirm('Delete this member from squad?')) return;
