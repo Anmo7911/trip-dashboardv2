@@ -1748,7 +1748,7 @@
     <div id="archives-list-view" class="space-y-6">
       <div class="bg-white rounded-[28px] lg:rounded-[32px] p-6 lg:p-8 border border-slate-200/80 shadow-sm space-y-5 relative">
         
-        <!-- Close Button -->
+        <!-- Close Button (Returns to spend tab) -->
         <button type="button" onclick="showTab('spend', document.querySelector('.nav-btn'))" class="absolute top-5 right-5 sm:top-6 sm:right-6 w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center active:scale-90 transition-all outline-none border border-slate-200 z-10" title="Close">
           <i data-lucide="x" class="w-4 h-4 stroke-[2.5]"></i>
         </button>
@@ -1777,14 +1777,14 @@
       <div id="archives-page-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 pb-12"></div>
     </div>
 
-    <!-- 2. EMBEDDED ARCHIVE GALLERY VIEW -->
-    <div id="archives-gallery-view" class="hidden flex-col bg-white rounded-[28px] lg:rounded-[32px] p-4 sm:p-6 lg:p-8 border border-slate-200/80 shadow-sm space-y-4 pb-8">
+    <!-- 2. ARCHIVE GALLERY VIEW (2-Column Grid on Mobile & Full Desktop Support) -->
+    <div id="archives-gallery-view" class="hidden bg-white rounded-[28px] lg:rounded-[32px] p-4 sm:p-6 lg:p-8 border border-slate-200/80 shadow-sm flex-col space-y-4 pb-8">
       
-      <!-- Gallery Header -->
+      <!-- Top Action Bar with Working Back Button -->
       <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
         <div class="flex items-center gap-2.5 min-w-0 pr-2">
-          <button type="button" onclick="closeArchiveGalleryPage()" class="w-8 h-8 sm:w-9 sm:h-9 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl flex items-center justify-center active:scale-90 transition-all shrink-0">
-            <i data-lucide="arrow-left" class="w-4 h-4 stroke-[2.5]"></i>
+          <button type="button" id="btn-back-archive-gallery" onclick="closeArchiveGalleryPage()" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl flex items-center justify-center active:scale-90 transition-all border border-slate-200 shrink-0 cursor-pointer" title="Back to list">
+            <i data-lucide="arrow-left" class="w-5 h-5 stroke-[2.5]"></i>
           </button>
           <div class="min-w-0">
             <h3 id="archive-gallery-title" class="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wide truncate">Gallery Preview</h3>
@@ -1792,18 +1792,18 @@
           </div>
         </div>
 
-        <a id="archive-gallery-ext-link" href="#" target="_blank" rel="noopener noreferrer" class="px-2.5 sm:px-4 py-1.5 sm:py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[9px] sm:text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0">
+        <a id="archive-gallery-ext-link" href="#" target="_blank" rel="noopener noreferrer" class="px-3 sm:px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0">
           <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
           <span class="hidden sm:inline">Open in Drive</span>
         </a>
       </div>
 
-      <!-- 2-Column Responsive Viewport Container -->
+      <!-- Iframe Container with 2-Column Mobile Breakpoint Scale Hack -->
       <div class="w-full h-[78vh] sm:h-[72vh] bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 relative">
         <iframe 
           id="archive-gallery-iframe"
           src="" 
-          class="absolute top-0 left-1/2 -translate-x-1/2 w-[124%] h-[124%] sm:w-full sm:h-full origin-top scale-[0.81] sm:scale-100 sm:relative sm:left-0 sm:translate-x-0 border-0" 
+          class="absolute top-0 left-1/2 -translate-x-1/2 w-[138%] h-[138%] sm:w-full sm:h-full origin-top scale-[0.725] sm:scale-100 sm:relative sm:left-0 sm:translate-x-0 border-0" 
           allow="autoplay">
         </iframe>
       </div>
@@ -4560,7 +4560,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       lucide.createIcons();
     }
 
-    function openArchiveGalleryPage(tripName, galleryUrl) {
+  function openArchiveGalleryPage(tripName, galleryUrl) {
   const listView = document.getElementById('archives-list-view');
   const galleryView = document.getElementById('archives-gallery-view');
   const iframe = document.getElementById('archive-gallery-iframe');
@@ -4579,9 +4579,28 @@ const places = payload.places.filter(p => p.tripDay || p.location);
   if (iframe) iframe.src = embedUrl;
   if (extLink) extLink.href = galleryUrl;
 
-  listView.classList.add('hidden');
+  listView.style.display = 'none';
   galleryView.classList.remove('hidden');
-  galleryView.classList.add('flex');
+  galleryView.style.display = 'flex';
+  
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  lucide.createIcons();
+}
+
+function closeArchiveGalleryPage() {
+  const listView = document.getElementById('archives-list-view');
+  const galleryView = document.getElementById('archives-gallery-view');
+  const iframe = document.getElementById('archive-gallery-iframe');
+
+  if (iframe) iframe.src = '';
+  if (galleryView) {
+    galleryView.classList.add('hidden');
+    galleryView.style.display = 'none';
+  }
+  if (listView) {
+    listView.style.display = 'block';
+  }
+  
   window.scrollTo({ top: 0, behavior: 'smooth' });
   lucide.createIcons();
 }
