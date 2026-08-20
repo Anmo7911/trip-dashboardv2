@@ -4255,28 +4255,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       }
     }
 
-    <!-- =========================================
-     MODAL: CHECKLIST CLAIM / REVOKE PROMPT
-     ========================================= -->
-<div id="checklist-confirm-modal" class="hidden fixed inset-0 z-[10000] bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
-  <div class="max-w-xs w-full bg-white rounded-3xl p-6 shadow-2xl text-center space-y-4 border border-slate-100">
-    <div id="chk-modal-icon-container" class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto border border-indigo-100 shadow-inner">
-      <i id="chk-modal-icon" data-lucide="check" class="w-6 h-6 stroke-[3]"></i>
-    </div>
-    <div>
-      <h3 id="chk-modal-title" class="text-sm font-black uppercase tracking-wider text-slate-800">Confirm Claim</h3>
-      <p id="chk-modal-desc" class="text-xs font-semibold text-slate-500 mt-1">Do you want to claim this task?</p>
-    </div>
-    <div class="grid grid-cols-2 gap-2 pt-1">
-      <button type="button" onclick="closeChecklistConfirmModal()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black rounded-xl text-xs uppercase tracking-wider active:scale-95 transition">
-        Cancel
-      </button>
-      <button type="button" id="chk-modal-confirm-btn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-wider active:scale-95 transition shadow-md">
-        Confirm
-      </button>
-    </div>
-  </div>
-</div>
+  
 
     
 
@@ -5714,6 +5693,37 @@ async function executePendingChecklistAction() {
     
 
   </script>
+
+
+    </script>
+
+  <!-- =========================================
+       MODAL: CHECKLIST CLAIM / REVOKE PROMPT
+       ========================================= -->
+  <div id="checklist-confirm-modal" class="hidden fixed inset-0 z-[10000] bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="max-w-xs w-full bg-white rounded-3xl p-6 shadow-2xl text-center space-y-4 border border-slate-100">
+      <div id="chk-modal-icon-container" class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto border border-indigo-100 shadow-inner">
+        <i id="chk-modal-icon" data-lucide="check" class="w-6 h-6 stroke-[3]"></i>
+      </div>
+      <div>
+        <h3 id="chk-modal-title" class="text-sm font-black uppercase tracking-wider text-slate-800">Confirm Claim</h3>
+        <p id="chk-modal-desc" class="text-xs font-semibold text-slate-500 mt-1">Do you want to claim this task?</p>
+      </div>
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button type="button" onclick="closeChecklistConfirmModal()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black rounded-xl text-xs uppercase tracking-wider active:scale-95 transition">
+          Cancel
+        </button>
+        <button type="button" id="chk-modal-confirm-btn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-wider active:scale-95 transition shadow-md">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================
+       GLOBAL TOAST COMPONENT (Hidden by default)
+       ========================================= -->
+  <div id="global-toast" ...
 
   <!-- =========================================
        GLOBAL TOAST COMPONENT (Hidden by default)
