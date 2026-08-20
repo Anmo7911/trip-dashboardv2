@@ -5601,6 +5601,14 @@ function renderChecklistTab(items) {
 
   const currentUser = localStorage.getItem('trekLoggedInUser') || '';
   const list = items || [];
+  const membersList = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.members) ? globalActiveDataPayloadBackup.members : (cachedMembersList || []);
+
+  // Helper to get post/designation/role in place of name
+  const getMemberPost = (userName) => {
+    if (!userName) return 'Member';
+    const found = membersList.find(m => (m.name && m.name.toLowerCase() === userName.toLowerCase()) || (m.rawName && m.rawName.toLowerCase() === userName.toLowerCase()));
+    return (found && (found.designation || found.memberRole || found.role)) ? (found.designation || found.memberRole || found.role) : userName;
+  };
 
   // Sorting: Claimed items go on top
   const sortedList = [...list].sort((a, b) => (b.isDone === a.isDone ? 0 : b.isDone ? 1 : -1));
@@ -5625,7 +5633,7 @@ function renderChecklistTab(items) {
             <p class="text-xs sm:text-sm ${textColor} leading-snug break-words">${item.title}</p>
             ${isClaimed ? `
               <p class="text-[10px] italic font-normal text-black mt-0.5">
-                Claimed by: ${item.claimedBy || 'Member'}
+                Claimed by: ${getMemberPost(item.claimedBy)}
               </p>` : ''}
           </div>
         </div>
