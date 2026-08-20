@@ -1739,7 +1739,7 @@
   </main>
 
 
-  <!-- =========================================
+ <!-- =========================================
        TAB 5: PAST TRIPS ARCHIVE FULL VIEW
        ========================================= -->
   <main id="view-archives" class="tab-content w-full max-w-md lg:max-w-5xl mx-auto pt-4 px-4 lg:p-8 space-y-6">
@@ -1777,31 +1777,33 @@
       <div id="archives-page-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 pb-12"></div>
     </div>
 
-    <!-- 2. INLINE ARCHIVE GALLERY PAGE VIEW -->
-    <div id="archives-gallery-view" class="hidden bg-white rounded-[28px] lg:rounded-[32px] p-6 lg:p-8 border border-slate-200/80 shadow-sm space-y-5 relative flex-col pb-12">
+    <!-- 2. EMBEDDED ARCHIVE GALLERY VIEW -->
+    <div id="archives-gallery-view" class="hidden flex-col bg-white rounded-[28px] lg:rounded-[32px] p-4 sm:p-6 lg:p-8 border border-slate-200/80 shadow-sm space-y-4 pb-8">
       
-      <div class="flex items-center justify-between border-b border-slate-100 pb-5">
-        <div class="flex items-center gap-3">
-          <button type="button" onclick="closeArchiveGalleryPage()" class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all active:scale-95 border border-slate-200 shrink-0" title="Back to Trips">
-            <i data-lucide="arrow-left" class="w-5 h-5 stroke-[2.5]"></i>
+      <!-- Gallery Header -->
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3.5">
+        <div class="flex items-center gap-2.5 min-w-0 pr-2">
+          <button type="button" onclick="closeArchiveGalleryPage()" class="w-8 h-8 sm:w-9 sm:h-9 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl flex items-center justify-center active:scale-90 transition-all shrink-0">
+            <i data-lucide="arrow-left" class="w-4 h-4 stroke-[2.5]"></i>
           </button>
-          <div>
-            <h2 id="archive-gallery-title" class="text-base lg:text-2xl font-black text-slate-800 tracking-tight uppercase truncate">Trip Gallery</h2>
-            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mt-0.5">Google Drive Media Vault</p>
+          <div class="min-w-0">
+            <h3 id="archive-gallery-title" class="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wide truncate">Gallery Preview</h3>
+            <p class="text-[8.5px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">Google Drive Media Vault</p>
           </div>
         </div>
 
-        <a id="archive-gallery-ext-link" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 shadow-sm active:scale-95 shrink-0">
-          <i data-lucide="external-link" class="w-4 h-4"></i>
+        <a id="archive-gallery-ext-link" href="#" target="_blank" rel="noopener noreferrer" class="px-2.5 sm:px-4 py-1.5 sm:py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[9px] sm:text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
           <span class="hidden sm:inline">Open in Drive</span>
         </a>
       </div>
 
-      <div class="w-full h-[72vh] bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 relative">
+      <!-- 2-Column Responsive Viewport Container -->
+      <div class="w-full h-[78vh] sm:h-[72vh] bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 relative">
         <iframe 
           id="archive-gallery-iframe"
           src="" 
-          class="w-full h-full border-0" 
+          class="absolute top-0 left-1/2 -translate-x-1/2 w-[124%] h-[124%] sm:w-full sm:h-full origin-top scale-[0.81] sm:scale-100 sm:relative sm:left-0 sm:translate-x-0 border-0" 
           allow="autoplay">
         </iframe>
       </div>
@@ -4559,44 +4561,30 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     }
 
     function openArchiveGalleryPage(tripName, galleryUrl) {
-      const listView = document.getElementById('archives-list-view');
-      const galleryView = document.getElementById('archives-gallery-view');
-      const iframe = document.getElementById('archive-gallery-iframe');
-      const title = document.getElementById('archive-gallery-title');
-      const extLink = document.getElementById('archive-gallery-ext-link');
+  const listView = document.getElementById('archives-list-view');
+  const galleryView = document.getElementById('archives-gallery-view');
+  const iframe = document.getElementById('archive-gallery-iframe');
+  const title = document.getElementById('archive-gallery-title');
+  const extLink = document.getElementById('archive-gallery-ext-link');
 
-      if (!galleryUrl || !galleryView || !listView) return;
+  if (!galleryUrl || !galleryView || !listView) return;
 
-      let embedUrl = galleryUrl;
-      const folderMatch = galleryUrl.match(/folders\/([a-zA-Z0-9_-]+)/);
-      if (folderMatch) {
-        embedUrl = `https://drive.google.com/embeddedfolderview?id=${folderMatch[1]}#grid`;
-      }
+  let embedUrl = galleryUrl;
+  const folderMatch = galleryUrl.match(/folders\/([a-zA-Z0-9_-]+)/);
+  if (folderMatch) {
+    embedUrl = `https://drive.google.com/embeddedfolderview?id=${folderMatch[1]}#grid`;
+  }
 
-      if (title) title.innerText = `${tripName} Gallery`;
-      if (iframe) iframe.src = embedUrl;
-      if (extLink) extLink.href = galleryUrl;
+  if (title) title.innerText = `${tripName} Gallery`;
+  if (iframe) iframe.src = embedUrl;
+  if (extLink) extLink.href = galleryUrl;
 
-      listView.classList.add('hidden');
-      galleryView.classList.remove('hidden');
-      galleryView.classList.add('flex');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      lucide.createIcons();
-    }
-
-    function closeArchiveGalleryPage() {
-      const listView = document.getElementById('archives-list-view');
-      const galleryView = document.getElementById('archives-gallery-view');
-      const iframe = document.getElementById('archive-gallery-iframe');
-
-      if (iframe) iframe.src = "";
-      if (galleryView) {
-        galleryView.classList.add('hidden');
-        galleryView.classList.remove('flex');
-      }
-      if (listView) listView.classList.remove('hidden');
-      lucide.createIcons();
-    }
+  listView.classList.add('hidden');
+  galleryView.classList.remove('hidden');
+  galleryView.classList.add('flex');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  lucide.createIcons();
+}
 
     // ==========================================
     // SQUAD CHAT MODULE LOGIC
