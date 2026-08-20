@@ -105,6 +105,9 @@
     <button onclick="switchTab('settings')" id="tabBtn-settings" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-indigo-500 text-indigo-400 flex items-center gap-1.5 whitespace-nowrap shrink-0">
       <i data-lucide="sliders" class="w-3.5 h-3.5"></i> Switches
     </button>
+    <button onclick="switchTab('checklist')" id="tabBtn-checklist" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap shrink-0">
+      <i data-lucide="check-square" class="w-3.5 h-3.5"></i> Checklist
+    </button>
     <button onclick="switchTab('members')" id="tabBtn-members" class="px-3 py-3 text-[11px] font-black uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-1.5 whitespace-nowrap shrink-0">
       <i data-lucide="users" class="w-3.5 h-3.5"></i> Members
     </button>
@@ -133,7 +136,7 @@
        ========================================= -->
   <main class="flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6">
 
-    <!-- 1. SWITCHES & SETTINGS (LEFT: TRIP HEADER & DESIGN, RIGHT: GLOBAL SWITCHES) -->
+    <!-- 1. SWITCHES & SETTINGS -->
     <section id="pane-settings" class="tab-pane active space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         
@@ -155,8 +158,6 @@
             <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Destination Subtitle</label>
             <input type="text" id="setTripSub" onchange="saveSetting(2, 'c', this.value, 'Subtitle updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1">
           </div>
-
-          
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
             <div>
@@ -194,16 +195,14 @@
             <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Emergency Alert Banner</label>
             <input type="text" id="setWarning" onchange="saveSetting(8, 'b', this.value, 'Alert banner saved')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-rose-400 font-bold mt-1">
           </div>
-        </div>
 
-        <!-- Dual Header Images Config (Mobile & Desktop) -->
+          <!-- Dual Header Images Config -->
           <div class="space-y-3 pt-3 border-t border-slate-800">
             <div class="flex items-center justify-between">
               <h4 class="text-[10px] font-black uppercase tracking-wider text-indigo-400">Header Background Images (6s Dissolve)</h4>
               <span class="text-[8px] text-slate-500 font-bold">Image 2 is optional</span>
             </div>
 
-            <!-- Image 1 Row -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Mobile Image 1 URL</label>
@@ -215,7 +214,6 @@
               </div>
             </div>
 
-            <!-- Image 2 Row -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Mobile Image 2 URL</label>
@@ -227,12 +225,25 @@
               </div>
             </div>
           </div>
+        </div>
 
         <!-- RIGHT COLUMN: GLOBAL APP SWITCHES -->
         <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
           <h3 class="text-xs font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
             <i data-lucide="toggle-left" class="w-4 h-4"></i> Global App Switches
           </h3>
+
+          <!-- Itinerary Checklist Visibility Switch -->
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
+            <div class="pr-2">
+              <p class="text-xs font-bold text-white">Itinerary Checklist Bookmark</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Show or hide checklist floating button</p>
+            </div>
+            <select onchange="saveSetting(24, 'b', this.value, 'Checklist visibility updated')" id="setChecklistVisibility" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+              <option value="VISIBLE">SHOW (Visible)</option>
+              <option value="HIDDEN">HIDE (Hidden)</option>
+            </select>
+          </div>
 
           <!-- Header Title Visibility Switch -->
           <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
@@ -324,7 +335,38 @@
       </div>
     </section>
 
-    <!-- 2. MEMBERS TAB -->
+    <!-- 2. CHECKLIST MANAGER TAB -->
+    <section id="pane-checklist" class="tab-pane space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Itinerary Checklist Tasks</h3>
+          <p class="text-[10px] font-bold text-indigo-400">Important & Optional trip responsibilities</p>
+        </div>
+        <button onclick="openChecklistModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 transition">
+          <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Add Task
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Important Section -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+          <h4 class="text-xs font-black uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
+            <i data-lucide="alert-circle" class="w-4 h-4"></i> Important Tasks
+          </h4>
+          <div id="adminImportantChecklist" class="space-y-2"></div>
+        </div>
+
+        <!-- Optional Section -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+          <h4 class="text-xs font-black uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
+            <i data-lucide="check-circle-2" class="w-4 h-4"></i> Optional Tasks
+          </h4>
+          <div id="adminOptionalChecklist" class="space-y-2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. MEMBERS TAB -->
     <section id="pane-members" class="tab-pane space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Squad Members</h3>
@@ -333,12 +375,10 @@
         </button>
       </div>
 
-      <div id="membersAdminGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        <!-- Rendered by JS -->
-      </div>
+      <div id="membersAdminGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
     </section>
 
-    <!-- 3. ROUTE & TIMELINE TAB (DRAGGABLE / LAYER-WISE UP-DOWN) -->
+    <!-- 4. ROUTE & TIMELINE TAB -->
     <section id="pane-places" class="tab-pane space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Route & Transit Stops</h3>
@@ -347,12 +387,10 @@
         </button>
       </div>
 
-      <div id="placesAdminCards" class="space-y-3">
-        <!-- Rendered as mobile-first cards by JS -->
-      </div>
+      <div id="placesAdminCards" class="space-y-3"></div>
     </section>
 
-    <!-- 4. LEDGER TAB (SEARCH + TIME + EDIT DETAILS) -->
+    <!-- 5. LEDGER TAB -->
     <section id="pane-ledger" class="tab-pane space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
@@ -360,19 +398,16 @@
           <div id="ledgerStats" class="text-[11px] font-bold text-emerald-400"></div>
         </div>
         
-        <!-- Ledger Search Bar -->
         <div class="relative w-full sm:w-64">
           <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
           <input type="text" id="ledgerSearchInput" oninput="filterLedger(this.value)" placeholder="Search by name, category, UTR..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white font-bold outline-none focus:border-indigo-500">
         </div>
       </div>
 
-      <div id="ledgerAdminCards" class="space-y-3">
-        <!-- Rendered as mobile-first cards by JS -->
-      </div>
+      <div id="ledgerAdminCards" class="space-y-3"></div>
     </section>
 
-    <!-- 5. BUDGET & BUDGET ALLOCATION TAB (NEW) -->
+    <!-- 6. BUDGET ALLOCATION TAB -->
     <section id="pane-budget" class="tab-pane space-y-4">
       <div class="flex items-center justify-between">
         <div>
@@ -384,12 +419,10 @@
         </button>
       </div>
 
-      <div id="budgetAdminCards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-        <!-- Rendered by JS -->
-      </div>
+      <div id="budgetAdminCards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"></div>
     </section>
 
-    <!-- 6. MEDIA & DOCUMENTS HUB (FILE/IMAGE UPLOADS + CARD BACKGROUNDS) -->
+    <!-- 7. MEDIA & DOCUMENTS HUB -->
     <section id="pane-media" class="tab-pane space-y-4">
       <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Direct File & Image Uploads</h3>
 
@@ -438,19 +471,17 @@
           </div>
         </div>
 
-        <!-- Card Backgrounds Upload (Coordinator & Member) -->
+        <!-- Card Backgrounds Upload -->
         <div class="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-2xl space-y-3">
           <h4 class="text-xs font-bold text-white flex items-center gap-2"><i data-lucide="image" class="w-4 h-4 text-emerald-400"></i> Member & Coordinator Card Backgrounds</h4>
           
           <div class="grid grid-cols-2 gap-2">
-            <!-- Coordinator BG -->
             <div onclick="document.getElementById('coordBgInput').click()" class="border-2 border-dashed border-slate-800 hover:border-emerald-500 rounded-xl p-3 text-center cursor-pointer bg-slate-950 transition flex flex-col items-center">
               <input type="file" id="coordBgInput" accept="image/*" class="hidden" onchange="uploadDirectAsset(this, 'member_meta', 'coordinator_bg', null, 'Coordinator Card BG Uploaded')">
               <i data-lucide="upload-cloud" class="w-5 h-5 text-slate-500 mb-1"></i>
               <p class="text-[10px] font-bold text-slate-300">Coordinator BG</p>
             </div>
             
-            <!-- Member BG -->
             <div onclick="document.getElementById('memberBgInput').click()" class="border-2 border-dashed border-slate-800 hover:border-emerald-500 rounded-xl p-3 text-center cursor-pointer bg-slate-950 transition flex flex-col items-center">
               <input type="file" id="memberBgInput" accept="image/*" class="hidden" onchange="uploadDirectAsset(this, 'member_meta', 'member_bg', null, 'Member Card BG Uploaded')">
               <i data-lucide="upload-cloud" class="w-5 h-5 text-slate-500 mb-1"></i>
@@ -462,7 +493,7 @@
       </div>
     </section>
 
-    <!-- 7. PAST TRIPS ARCHIVE TAB -->
+    <!-- 8. PAST TRIPS ARCHIVE TAB -->
     <section id="pane-archives" class="tab-pane space-y-4">
       <div class="flex items-center justify-between">
         <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Past Trips Archive</h3>
@@ -471,12 +502,10 @@
         </button>
       </div>
 
-      <div id="archivesAdminCards" class="space-y-3">
-        <!-- Rendered by JS -->
-      </div>
+      <div id="archivesAdminCards" class="space-y-3"></div>
     </section>
 
-    <!-- 8. CHAT HUB TAB -->
+    <!-- 9. CHAT HUB TAB -->
     <section id="pane-chat" class="tab-pane space-y-4">
       <div class="flex items-center justify-between">
         <div>
@@ -488,15 +517,9 @@
         </button>
       </div>
 
-      <!-- Chat Container -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden flex flex-col h-[600px]">
-        
-        <!-- Messages Area -->
-        <div id="adminChatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-950/50">
-          <!-- Rendered by JS -->
-        </div>
+        <div id="adminChatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-950/50"></div>
 
-        <!-- Reply Context Banner -->
         <div id="adminReplyBanner" class="hidden px-4 py-2 bg-slate-800/90 border-t border-slate-700 flex items-center justify-between">
           <div class="flex items-center gap-2 text-xs truncate">
             <i data-lucide="reply" class="w-3.5 h-3.5 text-indigo-400"></i>
@@ -506,21 +529,52 @@
           <button type="button" onclick="cancelAdminReply()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
 
-        <!-- Input Box Area -->
         <form id="adminChatForm" onsubmit="sendAdminMessage(event)" class="p-3 bg-slate-900 border-t border-slate-800 flex items-center gap-2">
           <input type="text" id="adminChatInput" placeholder="Type a message or announcement as Admin..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white font-bold outline-none focus:border-indigo-500" required>
           <button type="submit" id="adminSendBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black px-4 py-2.5 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest flex items-center gap-1.5 shadow-md">
             <i data-lucide="send" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Send</span>
           </button>
         </form>
-
       </div>
     </section>
 
   </main>
 
   <!-- =========================================
-       MODAL: MEMBER (EDIT LAYOUT: PHOTO TOP-LEFT, INPUTS TOP-RIGHT)
+       MODAL: CHECKLIST ITEM (NEW)
+       ========================================= -->
+  <div id="checklistModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 my-8">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+        <h3 id="checklistModalTitle" class="text-xs font-black uppercase tracking-wider text-white">Checklist Task</h3>
+        <button onclick="closeChecklistModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="checklistForm" onsubmit="saveChecklistForm(event)" class="space-y-3 text-left">
+        <input type="hidden" id="chkId">
+        
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Task Title / Item Name</label>
+          <input type="text" id="chkTitle" placeholder="e.g. Bring Portable Power Bank" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1 outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Section</label>
+          <select id="chkSection" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-indigo-400 font-bold mt-1 outline-none">
+            <option value="Important">Important</option>
+            <option value="Optional">Optional</option>
+          </select>
+        </div>
+
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest">
+          Save Task
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================
+       MODAL: MEMBER
        ========================================= -->
   <div id="memberModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div class="max-w-lg w-full bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 my-8">
@@ -532,7 +586,6 @@
       <form id="memberForm" onsubmit="saveMemberForm(event)" class="space-y-3 text-left">
         <input type="hidden" id="memId">
         
-        <!-- Profile Picture on Left, Name & Role on Right -->
         <div class="flex gap-3.5 items-start">
           <div id="dropZone" onclick="document.getElementById('memPhotoFile').click()" class="w-24 h-24 border-2 border-dashed border-slate-800 hover:border-indigo-500 rounded-2xl p-1 text-center cursor-pointer bg-slate-950 transition shrink-0 flex flex-col items-center justify-center overflow-hidden">
             <input type="file" id="memPhotoFile" accept="image/*" class="hidden" onchange="handlePhotoSelect(this)">
@@ -786,7 +839,6 @@
           </div>
         </div>
 
-        <!-- File Upload: Past Trip Report -->
         <div>
           <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Trip Report Document (Image / PDF)</label>
           <div onclick="document.getElementById('archReportFile').click()" class="mt-1 border-2 border-dashed border-slate-800 hover:border-indigo-500 rounded-xl p-3 text-center cursor-pointer bg-slate-950 transition">
@@ -799,7 +851,6 @@
           <input type="hidden" id="archReport">
         </div>
 
-       <!-- Direct URL Input: Past Trip Drive Gallery -->
         <div>
           <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Drive Gallery Folder / Media URL</label>
           <input type="text" id="archGallery" placeholder="https://drive.google.com/drive/folders/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1 outline-none focus:border-indigo-500">
@@ -941,8 +992,10 @@
 
       document.getElementById(`pane-${tab}`).classList.add('active');
       const btn = document.getElementById(`tabBtn-${tab}`);
-      btn.classList.add('border-indigo-500', 'text-indigo-400');
-      btn.classList.remove('border-transparent', 'text-slate-400');
+      if (btn) {
+        btn.classList.add('border-indigo-500', 'text-indigo-400');
+        btn.classList.remove('border-transparent', 'text-slate-400');
+      }
     }
 
     async function loadAdminDashboard() {
@@ -950,6 +1003,7 @@
         const data = await adminApi('dashboard');
         globalData = data;
         renderSettings(data);
+        renderChecklist(data.checklist);
         renderMembers(data.members);
         renderPlaces(data.places);
         renderLedger(data.transactions, data.stats);
@@ -975,9 +1029,8 @@
       document.getElementById('setContriStatus').value = d.contributionToggle || 'ACTIVE';
       document.getElementById('setSignOffStatus').value = d.signOffStatus || 'closed';
       document.getElementById('setSecurityStatus').value = d.securityStatus || 'normal';
+      document.getElementById('setChecklistVisibility').value = d.checklistVisibility || 'VISIBLE';
       
-      // Load custom typography pack values safely from nested style response payload
-      // Load custom typography pack values safely from nested style response payload
       if (d.styles) {
         document.getElementById('setTitleSize').value = d.styles.titleFontSize || 'xl';
         document.getElementById('setTitlePos').value = d.styles.titlePosition || 'justify-center';
@@ -989,6 +1042,7 @@
         document.getElementById('setHeaderDesk2').value = d.styles.headerImgDesk2 || '';
       }
     }
+
     async function saveSetting(row, col, val, msg = "Setting Saved") {
       try {
         const fresh = await adminApi('admin-update-setting', { rowNumber: row, col: col, value: val });
@@ -1011,7 +1065,87 @@
       }
     }
 
-    // Direct Asset Upload (Guidelines, Report, Stamp, Card Backgrounds)
+    // CHECKLIST ADMIN ENGINE
+    function renderChecklist(items) {
+      const impCont = document.getElementById('adminImportantChecklist');
+      const optCont = document.getElementById('adminOptionalChecklist');
+      if (!impCont || !optCont) return;
+
+      const list = items || [];
+      const importantItems = list.filter(i => (i.section || 'Important').toLowerCase() === 'important');
+      const optionalItems = list.filter(i => (i.section || '').toLowerCase() === 'optional');
+
+      const renderItem = (item) => `
+        <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex items-center justify-between gap-2">
+          <div class="min-w-0 flex-1">
+            <p class="text-xs font-bold text-white truncate">${item.title}</p>
+            <p class="text-[9px] font-bold ${item.isDone ? 'text-indigo-400' : 'text-slate-500'} mt-0.5">
+              ${item.isDone ? `Claimed by: ${item.claimedBy || 'Member'}` : 'Unclaimed'}
+            </p>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <button onclick='editChecklistItem(${JSON.stringify(item)})' class="p-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-lg"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+            <button onclick="deleteChecklistItem(${item.id})" class="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+          </div>
+        </div>`;
+
+      impCont.innerHTML = importantItems.length ? importantItems.map(renderItem).join('') : '<p class="text-[10px] text-slate-500 font-bold italic">No important tasks added</p>';
+      optCont.innerHTML = optionalItems.length ? optionalItems.map(renderItem).join('') : '<p class="text-[10px] text-slate-500 font-bold italic">No optional tasks added</p>';
+      lucide.createIcons();
+    }
+
+    function openChecklistModal() {
+      document.getElementById('checklistModalTitle').innerText = 'Add Checklist Task';
+      document.getElementById('checklistForm').reset();
+      document.getElementById('chkId').value = '';
+      document.getElementById('chkSection').value = 'Important';
+      document.getElementById('checklistModal').classList.remove('hidden');
+    }
+
+    function editChecklistItem(item) {
+      document.getElementById('checklistModalTitle').innerText = 'Edit Checklist Task';
+      document.getElementById('chkId').value = item.id || '';
+      document.getElementById('chkTitle').value = item.title || '';
+      document.getElementById('chkSection').value = item.section || 'Important';
+      document.getElementById('checklistModal').classList.remove('hidden');
+    }
+
+    function closeChecklistModal() {
+      document.getElementById('checklistModal').classList.add('hidden');
+    }
+
+    async function saveChecklistForm(e) {
+      e.preventDefault();
+      const payload = {
+        id: document.getElementById('chkId').value ? Number(document.getElementById('chkId').value) : null,
+        title: document.getElementById('chkTitle').value.trim(),
+        section: document.getElementById('chkSection').value
+      };
+
+      try {
+        const fresh = await adminApi('admin-save-checklist', payload);
+        globalData = fresh;
+        renderChecklist(fresh.checklist);
+        closeChecklistModal();
+        showAlert("Task Saved", `${payload.title} saved to checklist`);
+      } catch (err) {
+        showAlert("Failed", err.message, true);
+      }
+    }
+
+    async function deleteChecklistItem(id) {
+      if (!confirm('Delete this checklist task?')) return;
+      try {
+        const fresh = await adminApi('admin-delete-checklist', { id });
+        globalData = fresh;
+        renderChecklist(fresh.checklist);
+        showAlert("Task Deleted", "Item removed from checklist");
+      } catch (err) {
+        showAlert("Failed", err.message, true);
+      }
+    }
+
+    // Direct Asset Upload
     async function uploadDirectAsset(input, type, keyOrRow, col, previewLinkId, successMsg) {
       const file = input.files[0];
       if (!file) return;
@@ -1076,7 +1210,6 @@
       reader.readAsDataURL(file);
     }
 
-    // Past Trip File Upload Helper
     async function handleArchiveFileUpload(input, targetHiddenId, previewContainerId) {
       const file = input.files[0];
       if (!file) return;
@@ -1126,62 +1259,62 @@
     }
 
     function openMemberModal() {
-  document.getElementById('memberModalTitle').innerText = 'Add Member';
-  document.getElementById('memberForm').reset();
-  document.getElementById('memId').value = '';
-  document.getElementById('memImgUrl').value = '';
-  document.getElementById('memVerification').value = 'Verified';
-  document.getElementById('memAttendance').value = 'Attendance Confirmed'; // <-- ADD THIS
-  document.getElementById('uploadPreview').innerHTML = '<i data-lucide="user" class="w-7 h-7 text-slate-500 mb-0.5"></i><p class="text-[8px] font-bold text-slate-400 text-center">Upload Photo</p>';
-  document.getElementById('memberModal').classList.remove('hidden');
-  lucide.createIcons();
-}
+      document.getElementById('memberModalTitle').innerText = 'Add Member';
+      document.getElementById('memberForm').reset();
+      document.getElementById('memId').value = '';
+      document.getElementById('memImgUrl').value = '';
+      document.getElementById('memVerification').value = 'Verified';
+      document.getElementById('memAttendance').value = 'Attendance Confirmed';
+      document.getElementById('uploadPreview').innerHTML = '<i data-lucide="user" class="w-7 h-7 text-slate-500 mb-0.5"></i><p class="text-[8px] font-bold text-slate-400 text-center">Upload Photo</p>';
+      document.getElementById('memberModal').classList.remove('hidden');
+      lucide.createIcons();
+    }
 
     function editMember(m) {
-  document.getElementById('memberModalTitle').innerText = 'Edit Member';
-  document.getElementById('memId').value = m.id || '';
-  document.getElementById('memName').value = m.rawName || m.name;
-  document.getElementById('memRole').value = m.role || 'Member';
-  document.getElementById('memPin').value = m.pin || '1234';
-  document.getElementById('memVerification').value = m.verification || 'Verified';
-  document.getElementById('memAttendance').value = m.attendance || 'Attendance Confirmed'; // <-- ADD THIS
-  document.getElementById('memMobile').value = m.mobile || '';
-  document.getElementById('memEmail').value = m.email || '';
-  document.getElementById('memRoleDetail').value = m.assignedRoleDetail || '';
-  document.getElementById('memImgUrl').value = m.rawImg || m.img || '';
-  if (m.img) {
-    document.getElementById('uploadPreview').innerHTML = `<img src="${m.img}" class="w-full h-full rounded-2xl object-cover">`;
-  }
-  document.getElementById('memberModal').classList.remove('hidden');
-}
+      document.getElementById('memberModalTitle').innerText = 'Edit Member';
+      document.getElementById('memId').value = m.id || '';
+      document.getElementById('memName').value = m.rawName || m.name;
+      document.getElementById('memRole').value = m.role || 'Member';
+      document.getElementById('memPin').value = m.pin || '1234';
+      document.getElementById('memVerification').value = m.verification || 'Verified';
+      document.getElementById('memAttendance').value = m.attendance || 'Attendance Confirmed';
+      document.getElementById('memMobile').value = m.mobile || '';
+      document.getElementById('memEmail').value = m.email || '';
+      document.getElementById('memRoleDetail').value = m.assignedRoleDetail || '';
+      document.getElementById('memImgUrl').value = m.rawImg || m.img || '';
+      if (m.img) {
+        document.getElementById('uploadPreview').innerHTML = `<img src="${m.img}" class="w-full h-full rounded-2xl object-cover">`;
+      }
+      document.getElementById('memberModal').classList.remove('hidden');
+    }
 
     function closeMemberModal() { document.getElementById('memberModal').classList.add('hidden'); }
 
     async function saveMemberForm(e) {
-  e.preventDefault();
-  const payload = {
-    id: document.getElementById('memId').value ? Number(document.getElementById('memId').value) : null,
-    name: document.getElementById('memName').value,
-    role: document.getElementById('memRole').value,
-    pin: document.getElementById('memPin').value,
-    verification: document.getElementById('memVerification').value,
-    attendance: document.getElementById('memAttendance').value, // <-- ADD THIS
-    img: document.getElementById('memImgUrl').value,
-    mobile: document.getElementById('memMobile').value,
-    email: document.getElementById('memEmail').value,
-    assignedRoleDetail: document.getElementById('memRoleDetail').value
-  };
+      e.preventDefault();
+      const payload = {
+        id: document.getElementById('memId').value ? Number(document.getElementById('memId').value) : null,
+        name: document.getElementById('memName').value,
+        role: document.getElementById('memRole').value,
+        pin: document.getElementById('memPin').value,
+        verification: document.getElementById('memVerification').value,
+        attendance: document.getElementById('memAttendance').value,
+        img: document.getElementById('memImgUrl').value,
+        mobile: document.getElementById('memMobile').value,
+        email: document.getElementById('memEmail').value,
+        assignedRoleDetail: document.getElementById('memRoleDetail').value
+      };
 
-  try {
-    const fresh = await adminApi('admin-save-member', payload);
-    globalData = fresh;
-    renderMembers(fresh.members);
-    closeMemberModal();
-    showAlert("Member Saved", `${payload.name} updated in squad`);
-  } catch (err) {
-    showAlert("Failed", err.message, true);
-  }
-}
+      try {
+        const fresh = await adminApi('admin-save-member', payload);
+        globalData = fresh;
+        renderMembers(fresh.members);
+        closeMemberModal();
+        showAlert("Member Saved", `${payload.name} updated in squad`);
+      } catch (err) {
+        showAlert("Failed", err.message, true);
+      }
+    }
 
     async function deleteMember(id) {
       if (!confirm('Delete this member from squad?')) return;
@@ -1195,13 +1328,11 @@
       }
     }
 
-    // Places / Route (Layer Reordering Up/Down)
     function renderPlaces(places) {
       const container = document.getElementById('placesAdminCards');
       container.innerHTML = places.map((p, idx) => `
         <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div class="flex items-start gap-2.5">
-            <!-- Up/Down Layer Reordering Controls -->
             <div class="flex flex-col gap-1 pt-0.5">
               <button onclick="movePlace(${idx}, -1)" ${idx === 0 ? 'disabled class="opacity-20 cursor-not-allowed"' : 'class="hover:text-indigo-400"'}><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
               <button onclick="movePlace(${idx}, 1)" ${idx === places.length - 1 ? 'disabled class="opacity-20 cursor-not-allowed"' : 'class="hover:text-indigo-400"'}><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
@@ -1268,28 +1399,28 @@
     function closePlaceModal() { document.getElementById('placeModal').classList.add('hidden'); }
 
     async function savePlaceForm(e) {
-  e.preventDefault();
-  const payload = {
-    id: document.getElementById('placeId').value ? Number(document.getElementById('placeId').value) : null,
-    tripDay: document.getElementById('placeDay').value.trim(),
-    targetDate: document.getElementById('placeDate').value.trim(),
-    location: document.getElementById('placeLocation').value.trim(),
-    eta: document.getElementById('placeEta').value.trim(),
-    ata: document.getElementById('placeAta').value.trim(),
-    details: document.getElementById('placeDetails').value.trim(),
-    cancelStatus: document.getElementById('placeCancel').value
-  };
+      e.preventDefault();
+      const payload = {
+        id: document.getElementById('placeId').value ? Number(document.getElementById('placeId').value) : null,
+        tripDay: document.getElementById('placeDay').value.trim(),
+        targetDate: document.getElementById('placeDate').value.trim(),
+        location: document.getElementById('placeLocation').value.trim(),
+        eta: document.getElementById('placeEta').value.trim(),
+        ata: document.getElementById('placeAta').value.trim(),
+        details: document.getElementById('placeDetails').value.trim(),
+        cancelStatus: document.getElementById('placeCancel').value
+      };
 
-  try {
-    const fresh = await adminApi('admin-save-place', payload);
-    globalData = fresh;
-    renderPlaces(fresh.places);
-    closePlaceModal();
-    showAlert("Route Saved", `${payload.location} saved successfully`);
-  } catch (err) {
-    showAlert("Failed", err.message, true);
-  }
-}
+      try {
+        const fresh = await adminApi('admin-save-place', payload);
+        globalData = fresh;
+        renderPlaces(fresh.places);
+        closePlaceModal();
+        showAlert("Route Saved", `${payload.location} saved successfully`);
+      } catch (err) {
+        showAlert("Failed", err.message, true);
+      }
+    }
 
     async function deletePlace(id) {
       if (!confirm('Delete this stop?')) return;
@@ -1303,7 +1434,6 @@
       }
     }
 
-    // Ledger with Search & Edit Form
     function filterLedger(query) {
       if (!globalData || !globalData.transactions) return;
       const q = query.toLowerCase().trim();
@@ -1405,7 +1535,6 @@
       }
     }
 
-    // Budget Allocations
     function renderBudget(budgetList, stats) {
       document.getElementById('budgetOverviewText').innerText = `Total Budget: ₹${stats.budget.toLocaleString('en-IN')}`;
       const container = document.getElementById('budgetAdminCards');
@@ -1472,7 +1601,6 @@
       }
     }
 
-    // Media & Docs
     function renderMedia(d) {
       if (d.guidelinesUrl) {
         const link = document.getElementById('previewGuideline');
@@ -1494,7 +1622,6 @@
       }
     }
 
-    // Archives (Newest on Top)
     function renderArchives(trips) {
       const container = document.getElementById('archivesAdminCards');
       if (!container) return;
@@ -1554,9 +1681,7 @@
       document.getElementById('archiveModal').classList.remove('hidden');
     }
 
-    function closeArchiveModal() { 
-      document.getElementById('archiveModal').classList.add('hidden'); 
-    }
+    function closeArchiveModal() { document.getElementById('archiveModal').classList.add('hidden'); }
 
     async function saveArchiveForm(e) {
       e.preventDefault();
@@ -1593,7 +1718,6 @@
       }
     }
 
-    // CHAT MANAGEMENT FUNCTIONS
     function renderAdminChat(messages) {
       const container = document.getElementById('adminChatMessages');
       if (!container) return;
