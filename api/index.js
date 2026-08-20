@@ -101,7 +101,8 @@ async function dashboard() {
     budgetResult,
     messagesResult,
     archivesResult,
-    appMetaResult
+    appMetaResult,
+    checklistResult
   ] = await Promise.all([
     supabase.from('settings_sheet').select('*').order('row_number', { ascending: true }),
     supabase.from('transactions_sheet').select('*').order('id', { ascending: true }),
@@ -111,7 +112,8 @@ async function dashboard() {
     supabase.from('budget_sheet').select('*').order('id', { ascending: true }),
     supabase.from('messages_sheet').select('*').order('id', { ascending: false }).limit(50),
     supabase.from('archives_sheet').select('*').order('id', { ascending: false }),
-    supabase.from('app_meta').select('*').limit(1).maybeSingle()
+    supabase.from('app_meta').select('*').limit(1).maybeSingle(),
+    supabase.from('itinerary_checklist').select('*').order('id', { ascending: true })
   ]);
 
   const settingsRows = settingsResult.data || [];
@@ -122,20 +124,16 @@ async function dashboard() {
   const meta = appMetaResult?.data || {};
   const memberMeta = memberMetaResult?.data || {};
 
-  // Primary layout strings
   const tripName = text(setting(2, 'b')) || 'App by Anmol';
   const secondaryTitle = text(setting(2, 'c')) || 'Zantar Mantar, Dilli';
   
-  // Custom Typography & Position Design Controls
-  const titleColor = text(setting(2, 'd')) || '#064e3b';         // Default: Emerald 950 hex
-  const subtitleColor = text(setting(2, 'e')) || '#047857';      // Default: Emerald 700 hex
-  const titleFontSize = text(setting(3, 'b')) || 'xl';            // options: xl, 2xl, 3xl, 4xl
-  const titlePosition = text(setting(3, 'c')) || 'justify-center'; // options: justify-center, justify-start, justify-end
-  const rotationLines = text(setting(3, 'd')) || 'dual';          // options: dual (flippable), single (static)
-  const titleVisibility = text(setting(3, 'e')) || 'VISIBLE';     // options: VISIBLE, HIDDEN
-
+  const titleColor = text(setting(2, 'd')) || '#064e3b';
+  const subtitleColor = text(setting(2, 'e')) || '#047857';
+  const titleFontSize = text(setting(3, 'b')) || 'xl';
+  const titlePosition = text(setting(3, 'c')) || 'justify-center';
+  const rotationLines = text(setting(3, 'd')) || 'dual';
+  const titleVisibility = text(setting(3, 'e')) || 'VISIBLE';
   
-  // 4 Dual Crossfade Header Images (Mobile & Desktop)
   const headerImgMob1 = text(setting(25, 'b')) || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhEqmG8J5YSs5q-OPIiWD6Ths2iNc9yvnjReNjEDAeP1BFB_zXxwplZakAiXPA-RVUxcvAWDhQQIuREiM8KsaUWKbzKmQ_UFZXbZ14Jg3Fpo8MMbZHHrN3OwQgNCfZ3Mby0wz2gnCVQ3Etduep3yfwmpFlshJWASHVRHDyJBnqU5uzgQe1Jsle8R9ityME2/s0/@bharatway.png';
   const headerImgDesk1 = text(setting(25, 'c')) || headerImgMob1;
   const headerImgMob2 = text(setting(26, 'b')) || '';
@@ -159,6 +157,7 @@ async function dashboard() {
   const routeStatus = text(setting(18, 'b')).toUpperCase();
   const expenseStatus = text(setting(22, 'b'));
   const contributionToggle = text(setting(23, 'b')).toUpperCase();
+  const checklistVisibility = text(setting(24, 'b')).toUpperCase() || 'VISIBLE';
 
   const categoryBudgets = { Food: 0, 'Entry Fee': 0, Fare: 0, Stay: 0, Water: 0, Other: 0 };
   let calculatedTotalBudget = 0;
@@ -286,12 +285,20 @@ async function dashboard() {
     });
   }
 
+  const checklist = (checklistResult.data || []).map(item => ({
+    id: item.id,
+    title: text(item.title),
+    section: text(item.section) || 'Important',
+    isDone: Boolean(item.is_done),
+    claimedBy: text(item.claimed_by),
+    claimedAt: asIso(item.claimed_at)
+  }));
+
   const totalExpenses = Object.values(categorySpent).reduce((a, b) => a + b, 0);
   return {
-    appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus,
+    appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus, checklistVisibility,
     securityStatus: meta.security_status || 'normal',
     chiefCoordinatorSignature, eidStampImage, rawEidStamp, tripName, secondaryTitle,
-    // Add Design Configuration Pack
     styles: { titleColor, subtitleColor, titleFontSize, titlePosition, rotationLines, titleVisibility, headerImgMob1, headerImgDesk1, headerImgMob2, headerImgDesk2 },
     guidelinesUrl, rawGuidelines, tripReportUrl, rawTripReport, tripReportSubheading, eidSubheading, eidHeading,
     rawCoordinatorBg, rawMemberBg, coordinatorBg, memberBg,
@@ -305,7 +312,7 @@ async function dashboard() {
     },
     allocations: { limits: categoryBudgets, spent: categorySpent },
     budgetRawList,
-    transactions, members, places, messages: squadMessages, pastTrips,
+    transactions, members, places, messages: squadMessages, pastTrips, checklist,
     settingsRaw: settingsRows
   };
 }
@@ -399,6 +406,41 @@ async function changeMemberPIN(name, oldPin, newPin) {
   }
   await supabase.from('members_sheet').update({ col_d: text(newPin) }).eq('id', target.id);
   return { success: true };
+}
+
+// -------------------------------------------------------------
+// CHECKLIST USER ACTIONS
+// -------------------------------------------------------------
+async function claimChecklistItem(id, userName) {
+  if (!id || !userName) throw new Error('Item ID and user name required');
+  const { error } = await supabase.from('itinerary_checklist').update({
+    is_done: true,
+    claimed_by: userName,
+    claimed_at: new Date().toISOString()
+  }).eq('id', Number(id));
+
+  if (error) throw error;
+  return dashboard();
+}
+
+async function revokeChecklistItem(id, userName) {
+  if (!id || !userName) throw new Error('Item ID and user name required');
+  
+  const { data: item } = await supabase.from('itinerary_checklist').select('*').eq('id', Number(id)).maybeSingle();
+  if (!item) throw new Error('Item not found');
+  
+  if (text(item.claimed_by).toLowerCase() !== text(userName).toLowerCase()) {
+    throw new Error('Only the claimant can revoke this item');
+  }
+
+  const { error } = await supabase.from('itinerary_checklist').update({
+    is_done: false,
+    claimed_by: '',
+    claimed_at: null
+  }).eq('id', Number(id));
+
+  if (error) throw error;
+  return dashboard();
 }
 
 // -------------------------------------------------------------
@@ -598,6 +640,27 @@ async function adminDeleteBudget(budgetId) {
   return dashboard();
 }
 
+async function adminSaveChecklist(itemData) {
+  const payload = {
+    title: text(itemData.title),
+    section: text(itemData.section) || 'Important'
+  };
+
+  if (itemData.id) {
+    const { error } = await supabase.from('itinerary_checklist').update(payload).eq('id', Number(itemData.id));
+    if (error) throw error;
+  } else {
+    const { error } = await supabase.from('itinerary_checklist').insert(payload);
+    if (error) throw error;
+  }
+  return dashboard();
+}
+
+async function adminDeleteChecklist(id) {
+  await supabase.from('itinerary_checklist').delete().eq('id', Number(id));
+  return dashboard();
+}
+
 async function adminUploadFile(file) {
   if (!file || !file.base64Data) throw new Error('No file provided');
   const raw = String(file.base64Data);
@@ -631,7 +694,6 @@ async function adminDeleteMessage(id) {
   return dashboard();
 }
 
-
 async function updatePollVote(msgId, pollText) {
   await supabase.from('messages_sheet').update({ col_c: pollText }).eq('id', Number(msgId));
   return dashboard();
@@ -659,6 +721,8 @@ export default async function handler(req, res) {
       case 'signature': return json(res, 200, await saveFinalSignature(body.memberPin, body.base64Data));
       case 'message': return json(res, 200, await saveSquadMessage(body.sender, body.text));
       case 'change-pin': return json(res, 200, await changeMemberPIN(body.name, body.oldPin, body.newPin));
+      case 'checklist-claim': return json(res, 200, await claimChecklistItem(body.id, body.userName));
+      case 'checklist-revoke': return json(res, 200, await revokeChecklistItem(body.id, body.userName));
 
       // Admin Actions
       case 'admin-login': return json(res, 200, await adminLogin(body.username, body.password));
@@ -677,6 +741,8 @@ export default async function handler(req, res) {
       case 'admin-delete-archive': return json(res, 200, await adminDeleteArchive(body.id));
       case 'admin-save-budget': return json(res, 200, await adminSaveBudget(body));
       case 'admin-delete-budget': return json(res, 200, await adminDeleteBudget(body.id));
+      case 'admin-save-checklist': return json(res, 200, await adminSaveChecklist(body));
+      case 'admin-delete-checklist': return json(res, 200, await adminDeleteChecklist(body.id));
       case 'admin-upload': return json(res, 200, await adminUploadFile(body));
 
       // Admin Chat Extensions
