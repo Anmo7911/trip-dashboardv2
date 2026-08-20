@@ -1882,11 +1882,7 @@
 </main>
     
 
-    <!-- =========================================
-       TAB 6: ABOUT US PAGE
-       Clean, Responsive Plain Text Layout
-       ========================================= -->
-  <!-- =========================================
+<!-- =========================================
        TAB 6: ABOUT US PAGE
        ========================================= -->
   <main id="view-about" class="tab-content w-full max-w-md lg:max-w-4xl mx-auto pt-4 px-4 lg:p-8 space-y-6 pb-20">
@@ -1899,12 +1895,14 @@
 
       <!-- Header -->
       <div class="border-b border-slate-100 pb-5 pr-10">
-        <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shadow-inner shrink-0">
-            <i data-lucide="mountain-snow" class="w-6 h-6 stroke-[2]"></i>
-          </div>
+        <div class="flex items-center gap-3.5">
+          <img 
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG" 
+            alt="Bharat Way Logo" 
+            class="w-12 h-12 rounded-2xl object-cover border border-slate-100 shadow-md shadow-slate-200/60 shrink-0"
+          />
           <div>
-            <h2 class="text-xl lg:text-2xl font-black text-slate-800 tracking-tight uppercase">About Squad Goals</h2>
+            <h2 class="text-xl lg:text-2xl font-black text-slate-800 tracking-tight uppercase">About Bharat Way</h2>
             <p class="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">Expedition Logistics & Travel Portal</p>
           </div>
         </div>
@@ -1913,7 +1911,7 @@
       <!-- Content -->
       <div class="text-slate-700 text-xs lg:text-sm font-medium leading-relaxed space-y-5">
         <p>
-          <strong class="text-slate-900 font-extrabold uppercase tracking-wide">Squad Goals</strong> is an all-in-one expedition companion built to make group travel organized, transparent, and hassle-free. It unites team coordination, finances, and route tracking into a single real-time dashboard.
+          <strong class="text-slate-900 font-extrabold uppercase tracking-wide">Bharat Way</strong> is an all-in-one expedition companion built to make group travel organized, transparent, and hassle-free. It unites team coordination, finances, and route tracking into a single real-time dashboard.
         </p>
 
         <div class="space-y-3 pt-2">
@@ -1934,15 +1932,50 @@
           </p>
         </div>
 
-        <!-- Footer / Credits -->
-        <div class="border-t border-slate-100 pt-6 mt-6 flex flex-col items-center justify-center text-center space-y-2">
-          <img 
-            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjkuaVM6qfg_5Zn15noS45TYYdbJzaX3mUCtAoLBsJ7DOBxGs3veAMk-CtX4yC549DigfRmCKFP-7JYIevIBP6YciYAXbQandbSUKhBwTwCUWw5IKUAOvTUsC8ox_NugoSWXqMR-DbKZulzdmDDJRNwlp-ycVSyniMUGoBl0M5PXrlGFIBJYHIlF_un0H5J/s1170/ANCH%20TECH_inspyrenet.png" 
-            alt="Anch Tech Logo" 
-            class="h-8 w-auto object-contain mx-auto mb-1 opacity-90 transition-all duration-300 ease-out cursor-pointer hover:scale-110 hover:opacity-100 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.6)] active:scale-110 active:opacity-100 active:drop-shadow-[0_0_14px_rgba(99,102,241,0.8)]"
-          />
-          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">© 2026 Squad Goals. All rights reserved.</p>
-          <p class="text-xs font-black text-slate-700 uppercase tracking-wider">Made with ❤️ by <span class="text-indigo-600">Anch Technologies LTD</span></p>
+        <!-- Footer / Credits with Interactive X Hover Preview -->
+        <div class="border-t border-slate-100 pt-6 mt-6 flex flex-col items-center justify-center text-center space-y-2 relative">
+          
+          <div class="relative group inline-block py-1">
+            <!-- Anch Tech Logo Link -->
+            <a 
+              href="https://x.com/the_anch_" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="inline-block outline-none"
+            >
+              <img 
+                src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjkuaVM6qfg_5Zn15noS45TYYdbJzaX3mUCtAoLBsJ7DOBxGs3veAMk-CtX4yC549DigfRmCKFP-7JYIevIBP6YciYAXbQandbSUKhBwTwCUWw5IKUAOvTUsC8ox_NugoSWXqMR-DbKZulzdmDDJRNwlp-ycVSyniMUGoBl0M5PXrlGFIBJYHIlF_un0H5J/s1170/ANCH%20TECH_inspyrenet.png" 
+                alt="Anch Tech Logo" 
+                class="h-8 w-auto object-contain mx-auto mb-1 opacity-90 transition-all duration-300 ease-out cursor-pointer group-hover:scale-110 group-hover:opacity-100 group-hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.6)] active:scale-105 active:drop-shadow-[0_0_14px_rgba(99,102,241,0.8)]"
+              />
+            </a>
+
+            <!-- X (Twitter) Hover Preview Card -->
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 hidden group-hover:flex flex-col w-64 bg-slate-950 text-white rounded-2xl p-4 shadow-2xl border border-slate-800 z-50 pointer-events-none transition-all duration-300 opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto text-left">
+              <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-white text-xs font-black">
+                    𝕏
+                  </div>
+                  <div>
+                    <p class="text-xs font-black text-white leading-none">Anch Tech</p>
+                    <p class="text-[10px] font-bold text-slate-400">@the_anch_</p>
+                  </div>
+                </div>
+                <span class="bg-indigo-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-full">Follow</span>
+              </div>
+              <p class="text-[10px] text-slate-300 font-medium leading-tight">
+                Software design, engineering & smart expedition solutions.
+              </p>
+              <div class="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[9px] font-bold text-indigo-400">
+                <span>View profile on 𝕏</span>
+                <i data-lucide="external-link" class="w-3 h-3"></i>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">© 2026 Bharat Way. All rights reserved.</p>
+          <p class="text-xs font-black text-slate-700 uppercase tracking-wider">Made with ❤️ by <a href="https://x.com/the_anch_" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">Anch Technologies LTD</a></p>
         </div>
       </div>
 
