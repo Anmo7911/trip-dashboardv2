@@ -1108,12 +1108,11 @@
             <img src="${m.img || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.name)}" class="w-10 h-10 rounded-xl object-cover border border-slate-800 bg-slate-950 shrink-0">
             <div class="min-w-0">
               <p class="text-xs font-black text-white truncate">${m.rawName || m.name}</p>
-              // Replace inside renderMembers template string:
-<div class="flex items-center gap-1.5 mt-0.5">
-  <span class="text-[9px] font-bold text-indigo-400 uppercase truncate">${m.role || 'Member'}</span>
-  <span class="text-[8px] font-black px-1.5 py-0.2 rounded uppercase ${m.verification === 'Verified' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${m.verification || 'Verified'}</span>
-  <span class="text-[8px] font-black px-1.5 py-0.2 rounded uppercase bg-slate-800 text-slate-300 truncate">${m.attendance || 'Confirmed'}</span>
-</div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="text-[9px] font-bold text-indigo-400 uppercase truncate">${m.role || 'Member'}</span>
+                <span class="text-[8px] font-black px-1.5 py-0.2 rounded uppercase ${m.verification === 'Verified' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${m.verification || 'Verified'}</span>
+                <span class="text-[8px] font-black px-1.5 py-0.2 rounded uppercase bg-slate-800 text-slate-300 truncate">${m.attendance || 'Confirmed'}</span>
+              </div>
               <p class="text-[9px] font-mono text-slate-500">PIN: ${m.pin}</p>
             </div>
           </div>
