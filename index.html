@@ -5076,7 +5076,7 @@ function closeArchiveGalleryPage() {
             
             <div class="${bubbleClass} p-3.5 transition-all break-words max-w-[90%] relative cursor-pointer" onclick="setUserReply('${msg.sender}', '${safeText}')">
               ${replyQuoteHtml}
-              <p class="text-xs font-bold leading-relaxed whitespace-pre-wrap">${formatMessageText(displayBody, isMe)}</p>
+              <p class="text-xs font-bold leading-relaxed whitespace-pre-wrap">${formatMessageText(displayBody)}</p>
             </div>
             
             <span class="text-[8px] font-black uppercase tracking-widest text-slate-400 mt-1 ${isMe ? 'mr-1' : 'ml-1'}">${timeStr}</span>
@@ -5280,14 +5280,11 @@ function closeArchiveGalleryPage() {
         lucide.createIcons();
     }
 
-    
-   // Replaces raw url text with parsed href clickable links (For chat)
-    function formatMessageText(text, isMe = false) {
+    // Replaces raw url text with parsed href clickable links (For chat)
+    function formatMessageText(text) {
       const urlRegex = /(https?:\/\/[^\s]+)/g;
       return text.replace(urlRegex, (url) => {
-        // High-contrast sky blue for sender bubbles, indigo for receiver bubbles
-        const linkColor = isMe ? 'text-sky-200 hover:text-white' : 'text-indigo-600 hover:text-indigo-800';
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="${linkColor} font-black underline underline-offset-2 break-all">${url}</a>`;
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 font-bold hover:underline break-all">${url}</a>`;
       });
     }
 
