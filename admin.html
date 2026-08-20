@@ -345,13 +345,13 @@
         
         <div class="flex items-center gap-2">
           <!-- Revoke Button Visibility Switch -->
-          <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Revoke Button</span>
-            <select id="setChecklistRevoke" onchange="saveSetting(24, 'c', this.value, 'Revoke button visibility updated')" class="bg-slate-950 border border-slate-700 text-[11px] font-bold rounded-lg px-2 py-1 text-indigo-400 outline-none">
-              <option value="VISIBLE">SHOW</option>
-              <option value="HIDDEN">HIDE</option>
-            </select>
-          </div>
+<div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl">
+  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Revoke Button</span>
+  <select id="setChecklistRevoke" onchange="saveSetting(27, 'b', this.value, 'Revoke button visibility updated')" class="bg-slate-950 border border-slate-700 text-[11px] font-bold rounded-lg px-2 py-1 text-indigo-400 outline-none">
+    <option value="VISIBLE">SHOW</option>
+    <option value="HIDDEN">HIDE</option>
+  </select>
+</div>
 
           <button onclick="openChecklistModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 transition">
             <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Add Task
@@ -1041,12 +1041,13 @@
       document.getElementById('setContriStatus').value = d.contributionToggle || 'ACTIVE';
       document.getElementById('setSignOffStatus').value = d.signOffStatus || 'closed';
       document.getElementById('setSecurityStatus').value = d.securityStatus || 'normal';
+      
+      // Checklist Switches
       document.getElementById('setChecklistVisibility').value = d.checklistVisibility || 'VISIBLE';
-      document.getElementById('setChecklistVisibility').value = d.checklistVisibility || 'VISIBLE';
-
-      document.getElementById('setChecklistVisibility').value = d.checklistVisibility || 'VISIBLE';
-      if (document.getElementById('setChecklistRevoke')) {
-        document.getElementById('setChecklistRevoke').value = d.checklistRevokeVisibility || 'VISIBLE';
+      
+      const revokeSelect = document.getElementById('setChecklistRevoke');
+      if (revokeSelect) {
+        revokeSelect.value = d.checklistRevokeVisibility || d.revokeVisibility || 'VISIBLE';
       }
       
       if (d.styles) {
