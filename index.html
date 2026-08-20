@@ -3079,6 +3079,11 @@
         loginOverlay.classList.add('hidden');
       }
 
+      if (data.popupConfig) {
+    evaluateBroadcastPopup(data.popupConfig);
+  }
+}
+
       // =============================================================
       // DYNAMIC GRAPHICS ENGINE & DESIGN CONTROLLER INJECTION
       // =============================================================
@@ -5706,6 +5711,80 @@ async function executePendingChecklistAction() {
   }
 }
 
+
+
+    // ==========================================
+    // DYNAMIC 10-SECOND BROADCAST POPUP ENGINE
+    // ==========================================
+    let broadcastTimer = null;
+
+    function evaluateBroadcastPopup(config) {
+      if (!config || config.status !== 'ENABLED') return;
+      if (!config.message && !config.title) return;
+
+      // Session storage prevents popping up on every tab switch
+      if (sessionStorage.getItem('hasSeenBroadcastAlert')) return;
+
+      if (broadcastTimer) clearTimeout(broadcastTimer);
+
+      broadcastTimer = setTimeout(() => {
+        const modal = document.getElementById('broadcast-popup-modal');
+        const card = document.getElementById('broadcast-card');
+        const iconBox = document.getElementById('broadcast-icon-box');
+        const icon = document.getElementById('broadcast-icon');
+        const badge = document.getElementById('broadcast-badge');
+        const title = document.getElementById('broadcast-title');
+        const msg = document.getElementById('broadcast-message');
+        const btn = document.getElementById('broadcast-btn');
+
+        if (!modal || !card) return;
+
+        const type = (config.type || 'NOTIFICATION').toUpperCase();
+        title.innerText = config.title || 'Notice';
+        msg.innerText = config.message || '';
+
+        // Dynamic visual theming
+        if (type === 'ALERT') {
+          badge.innerText = 'Alert';
+          badge.className = 'px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-widest bg-rose-50 text-rose-600 border border-rose-100';
+          iconBox.className = 'w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center mx-auto shadow-inner';
+          icon.setAttribute('data-lucide', 'alert-triangle');
+          btn.className = 'w-full py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-black rounded-xl text-xs uppercase tracking-widest active:scale-95 transition shadow-lg';
+        } else if (type === 'ANNOUNCEMENT') {
+          badge.innerText = 'Announcement';
+          badge.className = 'px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-100';
+          iconBox.className = 'w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center mx-auto shadow-inner';
+          icon.setAttribute('data-lucide', 'megaphone');
+          btn.className = 'w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs uppercase tracking-widest active:scale-95 transition shadow-lg';
+        } else {
+          badge.innerText = 'Notification';
+          badge.className = 'px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-600 border border-indigo-100';
+          iconBox.className = 'w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center mx-auto shadow-inner';
+          icon.setAttribute('data-lucide', 'bell');
+          btn.className = 'w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-xl text-xs uppercase tracking-widest active:scale-95 transition shadow-lg';
+        }
+
+        lucide.createIcons();
+
+        modal.classList.remove('hidden');
+        void modal.offsetHeight; // Force layout recalculation
+        modal.classList.remove('opacity-0');
+        card.classList.replace('scale-90', 'scale-100');
+      }, 10000);
+    }
+
+    function closeBroadcastPopup() {
+      const modal = document.getElementById('broadcast-popup-modal');
+      const card = document.getElementById('broadcast-card');
+      sessionStorage.setItem('hasSeenBroadcastAlert', 'true');
+
+      if (modal && card) {
+        modal.classList.add('opacity-0');
+        card.classList.replace('scale-100', 'scale-90');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+      }
+    }
+
     
 
     
@@ -6031,6 +6110,36 @@ async function executePendingChecklistAction() {
         </iframe>
       </div>
 
+    </div>
+  </div>
+
+
+  <!-- =========================================
+       DYNAMIC 10-SECOND BROADCAST POPUP MODAL
+       ========================================= -->
+  <div id="broadcast-popup-modal" class="hidden fixed inset-0 z-[10000] bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4 transition-opacity duration-300 opacity-0" onclick="closeBroadcastPopup()">
+    <div id="broadcast-card" class="w-full max-w-sm bg-white rounded-[32px] p-6 text-center border border-slate-100 shadow-2xl space-y-4 transform scale-90 transition-all duration-300 ease-out" onclick="event.stopPropagation()">
+      
+      <!-- Dynamic Icon Container -->
+      <div id="broadcast-icon-box" class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center mx-auto shadow-inner">
+        <i id="broadcast-icon" data-lucide="bell" class="w-7 h-7 stroke-[2.2]"></i>
+      </div>
+
+      <div>
+        <span id="broadcast-badge" class="px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-600 border border-indigo-100">
+          Notification
+        </span>
+        <h3 id="broadcast-title" class="text-base font-black text-slate-800 uppercase tracking-tight mt-2">
+          Title
+        </h3>
+        <p id="broadcast-message" class="text-xs font-semibold text-slate-500 mt-1.5 leading-relaxed whitespace-pre-wrap">
+          Message
+        </p>
+      </div>
+
+      <button type="button" id="broadcast-btn" onclick="closeBroadcastPopup()" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-xl text-xs uppercase tracking-widest active:scale-95 transition shadow-lg">
+        Dismiss
+      </button>
     </div>
   </div>
 
