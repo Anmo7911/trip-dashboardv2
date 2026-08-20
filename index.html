@@ -1777,10 +1777,9 @@
       <div id="archives-page-content" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 pb-12"></div>
     </div>
 
- <!-- 2. INLINE ARCHIVE GALLERY PAGE VIEW -->
+    <!-- 2. INLINE ARCHIVE GALLERY PAGE VIEW -->
     <div id="archives-gallery-view" class="hidden bg-white rounded-[28px] lg:rounded-[32px] p-6 lg:p-8 border border-slate-200/80 shadow-sm space-y-5 relative flex-col pb-12">
       
-      <!-- Gallery Header & Navigation -->
       <div class="flex items-center justify-between border-b border-slate-100 pb-5">
         <div class="flex items-center gap-3">
           <button type="button" onclick="closeArchiveGalleryPage()" class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all active:scale-95 border border-slate-200 shrink-0" title="Back to Trips">
@@ -1798,12 +1797,11 @@
         </a>
       </div>
 
-      <!-- Embedded Google Drive Container with Mobile Zoom -->
-      <div class="w-full h-[78vh] sm:h-[72vh] bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 relative">
+      <div class="w-full h-[72vh] bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 relative">
         <iframe 
           id="archive-gallery-iframe"
           src="" 
-          class="absolute top-0 left-1/2 -translate-x-1/2 w-[124%] h-[124%] sm:w-full sm:h-full origin-top scale-[0.81] sm:scale-100 sm:relative sm:left-0 sm:translate-x-0 border-0" 
+          class="w-full h-full border-0" 
           allow="autoplay">
         </iframe>
       </div>
