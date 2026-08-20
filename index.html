@@ -5602,6 +5602,9 @@ function renderChecklistTab(items) {
   const currentUser = localStorage.getItem('trekLoggedInUser') || '';
   const list = items || [];
   const membersList = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.members) ? globalActiveDataPayloadBackup.members : (cachedMembersList || []);
+  
+  // Check if revoke is hidden globally by admin (defaults to VISIBLE)
+  const isRevokeVisible = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.checklistRevokeVisibility) !== 'HIDDEN';
 
   // Helper to get post/designation/role in place of name
   const getMemberPost = (userName) => {
@@ -5640,7 +5643,7 @@ function renderChecklistTab(items) {
 
         <!-- Action Buttons -->
         <div class="flex items-center gap-1.5 shrink-0 mt-0.5">
-          ${isMyClaim ? `
+          ${isMyClaim && isRevokeVisible ? `
             <button type="button" onclick="promptRevokeChecklist(${item.id}, '${item.title.replace(/'/g, "\\'")}')" class="px-2 py-0.5 text-rose-500 hover:text-rose-700 text-[9px] font-black uppercase tracking-wider active:scale-95 transition" title="Revoke Claim">
               Revoke
             </button>` : ''}
