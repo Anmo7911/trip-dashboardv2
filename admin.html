@@ -1072,15 +1072,22 @@
       if (!impCont || !optCont) return;
 
       const list = items || [];
+      const membersList = (globalData && globalData.members) ? globalData.members : [];
       const importantItems = list.filter(i => (i.section || 'Important').toLowerCase() === 'important');
       const optionalItems = list.filter(i => (i.section || '').toLowerCase() === 'optional');
+
+      const getMemberPost = (userName) => {
+        if (!userName) return 'Member';
+        const found = membersList.find(m => (m.name && m.name.toLowerCase() === userName.toLowerCase()) || (m.rawName && m.rawName.toLowerCase() === userName.toLowerCase()));
+        return (found && (found.designation || found.role)) ? (found.designation || found.role) : userName;
+      };
 
       const renderItem = (item) => `
         <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex items-center justify-between gap-2">
           <div class="min-w-0 flex-1">
             <p class="text-xs font-bold text-white truncate">${item.title}</p>
             <p class="text-[9px] font-bold ${item.isDone ? 'text-indigo-400' : 'text-slate-500'} mt-0.5">
-              ${item.isDone ? `Claimed by: ${item.claimedBy || 'Member'}` : 'Unclaimed'}
+              ${item.isDone ? `Claimed by: ${getMemberPost(item.claimedBy)}` : 'Unclaimed'}
             </p>
           </div>
           <div class="flex items-center gap-1 shrink-0">
@@ -1240,9 +1247,9 @@
           <div class="flex items-center gap-2.5 min-w-0">
             <img src="${m.img || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.name)}" class="w-10 h-10 rounded-xl object-cover border border-slate-800 bg-slate-950 shrink-0">
             <div class="min-w-0">
-              <p class="text-xs font-black text-white truncate">${m.rawName || m.name}</p>
+              <p class="text-xs font-black text-white truncate">${m.designation || m.role || m.rawName || m.name}</p>
               <div class="flex items-center gap-1.5 mt-0.5">
-                <span class="text-[9px] font-bold text-indigo-400 uppercase truncate">${m.role || 'Member'}</span>
+                <span class="text-[9px] font-bold text-indigo-400 uppercase truncate">${m.rawName || m.name}</span>
                 <span class="text-[8px] font-black px-1.5 py-0.2 rounded uppercase ${m.verification === 'Verified' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${m.verification || 'Verified'}</span>
                 <span class="text-[8px] font-black px-1.5 py-0.2 rounded uppercase bg-slate-800 text-slate-300 truncate">${m.attendance || 'Confirmed'}</span>
               </div>
@@ -1453,6 +1460,14 @@
 
     function renderLedgerCards(txs) {
       const container = document.getElementById('ledgerAdminCards');
+      const membersList = (globalData && globalData.members) ? globalData.members : [];
+
+      const getClaimantPost = (claimantName) => {
+        if (!claimantName) return 'Unknown';
+        const found = membersList.find(m => (m.name && m.name.toLowerCase() === claimantName.toLowerCase()) || (m.rawName && m.rawName.toLowerCase() === claimantName.toLowerCase()));
+        return (found && (found.designation || found.role)) ? (found.designation || found.role) : claimantName;
+      };
+
       container.innerHTML = txs.map(t => {
         let dateFormatted = "-";
         let timeFormatted = "";
@@ -1474,7 +1489,7 @@
               <span class="text-[9px] font-bold text-indigo-300">(${t.paidVia || 'UPI'})</span>
             </div>
             <p class="text-[11px] text-white font-semibold mt-0.5">${t.notes || 'Expense'}</p>
-            <p class="text-[9px] text-slate-500">By: ${t.claimant || 'Unknown'} • ${dateFormatted} ${timeFormatted ? 'at ' + timeFormatted : ''}</p>
+            <p class="text-[9px] text-slate-500">By: ${getClaimantPost(t.claimant)} • ${dateFormatted} ${timeFormatted ? 'at ' + timeFormatted : ''}</p>
           </div>
 
           <div class="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800">
