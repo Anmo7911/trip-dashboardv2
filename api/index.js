@@ -474,6 +474,33 @@ async function adminUpdateSetting(rowNumber, col, value) {
   return dashboard();
 }
 
+async function adminPushBroadcast(payload) {
+  const { status, type, title, message } = payload;
+  
+  const patch = {
+    col_b: type || 'NOTIFICATION',
+    col_c: title || '',
+    col_d: message || '',
+    col_e: status || 'ENABLED'
+  };
+
+  const { data: rows } = await supabase.from('settings_sheet').select('*').eq('row_number', 28);
+  if (rows?.length) {
+    await supabase.from('settings_sheet').update(patch).eq('row_number', 28);
+  } else {
+    await supabase.from('settings_sheet').insert({ row_number: 28, ...patch });
+  }
+
+  const chatNotice = `📢 [${(type || 'NOTIFICATION').toUpperCase()}] ${title ? title + ': ' : ''}${message || ''}`.trim();
+  await supabase.from('messages_sheet').insert({
+    col_a: new Date().toISOString(),
+    col_b: 'Admin',
+    col_c: chatNotice
+  });
+
+  return dashboard();
+}
+
 async function adminUpdateMeta(securityStatus) {
   const { data: metaRows } = await supabase.from('app_meta').select('*').limit(1);
   if (metaRows?.length) {
@@ -735,6 +762,7 @@ export default async function handler(req, res) {
       // Admin Actions
       case 'admin-login': return json(res, 200, await adminLogin(body.username, body.password));
       case 'admin-update-setting': return json(res, 200, await adminUpdateSetting(body.rowNumber, body.col, body.value));
+      case 'admin-push-broadcast': return json(res, 200, await adminPushBroadcast(body));
       case 'admin-update-meta': return json(res, 200, await adminUpdateMeta(body.securityStatus));
       case 'admin-update-member-meta': return json(res, 200, await adminUpdateMemberMeta(body.field, body.value));
       case 'admin-save-member': return json(res, 200, await adminSaveMember(body));
