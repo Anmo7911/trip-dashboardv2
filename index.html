@@ -2616,30 +2616,36 @@
         </a>
       ` : '';
 
-      // Helper to generate the Attendance Status line for cards
+     // Helper to generate the Attendance Status line with matched colors
       const getAttSection = (attText, isDarkBg, alignment) => {
-        let html = "";
-        const att = attText ? attText.toLowerCase().trim() : "";
-        const displayTxt = attText ? attText.trim() : "";
-        
-        // Dynamic coloring based on text content (await, confirm, cancel, etc)
-        if (att.includes("await") || att.includes("pending")) {
-            html += `<p class="text-[9px] font-black ${isDarkBg ? 'text-amber-300' : 'text-amber-500'} uppercase mt-1">(${displayTxt})</p>`;
-        } else if (att.includes("confirm")) {
-            html += `<p class="text-[9px] font-black ${isDarkBg ? 'text-emerald-300' : 'text-emerald-600'} uppercase mt-1">(${displayTxt})</p>`;
-        } else if (att.includes("not") || att.includes("cancel")) {
-            html += `<p class="text-[9px] font-black ${isDarkBg ? 'text-rose-300' : 'text-rose-600'} uppercase mt-1">(${displayTxt})</p>`;
-        } else if (att !== "") {
-            html += `<p class="text-[9px] font-black ${isDarkBg ? 'text-slate-300' : 'text-slate-500'} uppercase mt-1">(${displayTxt})</p>`;
+        if (!attText || attText.trim() === "") return "";
+        const att = attText.toLowerCase().trim();
+        const displayTxt = attText.trim();
+        let colorClass = isDarkBg ? 'text-slate-300' : 'text-slate-500';
+
+        // 1. Red - Not Attending
+        if (att.includes("not") || att.includes("cancel")) {
+          colorClass = isDarkBg ? 'text-rose-400 font-black' : 'text-rose-600 font-black';
         }
-        
-        if (html === "") return "";
+        // 2. Green - Attendance Confirmed
+        else if (att.includes("confirm") && !att.includes("await")) {
+          colorClass = isDarkBg ? 'text-emerald-300 font-black' : 'text-emerald-600 font-black';
+        }
+        // 3. Yellow/Amber - Awaiting Confirmation, Invitation Sent, Stand By
+        else if (att.includes("await") || att.includes("invitation") || att.includes("stand by") || att.includes("pending")) {
+          colorClass = isDarkBg ? 'text-amber-300 font-black' : 'text-amber-500 font-black';
+        }
 
         let flexAlign = "items-center";
         if (alignment === "right") flexAlign = "items-end";
         if (alignment === "left") flexAlign = "items-start";
 
-        return `<div class="flex flex-col w-full ${flexAlign}">${html}</div>`;
+        return `
+          <div class="flex flex-col w-full ${flexAlign}">
+            <p class="text-[8.5px] uppercase tracking-wider mt-0.5 ${colorClass}">
+              (${displayTxt})
+            </p>
+          </div>`;
       };
 
       // Helper to split Names securely
