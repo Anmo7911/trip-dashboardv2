@@ -158,6 +158,7 @@ async function dashboard() {
   const expenseStatus = text(setting(22, 'b'));
   const contributionToggle = text(setting(23, 'b')).toUpperCase();
   const checklistVisibility = text(setting(24, 'b')).toUpperCase() || 'VISIBLE';
+  const checklistRevokeVisibility = text(setting(24, 'c')).toUpperCase() || 'VISIBLE';
 
   const categoryBudgets = { Food: 0, 'Entry Fee': 0, Fare: 0, Stay: 0, Water: 0, Other: 0 };
   let calculatedTotalBudget = 0;
@@ -296,7 +297,7 @@ async function dashboard() {
 
   const totalExpenses = Object.values(categorySpent).reduce((a, b) => a + b, 0);
   return {
-    appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus, checklistVisibility,
+    appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus, checklistVisibility, checklistRevokeVisibility,
     securityStatus: meta.security_status || 'normal',
     chiefCoordinatorSignature, eidStampImage, rawEidStamp, tripName, secondaryTitle,
     styles: { titleColor, subtitleColor, titleFontSize, titlePosition, rotationLines, titleVisibility, headerImgMob1, headerImgDesk1, headerImgMob2, headerImgDesk2 },
