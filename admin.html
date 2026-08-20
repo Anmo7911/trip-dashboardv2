@@ -337,7 +337,50 @@
 
     <!-- 2. CHECKLIST MANAGER TAB -->
     <section id="pane-checklist" class="tab-pane space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      
+      <!-- Top Broadcast & Alert Manager Card -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+          <h4 class="text-xs font-black uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+            <i data-lucide="bell-ring" class="w-4 h-4"></i> Broadcast Message Box (10s Delayed Popup)
+          </h4>
+          
+          <select id="setPopupStatus" onchange="saveSetting(28, 'e', this.value, 'Popup broadcast status updated')" class="bg-slate-950 border border-slate-700 text-[10px] font-bold rounded-lg px-2.5 py-1 text-indigo-400 outline-none">
+            <option value="DISABLED">DISABLED (Off)</option>
+            <option value="ENABLED">ENABLED (Active)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Message Type</label>
+            <select id="setPopupType" onchange="saveSetting(28, 'b', this.value, 'Popup type updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1 outline-none">
+              <option value="NOTIFICATION">Notification (Blue/Indigo)</option>
+              <option value="ANNOUNCEMENT">Announcement (Emerald/Green)</option>
+              <option value="ALERT">Alert (Rose/Red)</option>
+            </select>
+          </div>
+          
+          <div class="sm:col-span-2">
+            <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Dialog Title</label>
+            <input type="text" id="setPopupTitle" placeholder="e.g. Schedule Update or Weather Alert" onchange="saveSetting(28, 'c', this.value, 'Popup title updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-bold mt-1 outline-none focus:border-indigo-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Message Content</label>
+          <textarea id="setPopupMessage" rows="2" placeholder="Enter message to display on member screen..." onchange="saveSetting(28, 'd', this.value, 'Popup message updated')" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-white font-bold mt-1 outline-none focus:border-indigo-500"></textarea>
+        </div>
+
+        <div class="flex justify-end pt-1">
+          <button type="button" onclick="previewAdminPopup()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 active:scale-95 transition">
+            <i data-lucide="eye" class="w-3.5 h-3.5"></i> Test Preview
+          </button>
+        </div>
+      </div>
+
+      <!-- Checklist Tasks Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
         <div>
           <h3 class="text-xs font-black uppercase tracking-wider text-slate-300">Itinerary Checklist Tasks</h3>
           <p class="text-[10px] font-bold text-indigo-400">Important & Optional trip responsibilities</p>
@@ -345,13 +388,13 @@
         
         <div class="flex items-center gap-2">
           <!-- Revoke Button Visibility Switch -->
-<div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl">
-  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Revoke Button</span>
-  <select id="setChecklistRevoke" onchange="saveSetting(24, 'c', this.value, 'Revoke button visibility updated')" class="bg-slate-950 border border-slate-700 text-[11px] font-bold rounded-lg px-2 py-1 text-indigo-400 outline-none">
-    <option value="VISIBLE">SHOW</option>
-    <option value="HIDDEN">HIDE</option>
-  </select>
-</div>
+          <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Revoke Button</span>
+            <select id="setChecklistRevoke" onchange="saveSetting(24, 'c', this.value, 'Revoke button visibility updated')" class="bg-slate-950 border border-slate-700 text-[11px] font-bold rounded-lg px-2 py-1 text-indigo-400 outline-none">
+              <option value="VISIBLE">SHOW</option>
+              <option value="HIDDEN">HIDE</option>
+            </select>
+          </div>
 
           <button onclick="openChecklistModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black uppercase tracking-wider px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 transition">
             <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Add Task
@@ -1042,13 +1085,19 @@
       document.getElementById('setSignOffStatus').value = d.signOffStatus || 'closed';
       document.getElementById('setSecurityStatus').value = d.securityStatus || 'normal';
 
-
-      
-     document.getElementById('setChecklistVisibility').value = d.checklistVisibility || 'VISIBLE';
+      // Checklist Settings Sync
+      document.getElementById('setChecklistVisibility').value = d.checklistVisibility || 'VISIBLE';
       if (document.getElementById('setChecklistRevoke')) {
         document.getElementById('setChecklistRevoke').value = d.checklistRevokeVisibility || 'VISIBLE';
       }
 
+      // 10-Second Popup Settings Sync
+      if (d.popupConfig) {
+        if (document.getElementById('setPopupStatus')) document.getElementById('setPopupStatus').value = d.popupConfig.status || 'DISABLED';
+        if (document.getElementById('setPopupType')) document.getElementById('setPopupType').value = d.popupConfig.type || 'NOTIFICATION';
+        if (document.getElementById('setPopupTitle')) document.getElementById('setPopupTitle').value = d.popupConfig.title || '';
+        if (document.getElementById('setPopupMessage')) document.getElementById('setPopupMessage').value = d.popupConfig.message || '';
+      }
       
       if (d.styles) {
         document.getElementById('setTitleSize').value = d.styles.titleFontSize || 'xl';
@@ -1060,6 +1109,13 @@
         document.getElementById('setHeaderMob2').value = d.styles.headerImgMob2 || '';
         document.getElementById('setHeaderDesk2').value = d.styles.headerImgDesk2 || '';
       }
+    }
+
+    function previewAdminPopup() {
+      const type = document.getElementById('setPopupType').value;
+      const title = document.getElementById('setPopupTitle').value || 'Notice';
+      const msg = document.getElementById('setPopupMessage').value || 'This is a sample message.';
+      alert(`[${type}] ${title}\n\n${msg}`);
     }
 
     async function saveSetting(row, col, val, msg = "Setting Saved") {
