@@ -5721,6 +5721,7 @@ async function executePendingChecklistAction() {
     let currentBroadcastKey = null;
     let isAppFirstLoaded = true;
     let lastKnownPushedAt = null;
+    let isBroadcastDismissed = false;
 
     function evaluateBroadcastPopup(config) {
       if (!config || (config.status || '').toUpperCase() !== 'ENABLED') return;
@@ -5728,20 +5729,30 @@ async function executePendingChecklistAction() {
 
       const isLivePush = config.pushedAt && config.pushedAt !== lastKnownPushedAt;
       const broadcastSignature = `${config.type}_${config.title}_${config.message}_${config.pushedAt || ''}`;
-      
-      // If it's not a fresh push and user already dismissed this version, skip
-      if (!isLivePush && sessionStorage.getItem('dismissedBroadcastKey') === broadcastSignature) return;
+
+      // Reset local dismissal state if a fresh push arrived
+      if (isLivePush) {
+        isBroadcastDismissed = false;
+      }
+
+      // Check both local runtime flag and sessionStorage
+      if (!isLivePush && (isBroadcastDismissed || sessionStorage.getItem('dismissedBroadcastKey') === broadcastSignature)) {
+        return;
+      }
 
       currentBroadcastKey = broadcastSignature;
       if (config.pushedAt) lastKnownPushedAt = config.pushedAt;
 
-      // Determine delay: 10s on initial launch, 0s (instant) when pushed live by Admin
+      // Determine delay: 10s on first app open, 0s (instant) when pushed live by Admin
       const delay = (isAppFirstLoaded && !isLivePush) ? 10000 : 0;
       isAppFirstLoaded = false;
 
       if (broadcastTimer) clearTimeout(broadcastTimer);
 
       const renderPopupUI = () => {
+        // Prevent showing if dismissed while waiting for the timer
+        if (isBroadcastDismissed || sessionStorage.getItem('dismissedBroadcastKey') === broadcastSignature) return;
+
         const modal = document.getElementById('broadcast-popup-modal');
         const card = document.getElementById('broadcast-card');
         const iconBox = document.getElementById('broadcast-icon-box');
@@ -5782,13 +5793,33 @@ async function executePendingChecklistAction() {
         modal.classList.remove('hidden');
         void modal.offsetHeight;
         modal.classList.remove('opacity-0');
-        card.classList.replace('scale-90', 'scale-100');
+        card.classList.remove('scale-90');
+        card.classList.add('scale-100');
       };
 
       if (delay === 0) {
         renderPopupUI();
       } else {
         broadcastTimer = setTimeout(renderPopupUI, delay);
+      }
+    }
+
+    function closeBroadcastPopup() {
+      isBroadcastDismissed = true;
+      if (broadcastTimer) clearTimeout(broadcastTimer);
+
+      const modal = document.getElementById('broadcast-popup-modal');
+      const card = document.getElementById('broadcast-card');
+      
+      if (currentBroadcastKey) {
+        sessionStorage.setItem('dismissedBroadcastKey', currentBroadcastKey);
+      }
+
+      if (modal && card) {
+        modal.classList.add('opacity-0');
+        card.classList.remove('scale-100');
+        card.classList.add('scale-90');
+        setTimeout(() => modal.classList.add('hidden'), 300);
       }
     }
 
