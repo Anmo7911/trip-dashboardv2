@@ -1297,92 +1297,73 @@
 </div>
 
  <!-- =========================================
-       SCENIC EXPEDITION APP HEADER (Sticky Mode with Dissolve Fade)
+       SOURCE 2 BANNER BACKGROUND + SOURCE 1 ORIGINAL TITLE ENGINE
        ========================================= -->
-  <header id="app-header" class="relative lg:sticky top-0 z-30 w-full overflow-hidden shadow-sm select-none">
+  <header id="app-header" class="title-enter-bar sticky top-0 z-30 w-full flex flex-col items-center select-none">
     
-    <!-- Dissolve Layer 1 -->
-    <div id="header-bg-layer-1" class="absolute inset-0 bg-cover bg-center transition-opacity duration-[900ms] ease-in-out z-0 opacity-100"></div>
+    <!-- Top safety bleed extension (Source 2 style) -->
+    <div class="absolute bottom-full left-0 w-full h-[100vh] bg-indigo-600 pointer-events-none"></div>
 
-    <!-- Dissolve Layer 2 -->
-    <div id="header-bg-layer-2" class="absolute inset-0 bg-cover bg-center transition-opacity duration-[900ms] ease-in-out z-0 opacity-0"></div>
-
-    <!-- Soft Sunlight & Sky Gradient Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-b from-sky-400/25 via-sky-100/10 to-transparent backdrop-blur-[0.5px] z-[1]"></div>
-    
-
-    <!-- Bottom Dissolve / Fade Overlay -->
-    <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-100 via-slate-100/60 to-transparent pointer-events-none z-10"></div>
-
-    <!-- Outer header container height locked so cards below never shift -->
-    <div class="relative z-20 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-2.5 pb-8 flex flex-col justify-start h-[190px] sm:h-[210px]">
+    <!-- Solid gradient header capsule (Source 2 design) -->
+    <div class="w-full bg-gradient-to-br from-indigo-600 to-violet-700 rounded-b-3xl shadow-md px-4 pt-4 pb-5 flex flex-col items-center justify-center text-center relative z-20">
       
       <!-- Top Action Bar: Floating Chat Button (Mobile Only) -->
-      <div class="flex items-center justify-end w-full h-9 sm:h-10">
-        <button type="button" onclick="openChatModal()" class="lg:hidden relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/80 hover:bg-white/95 backdrop-blur-md border border-white/80 shadow-md flex items-center justify-center text-slate-800 active:scale-95 transition-all outline-none" title="Trip Messenger">
-          <i data-lucide="message-circle" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-800 stroke-[2.2]"></i>
-          <span id="chat-unread-dot" class="absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full hidden shadow-sm"></span>
+      <div class="flex items-center justify-end w-full h-8 max-w-md lg:max-w-5xl mx-auto -mt-1">
+        <button type="button" onclick="openChatModal()" class="lg:hidden relative w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 shadow-sm flex items-center justify-center text-white active:scale-95 transition-all outline-none" title="Trip Messenger">
+          <i data-lucide="message-circle" class="w-4 h-4 text-white stroke-[2.2]"></i>
+          <span id="chat-unread-dot" class="absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 border-2 border-violet-700 rounded-full hidden shadow-sm"></span>
         </button>
       </div>
 
-      
-    <!-- Dynamic Trip Title -->
-<div id="ui-header-title-container" class="flex flex-col items-center justify-center -mt-2.5 sm:mt-2 relative">
+      <!-- Source 1 Original Title Typography Engine & Accent Gradient -->
+      <div id="ui-header-title-container" class="flex flex-col items-center justify-center -mt-2 sm:mt-1 relative w-full max-w-md lg:max-w-5xl mx-auto">
         <div id="ui-title-alignment-box" class="headline-scene h-14 w-full flex items-center justify-center px-2">
           <div id="ui-headline-flipper" class="headline-flipper w-full h-full">
             <div class="headline-front flex items-center justify-center w-full h-full">
-              <h1 id="ui-title-1" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
+              <h1 id="ui-title-1" class="expedition-title-font text-[38px] sm:text-5xl lg:text-6xl text-white uppercase text-center leading-none">
                 VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
               </h1>
             </div>
             <div class="headline-back flex items-center justify-center w-full h-full">
-              <h1 id="ui-title-2" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
+              <h1 id="ui-title-2" class="expedition-title-font text-[38px] sm:text-5xl lg:text-6xl text-white uppercase text-center leading-none">
                 VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
               </h1>
             </div>
           </div>
         </div>
       </div>
-      
-      <!-- Frosted Notice & Warning Bar (Anchored at exact original position) -->
-     <!-- Moved slightly downward using bottom-9 -->
-<div id="notice-container" class="absolute bottom-9 left-0 right-0 max-w-md lg:max-w-5xl mx-auto px-4 w-full">
-        <div class="overflow-hidden w-full">
-          <div id="notice-slider" class="carousel-track">
-            <!-- Notice Slot -->
-            <div class="carousel-item px-1">
-              <div class="bg-white/85 backdrop-blur-md border border-white/90 rounded-full px-3.5 py-1.5 flex items-center justify-between shadow-sm cursor-pointer hover:bg-white/95 transition-all">
-                <div class="flex items-center gap-2 min-w-0 pr-2">
-                  <div class="w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
-                    <i data-lucide="alert-circle" class="w-3.5 h-3.5 stroke-[2.5]"></i>
-                  </div>
-                  <p id="ui-trip-notice" class="text-[10.5px] font-black text-rose-900 truncate tracking-wide"></p>
-                </div>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
-              </div>
-            </div>
-            <!-- Warning Notice Slot -->
-            <div class="carousel-item px-1">
-              <div class="bg-rose-50/90 backdrop-blur-md border border-rose-200 rounded-full px-3.5 py-1.5 flex items-center justify-between shadow-sm cursor-pointer">
-                <div class="flex items-center gap-2 min-w-0 pr-2">
-                  <div class="w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-                    <i data-lucide="alert-triangle" class="w-3.5 h-3.5 stroke-[2.5]"></i>
-                  </div>
-                  <p id="ui-warning-notice" class="text-[10.5px] font-black text-rose-900 truncate tracking-wide"></p>
-                </div>
-                <i data-lucide="chevron-right" class="w-4 h-4 text-rose-400 shrink-0"></i>
-              </div>
-            </div>
+
+    </div>
+
+    <!-- Source 2 Notice & Warning Slider Bar -->
+    <div id="notice-container" class="hidden overflow-hidden w-full bg-slate-50 border-b border-slate-200 -mt-2 pt-4 pb-1 relative z-10">
+      <div id="notice-slider" class="carousel-track max-w-md lg:max-w-5xl mx-auto">
+        <!-- Standard Notice Slot -->
+        <div class="carousel-item px-4 pb-1">
+          <div class="bg-indigo-50 border border-indigo-100 rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto">
+            <span class="relative flex h-2 w-2 shrink-0"></span>
+            <p id="ui-trip-notice" class="text-[11px] font-bold text-indigo-700 truncate text-center"></p>
+          </div>
+        </div>
+        <!-- Warning Notice Slot -->
+        <div class="carousel-item px-4 pb-1">
+          <div class="bg-rose-50 border border-rose-100 rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto warning-pulse">
+            <span class="relative flex h-2 w-2 shrink-0">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+            </span>
+            <p id="ui-warning-notice" class="text-[11px] font-bold text-rose-700 truncate text-center"></p>
           </div>
         </div>
       </div>
+    </div>
   </header>
 
     
  <!-- =========================================
      TAB 1: SPEND VIEW (Side-by-Side on Desktop)
      ========================================= -->
-  <main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-6xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-6 px-4 lg:px-8 relative z-40 lg:z-20">
+  <main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-6xl mx-auto pt-4 lg:pt-6 px-4 lg:px-8 relative z-40 lg:z-20">
 
     <!-- DESKTOP 2-COLUMN GRID WRAPPER (Mobile Stacks Identically) -->
     <div class="flex flex-col lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start space-y-4 lg:space-y-0">
@@ -2577,41 +2558,39 @@
     }
 
     // 3D flips the title text in the navbar every 8 seconds
-    function runHeadlineCarousel(t1, t2) {
-  titleText1 = t1; 
-  titleText2 = t2;
-  
+   function runHeadlineCarousel(t1, t2) {
+  titleText1 = t1 || "";
+  titleText2 = t2 || "";
+
   const el1 = document.getElementById('ui-title-1');
   const el2 = document.getElementById('ui-title-2');
-  
-  if (el1) el1.innerHTML = formatTitleWithGradient(titleText1);
-  if (el2) el2.innerHTML = formatTitleWithGradient(titleText2 || titleText1);
-  
   const flipper = document.getElementById('ui-headline-flipper');
-  if (!flipper) return;
 
-  // Clear existing timer before creating a new one
+  if (el1) el1.innerText = titleText1;
+  if (el2) el2.innerText = titleText2 || titleText1;
+
   if (headlineLoopTimer) {
     clearInterval(headlineLoopTimer);
     headlineLoopTimer = null;
   }
-  
-  // If secondary title is absent or identical, reset to front face
-  if (!t2 || t2.trim() === "" || t2.trim() === t1.trim()) {
-    flipper.classList.remove('headline-rotated');
-    currentTitleState = 0;
-    return;
-  }
 
-  // Infinite flip loop every 4 seconds
+  currentTitleState = 0;
+  if (flipper) flipper.classList.remove('headline-rotated');
+
+  // Do not flip if second title is missing or identical
+  if (!t2 || t2.trim() === "" || t2.trim() === t1.trim()) return;
+
+  // Source 2 8-second smooth rotation loop
   headlineLoopTimer = setInterval(() => {
     currentTitleState = currentTitleState === 0 ? 1 : 0;
-    if (currentTitleState === 1) {
-      flipper.classList.add('headline-rotated');
-    } else {
-      flipper.classList.remove('headline-rotated');
+    if (flipper) {
+      if (currentTitleState === 1) {
+        flipper.classList.add('headline-rotated');
+      } else {
+        flipper.classList.remove('headline-rotated');
+      }
     }
-  }, 6000);
+  }, 8000);
 }
 
     // API call handler for marking miscellaneous "places" as Visited/Pending
@@ -3055,70 +3034,12 @@
      // =============================================================
      // DYNAMIC GRAPHICS ENGINE & DESIGN CONTROLLER INJECTION
      // =============================================================
+     // Retains Source 1 Title Engine while removing dual-image layer overhead
      if (data.styles) {
-       const headerEl = document.getElementById('app-header');
        const titleContainer = document.getElementById('ui-header-title-container');
        const alignBox = document.getElementById('ui-title-alignment-box');
-       const titleFlipper = document.getElementById('ui-headline-flipper');
        const h1Title1 = document.getElementById('ui-title-1');
        const h1Title2 = document.getElementById('ui-title-2');
-
-       // -------------------------------------------------------------
-       // DUAL HEADER 0.9s DISSOLVE ENGINE (6-second loop with fallback)
-       // -------------------------------------------------------------
-       const layer1 = document.getElementById('header-bg-layer-1');
-       const layer2 = document.getElementById('header-bg-layer-2');
-       
-       if (layer1 && layer2) {
-         const isDesktop = window.innerWidth >= 1024;
-         const img1 = isDesktop ? (data.styles.headerImgDesk1 || data.styles.headerImgMob1) : (data.styles.headerImgMob1 || data.styles.headerImgDesk1);
-         const img2 = isDesktop ? (data.styles.headerImgDesk2 || data.styles.headerImgMob2) : (data.styles.headerImgMob2 || data.styles.headerImgDesk2);
-
-         if (img1) layer1.style.backgroundImage = `url('${img1}')`;
-         if (img2) layer2.style.backgroundImage = `url('${img2}')`;
-
-         if (headerDissolveTimer) {
-           clearInterval(headerDissolveTimer);
-           headerDissolveTimer = null;
-         }
-
-         if (!img2 || img2.trim() === '') {
-           layer1.classList.remove('opacity-0');
-           layer1.classList.add('opacity-100');
-           layer2.classList.remove('opacity-100');
-           layer2.classList.add('opacity-0');
-         } else {
-           headerActiveLayer = 1;
-           layer1.classList.remove('opacity-0');
-           layer1.classList.add('opacity-100');
-           layer2.classList.remove('opacity-100');
-           layer2.classList.add('opacity-0');
-
-           headerDissolveTimer = setInterval(() => {
-             if (headerActiveLayer === 1) {
-               layer1.classList.replace('opacity-100', 'opacity-0');
-               layer2.classList.replace('opacity-0', 'opacity-100');
-               headerActiveLayer = 2;
-             } else {
-               layer2.classList.replace('opacity-100', 'opacity-0');
-               layer1.classList.replace('opacity-0', 'opacity-100');
-               headerActiveLayer = 1;
-             }
-           }, 6000);
-         }
-       }
-
-       // Dynamic Header Image (Mobile vs Desktop)
-       if (headerEl) {
-         const isDesktop = window.innerWidth >= 1024;
-         const targetImg = isDesktop 
-           ? (data.styles.headerImgDesktop || data.styles.headerImgMobile) 
-           : (data.styles.headerImgMobile || data.styles.headerImgDesktop);
-           
-         if (targetImg) {
-           headerEl.style.backgroundImage = `url('${targetImg}')`;
-         }
-       }
 
        // Title Visibility Toggle
        if (titleContainer) {
@@ -3135,14 +3056,12 @@
          alignBox.classList.add(data.styles.titlePosition || 'justify-center');
        }
 
-       // Typography Configuration
+       // Preserves Source 1 Display Typography
        if (h1Title1 && h1Title2) {
-         h1Title1.className = "expedition-title-font text-[44px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none tracking-wide";
-         h1Title2.className = "expedition-title-font text-[44px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none tracking-wide";
-         h1Title1.style.color = "";
-         h1Title2.style.color = "";
+         h1Title1.className = "expedition-title-font text-[38px] sm:text-5xl lg:text-6xl text-white uppercase text-center leading-none tracking-wide";
+         h1Title2.className = "expedition-title-font text-[38px] sm:text-5xl lg:text-6xl text-white uppercase text-center leading-none tracking-wide";
        }
-     }// <-- Properly closing if (data.styles)
+     }<-- Properly closing if (data.styles)
       
       // 2. Check the global trip live status
       const lockScreen = document.getElementById('live-lock-screen');
