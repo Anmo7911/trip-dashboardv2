@@ -64,22 +64,22 @@
     
 
 
- /* Modern Display Title Engine */
+ /* Ultra-Bold Title Display Engine */
     .expedition-title-font {
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      line-height: 1.05;
-      color: #0f172a; /* Deep Charcoal */
-      text-transform: none;
+      font-family: 'Anton', 'Bebas Neue', 'Teko', sans-serif;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      line-height: 0.92;
+      color: #0f172a; /* Deep Charcoal/Black */
+      text-transform: uppercase;
     }
 
     .title-accent-gradient {
       display: inline-block;
-      background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%);
+      background: linear-gradient(180deg, #818cf8 0%, #6366f1 50%, #4f46e5 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.18));
+      filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.25));
     }
 
     
@@ -893,8 +893,8 @@
           class="w-10 h-10 rounded-2xl object-cover border border-slate-100 shadow-md shadow-slate-200/50 shrink-0"
         />
         <div>
-          <h1 class="text-sm font-bold text-slate-800 tracking-normal leading-none">BHARAT WAY</h1>
-          <p class="text-[10px] font-bold text-indigo-600 tracking-normal mt-1">Expedition Portal</p>
+          <h1 class="text-sm font-black text-slate-800 uppercase tracking-wider leading-none">BHARAT WAY</h1>
+          <p class="text-[9px] font-bold text-indigo-600 uppercase tracking-widest mt-1">Expedition Portal</p>
         </div>
       </div>
 
@@ -902,7 +902,7 @@
       <nav class="space-y-1.5 pt-2">
         <!-- Desktop Sidebar Checklist Bookmark -->
 <div id="desktop-checklist-bookmark-container" class="pt-2">
-  <button type="button" onclick="showTab('checklist', this)" class="desktop-nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-xs tracking-normal transition-all bg-slate-900 text-white hover:bg-indigo-600 shadow-md outline-none group anim-bookmark-pulse" data-tab="checklist">
+  <button type="button" onclick="showTab('checklist', this)" class="desktop-nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all bg-slate-900 text-white hover:bg-indigo-600 shadow-md outline-none group anim-bookmark-pulse" data-tab="checklist">
     <div class="flex items-center gap-3">
       <i data-lucide="check-square" class="w-4 h-4 text-indigo-400 group-hover:text-white"></i>
       <span>Trip Checklist</span>
@@ -912,30 +912,30 @@
 </div>
         
         <!-- Spend Tab -->
-        <button onclick="showTab('spend', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs tracking-normal transition-all text-white bg-indigo-600 shadow-md shadow-indigo-100" data-tab="spend">
+        <button onclick="showTab('spend', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-white bg-indigo-600 shadow-md shadow-indigo-100" data-tab="spend">
           <i data-lucide="wallet" class="w-4 h-4"></i>
           <span>Spend</span>
         </button>
 
         <!-- Squad Tab -->
-        <button onclick="showTab('squad', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs tracking-normal transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="squad">
+        <button onclick="showTab('squad', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="squad">
           <i data-lucide="users" class="w-4 h-4"></i>
           <span>Members</span>
         </button>
 
         <!-- Route Tab -->
-        <button id="desktop-nav-route" onclick="showTab('places', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs tracking-normal transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="places">
+        <button id="desktop-nav-route" onclick="showTab('places', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="places">
           <i data-lucide="map-pin" class="w-4 h-4"></i>
           <span>Places / Trip</span>
         </button>
 
        <!-- Desktop Sidebar Trip Gallery Button -->
-<button onclick="showTab('gallery', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs tracking-normal transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="gallery">
+<button onclick="showTab('gallery', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="gallery">
   <i data-lucide="camera" class="w-4 h-4"></i>
   <span>Trip Gallery</span>
 </button>
         <!-- Trip Archives Tab Button -->
-        <button onclick="showTab('archives', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs tracking-normal transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="archives">
+        <button onclick="showTab('archives', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="archives">
           <i data-lucide="archive" class="w-4 h-4"></i>
           <span>Trip Archives</span>
         </button>
@@ -943,7 +943,7 @@
         
 
         <!-- More Tab Trigger -->
-        <button onclick="showTab('more', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs tracking-normal transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="more">
+        <button onclick="showTab('more', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="more">
           <i data-lucide="more-horizontal" class="w-4 h-4"></i>
           <span>More</span>
         </button>
@@ -957,17 +957,17 @@
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
           <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
         </span>
-        <span class="text-[11px] font-bold text-slate-700 tracking-normal">Trip Active</span>
+        <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">Trip Active</span>
       </div>
 
       <div class="space-y-2 mb-3">
         <div>
-          <p class="text-[9px] font-bold text-slate-400 tracking-normal">Trip Dates</p>
-          <p id="desktop-card-dates" class="text-[12px] font-bold text-slate-700 mt-0.5">27 June – 30 June 2026</p>
+          <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Trip Dates</p>
+          <p id="desktop-card-dates" class="text-[11px] font-black text-slate-700 mt-0.5">27 June – 30 June 2026</p>
         </div>
         <div>
-          <p class="text-[9px] font-bold text-slate-400 tracking-normal">Destination</p>
-          <p id="desktop-card-dest" class="text-[12px] font-bold text-slate-700 mt-0.5">Uttarakhand, India</p>
+          <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Destination</p>
+          <p id="desktop-card-dest" class="text-[11px] font-black text-slate-700 mt-0.5">Uttarakhand, India</p>
         </div>
       </div>
 
@@ -1004,7 +1004,7 @@
             <i data-lucide="qr-code" class="w-8 h-8 text-indigo-400"></i>
             <div class="absolute left-0 w-full h-[2px] bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)] qr-laser-scan"></div>
           </div>
-          <span class="text-[10px] font-bold tracking-[0.2em] text-emerald-400 animate-pulse">Authenticating Pass...</span>
+          <span class="text-[9px] font-black tracking-[0.2em] uppercase text-emerald-400 animate-pulse">Authenticating Pass...</span>
         </div>
       </div>
 
@@ -1015,12 +1015,12 @@
         <div id="eid-left-bar"
           class="w-[52px] bg-indigo-600 flex flex-col justify-between items-center py-4 text-white shrink-0 transition-colors duration-500 select-none overflow-hidden">
           <div style="writing-mode: vertical-rl; transform: rotate(180deg);"
-            class="text-[12px] font-bold tracking-[0.25em] opacity-90 whitespace-nowrap">
+            class="text-[11px] font-black tracking-[0.25em] uppercase opacity-90 whitespace-nowrap">
             E-ID
           </div>
           <div class="w-[1.5px] h-10 bg-white/40 my-2"></div>
           <div id="eid-vertical-status" style="writing-mode: vertical-rl; transform: rotate(180deg);"
-            class="text-[34px] font-bold tracking-wider whitespace-nowrap flex items-center justify-start leading-none">
+            class="text-[34px] font-black tracking-wider uppercase whitespace-nowrap flex items-center justify-start leading-none">
             VERIFIED
           </div>
         </div>
@@ -1031,11 +1031,11 @@
           <!-- Header Area (Fixed vertical & horizontal clipping) -->
           <div class="h-14 flex flex-col justify-center items-center px-3 text-center overflow-hidden">
             <h1 id="eid-title"
-              class="text-[16px] font-bold tracking-tight text-indigo-700 leading-tight w-full truncate transition-colors duration-500">
+              class="text-[16px] font-black tracking-tight uppercase text-indigo-700 leading-tight w-full truncate transition-colors duration-500">
               VALLEY OF FLOWERS
             </h1>
             <p id="eid-subtitle"
-              class="text-[8.5px] font-bold tracking-[0.18em] text-slate-400 mt-0.5 truncate w-full hidden"></p>
+              class="text-[7.5px] font-bold tracking-[0.18em] text-slate-400 uppercase mt-0.5 truncate w-full hidden"></p>
           </div>
 
           <!-- Photo Section -->
@@ -1053,10 +1053,10 @@
           <div class="flex-1 p-3.5 pb-2.5 flex flex-col justify-between">
             <div>
               <p id="eid-name"
-                class="font-bold text-base text-slate-900 leading-none tracking-tight truncate mb-2.5 border-b border-slate-100 pb-1.5">
+                class="font-black text-base text-slate-900 leading-none tracking-tight uppercase truncate mb-2.5 border-b border-slate-100 pb-1.5">
               </p>
 
-              <div class="grid grid-cols-[55px_auto] gap-y-1.5 gap-x-2 text-[9.5px] font-bold text-slate-800 tracking-normal w-full mb-1">
+              <div class="grid grid-cols-[55px_auto] gap-y-1.5 gap-x-2 text-[8.5px] font-bold text-slate-800 uppercase tracking-wide w-full mb-1">
                 <span class="text-slate-400">Position</span>
                 <div class="flex gap-1.5"><span class="text-slate-300 shrink-0">:</span><span id="eid-designation" class="leading-tight truncate"></span></div>
 
@@ -1076,7 +1076,7 @@
               <div class="flex flex-col items-start justify-end w-[60%]">
                 <img id="eid-chief-sign" class="h-5 object-contain mix-blend-multiply mb-0.5">
                 <p id="eid-sign-text"
-                  class="text-[8px] font-bold tracking-normal text-indigo-700 border-t border-slate-300 pt-0.5 w-[85%] transition-colors duration-500">
+                  class="text-[7px] font-black uppercase tracking-widest text-indigo-700 border-t border-slate-300 pt-0.5 w-[85%] transition-colors duration-500">
                   Chief Coord.
                 </p>
               </div>
@@ -1107,7 +1107,7 @@
     <div class="max-w-sm w-full bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col">
       <!-- Modal Header -->
       <div class="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center">
-        <h2 class="font-bold text-slate-800 tracking-wide text-sm">Sign Final Ledger</h2>
+        <h2 class="font-black text-slate-800 tracking-wide uppercase text-sm">Sign Final Ledger</h2>
         <button onclick="closeSignaturePad()" class="text-slate-400 hover:text-rose-500 font-bold px-2 py-1 bg-white rounded-md border border-slate-200 active:scale-95">X</button>
       </div>
       <!-- Canvas drawing area -->
@@ -1117,13 +1117,13 @@
       </div>
       <!-- Legal Text & Submit -->
       <div class="p-5 border-t border-slate-200 text-center">
-        <p class="text-[11px] font-bold text-slate-400 tracking-normal mb-1 leading-relaxed">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 leading-relaxed">
           ☑ By clicking ‘Submit’, I agree to the transaction details provided without any objection.
         </p>
-        <p class="text-[11px] font-bold text-slate-400 tracking-normal mb-4 leading-relaxed">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-4 leading-relaxed">
           सबमिट पर क्लिक करके, मैं पुष्टि करता/करती हूँ कि मुझे इस लेनदेन पर कोई आपत्ति नहीं है।
         </p>
-        <button id="sig-submit-btn" onclick="submitSignature()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
+        <button id="sig-submit-btn" onclick="submitSignature()" class="w-full bg-slate-900 text-white font-black py-4 rounded-xl active:scale-95 transition shadow-lg flex items-center justify-center gap-2">
           Submit Signature
         </button>
       </div>
@@ -1147,7 +1147,7 @@
             d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
       </div>
-      <h1 class="text-2xl font-bold text-slate-900 mb-2">Trip Concluded</h1>
+      <h1 class="text-2xl font-black text-slate-900 mb-2">Trip Concluded</h1>
       <p class="text-slate-500 text-sm mb-8 leading-relaxed">The financial ledger has been officially settled and
         archived. Live access is no longer available. Contact Admin for trip reports.</p>
 
@@ -1175,9 +1175,9 @@
           <i id="receipt-head-icon" data-lucide="check" class="w-8 h-8 text-blue-600 stroke-[3] transition-colors duration-300"></i>
         </div>
         <p id="receipt-head-title"
-          class="text-[12px] font-bold tracking-normal text-blue-100 mb-1 transition-colors duration-300">
+          class="text-[11px] font-bold uppercase tracking-widest text-blue-100 mb-1 transition-colors duration-300">
           Payment Successful</p>
-        <h2 id="receipt-amount" class="text-4xl font-bold tracking-tight">₹0</h2>
+        <h2 id="receipt-amount" class="text-4xl font-black tracking-tight">₹0</h2>
       </div>
 
       <!-- Receipt Body Data -->
@@ -1186,39 +1186,39 @@
 
            <!-- UTR Number & Copy Action -->
           <div class="flex justify-between items-center pt-1">
-            <span class="text-[11px] font-bold text-slate-400 tracking-normal">UTR No.</span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">UTR No.</span>
             <div class="flex items-center gap-1.5">
-              <span id="receipt-utr" class="font-mono text-xs font-bold text-indigo-600"></span>
+              <span id="receipt-utr" class="font-mono text-xs font-black text-indigo-600"></span>
               <i data-lucide="copy" class="w-3.5 h-3.5 text-slate-300 cursor-pointer hover:text-indigo-500" onclick="copyUTR()"></i>
             </div>
           </div>
           
           <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-3">
-            <span class="text-[11px] font-bold text-slate-400 tracking-normal">Status</span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</span>
             <div id="receipt-status-badge"></div>
           </div>
 
           
           <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-3">
-            <span class="text-[11px] font-bold text-slate-400 tracking-normal">Date & Time</span>
-            <span id="receipt-date" class="text-[11px] font-bold text-slate-600 text-right"></span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Date & Time</span>
+            <span id="receipt-date" class="text-[10px] font-bold text-slate-600 text-right"></span>
           </div>
 
          
 
           <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-3">
-            <span class="text-[11px] font-bold text-slate-400 tracking-normal">Category</span>
-            <span id="receipt-category" class="text-xs font-bold text-slate-800"></span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Category</span>
+            <span id="receipt-category" class="text-xs font-black text-slate-800 uppercase"></span>
           </div>
 
           <div class="flex justify-between items-start border-b border-dashed border-slate-200 pb-3 gap-3">
-            <span class="text-[11px] font-bold text-slate-400 tracking-normal shrink-0 mt-0.5">Notes</span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest shrink-0 mt-0.5">Notes</span>
             <span id="receipt-notes" class="text-xs font-bold text-slate-600 text-right break-words max-w-[70%] leading-snug"></span>
           </div>
 
         </div>
 
-        <button onclick="closeReceiptModal()" class="w-full mt-6 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-4 rounded-xl transition active:scale-95 text-[12px] tracking-normal">
+        <button onclick="closeReceiptModal()" class="w-full mt-6 bg-slate-200 hover:bg-slate-300 text-slate-700 font-black py-4 rounded-xl transition active:scale-95 text-[11px] uppercase tracking-widest">
           Close Receipt
         </button>
       </div>
@@ -1239,23 +1239,23 @@
         class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner border border-indigo-100">
         <i data-lucide="lock" class="w-6 h-6 stroke-[2.5]"></i>
       </div>
-      <h2 class="text-xl font-bold text-slate-800 tracking-wide mb-1">Member Authentication</h2>
+      <h2 class="text-xl font-black text-slate-800 tracking-wide uppercase mb-1">Member Authentication</h2>
       <p class="text-slate-400 text-xs font-medium mb-6">Select your Name & enter Trip PIN</p>
 
       <div class="space-y-4 text-left">
         <div>
-          <label class="text-[11px] font-bold text-slate-400 mb-1 block">Select Your Name</label>
+          <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Select Your Name</label>
           <!-- Names injected here dynamically by JS -->
           <select id="login-name-select" class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none appearance-none cursor-pointer text-slate-700"></select>
         </div>
         <div>
-          <label class="text-[11px] font-bold text-slate-400 mb-1 block">Enter 4-Digit PIN</label>
-          <input type="password" id="login-pin-input" pattern="\d*" maxlength="4" placeholder="••••" class="w-full text-center tracking-[0.5em] py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-xl">
+          <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Enter 4-Digit PIN</label>
+          <input type="password" id="login-pin-input" pattern="\d*" maxlength="4" placeholder="••••" class="w-full text-center tracking-[0.5em] py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-black text-xl">
         </div>
         <p id="login-error-msg"
-          class="text-rose-500 text-center text-[12px] font-bold hidden tracking-normal">Invalid PIN! Try
+          class="text-rose-500 text-center text-[11px] font-black hidden uppercase tracking-wider">Invalid PIN! Try
           again.</p>
-        <button onclick="processAppLogin()" id="login-submit-btn" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl active:scale-95 transition shadow-lg mt-2">Sign In</button>
+        <button onclick="processAppLogin()" id="login-submit-btn" class="w-full bg-slate-900 text-white font-black py-4 rounded-xl active:scale-95 transition shadow-lg mt-2">Sign In</button>
       </div>
     </div>
   </div>
@@ -1271,12 +1271,12 @@
         <i data-lucide="check-circle" class="w-8 h-8"></i>
       </div>
       <div>
-        <h2 class="text-xl font-bold text-slate-800 tracking-normal">All synced.</h2>
+        <h2 class="text-xl font-black text-slate-800 uppercase tracking-wide">All synced.</h2>
         <p class="text-sm font-bold text-slate-500 mt-2">You're all set for now.</p>
       </div>
 
       <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl">
-        <p class="text-xs font-bold text-indigo-600 tracking-normal italic">
+        <p class="text-xs font-black text-indigo-600 uppercase tracking-widest italic">
           Refresh the page to login again
         </p>
       </div>
@@ -1289,7 +1289,7 @@
 <div id="mobile-checklist-bookmark" class="lg:hidden fixed left-0 top-1/2 -translate-y-1/2 z-50 transition-all duration-300 anim-bookmark-pulse">
   <button type="button" onclick="showTab('checklist', null)" class="bg-slate-900/95 hover:bg-indigo-600 border-y border-r border-indigo-500/40 text-white py-3.5 px-1.5 rounded-r-2xl shadow-xl flex flex-col items-center gap-1.5 active:scale-95 transition-all outline-none">
     <i data-lucide="check-square" class="w-3.5 h-3.5 text-indigo-400 stroke-[2.5]"></i>
-    <span class="guidelines-text text-[9px] font-bold tracking-widest text-slate-100">Checklist</span>
+    <span class="guidelines-text text-[8px] font-black tracking-widest uppercase text-slate-100">Checklist</span>
   </button>
 </div>
 
@@ -1328,12 +1328,12 @@
         <div id="ui-title-alignment-box" class="headline-scene h-14 w-full flex items-center justify-center px-2">
           <div id="ui-headline-flipper" class="headline-flipper w-full h-full">
             <div class="headline-front flex items-center justify-center w-full h-full">
-              <h1 id="ui-title-1" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 text-center leading-none">
+              <h1 id="ui-title-1" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
                 VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
               </h1>
             </div>
             <div class="headline-back flex items-center justify-center w-full h-full">
-              <h1 id="ui-title-2" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 text-center leading-none">
+              <h1 id="ui-title-2" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
                 VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
               </h1>
             </div>
@@ -1353,7 +1353,7 @@
                   <div class="w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
                     <i data-lucide="alert-circle" class="w-3.5 h-3.5 stroke-[2.5]"></i>
                   </div>
-                  <p id="ui-trip-notice" class="text-[11.5px] font-bold text-rose-900 truncate tracking-wide"></p>
+                  <p id="ui-trip-notice" class="text-[10.5px] font-black text-rose-900 truncate tracking-wide"></p>
                 </div>
                 <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
               </div>
@@ -1365,7 +1365,7 @@
                   <div class="w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-sm">
                     <i data-lucide="alert-triangle" class="w-3.5 h-3.5 stroke-[2.5]"></i>
                   </div>
-                  <p id="ui-warning-notice" class="text-[11.5px] font-bold text-rose-900 truncate tracking-wide"></p>
+                  <p id="ui-warning-notice" class="text-[10.5px] font-black text-rose-900 truncate tracking-wide"></p>
                 </div>
                 <i data-lucide="chevron-right" class="w-4 h-4 text-rose-400 shrink-0"></i>
               </div>
@@ -1411,18 +1411,18 @@
                     <span id="dot-main" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                   </span>
 
-                  <p id="balance-label" class="text-[10.5px] font-bold text-emerald-600 tracking-normal leading-none">
+                  <p id="balance-label" class="text-[9.5px] font-black text-emerald-600 uppercase tracking-widest leading-none">
                     Remaining
                   </p>
                 </div>
 
-                <p id="stat-balance" class="text-3xl lg:text-4xl font-bold text-emerald-700 tracking-tight text-center leading-none">
+                <p id="stat-balance" class="text-3xl lg:text-4xl font-black text-emerald-700 tracking-tight text-center leading-none">
                   ₹0
                 </p>
 
               </div>
 
-              <div id="balance-hint-footer" class="text-[10px] font-bold tracking-normal text-emerald-700/80 flex items-center justify-center gap-1.5 transition-colors duration-500 w-full relative z-10">
+              <div id="balance-hint-footer" class="text-[9px] font-bold uppercase tracking-wider text-emerald-700/80 flex items-center justify-center gap-1.5 transition-colors duration-500 w-full relative z-10">
                 <span>Allocations</span>
                 <i data-lucide="layers" class="w-3.5 h-3.5 stroke-[2.5]"></i>
               </div>
@@ -1434,14 +1434,14 @@
             <div class="face-back w-full h-full p-4 rounded-[26px] lg:rounded-[28px] border border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 shadow-xl text-slate-100 flex flex-col justify-between">
 
               <div class="flex justify-between items-center w-full border-b border-slate-700/80 pb-1.5 px-1">
-                <p class="text-[11px] lg:text-xs font-bold tracking-normal text-indigo-400">
+                <p class="text-[10px] lg:text-xs font-black uppercase tracking-widest text-indigo-400">
                   Budget Allocations
                 </p>
 
                 <i data-lucide="x" class="w-4 h-4 text-slate-400 hover:text-white transition-colors"></i>
               </div>
 
-              <div id="back-bars-grid" class="grid grid-cols-2 gap-x-6 gap-y-1.5 w-full text-[11px] lg:text-xs font-bold px-1 overflow-y-auto max-h-[90px] lg:max-h-[110px]"></div>
+              <div id="back-bars-grid" class="grid grid-cols-2 gap-x-6 gap-y-1.5 w-full text-[10px] lg:text-xs font-bold px-1 overflow-y-auto max-h-[90px] lg:max-h-[110px]"></div>
 
             </div>
 
@@ -1466,11 +1466,11 @@
 
                 <div class="flex flex-col justify-center text-left">
 
-                  <p class="text-[9px] lg:text-[10.5px] font-bold text-slate-400 tracking-normal mb-0.5">
+                  <p class="text-[8px] lg:text-[9.5px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
                     Total Budget
                   </p>
 
-                  <p id="stat-budget" class="text-sm lg:text-xl font-bold text-slate-800">
+                  <p id="stat-budget" class="text-sm lg:text-xl font-black text-slate-800">
                     ₹0
                   </p>
 
@@ -1487,9 +1487,9 @@
               <!-- Back -->
               <div class="budget-back bg-gradient-to-b from-emerald-50 to-emerald-100 border border-emerald-100 p-2 text-center rounded-[22px] w-full h-full flex flex-col justify-center items-center">
 
-                <p id="ui-peek-title-row" class="text-[11px] font-bold tracking-wide text-emerald-600"></p>
+                <p id="ui-peek-title-row" class="text-[10px] font-black tracking-wide text-emerald-600 uppercase"></p>
 
-                <p id="ui-peek-notes-row" class="text-[10px] font-semibold text-emerald-600/90 truncate w-full mt-0.5"></p>
+                <p id="ui-peek-notes-row" class="text-[9px] font-semibold text-emerald-600/90 truncate w-full mt-0.5"></p>
 
               </div>
 
@@ -1506,7 +1506,7 @@
 
             <div class="flex items-center gap-1 mb-0.5">
 
-              <p id="ui-spent-label" class="text-[9px] lg:text-[10.5px] font-bold text-rose-500 tracking-normal">
+              <p id="ui-spent-label" class="text-[8px] lg:text-[9.5px] font-black text-rose-500 uppercase tracking-wider">
                 Spent
               </p>
 
@@ -1514,7 +1514,7 @@
 
             </div>
 
-            <p id="stat-spent" class="text-sm lg:text-xl font-bold text-rose-600">
+            <p id="stat-spent" class="text-sm lg:text-xl font-black text-rose-600">
               ₹0
             </p>
 
@@ -1544,24 +1544,24 @@
           <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-2 text-slate-600">
             <i data-lucide="lock" class="w-6 h-6"></i>
           </div>
-          <p class="text-xs font-bold text-slate-600 tracking-normal lock-text-pulse">Adding Expenses Paused</p>
+          <p class="text-xs font-black text-slate-600 uppercase tracking-widest lock-text-pulse">Adding Expenses Paused</p>
         </div>
 
         <form id="expenseForm" class="space-y-4 relative z-10">
 
           <!-- Header & Date Picker -->
           <div class="flex items-center justify-between">
-            <h3 class="text-[10.5px] font-bold text-slate-400 tracking-normal">Enter New Expense</h3>
+            <h3 class="text-[9.5px] font-black text-slate-400 uppercase tracking-widest">Enter New Expense</h3>
             <div class="flex items-center gap-1 bg-indigo-50/40 hover:bg-indigo-50 border border-indigo-100/70 px-2.5 py-1 rounded-lg cursor-pointer transition-colors">
               <i data-lucide="calendar" class="w-3 h-3 text-indigo-600"></i>
-              <input type="date" id="todayDate" name="date" required class="bg-transparent text-[11px] font-bold text-indigo-600 tracking-normal outline-none cursor-pointer">
+              <input type="date" id="todayDate" name="date" required class="bg-transparent text-[10px] font-black text-indigo-600 uppercase tracking-wider outline-none cursor-pointer">
             </div>
           </div>
 
           <!-- Minimal Large Amount Input -->
           <div class="flex items-center gap-2 border-b border-slate-100/90 pb-3 pt-1">
-            <span class="text-3xl font-bold text-slate-300">₹</span>
-            <input type="number" name="amount" placeholder="0" required class="w-full bg-transparent outline-none font-bold text-4xl text-slate-800 placeholder-slate-200 tracking-tight">
+            <span class="text-3xl font-black text-slate-300">₹</span>
+            <input type="number" name="amount" placeholder="0" required class="w-full bg-transparent outline-none font-black text-4xl text-slate-800 placeholder-slate-200 tracking-tight">
           </div>
 
           <!-- Payment Mode & Category (Light Rounded Pills) -->
@@ -1569,7 +1569,7 @@
             <!-- Payment Mode -->
             <div class="bg-slate-50/80 hover:bg-slate-100/80 transition-colors rounded-2xl border border-slate-100/80 px-4 py-3 flex items-center gap-2.5">
               <i data-lucide="credit-card" class="w-4 h-4 text-indigo-500 shrink-0"></i>
-              <select name="paidVia" class="w-full bg-transparent text-xs font-bold tracking-normal text-slate-700 outline-none appearance-none cursor-pointer">
+              <select name="paidVia" class="w-full bg-transparent text-xs font-black uppercase tracking-wider text-slate-700 outline-none appearance-none cursor-pointer">
                 <option value="UPI" selected>UPI</option>
                 <option value="Cash">Cash</option>
                 <option value="Card">Card</option>
@@ -1580,7 +1580,7 @@
             <!-- Category -->
             <div class="bg-slate-50/80 hover:bg-slate-100/80 transition-colors rounded-2xl border border-slate-100/80 px-4 py-3 flex items-center gap-2.5">
               <i data-lucide="layout-grid" class="w-4 h-4 text-emerald-500 shrink-0"></i>
-              <select name="category" class="w-full bg-transparent text-xs font-bold tracking-normal text-slate-700 outline-none appearance-none cursor-pointer">
+              <select name="category" class="w-full bg-transparent text-xs font-black uppercase tracking-wider text-slate-700 outline-none appearance-none cursor-pointer">
                 <option>Food</option>
                 <option>Entry Fee</option>
                 <option>Fare</option>
@@ -1603,7 +1603,7 @@
 
           <!-- Swipe To Save Bar -->
           <div id="swipe-track" class="w-full bg-slate-950 rounded-2xl h-[56px] relative flex items-center select-none overflow-hidden touch-none shadow-md mt-1">
-            <span id="swipe-text" class="absolute w-full text-center text-slate-400 font-bold text-[12px] pointer-events-none transition-all duration-300">
+            <span id="swipe-text" class="absolute w-full text-center text-slate-400 font-black text-[11px] uppercase tracking-[0.2em] pointer-events-none transition-all duration-300">
               Swipe to Save
             </span>
             <div id="swipe-thumb" class="absolute left-1.5 w-[46px] h-[46px] bg-white rounded-xl shadow flex items-center justify-center cursor-grab active:cursor-grabbing text-slate-900 z-10">
@@ -1619,7 +1619,7 @@
    <!-- TRANSACTION LEDGER -->
 <div id="ui-ledger-container" class="hidden opacity-0 translate-y-10 transition-all duration-500 pb-10">
   <div class="flex items-center justify-between mb-3 px-2 -mt-[-40px] lg:mt-0">
-    <h3 class="text-xs font-bold text-slate-400 tracking-normal">Transaction Ledger</h3>
+    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Transaction Ledger</h3>
     <div class="flex items-center gap-2">
       <!-- Search Button Toggle -->
       <button type="button" onclick="toggleLedgerSearch()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors active:scale-90 outline-none" title="Search Transactions">
@@ -1667,7 +1667,7 @@
 
     <!-- Members Grid Section -->
     <div class="space-y-3 pt-2">
-      <h3 class="text-xs font-bold text-slate-400 tracking-normal px-1">TRIP MEMBERS</h3>
+      <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest px-1">TRIP MEMBERS</h3>
       <!-- Responsive Grid: 2 columns on mobile, 4 columns on large desktop -->
       <div id="memberList" class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4"></div>
     </div>
@@ -1694,13 +1694,13 @@
             <i data-lucide="lock" class="w-7 h-7 text-indigo-600 stroke-[2.5]"></i>
           </div>
         </div>
-        <h2 class="text-lg font-bold text-slate-800 tracking-normal mb-2">Navigation Standby</h2>
-        <p class="text-[11px] font-bold text-slate-400 leading-relaxed tracking-wider mb-8">
+        <h2 class="text-lg font-black text-slate-800 uppercase tracking-widest mb-2">Navigation Standby</h2>
+        <p class="text-[10px] font-bold text-slate-400 uppercase leading-relaxed tracking-wider mb-8">
           Route contains live transit coordinates and ETA details. Tracking functionality will be enabled closer to scheduled departure.
         </p>
         <div
           class="flex items-center justify-center text-indigo-500 bg-indigo-50 py-3 px-4 rounded-xl border border-indigo-100">
-          <span class="text-[10px] font-bold tracking-normal animate-pulse">Awaiting Clearance</span>
+          <span class="text-[9px] font-black uppercase tracking-widest animate-pulse">Awaiting Clearance</span>
         </div>
       </div>
     </div>
@@ -1713,9 +1713,9 @@
         <div id="timer-container"
           class="hidden bg-white border border-slate-200 rounded-full py-1.5 px-4 mb-2 flex items-center justify-center gap-2 shadow-sm">
           <i data-lucide="hourglass" class="w-3.5 h-3.5 text-indigo-500 animate-pulse"></i>
-          <span id="ui-timer-text" class="text-[11px] lg:text-xs font-bold text-slate-700 tracking-normal leading-none mt-px"></span>
+          <span id="ui-timer-text" class="text-[10px] lg:text-xs font-black text-slate-700 uppercase tracking-widest leading-none mt-px"></span>
         </div>
-        <span class="text-[11px] lg:text-xs font-medium italic text-slate-400 text-center leading-none">*The schedule will be considered from Delhi onwards.</span>
+        <span class="text-[10px] lg:text-xs font-medium italic text-slate-400 text-center leading-none">*The schedule will be considered from Delhi onwards.</span>
       </div>
 
       <!-- Vertical Timeline Tracker -->
@@ -1725,13 +1725,13 @@
 
       <!-- Additional Locations List -->
       <div class="space-y-3 mt-6">
-        <h2 id="head-active-places" class="text-xs font-bold text-slate-400 tracking-normal px-1 hidden">Additional Locations</h2>
+        <h2 id="head-active-places" class="text-xs font-bold text-slate-400 uppercase tracking-widest px-1 hidden">Additional Locations</h2>
         <div id="activePlaceList" class="space-y-2.5"></div>
       </div>
 
       <!-- Visited Locations List -->
       <div class="space-y-3 pb-10 mt-6">
-        <h4 id="head-visited-places" class="text-xs font-bold text-emerald-600 tracking-normal px-1 hidden">Additional Locations Visited ✅</h4>
+        <h4 id="head-visited-places" class="text-xs font-bold text-emerald-600 uppercase tracking-widest px-1 hidden">Additional Locations Visited ✅</h4>
         <div id="visitedPlaceList" class="space-y-2.5"></div>
       </div>
     </div>
@@ -1745,10 +1745,10 @@
   
   <div class="flex items-center justify-between px-1 mt-[50px]">
     <div>
-      <h2 class="text-base lg:text-lg font-bold tracking-tight text-slate-900">Itinerary Checklist</h2>
-      <p class="text-[11px] font-bold tracking-normal text-slate-400">Claim tasks and track readiness</p>
+      <h2 class="text-base lg:text-lg font-black uppercase tracking-tight text-slate-900">Itinerary Checklist</h2>
+      <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Claim tasks and track readiness</p>
     </div>
-    <button type="button" onclick="showTab('spend', document.querySelector('.nav-btn'))" class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-[11px] font-bold text-slate-600 tracking-normal hover:bg-slate-50 active:scale-95 transition flex items-center gap-1.5 shadow-sm">
+    <button type="button" onclick="showTab('spend', document.querySelector('.nav-btn'))" class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-[10px] font-black text-slate-600 uppercase tracking-wider hover:bg-slate-50 active:scale-95 transition flex items-center gap-1.5 shadow-sm">
       <i data-lucide="arrow-left" class="w-3 h-3"></i> Back
     </button>
   </div>
@@ -1757,7 +1757,7 @@
   <div class="space-y-2.5">
     <div class="flex items-center gap-2 px-1">
       <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-      <h3 class="text-sm sm:text-base font-bold tracking-normal text-slate-900">Important</h3>
+      <h3 class="text-sm sm:text-base font-black uppercase tracking-wider text-slate-900">Important</h3>
     </div>
     <div id="checklist-important-container" class="space-y-1 px-1"></div>
   </div>
@@ -1766,7 +1766,7 @@
   <div class="space-y-2.5 pt-3">
     <div class="flex items-center gap-2 px-1">
       <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
-      <h3 class="text-sm sm:text-base font-bold tracking-normal text-slate-900">Optional</h3>
+      <h3 class="text-sm sm:text-base font-black uppercase tracking-wider text-slate-900">Optional</h3>
     </div>
     <div id="checklist-optional-container" class="space-y-1 px-1"></div>
   </div>
@@ -1785,10 +1785,10 @@
       <!-- Header: User Greeting & ID Button -->
       <div class="flex items-center justify-between border-b border-slate-100 pb-6">
         <div>
-          <p class="text-xs font-bold text-slate-400 tracking-normal mb-1">HELLO</p>
-          <h2 id="desktop-more-user-heading" class="text-2xl lg:text-3xl font-bold text-slate-800 tracking-tight capitalize">Member</h2>
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">HELLO</p>
+          <h2 id="desktop-more-user-heading" class="text-2xl lg:text-3xl font-black text-slate-800 tracking-tight capitalize">Member</h2>
         </div>
-        <button onclick="openEID()" class="px-5 py-2.5 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 text-indigo-600 rounded-2xl flex items-center gap-2.5 transition-colors active:scale-95 font-bold text-xs tracking-normal">
+        <button onclick="openEID()" class="px-5 py-2.5 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 text-indigo-600 rounded-2xl flex items-center gap-2.5 transition-colors active:scale-95 font-black text-xs uppercase tracking-widest">
           <i data-lucide="id-card" class="w-4 h-4 stroke-[2.5]"></i>
           <span>ID CARD</span>
         </button>
@@ -1802,8 +1802,8 @@
             <i data-lucide="book-open" class="w-5 h-5"></i>
           </div>
           <div class="flex-1">
-            <p class="text-xs font-bold text-slate-800 tracking-normal">GUIDELINES</p>
-            <p class="text-[11px] text-slate-400 font-bold mt-0.5">Important rules and instructions for the trip</p>
+            <p class="text-xs font-black text-slate-800 uppercase tracking-wider">GUIDELINES</p>
+            <p class="text-[10px] text-slate-400 font-bold mt-0.5">Important rules and instructions for the trip</p>
           </div>
         </a>
 
@@ -1813,8 +1813,8 @@
             <i data-lucide="file-pie-chart" class="w-5 h-5"></i>
           </div>
           <div class="flex-1">
-            <p class="text-xs font-bold text-slate-800 tracking-normal">TRIP REPORT</p>
-            <p id="desktop-more-tripreport-sub" class="text-[11px] text-slate-400 font-bold mt-0.5">Summary of expenses & audit</p>
+            <p class="text-xs font-black text-slate-800 uppercase tracking-wider">TRIP REPORT</p>
+            <p id="desktop-more-tripreport-sub" class="text-[10px] text-slate-400 font-bold mt-0.5">Summary of expenses & audit</p>
           </div>
         </a>
       </div>
@@ -1835,8 +1835,8 @@
               <i data-lucide="archive" class="w-5 h-5"></i>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-xs font-bold text-slate-800 tracking-normal truncate">PAST TRIPS ARCHIVE</p>
-              <p class="text-[11px] text-slate-400 font-bold mt-0.5 truncate">Previous trip reports & photos</p>
+              <p class="text-xs font-black text-slate-800 uppercase tracking-wider truncate">PAST TRIPS ARCHIVE</p>
+              <p class="text-[10px] text-slate-400 font-bold mt-0.5 truncate">Previous trip reports & photos</p>
             </div>
             <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 shrink-0"></i>
           </div>
@@ -1849,8 +1849,8 @@
             <i data-lucide="camera" class="w-5 h-5"></i>
           </div>
           <div class="flex-1">
-            <p class="text-xs font-bold text-slate-800 tracking-normal">TRIP GALLERY</p>
-            <p class="text-[11px] text-slate-400 font-bold mt-0.5">Preview & upload photos in Drive</p>
+            <p class="text-xs font-black text-slate-800 uppercase tracking-wider">TRIP GALLERY</p>
+            <p class="text-[10px] text-slate-400 font-bold mt-0.5">Preview & upload photos in Drive</p>
           </div>
           <i data-lucide="maximize-2" class="w-4 h-4 text-slate-300"></i>
         </div>
@@ -1861,7 +1861,7 @@
         <button onclick="openChangePinModal()" class="w-14 py-4 bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-600 rounded-2xl flex items-center justify-center transition-colors active:scale-95" title="Change PIN">
           <i data-lucide="key-round" class="w-5 h-5"></i>
         </button>
-        <button onclick="processLogOut()" class="flex-1 py-4 bg-rose-50 hover:bg-rose-100 border border-rose-100 text-rose-600 rounded-2xl flex items-center justify-center gap-2 font-bold text-xs tracking-normal transition-all active:scale-95">
+        <button onclick="processLogOut()" class="flex-1 py-4 bg-rose-50 hover:bg-rose-100 border border-rose-100 text-rose-600 rounded-2xl flex items-center justify-center gap-2 font-black text-xs uppercase tracking-widest transition-all active:scale-95">
           <i data-lucide="log-out" class="w-4 h-4 stroke-[2.5]"></i>
           <span>LOG OUT</span>
         </button>
@@ -1899,14 +1899,14 @@
               </div>
               <div>
                 <div class="flex items-center gap-2">
-                  <h2 class="text-base sm:text-lg lg:text-xl font-bold tracking-tight text-white leading-none">
+                  <h2 class="text-base sm:text-lg lg:text-xl font-black uppercase tracking-tight text-white leading-none">
                     Past Trips Archive
                   </h2>
-                  <span class="bg-indigo-500/25 border border-indigo-400/30 text-indigo-300 text-[9.5px] font-bold px-2 py-0.5 rounded-full tracking-normal">
+                  <span class="bg-indigo-500/25 border border-indigo-400/30 text-indigo-300 text-[8.5px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
                     Vault
                   </span>
                 </div>
-                <p class="text-slate-400 text-[10.5px] sm:text-[11px] font-bold tracking-normal mt-1">
+                <p class="text-slate-400 text-[9.5px] sm:text-[10px] font-bold uppercase tracking-widest mt-1">
                   Historical Reports & Media Folders
                 </p>
               </div>
@@ -1950,12 +1950,12 @@
             <i data-lucide="arrow-left" class="w-5 h-5 stroke-[2.5]"></i>
           </button>
           <div class="min-w-0">
-            <h3 id="archive-gallery-title" class="text-xs sm:text-sm font-bold text-slate-800 tracking-normal truncate">Gallery Preview</h3>
-            <p class="text-[9.5px] sm:text-[11px] font-bold text-slate-400 tracking-normal truncate">Google Drive Media Vault</p>
+            <h3 id="archive-gallery-title" class="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wide truncate">Gallery Preview</h3>
+            <p class="text-[8.5px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">Google Drive Media Vault</p>
           </div>
         </div>
 
-        <a id="archive-gallery-ext-link" href="#" target="_blank" rel="noopener noreferrer" class="px-3 sm:px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[11px] sm:text-xs font-bold tracking-normal transition-all flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0">
+        <a id="archive-gallery-ext-link" href="#" target="_blank" rel="noopener noreferrer" class="px-3 sm:px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0">
           <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
           <span class="hidden sm:inline">Open in Drive</span>
         </a>
@@ -1988,13 +1988,13 @@
           <i data-lucide="camera" class="w-6 h-6 stroke-[2.5]"></i>
         </div>
         <div>
-          <h2 class="text-xl lg:text-2xl font-bold text-slate-800 tracking-tight">Trip Gallery</h2>
-          <p class="text-slate-400 text-xs font-bold tracking-normal mt-0.5">Google Drive Media Vault</p>
+          <h2 class="text-xl lg:text-2xl font-black text-slate-800 tracking-tight uppercase">Trip Gallery</h2>
+          <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mt-0.5">Google Drive Media Vault</p>
         </div>
       </div>
 
       <!-- Direct External Link Button -->
-      <a href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xs font-bold tracking-normal transition-all flex items-center gap-2 shadow-sm active:scale-95">
+      <a href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 shadow-sm active:scale-95">
         <i data-lucide="external-link" class="w-4 h-4"></i>
         <span>Open in Drive</span>
       </a>
@@ -2034,8 +2034,8 @@
             class="w-12 h-12 rounded-2xl object-cover border border-slate-100 shadow-md shadow-slate-200/60 shrink-0"
           />
           <div>
-            <h2 class="text-xl lg:text-2xl font-bold text-slate-800 tracking-tight">About Bharat Way</h2>
-            <p class="text-[11px] lg:text-xs font-bold text-slate-400 tracking-normal mt-0.5">Expedition Logistics & Travel Portal</p>
+            <h2 class="text-xl lg:text-2xl font-black text-slate-800 tracking-tight uppercase">About Bharat Way</h2>
+            <p class="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5">Expedition Logistics & Travel Portal</p>
           </div>
         </div>
       </div>
@@ -2043,11 +2043,11 @@
       <!-- Content -->
       <div class="text-slate-700 text-xs lg:text-sm font-medium leading-relaxed space-y-5">
         <p>
-          <strong class="text-slate-900 font-extrabold tracking-normal">Bharat Way</strong> is an all-in-one expedition companion built to make group travel organized, transparent, and hassle-free. It unites team coordination, finances, and route tracking into a single real-time dashboard.
+          <strong class="text-slate-900 font-extrabold uppercase tracking-wide">Bharat Way</strong> is an all-in-one expedition companion built to make group travel organized, transparent, and hassle-free. It unites team coordination, finances, and route tracking into a single real-time dashboard.
         </p>
 
         <div class="space-y-3 pt-2">
-          <h3 class="text-[12px] lg:text-xs font-bold tracking-normal text-indigo-600">Key Features</h3>
+          <h3 class="text-[11px] lg:text-xs font-black uppercase tracking-widest text-indigo-600">Key Features</h3>
           <ul class="space-y-2 list-disc pl-4 text-slate-600">
             <li><strong class="text-slate-800">Live Expense Ledger:</strong> Real-time group budget tracking, category limits, and receipt verification.</li>
             <li><strong class="text-slate-800">Smart Route Tracker:</strong> Milestone progress and arrival timestamps without battery-draining GPS.</li>
@@ -2058,7 +2058,7 @@
         </div>
 
         <div class="space-y-2 pt-2">
-          <h3 class="text-[12px] lg:text-xs font-bold tracking-normal text-indigo-600">Our Mission</h3>
+          <h3 class="text-[11px] lg:text-xs font-black uppercase tracking-widest text-indigo-600">Our Mission</h3>
           <p class="text-slate-600">
             To handle the logistics—expenses, schedules, and passes—so you can focus entirely on the journey.
           </p>
@@ -2086,28 +2086,28 @@
             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 hidden group-hover:flex flex-col w-64 bg-slate-950 text-white rounded-2xl p-4 shadow-2xl border border-slate-800 z-50 pointer-events-none transition-all duration-300 opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto text-left">
               <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
                 <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-white text-xs font-bold">
+                  <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-white text-xs font-black">
                     𝕏
                   </div>
                   <div>
-                    <p class="text-xs font-bold text-white leading-none">Anch Tech</p>
-                    <p class="text-[11px] font-bold text-slate-400">@the_anch_</p>
+                    <p class="text-xs font-black text-white leading-none">Anch Tech</p>
+                    <p class="text-[10px] font-bold text-slate-400">@the_anch_</p>
                   </div>
                 </div>
-                <span class="bg-indigo-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">Follow</span>
+                <span class="bg-indigo-600 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-full">Follow</span>
               </div>
-              <p class="text-[11px] text-slate-300 font-medium leading-tight">
+              <p class="text-[10px] text-slate-300 font-medium leading-tight">
                 Software design, engineering & smart expedition solutions.
               </p>
-              <div class="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-bold text-indigo-400">
+              <div class="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[9px] font-bold text-indigo-400">
                 <span>View profile on 𝕏</span>
                 <i data-lucide="external-link" class="w-3 h-3"></i>
               </div>
             </div>
           </div>
 
-          <p class="text-[12px] font-bold text-slate-400 tracking-normal">© 2026 Bharat Way. All rights reserved.</p>
-          <p class="text-xs font-bold text-slate-700 tracking-normal">Made with ❤️ by <a href="https://x.com/the_anch_" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">Anch Technologies LTD</a></p>
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">© 2026 Bharat Way. All rights reserved.</p>
+          <p class="text-xs font-black text-slate-700 uppercase tracking-wider">Made with ❤️ by <a href="https://x.com/the_anch_" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">Anch Technologies LTD</a></p>
         </div>
       </div>
 
@@ -2167,9 +2167,9 @@
     <!-- Header: User greeting and quick actions -->
     <div class="flex items-center justify-between mb-6">
       <div class="flex-1 min-w-0 pr-3">
-        <p class="text-[11px] font-bold text-slate-400 tracking-normal mb-0.5">Hello</p>
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Hello</p>
         <!-- Injected Username -->
-        <p id="ui-more-username" class="text-xl font-bold text-slate-800 leading-tight truncate">Squad Member</p>
+        <p id="ui-more-username" class="text-xl font-black text-slate-800 leading-tight truncate">Squad Member</p>
       </div>
 
       <div class="flex flex-col gap-2">
@@ -2177,7 +2177,7 @@
         <div onclick="openEID()"
           class="px-4 py-2 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-full flex items-center gap-2 transition-colors active:bg-indigo-100 outline-none cursor-pointer">
           <i data-lucide="id-card" class="w-4 h-4 stroke-[2.5]"></i>
-          <span class="text-[11px] font-bold tracking-normal">ID CARD</span>
+          <span class="text-[10px] font-bold uppercase tracking-widest">ID CARD</span>
         </div>
 
         <!-- Dynamic Sign Off Container (injected if signing period active) -->
@@ -2195,7 +2195,7 @@
           <i data-lucide="book-text" class="w-4 h-4"></i>
         </div>
         <div class="flex-1 overflow-hidden">
-          <p class="text-[12px] font-bold text-slate-700 tracking-normal truncate">Guidelines</p>
+          <p class="text-[11px] font-black text-slate-700 uppercase tracking-widest truncate">Guidelines</p>
         </div>
       </a>
 
@@ -2206,9 +2206,9 @@
           <i data-lucide="file-pie-chart" class="w-4 h-4"></i>
         </div>
         <div class="flex-1 overflow-hidden flex flex-col justify-center">
-          <p class="text-[12px] font-bold text-slate-700 tracking-normal truncate">Trip Report</p>
+          <p class="text-[11px] font-black text-slate-700 uppercase tracking-widest truncate">Trip Report</p>
           <p id="ui-more-tripreport-subtext"
-            class="text-[9px] font-bold text-slate-400 tracking-normal mt-0.5 truncate hidden"></p>
+            class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 truncate hidden"></p>
         </div>
       </a>
 
@@ -2225,8 +2225,8 @@
             <i data-lucide="archive" class="w-4 h-4"></i>
           </div>
           <div class="flex-1 min-w-0">
-            <p class="text-xs font-bold text-slate-800 tracking-normal truncate">Past Trips Archive</p>
-            <p class="text-[8.5px] text-slate-400 font-bold tracking-normal mt-0.5 truncate">Previous trip reports & photos</p>
+            <p class="text-xs font-black text-slate-800 uppercase tracking-wide truncate">Past Trips Archive</p>
+            <p class="text-[7.5px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 truncate">Previous trip reports & photos</p>
           </div>
           <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 shrink-0"></i>
         </div>
@@ -2240,8 +2240,8 @@
           <i data-lucide="camera" class="w-5 h-5"></i>
         </div>
         <div class="flex-1">
-          <p class="text-sm font-bold text-slate-800 tracking-normal">Trip Gallery</p>
-          <p class="text-[8px] text-slate-400 font-bold tracking-normal mt-0.5">Preview & upload photos in Drive</p>
+          <p class="text-sm font-black text-slate-800 uppercase tracking-wide">Trip Gallery</p>
+          <p class="text-[7px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Preview & upload photos in Drive</p>
         </div>
         <i data-lucide="maximize-2" class="w-4 h-4 text-slate-300"></i>
       </div>
@@ -2255,7 +2255,7 @@
 
       <button onclick="processLogOut()" class="flex-1 py-4 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl flex items-center justify-center gap-2 active:bg-rose-100 transition-colors outline-none shrink-0">
         <i data-lucide="log-out" class="w-4 h-4 stroke-[2.5]"></i>
-        <span class="text-[12px] font-bold tracking-normal">Log Out</span>
+        <span class="text-[11px] font-black uppercase tracking-widest">Log Out</span>
       </button>
     </div>
   </div>
@@ -2595,7 +2595,7 @@
         let labelColor = 'text-emerald-400'; 
         // Color shifts to warn users when over limits
         if (pct >= 100) labelColor = 'text-rose-500'; else if (pct > 80) labelColor = 'text-amber-400'; 
-        return `<div class="flex justify-between items-center py-0.5 border-b border-slate-800"><span class="text-slate-400 text-[11px] tracking-normal font-medium">${cat}</span><span class="${labelColor} text-[12px] font-bold tracking-tight">${formatINR(spent)}/<span class="text-slate-500 font-medium">${formatINR(limit)}</span></span></div>`; 
+        return `<div class="flex justify-between items-center py-0.5 border-b border-slate-800"><span class="text-slate-400 text-[10px] uppercase tracking-wide font-medium">${cat}</span><span class="${labelColor} text-[11px] font-black tracking-tight">${formatINR(spent)}/<span class="text-slate-500 font-medium">${formatINR(limit)}</span></span></div>`; 
       }).join(''); 
     }
 
@@ -2688,7 +2688,7 @@
       const cardGuideTabHtml = guideUrl ? `
         <a href="${guideUrl}" target="_blank" onclick="event.stopPropagation();" class="absolute top-1/2 right-0 -translate-y-1/2 bg-slate-900/95 text-white py-3 px-1.5 rounded-l-lg shadow-xl border-y border-l border-white/10 z-50 flex flex-col items-center gap-1.5 transition-all active:scale-95">
           <i data-lucide="book-text" class="w-3.5 h-3.5 text-indigo-400"></i>
-          <span class="guidelines-text text-[9px] font-bold tracking-widest text-slate-100">Guidelines</span>
+          <span class="guidelines-text text-[8px] font-black tracking-widest uppercase text-slate-100">Guidelines</span>
         </a>
       ` : '';
 
@@ -2701,15 +2701,15 @@
 
         // 1. Red - Not Attending
         if (att.includes("not") || att.includes("cancel")) {
-          colorClass = isDarkBg ? 'text-rose-400 font-bold' : 'text-rose-600 font-bold';
+          colorClass = isDarkBg ? 'text-rose-400 font-black' : 'text-rose-600 font-black';
         }
         // 2. Green - Attendance Confirmed
         else if (att.includes("confirm") && !att.includes("await")) {
-          colorClass = isDarkBg ? 'text-emerald-300 font-bold' : 'text-emerald-600 font-bold';
+          colorClass = isDarkBg ? 'text-emerald-300 font-black' : 'text-emerald-600 font-black';
         }
         // 3. Yellow/Amber - Awaiting Confirmation, Invitation Sent, Stand By
         else if (att.includes("await") || att.includes("invitation") || att.includes("stand by") || att.includes("pending")) {
-          colorClass = isDarkBg ? 'text-amber-300 font-bold' : 'text-amber-500 font-bold';
+          colorClass = isDarkBg ? 'text-amber-300 font-black' : 'text-amber-500 font-black';
         }
 
         let flexAlign = "items-center";
@@ -2718,7 +2718,7 @@
 
         return `
           <div class="flex flex-col w-full ${flexAlign}">
-            <p class="text-[9.5px] tracking-normal mt-0.5 ${colorClass}">
+            <p class="text-[8.5px] uppercase tracking-wider mt-0.5 ${colorClass}">
               (${displayTxt})
             </p>
           </div>`;
@@ -2744,11 +2744,11 @@
         
         if (data.signOffStatus === "signing off") {
           if (isCoordSigned) {
-            signOffBtnCoord = `<div class="absolute top-2 right-2 z-40 bg-slate-100/90 text-slate-600 text-[9px] font-bold tracking-normal px-2 py-1 rounded-md border border-slate-200 shadow-sm pointer-events-none flex items-center gap-1">Signed Off <i data-lucide="badge-check" class="w-3 h-3 text-emerald-500 stroke-[3]"></i></div>`;
+            signOffBtnCoord = `<div class="absolute top-2 right-2 z-40 bg-slate-100/90 text-slate-600 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-md border border-slate-200 shadow-sm pointer-events-none flex items-center gap-1">Signed Off <i data-lucide="badge-check" class="w-3 h-3 text-emerald-500 stroke-[3]"></i></div>`;
           } else if (isCurrentCoordUser) {
-            signOffBtnCoord = `<button onclick="event.stopPropagation(); openSignaturePad('${coordinator.pin}')" class="absolute top-2 right-2 z-40 bg-slate-900 text-white text-[9px] font-bold tracking-normal px-2.5 py-1 rounded-md shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span></span>SIGN OFF</button>`;
+            signOffBtnCoord = `<button onclick="event.stopPropagation(); openSignaturePad('${coordinator.pin}')" class="absolute top-2 right-2 z-40 bg-slate-900 text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span></span>SIGN OFF</button>`;
           } else {
-            signOffBtnCoord = `<div class="absolute top-2 right-2 z-40 bg-slate-50/80 text-slate-400 text-[9px] font-bold tracking-normal px-2 py-1 rounded-md border border-slate-200 shadow-sm pointer-events-none">Awaiting Sign ⏱</div>`;
+            signOffBtnCoord = `<div class="absolute top-2 right-2 z-40 bg-slate-50/80 text-slate-400 text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded-md border border-slate-200 shadow-sm pointer-events-none">Awaiting Sign ⏱</div>`;
           }
         }
 
@@ -2772,10 +2772,10 @@
               </div>` : ''}
               <div class="absolute top-0 right-0 w-[55%] h-full py-4 pr-4 pl-1 flex flex-col justify-center items-start z-10 text-left">
                 <div class="mb-2">
-                  <p class="text-2xl font-bold tracking-tight text-white leading-none">${cFirst}</p>
+                  <p class="text-2xl font-black tracking-tight text-white leading-none">${cFirst}</p>
                   ${cLast ? `<p class="text-base font-extrabold tracking-tight text-indigo-200 leading-tight">${cLast}</p>` : ''}
                 </div>
-                <p class="text-[10px] font-bold text-white/70 mb-1 border-b border-white/20 pb-1">Chief Coordinator</p>
+                <p class="text-[9px] font-black uppercase tracking-[0.2em] text-white/70 mb-1 border-b border-white/20 pb-1">Chief Coordinator</p>
                 <div class="scale-90 origin-left w-full">${getAttSection(coordinator.attendance, true, 'left')}</div>
               </div>
             </div>`;
@@ -2791,8 +2791,8 @@
               <div class="relative w-16 h-16 bg-white/10 rounded-full border-[2px] border-white/20 shadow-inner flex items-center justify-center mb-3 z-10">
                 <i data-lucide="award" class="w-8 h-8 text-indigo-50"></i>
               </div>
-              <p class="text-xl font-bold z-10 tracking-wide">${coordinator.name}</p>
-              <p class="text-[11px] font-bold z-10 text-indigo-200 mt-1">Chief Coordinator</p>
+              <p class="text-xl font-black z-10 tracking-wide">${coordinator.name}</p>
+              <p class="text-[10px] font-bold uppercase tracking-[0.2em] z-10 text-indigo-200 mt-1">Chief Coordinator</p>
               <div class="mt-1.5 z-10 w-full">${getAttSection(coordinator.attendance, true, 'center')}</div>
             </div>`;
         }
@@ -2801,8 +2801,8 @@
         const coordBookmark = showContribution ? `
         <div class="flex justify-center relative z-0 transition-all duration-500">
           <div class="bg-indigo-950 text-white px-5 py-2 rounded-b-2xl shadow-md border-x border-b border-indigo-900 flex flex-row items-center justify-center gap-2 min-w-[60%]">
-            <span class="text-[9px] font-bold text-indigo-300 tracking-normal">Contribution:</span>
-            <span class="text-xs font-bold text-emerald-400">${formatINR(coordinator.contribution)}</span>
+            <span class="text-[8px] font-bold text-indigo-300 uppercase tracking-widest">Contribution:</span>
+            <span class="text-xs font-black text-emerald-400">${formatINR(coordinator.contribution)}</span>
           </div>
         </div>` : '';
 
@@ -2835,11 +2835,11 @@
         
         if (data.signOffStatus === "signing off") {
           if (isMemSigned) {
-            signOffBtnMem = `<div class="absolute top-2 right-2 z-40 bg-slate-100/90 text-slate-600 text-[9px] font-bold tracking-normal px-2 py-1 rounded-md border border-slate-200 shadow-sm pointer-events-none flex items-center gap-1">Signed Off <i data-lucide="badge-check" class="w-3 h-3 text-emerald-500 stroke-[3]"></i></div>`;
+            signOffBtnMem = `<div class="absolute top-2 right-2 z-40 bg-slate-100/90 text-slate-600 text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-md border border-slate-200 shadow-sm pointer-events-none flex items-center gap-1">Signed Off <i data-lucide="badge-check" class="w-3 h-3 text-emerald-500 stroke-[3]"></i></div>`;
           } else if (isCurrentMemUser) {
-            signOffBtnMem = `<button onclick="event.stopPropagation(); openSignaturePad('${m.pin}')" class="absolute top-2 right-2 z-40 bg-slate-900 text-white text-[9px] font-bold tracking-normal px-2.5 py-1 rounded-md shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span></span>SIGN OFF</button>`;
+            signOffBtnMem = `<button onclick="event.stopPropagation(); openSignaturePad('${m.pin}')" class="absolute top-2 right-2 z-40 bg-slate-900 text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span></span>SIGN OFF</button>`;
           } else {
-            signOffBtnMem = `<div class="absolute top-2 right-2 z-40 bg-slate-50/80 text-slate-400 text-[9px] font-bold tracking-normal px-2 py-1 rounded-md border border-slate-200 shadow-sm pointer-events-none">Awaiting Sign ⏱</div>`;
+            signOffBtnMem = `<div class="absolute top-2 right-2 z-40 bg-slate-50/80 text-slate-400 text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded-md border border-slate-200 shadow-sm pointer-events-none">Awaiting Sign ⏱</div>`;
           }
         }
 
@@ -2879,10 +2879,10 @@
                   <img src="${m.signature}" class="w-full h-full object-contain object-bottom drop-shadow-sm">
                 </div>` : ''}
                 <div class="absolute top-0 right-0 w-[50%] h-full py-2 pr-3 flex flex-col justify-center items-end z-10 text-right overflow-hidden">
-                  <p class="font-bold text-indigo-600 ${fSizeClass} leading-none w-full whitespace-nowrap" style="${fLetterSpacing}">${mFirst}</p>
-                  ${mLast ? `<p class="font-bold text-slate-700 leading-none tracking-tighter w-full mt-0.5 whitespace-nowrap" style="font-size: ${lSizePx}px;">${mLast}</p>` : ''}
+                  <p class="font-black text-indigo-600 ${fSizeClass} uppercase leading-none w-full whitespace-nowrap" style="${fLetterSpacing}">${mFirst}</p>
+                  ${mLast ? `<p class="font-black text-slate-700 uppercase leading-none tracking-tighter w-full mt-0.5 whitespace-nowrap" style="font-size: ${lSizePx}px;">${mLast}</p>` : ''}
                   <div class="w-[70%] h-[1px] bg-slate-200 my-1.5"></div>
-                  <p class="text-[9px] text-slate-600 font-extrabold tracking-normal w-full whitespace-nowrap">${m.role || 'Member'}</p>
+                  <p class="text-[8px] text-slate-600 font-extrabold uppercase tracking-widest w-full whitespace-nowrap">${m.role || 'Member'}</p>
                   ${(m.attendance && m.attendance.trim() !== "") || (m.signature && m.signature.startsWith("http")) ? `<div class="w-full h-[1px] bg-slate-200 my-1.5"></div>` : ''}
                   <div class="origin-right scale-[0.85] w-[120%] -mt-0.5">${getAttSection(m.attendance, false, 'right')}</div>
                 </div>
@@ -2899,7 +2899,7 @@
                 ${m.num}
               </div>
               <p class="font-extrabold text-slate-800 text-sm text-center w-full px-1 truncate">${m.name}</p>
-              <p class="text-[10px] text-slate-400 font-bold tracking-normal text-center mt-0.5">${m.role || 'Member'}</p>
+              <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider text-center mt-0.5">${m.role || 'Member'}</p>
               <div class="mt-1 w-full z-10">${getAttSection(m.attendance, false, 'center')}</div>
             </div>`;
         }
@@ -2907,8 +2907,8 @@
         const memBookmark = showContribution ? `
         <div class="flex justify-center relative z-0 transition-all duration-500">
           <div class="bg-slate-800 text-white px-3 py-1.5 rounded-b-xl shadow-sm border-x border-b border-slate-700 flex flex-row items-center justify-center gap-1.5 min-w-[75%]">
-            <span class="text-[8px] font-bold text-slate-400 tracking-normal">Contribution:</span>
-            <span class="text-[11px] font-bold text-emerald-400">${formatINR(m.contribution)}</span>
+            <span class="text-[7px] font-bold text-slate-400 uppercase tracking-widest">Contribution:</span>
+            <span class="text-[10px] font-black text-emerald-400">${formatINR(m.contribution)}</span>
           </div>
         </div>` : '';
 
@@ -3171,8 +3171,8 @@
 
        // Typography Configuration
        if (h1Title1 && h1Title2) {
-         h1Title1.className = "expedition-title-font text-[44px] sm:text-5xl lg:text-6xl text-slate-900  text-center leading-none tracking-wide";
-         h1Title2.className = "expedition-title-font text-[44px] sm:text-5xl lg:text-6xl text-slate-900  text-center leading-none tracking-wide";
+         h1Title1.className = "expedition-title-font text-[44px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none tracking-wide";
+         h1Title2.className = "expedition-title-font text-[44px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none tracking-wide";
          h1Title1.style.color = "";
          h1Title2.style.color = "";
        }
@@ -3342,29 +3342,29 @@
       if (currentBalance < 0) {
         balanceCard.classList.add('bg-gradient-to-b', 'from-rose-50', 'to-rose-100', 'warning-pulse', 'shadow-[0_12px_24px_rgba(225,29,72,0.08),inset_0_2px_6px_rgba(255,255,255,0.9)]');
         if(balanceLabel) { 
-          balanceLabel.className = "text-[10.5px] font-bold text-rose-600 tracking-normal drop-shadow-sm"; 
+          balanceLabel.className = "text-[9.5px] font-black text-rose-600 uppercase tracking-widest drop-shadow-sm"; 
           balanceLabel.innerText = "BUDGET EXCEEDED"; 
         }
-        if(balanceVal) balanceVal.className = "text-3xl font-bold text-rose-700 tracking-tight text-center drop-shadow-sm";
-        if(hintFooter) hintFooter.className = "text-[10px] font-bold tracking-normal text-rose-600 flex items-center justify-center gap-1 transition-colors duration-500 w-full drop-shadow-sm";
+        if(balanceVal) balanceVal.className = "text-3xl font-black text-rose-700 tracking-tight text-center drop-shadow-sm";
+        if(hintFooter) hintFooter.className = "text-[9px] font-bold uppercase tracking-wider text-rose-600 flex items-center justify-center gap-1 transition-colors duration-500 w-full drop-shadow-sm";
         if(dotPing) dotPing.classList.add('bg-rose-500'); if(dotMain) dotMain.classList.add('bg-rose-600');
       } else if (pLeft > 20) { 
         balanceCard.classList.add('bg-gradient-to-b', 'from-emerald-50', 'to-emerald-100', 'shadow-[0_12px_24px_rgba(16,185,129,0.06),inset_0_2px_6px_rgba(255,255,255,0.9)]');
-        if(balanceLabel) { balanceLabel.className = "text-[10.5px] font-bold text-emerald-600 tracking-normal drop-shadow-sm"; balanceLabel.innerText = "Remaining"; }
-        if(balanceVal) balanceVal.className = "text-3xl font-bold text-emerald-700 tracking-tight text-center drop-shadow-sm";
-        if(hintFooter) hintFooter.className = "text-[10px] font-bold tracking-normal text-emerald-700 flex items-center justify-center gap-1 transition-colors duration-500 w-full drop-shadow-sm";
+        if(balanceLabel) { balanceLabel.className = "text-[9.5px] font-black text-emerald-600 uppercase tracking-widest drop-shadow-sm"; balanceLabel.innerText = "Remaining"; }
+        if(balanceVal) balanceVal.className = "text-3xl font-black text-emerald-700 tracking-tight text-center drop-shadow-sm";
+        if(hintFooter) hintFooter.className = "text-[9px] font-bold uppercase tracking-wider text-emerald-700 flex items-center justify-center gap-1 transition-colors duration-500 w-full drop-shadow-sm";
         if(dotPing) dotPing.classList.add('bg-emerald-500'); if(dotMain) dotMain.classList.add('bg-emerald-600');
       } else if (pLeft > 10) { 
         balanceCard.classList.add('bg-gradient-to-b', 'from-amber-50', 'to-amber-100', 'shadow-[0_12px_24px_rgba(245,158,11,0.06),inset_0_2px_6px_rgba(255,255,255,0.9)]');
-        if(balanceLabel) { balanceLabel.className = "text-[10.5px] font-bold text-amber-600 tracking-normal drop-shadow-sm"; balanceLabel.innerText = "Remaining"; }
-        if(balanceVal) balanceVal.className = "text-3xl font-bold text-amber-700 tracking-tight text-center drop-shadow-sm";
-        if(hintFooter) hintFooter.className = "text-[10px] font-bold tracking-normal text-amber-700 flex items-center justify-center gap-1 transition-colors duration-500 w-full drop-shadow-sm";
+        if(balanceLabel) { balanceLabel.className = "text-[9.5px] font-black text-amber-600 uppercase tracking-widest drop-shadow-sm"; balanceLabel.innerText = "Remaining"; }
+        if(balanceVal) balanceVal.className = "text-3xl font-black text-amber-700 tracking-tight text-center drop-shadow-sm";
+        if(hintFooter) hintFooter.className = "text-[9px] font-bold uppercase tracking-wider text-amber-700 flex items-center justify-center gap-1 transition-colors duration-500 w-full drop-shadow-sm";
         if(dotPing) dotPing.classList.add('bg-amber-500'); if(dotMain) dotMain.classList.add('bg-amber-600');
       } else { 
         balanceCard.classList.add('bg-gradient-to-b', 'from-rose-50', 'to-rose-100', 'warning-pulse', 'shadow-[0_12px_24px_rgba(225,29,72,0.08),inset_0_2px_6px_rgba(255,255,255,0.9)]');
-        if(balanceLabel) { balanceLabel.className = "text-[10.5px] font-bold text-rose-600 tracking-normal drop-shadow-sm"; balanceLabel.innerText = "Remaining"; }
-        if(balanceVal) balanceVal.className = "text-3xl font-bold text-rose-700 tracking-tight text-center drop-shadow-sm";
-        if(hintFooter) hintFooter.className = "text-[10px] font-bold tracking-normal text-rose-600 flex items-center justify-center gap-1 transition-colors duration-500 w-full drop-shadow-sm";
+        if(balanceLabel) { balanceLabel.className = "text-[9.5px] font-black text-rose-600 uppercase tracking-widest drop-shadow-sm"; balanceLabel.innerText = "Remaining"; }
+        if(balanceVal) balanceVal.className = "text-3xl font-black text-rose-700 tracking-tight text-center drop-shadow-sm";
+        if(hintFooter) hintFooter.className = "text-[9px] font-bold uppercase tracking-wider text-rose-600 flex items-center justify-center gap-1 transition-colors duration-500 w-full drop-shadow-sm";
         if(dotPing) dotPing.classList.add('bg-rose-500'); if(dotMain) dotMain.classList.add('bg-rose-600');
       }
 
@@ -3390,7 +3390,7 @@
         if (p.status === 'Visited') {
           visitedCount++; 
           const formattedStamp = formatVisitedTime(p.timeString);
-          visitedHtml += `<div id="place-card-${p.rowId}" class="bg-white px-4 py-3.5 rounded-xl border border-slate-200/60 shadow-sm flex items-center justify-between opacity-65 transition-all duration-300"><div class="flex items-center gap-3 truncate pr-2 w-full justify-between"><div class="flex items-center gap-3 truncate pr-1"><button onclick="triggerPlaceCheck(${p.rowId}, 'Visited')" class="w-5 h-5 flex-shrink-0 bg-emerald-500 rounded-full flex items-center justify-center text-white border border-emerald-600 outline-none"><i data-lucide="check" class="w-3 h-3 stroke-[3]"></i></button><div class="truncate"><p class="font-bold text-slate-500 text-sm line-through decoration-slate-400 truncate">${p.name}</p>${p.note ? `<p class="text-[11px] text-slate-400 truncate mt-0.5">${p.note}</p>` : ''}</div></div><span class="text-[11px] font-semibold text-slate-400 flex-shrink-0 bg-slate-100 rounded-md px-1.5 py-0.5">${formattedStamp}</span></div></div>`;
+          visitedHtml += `<div id="place-card-${p.rowId}" class="bg-white px-4 py-3.5 rounded-xl border border-slate-200/60 shadow-sm flex items-center justify-between opacity-65 transition-all duration-300"><div class="flex items-center gap-3 truncate pr-2 w-full justify-between"><div class="flex items-center gap-3 truncate pr-1"><button onclick="triggerPlaceCheck(${p.rowId}, 'Visited')" class="w-5 h-5 flex-shrink-0 bg-emerald-500 rounded-full flex items-center justify-center text-white border border-emerald-600 outline-none"><i data-lucide="check" class="w-3 h-3 stroke-[3]"></i></button><div class="truncate"><p class="font-bold text-slate-500 text-sm line-through decoration-slate-400 truncate">${p.name}</p>${p.note ? `<p class="text-[10px] text-slate-400 truncate mt-0.5">${p.note}</p>` : ''}</div></div><span class="text-[10px] font-semibold text-slate-400 flex-shrink-0 bg-slate-100 rounded-md px-1.5 py-0.5">${formattedStamp}</span></div></div>`;
         } else {
           activeCount++;
           activeHtml += `<div id="place-card-${p.rowId}" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between transition-all duration-300"><div class="flex items-center gap-3 truncate pr-2"><button onclick="triggerPlaceCheck(${p.rowId}, 'Pending')" class="w-5 h-5 flex-shrink-0 rounded-full border border-slate-300 hover:border-indigo-500 flex items-center justify-center bg-slate-50 outline-none transition-colors"></button><div class="truncate"><p class="font-bold text-slate-800 text-sm truncate">${p.name}</p>${p.note ? `<p class="text-xs text-slate-400 truncate mt-0.5">${p.note}</p>` : ''}</div></div></div>`;
@@ -3398,8 +3398,8 @@
       });
 
       document.getElementById('ui-places-divider').className = activeCount > 0 ? "w-full h-[1px] bg-slate-200 my-8 block" : "hidden";
-      document.getElementById('head-active-places').className = activeCount > 0 ? "text-[11px] font-bold text-slate-400 tracking-normal px-1 block" : "hidden";
-      document.getElementById('head-visited-places').className = visitedCount > 0 ? "text-[11px] font-bold text-emerald-500 tracking-normal px-1 block mt-4" : "hidden";
+      document.getElementById('head-active-places').className = activeCount > 0 ? "text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 block" : "hidden";
+      document.getElementById('head-visited-places').className = visitedCount > 0 ? "text-[10px] font-bold text-emerald-500 uppercase tracking-widest px-1 block mt-4" : "hidden";
       activeContainer.innerHTML = activeHtml; 
       visitedContainer.innerHTML = visitedHtml;
 
@@ -3436,7 +3436,7 @@
           scheduleHtml += `
             <div class="mb-8">
               <div class="py-2 z-10 anim-badge relative" style="animation-delay: ${badgeDelay}ms;">
-                <span class="bg-slate-800 text-white text-[11px] font-bold tracking-normal px-3 py-1 rounded-full shadow-md">${headerText}</span>
+                <span class="bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md">${headerText}</span>
               </div>
               <div class="border-l-2 border-transparent ml-20 mt-4 space-y-6 relative">`;
 
@@ -3452,11 +3452,11 @@
             let detailText = p.details ? p.details.toLowerCase() : "";
             
             if (detailText.includes("train") || detailText.includes("exp")) {
-              badgeHtml = `<span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-1 rounded tracking-normal inline-block"> ${p.details}</span>`;
+              badgeHtml = `<span class="bg-amber-100 text-amber-700 text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider inline-block"> ${p.details}</span>`;
             } else if (detailText.includes("hotel") || detailText.includes("stay")) {
-              badgeHtml = `<span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded tracking-normal inline-block"> ${p.details}</span>`;
+              badgeHtml = `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider inline-block"> ${p.details}</span>`;
             } else if (detailText.includes("visit") || p.details) {
-              badgeHtml = `<span class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-1 rounded tracking-normal inline-block"> ${p.details}</span>`;
+              badgeHtml = `<span class="bg-indigo-100 text-indigo-700 text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider inline-block"> ${p.details}</span>`;
             }
 
             let timeBlock = "";
@@ -3466,14 +3466,14 @@
             let clickAction = "";
             
             if (isCancelled) {
-              timeBlock = `<p class="text-[12px] font-bold italic text-red-500 mt-1">Cancelled</p>`;
+              timeBlock = `<p class="text-[11px] font-black italic text-red-500 mt-1">Cancelled</p>`;
               dotClass = "bg-slate-300"; 
               cardClass += " bg-red-50 border-red-200 opacity-60"; 
               titleClass += " text-red-800 line-through decoration-red-400"; 
             } else {
-              if (p.eta) timeBlock += `<p class="text-[10px] font-bold text-slate-400">ETA ${p.eta}</p>`;
+              if (p.eta) timeBlock += `<p class="text-[9px] font-bold text-slate-400">ETA ${p.eta}</p>`;
               if (p.ata) {
-                timeBlock += `<p class="text-[12px] font-bold text-indigo-600 mt-0.5">ATA ${p.ata}</p>`;
+                timeBlock += `<p class="text-[11px] font-black text-indigo-600 mt-0.5">ATA ${p.ata}</p>`;
                 timeBlock += getEtaAtaStatusHtml(p.eta, p.ata);
               }
               cardClass += " bg-white border-slate-200 active:scale-95 cursor-pointer hover:border-indigo-200";
@@ -3829,7 +3829,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
   const statusHtml = getEtaAtaStatusHtml(etaVal, instantAta);
 
   if (timeBlock) {
-    timeBlock.innerHTML += `<p class="text-[12px] font-bold text-indigo-600 mt-0.5 animate-blink-3">ATA ${instantAta}</p>${statusHtml}`;
+    timeBlock.innerHTML += `<p class="text-[11px] font-black text-indigo-600 mt-0.5 animate-blink-3">ATA ${instantAta}</p>${statusHtml}`;
   }
 
   // 3. Turn the circle dot purple
@@ -4188,14 +4188,14 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         verticalStatusText.innerText = "VERIFIED";
         leftBar.className = "w-[52px] bg-indigo-600 flex flex-col justify-between items-center py-4 text-white shrink-0 transition-colors duration-500 select-none overflow-hidden";
         photoBorder.className = "h-[185px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 overflow-hidden transition-colors duration-500";
-        titleText.className = "text-[16px] font-bold tracking-tight  text-indigo-700 leading-tight w-full truncate transition-colors duration-500";
-        signText.className = "text-[8px] font-bold tracking-normal text-indigo-700 border-t border-slate-300 pt-0.5 w-[85%] transition-colors duration-500";
+        titleText.className = "text-[16px] font-black tracking-tight uppercase text-indigo-700 leading-tight w-full truncate transition-colors duration-500";
+        signText.className = "text-[7px] font-black uppercase tracking-widest text-indigo-700 border-t border-slate-300 pt-0.5 w-[85%] transition-colors duration-500";
       } else {
         verticalStatusText.innerText = "UNVERIFIED";
         leftBar.className = "w-[52px] bg-rose-600 flex flex-col justify-between items-center py-4 text-white shrink-0 transition-colors duration-500 select-none overflow-hidden";
         photoBorder.className = "h-[185px] w-full border-y-[3px] border-rose-600 relative bg-slate-100 overflow-hidden transition-colors duration-500";
-        titleText.className = "text-[16px] font-bold tracking-tight  text-rose-700 leading-tight w-full truncate transition-colors duration-500";
-        signText.className = "text-[8px] font-bold tracking-normal text-rose-700 border-t border-slate-300 pt-0.5 w-[85%] transition-colors duration-500";
+        titleText.className = "text-[16px] font-black tracking-tight uppercase text-rose-700 leading-tight w-full truncate transition-colors duration-500";
+        signText.className = "text-[7px] font-black uppercase tracking-widest text-rose-700 border-t border-slate-300 pt-0.5 w-[85%] transition-colors duration-500";
       }
 
       // Stamp Image
@@ -4238,12 +4238,12 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
       if (status.includes('verified')) {
         box.innerHTML = `
-        <span class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-full flex items-center justify-center gap-1.5 text-[11px] font-bold tracking-normal shadow-sm border border-indigo-100">
+        <span class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-full flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-widest shadow-sm border border-indigo-100">
           <i data-lucide="check-circle-2" class="w-3.5 h-3.5 stroke-[2.5]"></i> VERIFIED
         </span>`;
       } else {
         box.innerHTML = `
-        <span class="bg-rose-50 text-rose-600 px-3 py-1.5 rounded-full flex items-center justify-center gap-1.5 text-[11px] font-bold tracking-normal shadow-sm border border-rose-100">
+        <span class="bg-rose-50 text-rose-600 px-3 py-1.5 rounded-full flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-widest shadow-sm border border-rose-100">
           <i data-lucide="shield-alert" class="w-3.5 h-3.5 stroke-[2.5]"></i> UNVERIFIED
         </span>`;
       }
@@ -4386,7 +4386,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
           ? "bg-indigo-600 text-white shadow-md scale-105 border-transparent" 
           : "bg-white text-slate-500 border-slate-200 active:scale-95 hover:bg-slate-50";
           
-        return `<button onclick="applyLedgerFilter('${cat}')" class="px-4 py-1.5 rounded-full text-[11px] font-bold tracking-normal flex-shrink-0 snap-start transition-all border ${bgClass}">${cat}</button>`;
+        return `<button onclick="applyLedgerFilter('${cat}')" class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider flex-shrink-0 snap-start transition-all border ${bgClass}">${cat}</button>`;
       }).join('');
     }
 
@@ -4432,7 +4432,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         listContainer.innerHTML = `
           <div class="w-full py-8 text-center animate-pulse">
             <i data-lucide="receipt-indian-rupee" class="w-8 h-8 text-slate-200 mx-auto mb-2"></i>
-            <p class="text-[11px] font-bold text-slate-400 tracking-normal">No matching expenses found</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">No matching expenses found</p>
           </div>`;
         lucide.createIcons();
         return;
@@ -4471,20 +4471,20 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         const opacityClass = t.isVerified ? "opacity-100" : "opacity-60"; 
         
         const statusUI = t.isVerified 
-          ? `<div class="flex items-center justify-end gap-1 text-[9px] font-bold text-emerald-500 tracking-normal mt-1 whitespace-nowrap"><i data-lucide="badge-check" class="w-3 h-3"></i> Verified</div>`
-          : `<div class="flex items-center justify-end gap-1 text-[9px] font-bold text-amber-500 tracking-normal mt-1 whitespace-nowrap"><i data-lucide="badge-x" class="w-3 h-3"></i> Unverified</div>`;
+          ? `<div class="flex items-center justify-end gap-1 text-[8px] font-black text-emerald-500 uppercase tracking-widest mt-1 whitespace-nowrap"><i data-lucide="badge-check" class="w-3 h-3"></i> Verified</div>`
+          : `<div class="flex items-center justify-end gap-1 text-[8px] font-black text-amber-500 uppercase tracking-widest mt-1 whitespace-nowrap"><i data-lucide="badge-x" class="w-3 h-3"></i> Unverified</div>`;
 
         return `
           <div onclick="openReceiptModal('${safeUtr}', ${t.amount}, '${safeCat}', '${safeNotes}', '${dateTimeString}', ${t.isVerified})" class="${txCardBg} ${opacityClass} p-4 rounded-xl flex justify-between items-center border shadow-sm transition-colors duration-300 cursor-pointer hover:scale-[1.02] active:scale-95 overflow-hidden">
             
             <div class="flex flex-col pointer-events-none min-w-0 pr-2">
-              <span class="text-[10px] font-bold text-indigo-500 tracking-normal truncate">${safeCat}</span>
+              <span class="text-[9px] font-bold text-indigo-500 uppercase tracking-wide truncate">${safeCat}</span>
               <span class="text-sm font-bold text-slate-800 mt-0.5 break-words whitespace-normal leading-snug">${safeNotes}</span>
-              <span class="text-[10px] text-slate-400 font-semibold mt-1 tracking-tight truncate">${dateTimeString}</span>
+              <span class="text-[9px] text-slate-400 font-semibold mt-1 uppercase tracking-tight truncate">${dateTimeString}</span>
             </div>
 
             <div class="flex flex-col items-end pointer-events-none shrink-0 ml-2">
-              <span class="text-base font-bold ${amountColor}">${formatINR(t.amount)}</span>
+              <span class="text-base font-black ${amountColor}">${formatINR(t.amount)}</span>
               ${statusUI}
             </div>
             
@@ -4493,7 +4493,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       
       if (filteredData.length > visibleLedgerCount) {
         htmlOutput += `
-          <button onclick="loadMoreLedger()" class="w-full py-4 mt-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl text-[11px] tracking-normal transition-colors active:scale-95 border border-slate-200 shadow-sm">
+          <button onclick="loadMoreLedger()" class="w-full py-4 mt-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black rounded-xl text-[10px] uppercase tracking-widest transition-colors active:scale-95 border border-slate-200 shadow-sm">
             Load More Transactions
           </button>`;
       }
@@ -4522,13 +4522,13 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
       if (isVerified) {
         headBg.className = "bg-blue-600 px-6 pt-10 pb-8 text-center text-white relative transition-colors duration-300";
-        headTitle.className = "text-[12px] font-bold tracking-normal text-blue-100 mb-1 transition-colors duration-300";
+        headTitle.className = "text-[11px] font-bold uppercase tracking-widest text-blue-100 mb-1 transition-colors duration-300";
         headTitle.innerText = "Payment Successful";
         headIcon.setAttribute('data-lucide', 'check');
         headIcon.className = "w-8 h-8 text-blue-600 stroke-[3] transition-colors duration-300";
       } else {
         headBg.className = "bg-amber-500 px-6 pt-10 pb-8 text-center text-white relative transition-colors duration-300";
-        headTitle.className = "text-[12px] font-bold tracking-normal text-amber-100 mb-1 transition-colors duration-300";
+        headTitle.className = "text-[11px] font-bold uppercase tracking-widest text-amber-100 mb-1 transition-colors duration-300";
         headTitle.innerText = "Payment Standby";
         headIcon.setAttribute('data-lucide', 'alert-circle');
         headIcon.className = "w-8 h-8 text-amber-500 stroke-[3] transition-colors duration-300";
@@ -4538,9 +4538,9 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       const badgeContainer = document.getElementById('receipt-status-badge');
       if (badgeContainer) {
         if (isVerified) {
-          badgeContainer.innerHTML = `<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[10px] font-bold tracking-normal flex items-center gap-1"><i data-lucide="badge-check" class="w-3 h-3"></i> Verified Payment</span>`;
+          badgeContainer.innerHTML = `<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest flex items-center gap-1"><i data-lucide="badge-check" class="w-3 h-3"></i> Verified Payment</span>`;
         } else {
-          badgeContainer.innerHTML = `<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-[10px] font-bold tracking-normal flex items-center gap-1"><i data-lucide="badge-alert" class="w-3 h-3"></i> Unverified Payment</span>`;
+          badgeContainer.innerHTML = `<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest flex items-center gap-1"><i data-lucide="badge-alert" class="w-3 h-3"></i> Unverified Payment</span>`;
         }
       }
 
@@ -4702,7 +4702,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         container.innerHTML = `
           <div class="col-span-full bg-slate-50 rounded-2xl p-6 text-center border border-slate-200">
             <i data-lucide="search-x" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
-            <p class="text-xs font-bold text-slate-400 tracking-normal">No matching trips found</p>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">No matching trips found</p>
           </div>`;
         lucide.createIcons();
         return;
@@ -4712,32 +4712,32 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         const hasReport = trip.reportUrl && trip.reportUrl.trim() !== "" && trip.reportUrl !== "#";
         const hasGallery = trip.galleryUrl && trip.galleryUrl.trim() !== "" && trip.galleryUrl !== "#";
         const spentText = trip.totalSpent ? `₹${Math.round(trip.totalSpent).toLocaleString('en-IN')}` : '';
-        const tripCodeText = trip.tripCode ? `<span class="bg-indigo-50 text-indigo-700 border border-indigo-100 text-[9.5px] font-bold px-1.5 py-0.5 rounded tracking-normal">${trip.tripCode}</span>` : '';
+        const tripCodeText = trip.tripCode ? `<span class="bg-indigo-50 text-indigo-700 border border-indigo-100 text-[8.5px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">${trip.tripCode}</span>` : '';
 
         return `
           <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col justify-between gap-3 hover:border-slate-300 transition-all shadow-sm">
             <div class="flex justify-between items-start gap-2">
               <div class="min-w-0">
                 <div class="flex items-center gap-1.5 flex-wrap">
-                  <h3 class="text-xs sm:text-sm font-bold text-slate-800 tracking-normal truncate">${trip.name || 'Past Trip'}</h3>
+                  <h3 class="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wide truncate">${trip.name || 'Past Trip'}</h3>
                   ${tripCodeText}
                 </div>
-                ${trip.dates ? `<p class="text-[11px] font-bold text-slate-400 tracking-normal mt-0.5">${trip.dates}</p>` : ''}
+                ${trip.dates ? `<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${trip.dates}</p>` : ''}
               </div>
-              ${spentText ? `<span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0">Spent: ${spentText}</span>` : ''}
+              ${spentText ? `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase shrink-0">Spent: ${spentText}</span>` : ''}
             </div>
             
             <div class="flex gap-2 pt-2 border-t border-slate-200/80">
               ${hasReport ? `
-                <a href="${trip.reportUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold tracking-normal py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm">
+                <a href="${trip.reportUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm">
                   <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Report
                 </a>` : `
-                <span class="flex-1 bg-slate-200/70 text-slate-400 text-[11px] font-bold tracking-normal py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 cursor-not-allowed">
+                <span class="flex-1 bg-slate-200/70 text-slate-400 text-[10px] font-bold uppercase tracking-widest py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 cursor-not-allowed">
                   <i data-lucide="file-x" class="w-3.5 h-3.5"></i> No Report
                 </span>`}
 
               ${hasGallery ? `
-                <button type="button" onclick="openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[11px] font-bold tracking-normal py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+                <button type="button" onclick="openDriveGallery('${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] font-black uppercase tracking-widest py-2.5 px-3 rounded-xl text-center flex items-center justify-center gap-1.5 active:scale-95 transition-all">
                   <i data-lucide="camera" class="w-3.5 h-3.5"></i> Gallery
                 </button>` : ''}
             </div>
@@ -4772,7 +4772,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         container.innerHTML = `
           <div class="col-span-full bg-white rounded-[24px] p-8 text-center border border-slate-200 shadow-sm">
             <i data-lucide="search-x" class="w-10 h-10 text-slate-300 mx-auto mb-2.5"></i>
-            <p class="text-xs font-bold text-slate-400 tracking-normal">No matching trips found</p>
+            <p class="text-xs font-black text-slate-400 uppercase tracking-widest">No matching trips found</p>
           </div>`;
         lucide.createIcons();
         return;
@@ -4782,7 +4782,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
         const hasReport = trip.reportUrl && trip.reportUrl.trim() !== "" && trip.reportUrl !== "#";
         const hasGallery = trip.galleryUrl && trip.galleryUrl.trim() !== "" && trip.galleryUrl !== "#";
         const spentText = trip.totalSpent ? `₹${Math.round(trip.totalSpent).toLocaleString('en-IN')}` : '';
-        const tripCodeText = trip.tripCode ? `<span class="bg-indigo-50 text-indigo-700 border border-indigo-100 text-[10px] font-bold px-2 py-0.5 rounded tracking-normal">${trip.tripCode}</span>` : '';
+        const tripCodeText = trip.tripCode ? `<span class="bg-indigo-50 text-indigo-700 border border-indigo-100 text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider">${trip.tripCode}</span>` : '';
         const safeName = (trip.name || 'Trip').replace(/'/g, "\\'");
 
         return `
@@ -4790,25 +4790,25 @@ const places = payload.places.filter(p => p.tripDay || p.location);
             <div class="flex justify-between items-start gap-2">
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <h3 class="text-sm lg:text-base font-bold text-slate-800 tracking-normal truncate">${trip.name || 'Past Trip'}</h3>
+                  <h3 class="text-sm lg:text-base font-black text-slate-800 uppercase tracking-wide truncate">${trip.name || 'Past Trip'}</h3>
                   ${tripCodeText}
                 </div>
-                ${trip.dates ? `<p class="text-[11px] sm:text-xs font-bold text-slate-400 tracking-normal mt-1">${trip.dates}</p>` : ''}
+                ${trip.dates ? `<p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">${trip.dates}</p>` : ''}
               </div>
-              ${spentText ? `<span class="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[11px] font-bold px-3 py-1.5 rounded-full shrink-0">Spent: ${spentText}</span>` : ''}
+              ${spentText ? `<span class="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-black px-3 py-1.5 rounded-full uppercase shrink-0">Spent: ${spentText}</span>` : ''}
             </div>
             
             <div class="flex items-center gap-2.5 pt-3 border-t border-slate-100">
               ${hasReport ? `
-                <a href="${trip.reportUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-[11px] lg:text-[12px] font-bold tracking-normal py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm">
+                <a href="${trip.reportUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm">
                   <i data-lucide="file-text" class="w-4 h-4"></i> View Report
                 </a>` : `
-                <span class="flex-1 bg-slate-100 text-slate-400 text-[11px] lg:text-[12px] font-bold tracking-normal py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed border border-slate-200/60">
+                <span class="flex-1 bg-slate-100 text-slate-400 text-[10px] lg:text-[11px] font-bold uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 cursor-not-allowed border border-slate-200/60">
                   <i data-lucide="file-x" class="w-4 h-4"></i> No Report
                 </span>`}
 
               ${hasGallery ? `
-                <button type="button" onclick="openArchiveGalleryPage('${safeName}', '${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[11px] lg:text-[12px] font-bold tracking-normal py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all">
+                <button type="button" onclick="openArchiveGalleryPage('${safeName}', '${trip.galleryUrl}')" class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-[10px] lg:text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-xl text-center flex items-center justify-center gap-2 active:scale-95 transition-all">
                   <i data-lucide="camera" class="w-4 h-4"></i> Gallery
                 </button>` : ''}
             </div>
@@ -4888,12 +4888,12 @@ function closeArchiveGalleryPage() {
         if (matches.length > 0) {
           dropdown.innerHTML = matches.map(m => `
             <button type="button" onclick="selectMention('${m.name}')" class="flex items-center gap-2 p-2 hover:bg-indigo-50 rounded-xl text-left w-full transition active:scale-95">
-              <div class="w-6 h-6 rounded-full ${m.name === 'Admin' ? 'bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-600'} flex items-center justify-center font-bold text-[10px] shrink-0">
+              <div class="w-6 h-6 rounded-full ${m.name === 'Admin' ? 'bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-600'} flex items-center justify-center font-black text-[9px] shrink-0">
                 ${m.name === 'Admin' ? '★' : m.name.charAt(0)}
               </div>
               <div class="min-w-0">
                 <p class="text-xs font-bold text-slate-800 truncate">${m.name}</p>
-                <p class="text-[9px] font-bold text-slate-400 tracking-normal truncate">${m.role || 'Member'}</p>
+                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest truncate">${m.role || 'Member'}</p>
               </div>
             </button>
           `).join('');
@@ -4991,7 +4991,7 @@ function closeArchiveGalleryPage() {
       document.getElementById('pollQuestionInput').value = '';
       const optContainer = document.getElementById('pollOptionsContainer');
       optContainer.innerHTML = `
-        <label class="text-[10px] font-bold tracking-normal text-slate-400">Options</label>
+        <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Options</label>
         <input type="text" class="poll-opt-input w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-bold outline-none focus:border-indigo-500" placeholder="Option 1" required>
         <input type="text" class="poll-opt-input w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-bold outline-none focus:border-indigo-500" placeholder="Option 2" required>
       `;
@@ -5095,7 +5095,7 @@ function closeArchiveGalleryPage() {
       }
 
       if (messages.length === 0) {
-        chatBox.innerHTML = `<div class="text-center py-10 opacity-50"><i data-lucide="messages-square" class="w-8 h-8 mx-auto mb-2 text-slate-400"></i><p class="text-[11px] font-bold tracking-widest text-slate-400">No messages yet</p></div>`;
+        chatBox.innerHTML = `<div class="text-center py-10 opacity-50"><i data-lucide="messages-square" class="w-8 h-8 mx-auto mb-2 text-slate-400"></i><p class="text-[10px] font-black tracking-widest uppercase text-slate-400">No messages yet</p></div>`;
         lucide.createIcons();
         return;
       }
@@ -5120,7 +5120,7 @@ function closeArchiveGalleryPage() {
         // Sender color: Red for Admin, Help, Support
         let senderColorClass = "text-indigo-500";
         if (isAdmin || isHelpOrSupport) {
-          senderColorClass = "text-rose-600 font-bold";
+          senderColorClass = "text-rose-600 font-black";
         }
 
         // Bubble styling
@@ -5150,28 +5150,28 @@ function closeArchiveGalleryPage() {
                   <div class="absolute left-0 top-0 bottom-0 ${hasVoted ? 'bg-indigo-200/50' : 'bg-slate-200/50'} transition-all duration-500" style="width: ${pct}%;"></div>
                   <div class="relative z-10 flex justify-between items-center text-xs font-bold ${hasVoted ? 'text-indigo-700' : 'text-slate-800'}">
                     <span class="flex items-center gap-1.5">${hasVoted ? '<i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-indigo-600"></i>' : ''}${opt.text}</span>
-                    <span class="text-[11px] font-bold">${pct}%</span>
+                    <span class="text-[10px] font-black">${pct}%</span>
                   </div>
                 </button>`;
             }).join('');
 
             return `
               <div class="chat-msg-row flex flex-col ${isMe ? 'items-end pl-6' : 'items-start pr-6'} w-full transition-transform duration-150 relative" data-sender="${msg.sender}">
-                ${!isMe ? `<span class="text-[10px] font-bold tracking-normal ${senderColorClass} mb-1 ml-1">${msg.sender}</span>` : ''}
+                ${!isMe ? `<span class="text-[9px] font-black uppercase tracking-widest ${senderColorClass} mb-1 ml-1">${msg.sender}</span>` : ''}
                 
                 <div class="bg-white border border-slate-200 text-slate-800 p-4 rounded-2xl shadow-sm w-full max-w-[300px] sm:max-w-xs space-y-2.5">
                   <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
                     <div class="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
                       <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>
                     </div>
-                    <h4 class="text-xs font-bold tracking-normal text-slate-800 leading-snug">${poll.question}</h4>
+                    <h4 class="text-xs font-black uppercase tracking-wide text-slate-800 leading-snug">${poll.question}</h4>
                   </div>
 
                   <div class="space-y-2">
                     ${optionsHtml}
                   </div>
 
-                  <div class="flex justify-between items-center pt-1 text-[10px] font-bold text-slate-400 tracking-normal">
+                  <div class="flex justify-between items-center pt-1 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
                     <span>${totalVotes} vote${totalVotes === 1 ? '' : 's'}</span>
                     <span>${timeStr}</span>
                   </div>
@@ -5189,20 +5189,20 @@ function closeArchiveGalleryPage() {
           if (firstLineEnd !== -1) {
             const quoteHeader = displayBody.slice(0, firstLineEnd);
             displayBody = displayBody.slice(firstLineEnd + 1);
-            replyQuoteHtml = `<div class="p-2 mb-1.5 rounded-lg text-[11px] ${isMe ? 'bg-indigo-700/60 text-indigo-100' : 'bg-slate-100 text-slate-600'} border-l-2 border-indigo-400 truncate">${quoteHeader}</div>`;
+            replyQuoteHtml = `<div class="p-2 mb-1.5 rounded-lg text-[10px] ${isMe ? 'bg-indigo-700/60 text-indigo-100' : 'bg-slate-100 text-slate-600'} border-l-2 border-indigo-400 truncate">${quoteHeader}</div>`;
           }
         }
 
         return `
           <div class="chat-msg-row flex flex-col ${isMe ? 'items-end pl-10' : 'items-start pr-10'} w-full transition-transform duration-150 relative group" data-sender="${msg.sender}" data-text="${safeText}">
-            ${!isMe ? `<span class="text-[10px] font-bold tracking-normal ${senderColorClass} mb-1 ml-1">${msg.sender}</span>` : ''}
+            ${!isMe ? `<span class="text-[9px] font-black uppercase tracking-widest ${senderColorClass} mb-1 ml-1">${msg.sender}</span>` : ''}
             
             <div class="${bubbleClass} p-3.5 transition-all break-words max-w-[90%] relative cursor-pointer" onclick="setUserReply('${msg.sender}', '${safeText}')">
               ${replyQuoteHtml}
               <p class="text-xs font-bold leading-relaxed whitespace-pre-wrap">${formatMessageText(displayBody, isMe)}</p>
             </div>
             
-            <span class="text-[9px] font-bold tracking-normal text-slate-400 mt-1 ${isMe ? 'mr-1' : 'ml-1'}">${timeStr}</span>
+            <span class="text-[8px] font-black uppercase tracking-widest text-slate-400 mt-1 ${isMe ? 'mr-1' : 'ml-1'}">${timeStr}</span>
           </div>`;
       }).join('');
       
@@ -5387,14 +5387,14 @@ function closeArchiveGalleryPage() {
                 container.innerHTML = `
                     <div class="px-4 py-2 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center gap-2 border border-slate-200 cursor-not-allowed opacity-60">
                         <i data-lucide="badge-check" class="w-4 h-4 stroke-[2.5]"></i>
-                        <span class="text-[11px] font-bold tracking-normal">Signed Off</span>
+                        <span class="text-[10px] font-black uppercase tracking-widest">Signed Off</span>
                     </div>`;
             } else {
                 // Black active state
                 container.innerHTML = `
                     <div onclick="handleMenuSignOff()" class="px-4 py-2 bg-slate-900 text-white rounded-full flex items-center gap-2 transition-colors active:scale-95 outline-none cursor-pointer">
                         <i data-lucide="pen-tool" class="w-4 h-4 stroke-[2.5]"></i>
-                        <span class="text-[11px] font-bold tracking-normal">Sign Off</span>
+                        <span class="text-[10px] font-black uppercase tracking-widest">Sign Off</span>
                     </div>`;
             }
         } else {
@@ -5410,7 +5410,7 @@ function closeArchiveGalleryPage() {
       return text.replace(urlRegex, (url) => {
         // High-contrast sky blue for sender bubbles, indigo for receiver bubbles
         const linkColor = isMe ? 'text-sky-200 hover:text-white' : 'text-indigo-600 hover:text-indigo-800';
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="${linkColor} font-bold underline underline-offset-2 break-all">${url}</a>`;
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="${linkColor} font-black underline underline-offset-2 break-all">${url}</a>`;
       });
     }
 
@@ -5548,11 +5548,11 @@ function getEtaAtaStatusHtml(etaStr, ataStr) {
   };
 
   if (diff > 0) {
-    return `<p class="text-[9.5px] font-normal italic text-rose-500 mt-0.5 leading-tight">(Delayed by ${formatDuration(diff)})</p>`;
+    return `<p class="text-[8.5px] font-normal italic text-rose-500 mt-0.5 leading-tight">(Delayed by ${formatDuration(diff)})</p>`;
   } else if (diff < 0) {
-    return `<p class="text-[9.5px] font-normal italic text-emerald-600 mt-0.5 leading-tight">(Arrived early by ${formatDuration(Math.abs(diff))})</p>`;
+    return `<p class="text-[8.5px] font-normal italic text-emerald-600 mt-0.5 leading-tight">(Arrived early by ${formatDuration(Math.abs(diff))})</p>`;
   } else {
-    return `<p class="text-[9.5px] font-normal italic text-emerald-600 mt-0.5 leading-tight">(On time)</p>`;
+    return `<p class="text-[8.5px] font-normal italic text-emerald-600 mt-0.5 leading-tight">(On time)</p>`;
   }
 }
 
@@ -5629,7 +5629,7 @@ function renderChecklistTab(items) {
     const isClaimed = item.isDone;
     const isMyClaim = isClaimed && item.claimedBy && item.claimedBy.toLowerCase() === currentUser.toLowerCase();
 
-    const textColor = isClaimed ? 'text-indigo-600 font-bold' : 'text-slate-700 font-semibold';
+    const textColor = isClaimed ? 'text-indigo-600 font-black' : 'text-slate-700 font-semibold';
     const pointerDot = isClaimed ? 'bg-indigo-600 ring-4 ring-indigo-100' : 'bg-slate-400';
 
     return `
@@ -5641,7 +5641,7 @@ function renderChecklistTab(items) {
           <div class="min-w-0 flex-1">
             <p class="text-xs sm:text-sm ${textColor} leading-snug break-words">${item.title}</p>
             ${isClaimed ? `
-              <p class="text-[11px] italic font-normal text-black mt-0.5">
+              <p class="text-[10px] italic font-normal text-black mt-0.5">
                 Claimed by: ${getMemberPost(item.claimedBy)}
               </p>` : ''}
           </div>
@@ -5650,7 +5650,7 @@ function renderChecklistTab(items) {
         <!-- Action Buttons -->
         <div class="flex items-center gap-1.5 shrink-0 mt-0.5">
           ${isMyClaim && isRevokeVisible ? `
-            <button type="button" onclick="promptRevokeChecklist(${item.id}, '${item.title.replace(/'/g, "\\'")}')" class="px-2 py-0.5 text-rose-500 hover:text-rose-700 text-[10px] font-bold tracking-normal active:scale-95 transition" title="Revoke Claim">
+            <button type="button" onclick="promptRevokeChecklist(${item.id}, '${item.title.replace(/'/g, "\\'")}')" class="px-2 py-0.5 text-rose-500 hover:text-rose-700 text-[9px] font-black uppercase tracking-wider active:scale-95 transition" title="Revoke Claim">
               Revoke
             </button>` : ''}
 
@@ -5675,7 +5675,7 @@ function promptClaimChecklist(id, title) {
   pendingChecklistAction = { type: 'claim', id, title };
   document.getElementById('chk-modal-title').innerText = 'Claim Task';
   document.getElementById('chk-modal-desc').innerText = `Claim "${title}" under your name?`;
-  document.getElementById('chk-modal-confirm-btn').className = 'w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs tracking-normal active:scale-95 transition shadow-md';
+  document.getElementById('chk-modal-confirm-btn').className = 'w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-wider active:scale-95 transition shadow-md';
   document.getElementById('chk-modal-confirm-btn').innerText = 'Claim';
   document.getElementById('chk-modal-confirm-btn').onclick = executePendingChecklistAction;
   document.getElementById('checklist-confirm-modal').classList.remove('hidden');
@@ -5685,7 +5685,7 @@ function promptRevokeChecklist(id, title) {
   pendingChecklistAction = { type: 'revoke', id, title };
   document.getElementById('chk-modal-title').innerText = 'Revoke Claim';
   document.getElementById('chk-modal-desc').innerText = `Make "${title}" unclaimed again?`;
-  document.getElementById('chk-modal-confirm-btn').className = 'w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs tracking-normal active:scale-95 transition shadow-md';
+  document.getElementById('chk-modal-confirm-btn').className = 'w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-black rounded-xl text-xs uppercase tracking-wider active:scale-95 transition shadow-md';
   document.getElementById('chk-modal-confirm-btn').innerText = 'Revoke';
   document.getElementById('chk-modal-confirm-btn').onclick = executePendingChecklistAction;
   document.getElementById('checklist-confirm-modal').classList.remove('hidden');
@@ -5770,22 +5770,22 @@ async function executePendingChecklistAction() {
 
         if (type === 'ALERT') {
           badge.innerText = 'Alert';
-          badge.className = 'px-2.5 py-0.5 rounded-full text-[9.5px] font-bold tracking-normal bg-rose-50 text-rose-600 border border-rose-100';
+          badge.className = 'px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-widest bg-rose-50 text-rose-600 border border-rose-100';
           iconBox.className = 'w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center mx-auto shadow-inner';
           icon.setAttribute('data-lucide', 'alert-triangle');
-          btn.className = 'w-full py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs tracking-normal active:scale-95 transition shadow-lg';
+          btn.className = 'w-full py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-black rounded-xl text-xs uppercase tracking-widest active:scale-95 transition shadow-lg';
         } else if (type === 'ANNOUNCEMENT') {
           badge.innerText = 'Announcement';
-          badge.className = 'px-2.5 py-0.5 rounded-full text-[9.5px] font-bold tracking-normal bg-emerald-50 text-emerald-600 border border-emerald-100';
+          badge.className = 'px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-100';
           iconBox.className = 'w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center mx-auto shadow-inner';
           icon.setAttribute('data-lucide', 'megaphone');
-          btn.className = 'w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs tracking-normal active:scale-95 transition shadow-lg';
+          btn.className = 'w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs uppercase tracking-widest active:scale-95 transition shadow-lg';
         } else {
           badge.innerText = 'Notification';
-          badge.className = 'px-2.5 py-0.5 rounded-full text-[9.5px] font-bold tracking-normal bg-indigo-50 text-indigo-600 border border-indigo-100';
+          badge.className = 'px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-600 border border-indigo-100';
           iconBox.className = 'w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center mx-auto shadow-inner';
           icon.setAttribute('data-lucide', 'bell');
-          btn.className = 'w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs tracking-normal active:scale-95 transition shadow-lg';
+          btn.className = 'w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-xl text-xs uppercase tracking-widest active:scale-95 transition shadow-lg';
         }
 
         lucide.createIcons();
@@ -5841,14 +5841,14 @@ async function executePendingChecklistAction() {
         <i id="chk-modal-icon" data-lucide="check" class="w-6 h-6 stroke-[3]"></i>
       </div>
       <div>
-        <h3 id="chk-modal-title" class="text-sm font-bold tracking-normal text-slate-800">Confirm Claim</h3>
+        <h3 id="chk-modal-title" class="text-sm font-black uppercase tracking-wider text-slate-800">Confirm Claim</h3>
         <p id="chk-modal-desc" class="text-xs font-semibold text-slate-500 mt-1">Do you want to claim this task?</p>
       </div>
       <div class="grid grid-cols-2 gap-2 pt-1">
-        <button type="button" onclick="closeChecklistConfirmModal()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl text-xs tracking-normal active:scale-95 transition">
+        <button type="button" onclick="closeChecklistConfirmModal()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black rounded-xl text-xs uppercase tracking-wider active:scale-95 transition">
           Cancel
         </button>
-        <button type="button" id="chk-modal-confirm-btn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs tracking-normal active:scale-95 transition shadow-md">
+        <button type="button" id="chk-modal-confirm-btn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-wider active:scale-95 transition shadow-md">
           Confirm
         </button>
       </div>
@@ -5861,7 +5861,7 @@ async function executePendingChecklistAction() {
   <div id="global-toast"
     class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[10000] transform transition-all duration-300 opacity-0 translate-y-4 pointer-events-none flex items-center gap-2 bg-slate-900/95 backdrop-blur-md text-white px-5 py-2.5 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.2)] border border-slate-700">
     <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
-    <span id="toast-message" class="text-[12px] font-bold tracking-widest text-slate-100">Copied!</span>
+    <span id="toast-message" class="text-[11px] font-bold tracking-widest uppercase text-slate-100">Copied!</span>
   </div>
 
   <!-- =========================================
@@ -5878,22 +5878,22 @@ async function executePendingChecklistAction() {
         class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner border border-indigo-100">
         <i data-lucide="key-round" class="w-6 h-6 stroke-[2.5]"></i>
       </div>
-      <h2 class="text-xl font-bold text-slate-800 tracking-wide mb-1">Change PIN</h2>
+      <h2 class="text-xl font-black text-slate-800 tracking-wide uppercase mb-1">Change PIN</h2>
       <p class="text-slate-400 text-xs font-medium mb-6">Update your 4-digit security PIN</p>
 
       <div class="space-y-4 text-left">
         <div>
-          <label class="text-[11px] font-bold text-slate-400 mb-1 block">Current PIN</label>
-          <input type="password" id="cp-old-pin" pattern="\d*" maxlength="4" placeholder="••••" class="w-full text-center tracking-[0.5em] py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-xl">
+          <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Current PIN</label>
+          <input type="password" id="cp-old-pin" pattern="\d*" maxlength="4" placeholder="••••" class="w-full text-center tracking-[0.5em] py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-black text-xl">
         </div>
         <div>
-          <label class="text-[11px] font-bold text-slate-400 mb-1 block">New PIN</label>
-          <input type="password" id="cp-new-pin" pattern="\d*" maxlength="4" placeholder="••••" class="w-full text-center tracking-[0.5em] py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-xl">
+          <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">New PIN</label>
+          <input type="password" id="cp-new-pin" pattern="\d*" maxlength="4" placeholder="••••" class="w-full text-center tracking-[0.5em] py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-black text-xl">
         </div>
-        <p id="cp-error-msg" class="text-rose-500 text-center text-[12px] font-bold hidden tracking-normal">
+        <p id="cp-error-msg" class="text-rose-500 text-center text-[11px] font-black hidden uppercase tracking-wider">
         </p>
 
-        <button onclick="submitPinChange()" id="cp-submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl active:scale-95 transition shadow-lg mt-2 tracking-normal text-[12px]">
+        <button onclick="submitPinChange()" id="cp-submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl active:scale-95 transition shadow-lg mt-2 uppercase tracking-widest text-[11px]">
           Update PIN
         </button>
       </div>
@@ -5922,8 +5922,8 @@ async function executePendingChecklistAction() {
           <i data-lucide="messages-square" class="w-4 h-4 text-white"></i>
         </div>
         <div>
-          <h2 class="text-xs font-bold tracking-wider">Trip Messenger</h2>
-          <p class="text-[9.5px] font-bold text-indigo-200 tracking-normal flex items-center gap-1">
+          <h2 class="text-xs font-black tracking-wider uppercase">Trip Messenger</h2>
+          <p class="text-[8.5px] font-bold text-indigo-200 uppercase tracking-widest flex items-center gap-1">
             <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span> Encrypted
           </p>
         </div>
@@ -5946,8 +5946,8 @@ async function executePendingChecklistAction() {
       <div id="userReplyBanner" class="hidden absolute bottom-full left-0 w-full px-4 py-2.5 bg-indigo-50/90 backdrop-blur-md border-t border-indigo-100 flex items-center justify-between shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
         <div class="flex items-center gap-2 text-xs truncate border-l-2 border-indigo-500 pl-2">
           <i data-lucide="reply" class="w-3.5 h-3.5 text-indigo-500"></i>
-          <span class="text-[11px] font-bold tracking-normal text-indigo-600 truncate max-w-[80px]" id="userReplySender"></span>
-          <span id="userReplyText" class="text-[11px] font-bold text-slate-500 truncate max-w-[150px] sm:max-w-xs"></span>
+          <span class="text-[10px] font-black uppercase tracking-wider text-indigo-600 truncate max-w-[80px]" id="userReplySender"></span>
+          <span id="userReplyText" class="text-[10px] font-bold text-slate-500 truncate max-w-[150px] sm:max-w-xs"></span>
         </div>
         <button type="button" onclick="cancelUserReply()" class="text-slate-400 hover:text-rose-500 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
@@ -5959,10 +5959,10 @@ async function executePendingChecklistAction() {
 
       <!-- Command Menu Popup -->
       <div id="chat-command-menu" class="hidden absolute bottom-[65px] left-3 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 flex flex-col gap-1 w-32 z-30 transition-all origin-bottom-left">
-        <button type="button" onclick="insertChatCommand('/Help')" class="text-left px-3 py-2 text-[11px] font-bold tracking-widest text-amber-600 bg-amber-50 rounded-xl hover:bg-amber-100 active:scale-95 transition-all"><i data-lucide="info" class="w-3 h-3 inline-block mr-1 -mt-0.5"></i>/Help</button>
-        <button type="button" onclick="insertChatCommand('/Support')" class="text-left px-3 py-2 text-[11px] font-bold tracking-widest text-rose-600 bg-rose-50 rounded-xl hover:bg-rose-100 active:scale-95 transition-all"><i data-lucide="life-buoy" class="w-3 h-3 inline-block mr-1 -mt-0.5"></i>/Support</button>
+        <button type="button" onclick="insertChatCommand('/Help')" class="text-left px-3 py-2 text-[10px] font-black tracking-widest uppercase text-amber-600 bg-amber-50 rounded-xl hover:bg-amber-100 active:scale-95 transition-all"><i data-lucide="info" class="w-3 h-3 inline-block mr-1 -mt-0.5"></i>/Help</button>
+        <button type="button" onclick="insertChatCommand('/Support')" class="text-left px-3 py-2 text-[10px] font-black tracking-widest uppercase text-rose-600 bg-rose-50 rounded-xl hover:bg-rose-100 active:scale-95 transition-all"><i data-lucide="life-buoy" class="w-3 h-3 inline-block mr-1 -mt-0.5"></i>/Support</button>
         <!-- New Poll Command -->
-        <button type="button" onclick="openPollModal()" class="text-left px-3 py-2 text-[11px] font-bold tracking-widest text-indigo-600 bg-indigo-50 rounded-xl hover:bg-indigo-100 active:scale-95 transition-all flex items-center gap-1.5"><i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>/Poll</button>
+        <button type="button" onclick="openPollModal()" class="text-left px-3 py-2 text-[10px] font-black tracking-widest uppercase text-indigo-600 bg-indigo-50 rounded-xl hover:bg-indigo-100 active:scale-95 transition-all flex items-center gap-1.5"><i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>/Poll</button>
       </div>
 
       <!-- Message Form -->
@@ -5992,11 +5992,11 @@ async function executePendingChecklistAction() {
         class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-100 shadow-inner">
         <i data-lucide="map-pin-check" class="w-8 h-8 stroke-[2]"></i>
       </div>
-      <h2 class="text-xl font-bold text-slate-800 tracking-normal mb-1">Trip Completed!</h2>
-      <p class="text-slate-400 text-xs font-bold tracking-normal mb-6 leading-relaxed">
+      <h2 class="text-xl font-black text-slate-800 uppercase tracking-wide mb-1">Trip Completed!</h2>
+      <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-6 leading-relaxed">
         The final destination has been reached, Please sign off from your profile.
       </p>
-      <button onclick="closeTripCompletePopup()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition active:scale-95 text-xs tracking-normal shadow-lg">
+      <button onclick="closeTripCompletePopup()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl transition active:scale-95 text-xs uppercase tracking-widest shadow-lg">
         close
       </button>
     </div>
@@ -6013,16 +6013,16 @@ async function executePendingChecklistAction() {
 
 
 
-      <h2 id="modal-role-member-name" class="text-sm font-bold text-slate-400 tracking-normal mb-1">Member
+      <h2 id="modal-role-member-name" class="text-sm font-black text-slate-400 uppercase tracking-widest mb-1">Member
         Name</h2>
-      <h3 class="text-xl font-bold text-slate-800 tracking-normal mb-4">Assigned Role</h3>
+      <h3 class="text-xl font-black text-slate-800 uppercase tracking-wide mb-4">Assigned Role</h3>
 
       <!-- Bullet list container target -->
       <div id="modal-role-content" class="w-full text-xs font-bold text-slate-600 leading-relaxed pb-4">
         <!-- Injected dynamically -->
       </div>
 
-      <button onclick="closeRoleDetailsModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition active:scale-95 text-xs tracking-normal shadow-lg">
+      <button onclick="closeRoleDetailsModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl transition active:scale-95 text-xs uppercase tracking-widest shadow-lg">
         Close
       </button>
     </div>
@@ -6044,8 +6044,8 @@ async function executePendingChecklistAction() {
       <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-2.5 border border-indigo-100 shadow-inner shrink-0">
         <i data-lucide="archive" class="w-6 h-6 stroke-[2.5]"></i>
       </div>
-      <h2 class="text-lg sm:text-2xl font-bold text-slate-800 tracking-wide mb-0.5">Past Trips Archive</h2>
-      <p class="text-slate-400 text-[11px] sm:text-xs font-bold tracking-normal mb-4">Reports & Media Folders</p>
+      <h2 class="text-lg sm:text-2xl font-black text-slate-800 tracking-wide uppercase mb-0.5">Past Trips Archive</h2>
+      <p class="text-slate-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">Reports & Media Folders</p>
 
       <!-- Search Input -->
       <div class="relative mb-4 shrink-0 max-w-xl mx-auto w-full">
@@ -6066,7 +6066,7 @@ async function executePendingChecklistAction() {
   <div id="poll-creator-modal" class="hidden fixed inset-0 z-[1100] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="max-w-sm w-full bg-white rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 border border-slate-100">
       <div class="flex justify-between items-center pb-2 border-b border-slate-100">
-        <h3 class="text-xs font-bold tracking-normal text-slate-800 flex items-center gap-2">
+        <h3 class="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-2">
           <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-600"></i> Create a Poll
         </h3>
         <button type="button" onclick="closePollModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
@@ -6074,21 +6074,21 @@ async function executePendingChecklistAction() {
 
       <form onsubmit="submitNewPoll(event)" class="space-y-3 text-left">
         <div>
-          <label class="text-[10px] font-bold tracking-normal text-slate-400">Question</label>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Question</label>
           <input type="text" id="pollQuestionInput" placeholder="Ask a question..." required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-bold mt-1 outline-none focus:border-indigo-500">
         </div>
 
         <div id="pollOptionsContainer" class="space-y-2">
-          <label class="text-[10px] font-bold tracking-normal text-slate-400">Options</label>
+          <label class="text-[9px] font-black uppercase tracking-widest text-slate-400">Options</label>
           <input type="text" class="poll-opt-input w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-bold outline-none focus:border-indigo-500" placeholder="Option 1" required>
           <input type="text" class="poll-opt-input w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-bold outline-none focus:border-indigo-500" placeholder="Option 2" required>
         </div>
 
-        <button type="button" onclick="addPollOptionField()" class="text-[11px] font-bold tracking-normal text-indigo-600 hover:text-indigo-700 flex items-center gap-1 pt-1">
+        <button type="button" onclick="addPollOptionField()" class="text-[10px] font-black uppercase tracking-wider text-indigo-600 hover:text-indigo-700 flex items-center gap-1 pt-1">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Option
         </button>
 
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl active:scale-95 transition text-xs tracking-normal shadow-md mt-2">
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 rounded-xl active:scale-95 transition text-xs uppercase tracking-widest shadow-md mt-2">
           Send Poll
         </button>
       </form>
@@ -6112,15 +6112,15 @@ async function executePendingChecklistAction() {
             <i data-lucide="camera" class="w-4 h-4 stroke-[2.5]"></i>
           </div>
           <div class="min-w-0">
-            <h3 class="text-xs sm:text-sm font-bold text-slate-800 tracking-normal truncate">Trip Gallery Preview</h3>
-            <p class="text-[9.5px] sm:text-[11px] font-bold text-slate-400 tracking-normal truncate">Google Drive Media Vault</p>
+            <h3 class="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wide truncate">Trip Gallery Preview</h3>
+            <p class="text-[8.5px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">Google Drive Media Vault</p>
           </div>
         </div>
 
         <div class="flex items-center gap-2 shrink-0">
           <!-- Open in Drive App Link -->
          
-          <a id="drive-external-link-btn" href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank" rel="noopener noreferrer" class="px-2.5 sm:px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[10px] sm:text-[11px] font-bold tracking-normal transition-colors flex items-center gap-1 shadow-sm active:scale-95">
+          <a id="drive-external-link-btn" href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank" rel="noopener noreferrer" class="px-2.5 sm:px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-colors flex items-center gap-1 shadow-sm active:scale-95">
             <i data-lucide="external-link" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
             <span>Open App</span>
           </a>
@@ -6133,9 +6133,9 @@ async function executePendingChecklistAction() {
       </div>
 
       <!-- Helper Notice for Mobile -->
-      <div class="sm:hidden px-4 py-2 bg-indigo-50/70 border-b border-indigo-100/60 flex items-center justify-between text-[10px] font-bold text-indigo-700">
+      <div class="sm:hidden px-4 py-2 bg-indigo-50/70 border-b border-indigo-100/60 flex items-center justify-between text-[9px] font-bold text-indigo-700">
         <span class="flex items-center gap-1"><i data-lucide="info" class="w-3 h-3 text-indigo-500"></i> Tap 'Open App' to upload photos</span>
-        <a href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank" class="underline font-bold">Upload</a>
+        <a href="https://drive.google.com/drive/folders/1Cl2PNGuzJ55t1PvSffb6Vdz8u_dr0Ys0" target="_blank" class="underline font-black">Upload</a>
       </div>
 
      <!-- Google Drive Embedded Viewer Container (Large 2-Column Mobile Thumbnails) -->
@@ -6164,10 +6164,10 @@ async function executePendingChecklistAction() {
       </div>
 
       <div>
-        <span id="broadcast-badge" class="px-2.5 py-0.5 rounded-full text-[9.5px] font-bold tracking-normal bg-indigo-50 text-indigo-600 border border-indigo-100">
+        <span id="broadcast-badge" class="px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-600 border border-indigo-100">
           Notification
         </span>
-        <h3 id="broadcast-title" class="text-base font-bold text-slate-800 tracking-tight mt-2">
+        <h3 id="broadcast-title" class="text-base font-black text-slate-800 uppercase tracking-tight mt-2">
           Title
         </h3>
         <p id="broadcast-message" class="text-xs font-semibold text-slate-500 mt-1.5 leading-relaxed whitespace-pre-wrap">
@@ -6175,7 +6175,7 @@ async function executePendingChecklistAction() {
         </p>
       </div>
 
-      <button type="button" id="broadcast-btn" onclick="closeBroadcastPopup()" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs tracking-normal active:scale-95 transition shadow-lg">
+      <button type="button" id="broadcast-btn" onclick="closeBroadcastPopup()" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-black rounded-xl text-xs uppercase tracking-widest active:scale-95 transition shadow-lg">
         Dismiss
       </button>
     </div>
