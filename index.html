@@ -2392,128 +2392,133 @@
     });
     
     // --- TAB SWITCHING MANAGER ---
-    // Controls toggling between Spend, Squad, Places, Archives, About, and Gallery views
-    function showTab(tabId, el) { 
-      if (tabId !== 'archives') {
-        closeArchiveGalleryPage();
-      }
-      // Hide header completely on Archives, About, and Gallery tabs; show on all other tabs
-      const header = document.getElementById('app-header');
-      if (header) {
-        if (tabId === 'archives' || tabId === 'about' || tabId === 'gallery') {
-  header.classList.add('hidden');
-} else {
-  header.classList.remove('hidden');
-  if (tabId === 'spend') {
-    header.classList.remove('sticky');
-    header.classList.add('relative');
-  } else {
-    header.classList.remove('relative');
-    header.classList.add('sticky');
+   function showTab(tabId, el) { 
+  if (tabId !== 'archives') {
+    closeArchiveGalleryPage();
   }
-}
-      }
+  
+  // Normalize target view: transactions uses the spend view DOM
+  const targetViewId = (tabId === 'transactions') ? 'spend' : tabId;
 
-      // Reset all tab content
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
-      
-      // Reset mobile navigation styling
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
-      
-      // Reset desktop sidebar button styling
-      document.querySelectorAll('.desktop-nav-btn').forEach(b => {
-        b.classList.remove('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100');
-        b.classList.add('text-slate-500');
-      });
+  // Hide header completely on Archives, About, and Gallery tabs; show on all other tabs
+  const header = document.getElementById('app-header');
+  if (header) {
+    if (tabId === 'archives' || tabId === 'about' || tabId === 'gallery') {
+      header.classList.add('hidden');
+    } else {
+      header.classList.remove('hidden');
+      if (targetViewId === 'spend' && tabId !== 'transactions') {
+        header.classList.remove('sticky');
+        header.classList.add('relative');
+      } else {
+        header.classList.remove('relative');
+        header.classList.add('sticky');
+      }
+    }
+  }
 
-      // Show the selected view
-      const targetView = document.getElementById('view-' + tabId);
-      if (targetView) targetView.classList.add('active-tab');
+  // Reset all tab content
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+  
+  // Reset mobile navigation styling
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
+  
+  // Reset desktop sidebar button styling
+  document.querySelectorAll('.desktop-nav-btn').forEach(b => {
+    b.classList.remove('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100');
+    b.classList.add('text-slate-500');
+  });
 
-      // Sync active state for Desktop Sidebar button
-      const desktopBtn = document.querySelector(`.desktop-nav-btn[data-tab="${tabId}"]`);
-      if (desktopBtn) {
-        desktopBtn.classList.remove('text-slate-500');
-        desktopBtn.classList.add('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100');
-      }
+  // Show the selected view container
+  const targetView = document.getElementById('view-' + targetViewId);
+  if (targetView) targetView.classList.add('active-tab');
 
-      // Sync mobile active state if clicked from mobile
-      if (el && el.classList.contains('nav-btn')) {
-        el.classList.add('nav-active');
-      }
+  // Sync active state for Desktop Sidebar button
+  const desktopBtn = document.querySelector(`.desktop-nav-btn[data-tab="${tabId}"]`);
+  if (desktopBtn) {
+    desktopBtn.classList.remove('text-slate-500');
+    desktopBtn.classList.add('text-white', 'bg-indigo-600', 'shadow-md', 'shadow-indigo-100');
+  }
+
+  // Sync mobile active state if clicked from mobile
+  if (el && el.classList.contains('nav-btn')) {
+    el.classList.add('nav-active');
+  }
+  
+  // Contextual Logic: Reset UI states specific to the SPEND tab
+  if (tabId === 'spend') {
+    const flipper = document.getElementById('card-flipper-engine');
+    if (flipper) flipper.classList.remove('flipper-rotated');
+    if (isLedgerActive) toggleLedger();
+    currentLedgerFilter = "All";
+    renderLedgerList();
+  } else if (tabId === 'transactions') {
+    const flipper = document.getElementById('card-flipper-engine');
+    if (flipper) flipper.classList.remove('flipper-rotated');
+    if (!isLedgerActive) toggleLedger();
+  }
+  
+  // Contextual Logic: Trigger stagger animations in SQUAD tab
+  if (tabId === 'squad' && globalActiveDataPayloadBackup) { 
+    triggerSequentialWaveEffects(globalActiveDataPayloadBackup, true); 
+  }
+  
+  // Contextual Logic: Restart timeline animations & auto-scroll in ROUTE tab
+  if (tabId === 'places') {
+    const tLine = document.getElementById('ui-timeline-container');
+    if (tLine) {
+      tLine.classList.remove('play-places-anim');
+      void tLine.offsetWidth;
+      tLine.classList.add('play-places-anim');
+    }
+
+    setTimeout(() => {
+      const lockVault = document.getElementById('route-lock-vault');
+      if (lockVault && !lockVault.classList.contains('hidden')) return; 
       
-      // Contextual Logic: Reset UI states specific to the SPEND tab
-      if (tabId === 'spend') {
-        const flipper = document.getElementById('card-flipper-engine');
-        if (flipper) flipper.classList.remove('flipper-rotated');
-        if (isLedgerActive) toggleLedger();
-        currentLedgerFilter = "All";
-        renderLedgerList();
-      }
-      
-      // Contextual Logic: Trigger stagger animations in SQUAD tab
-      if (tabId === 'squad' && globalActiveDataPayloadBackup) { 
-        triggerSequentialWaveEffects(globalActiveDataPayloadBackup, true); 
-      }
-      
-      // Contextual Logic: Restart timeline animations & auto-scroll in ROUTE tab
-      if (tabId === 'places') {
-        const tLine = document.getElementById('ui-timeline-container');
-        if (tLine) {
-          tLine.classList.remove('play-places-anim');
-          void tLine.offsetWidth;
-          tLine.classList.add('play-places-anim');
+      const nodes = Array.from(document.querySelectorAll('.tracker-node'));
+      if (nodes.length === 0) return;
+
+      const activeNodes = nodes.filter(n => n.getAttribute('data-cancelled') !== 'true');
+      const lastNode = activeNodes[activeNodes.length - 1];
+      const isTripFinished = lastNode && lastNode.getAttribute('data-ata');
+
+      if (isTripFinished) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (window.popupDelayTimeout) clearTimeout(window.popupDelayTimeout);
+        
+        window.popupDelayTimeout = setTimeout(() => {
+          const modal = document.getElementById('trip-complete-popup');
+          const card = document.getElementById('trip-complete-card');
+          
+          if (modal && card) {
+            modal.classList.remove('hidden');
+            lucide.createIcons(); 
+            void modal.offsetHeight;
+            modal.classList.remove('opacity-0');
+            card.classList.remove('scale-75', 'opacity-0');
+            card.classList.add('scale-100', 'opacity-100');
+          }
+        }, 900);
+        
+      } else {
+        let activeNode = null;
+        for (let i = 0; i < nodes.length; i++) {
+          const ataVal = nodes[i].getAttribute('data-ata');
+          if (ataVal && ataVal.trim() !== '') {
+            activeNode = nodes[i];
+          }
         }
 
-        setTimeout(() => {
-          const lockVault = document.getElementById('route-lock-vault');
-          if (lockVault && !lockVault.classList.contains('hidden')) return; 
-          
-          const nodes = Array.from(document.querySelectorAll('.tracker-node'));
-          if (nodes.length === 0) return;
-
-          const activeNodes = nodes.filter(n => n.getAttribute('data-cancelled') !== 'true');
-          const lastNode = activeNodes[activeNodes.length - 1];
-          const isTripFinished = lastNode && lastNode.getAttribute('data-ata');
-
-          if (isTripFinished) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            if (window.popupDelayTimeout) clearTimeout(window.popupDelayTimeout);
-            
-            window.popupDelayTimeout = setTimeout(() => {
-              const modal = document.getElementById('trip-complete-popup');
-              const card = document.getElementById('trip-complete-card');
-              
-              if (modal && card) {
-                modal.classList.remove('hidden');
-                lucide.createIcons(); 
-                void modal.offsetHeight;
-                modal.classList.remove('opacity-0');
-                card.classList.remove('scale-75', 'opacity-0');
-                card.classList.add('scale-100', 'opacity-100');
-              }
-            }, 900);
-            
-          } else {
-            // Find the most recently stamped node with an ATA
-            let activeNode = null;
-            for (let i = 0; i < nodes.length; i++) {
-              const ataVal = nodes[i].getAttribute('data-ata');
-              if (ataVal && ataVal.trim() !== '') {
-                activeNode = nodes[i];
-              }
-            }
-
-            // Only auto-scroll if at least one stamp (ATA) exists
-            if (activeNode) {
-              activeNode.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          }
-        }, 200);
+        if (activeNode) {
+          activeNode.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       }
-      
-      lucide.createIcons();
-    }
+    }, 200);
+  }
+  
+  lucide.createIcons();
+}
 
     // Handles the Bento layout transition when flipping the Balance Card
     function flipBalanceCard() { 
@@ -5828,10 +5833,7 @@ async function executePendingChecklistAction() {
 
 
     function openTransactionsTab(btnEl) {
-  showTab('spend', btnEl);
-  if (!isLedgerActive) {
-    toggleLedger();
-  }
+  showTab('transactions', btnEl);
 }
 
     
