@@ -917,7 +917,7 @@
           <span>Places / Trip</span>
         </button>
 
-        <!-- 4. Trip Checklist (Standard Styled with Indigo Trailing Dot) -->
+        <!-- 4. Trip Checklist (With Trailing Indigo Dot) -->
         <div id="desktop-checklist-bookmark-container">
           <button onclick="showTab('checklist', this)" class="desktop-nav-btn w-full flex items-center justify-between px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="checklist">
             <div class="flex items-center gap-3.5">
@@ -928,13 +928,19 @@
           </button>
         </div>
 
-        <!-- 5. Trip Gallery Button -->
+        <!-- 5. Transactions Tab (Opens Ledger Directly) -->
+        <button onclick="openTransactionsTab(this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="transactions">
+          <i data-lucide="receipt" class="w-4 h-4"></i>
+          <span>Transactions</span>
+        </button>
+
+        <!-- 6. Trip Gallery Button -->
         <button onclick="showTab('gallery', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="gallery">
           <i data-lucide="camera" class="w-4 h-4"></i>
           <span>Trip Gallery</span>
         </button>
 
-        <!-- 6. Trip Archives Tab Button -->
+        <!-- 7. Trip Archives Tab Button -->
         <button onclick="showTab('archives', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="archives">
           <i data-lucide="archive" class="w-4 h-4"></i>
           <span>Trip Archives</span>
@@ -5819,6 +5825,14 @@ async function executePendingChecklistAction() {
         setTimeout(() => modal.classList.add('hidden'), 300);
       }
     }
+
+
+    function openTransactionsTab(btnEl) {
+  showTab('spend', btnEl);
+  if (!isLedgerActive) {
+    toggleLedger();
+  }
+}
 
     
 
