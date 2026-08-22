@@ -881,10 +881,12 @@
   <!-- =========================================
        DESKTOP SIDEBAR NAVIGATION (Hidden on Mobile)
        ========================================= -->
+  <!-- =========================================
+       DESKTOP SIDEBAR NAVIGATION (Hidden on Mobile)
+       ========================================= -->
   <aside id="desktop-sidebar" class="hidden lg:flex w-72 h-screen sticky top-0 shrink-0 bg-white border-r border-slate-200/80 p-5 flex-col justify-between z-40">
     <div class="space-y-6">
 
-      
       <!-- App Brand / Logo -->
       <div class="flex items-center gap-3 px-2 py-1">
         <img 
@@ -900,79 +902,77 @@
 
       <!-- Navigation Tabs -->
       <nav class="space-y-1.5 pt-2">
-        <!-- Desktop Sidebar Checklist Bookmark -->
-<div id="desktop-checklist-bookmark-container" class="pt-2">
-  <button type="button" onclick="showTab('checklist', this)" class="desktop-nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all bg-slate-900 text-white hover:bg-indigo-600 shadow-md outline-none group anim-bookmark-pulse" data-tab="checklist">
-    <div class="flex items-center gap-3">
-      <i data-lucide="check-square" class="w-4 h-4 text-indigo-400 group-hover:text-white"></i>
-      <span>Trip Checklist</span>
-    </div>
-    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-  </button>
-</div>
-        
-        <!-- Spend Tab -->
+        <!-- 1. Spend Tab -->
         <button onclick="showTab('spend', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-white bg-indigo-600 shadow-md shadow-indigo-100" data-tab="spend">
           <i data-lucide="wallet" class="w-4 h-4"></i>
           <span>Spend</span>
         </button>
 
-        <!-- Squad Tab -->
+        <!-- 2. Squad Tab -->
         <button onclick="showTab('squad', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="squad">
           <i data-lucide="users" class="w-4 h-4"></i>
           <span>Members</span>
         </button>
 
-        <!-- Route Tab -->
+        <!-- 3. Route Tab -->
         <button id="desktop-nav-route" onclick="showTab('places', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="places">
           <i data-lucide="map-pin" class="w-4 h-4"></i>
           <span>Places / Trip</span>
         </button>
 
-       <!-- Desktop Sidebar Trip Gallery Button -->
-<button onclick="showTab('gallery', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="gallery">
-  <i data-lucide="camera" class="w-4 h-4"></i>
-  <span>Trip Gallery</span>
-</button>
-        <!-- Trip Archives Tab Button -->
+        <!-- 4. Trip Checklist (Standard Styled with Leading Dot Indicator) -->
+        <div id="desktop-checklist-bookmark-container">
+          <button onclick="showTab('checklist', this)" class="desktop-nav-btn w-full flex items-center justify-between px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="checklist">
+            <div class="flex items-center gap-3.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-sm shrink-0"></span>
+              <i data-lucide="check-square" class="w-4 h-4"></i>
+              <span>Trip Checklist</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- 5. Trip Gallery Button -->
+        <button onclick="showTab('gallery', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="gallery">
+          <i data-lucide="camera" class="w-4 h-4"></i>
+          <span>Trip Gallery</span>
+        </button>
+
+        <!-- 6. Trip Archives Tab Button -->
         <button onclick="showTab('archives', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="archives">
           <i data-lucide="archive" class="w-4 h-4"></i>
           <span>Trip Archives</span>
         </button>
-
-        
-
-        <!-- More Tab Trigger -->
-        <button onclick="showTab('more', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="more">
-          <i data-lucide="more-horizontal" class="w-4 h-4"></i>
-          <span>More</span>
-        </button>
       </nav>
     </div>
 
-    <!-- Bottom Trip Info Card Widget -->
-    <div class="bg-gradient-to-b from-slate-50 to-indigo-50/40 rounded-3xl p-4 border border-slate-100 shadow-sm relative overflow-hidden">
-      <div class="flex items-center gap-2 mb-3">
-        <span class="relative flex h-2.5 w-2.5">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-        </span>
-        <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">Trip Active</span>
-      </div>
+    <!-- Bottom Section: Settings & Profile + Trip Info Card -->
+    <div class="space-y-3">
+      <!-- Settings & Profile Tab Trigger (Renamed & Positioned above card) -->
+      <button onclick="showTab('more', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="more">
+        <i data-lucide="user-cog" class="w-4 h-4"></i>
+        <span>Settings & Profile</span>
+      </button>
 
-      <div class="space-y-2 mb-3">
-        <div>
-          <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Trip Dates</p>
-          <p id="desktop-card-dates" class="text-[11px] font-black text-slate-700 mt-0.5">27 June – 30 June 2026</p>
+      <!-- Bottom Trip Info Card Widget (Text-Only) -->
+      <div class="bg-gradient-to-b from-slate-50 to-indigo-50/40 rounded-3xl p-4 border border-slate-100 shadow-sm relative overflow-hidden">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="relative flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+          </span>
+          <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">Trip Active</span>
         </div>
-        <div>
-          <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Destination</p>
-          <p id="desktop-card-dest" class="text-[11px] font-black text-slate-700 mt-0.5">Uttarakhand, India</p>
-        </div>
-      </div>
 
-      <div class="w-full h-20 rounded-2xl bg-indigo-600/10 border border-indigo-100/50 flex items-center justify-center overflow-hidden relative">
-        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=400&q=80" alt="Mountain Scene" class="w-full h-full object-cover opacity-80 mix-blend-multiply" />
+        <div class="space-y-2">
+          <div>
+            <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Trip Dates</p>
+            <p id="desktop-card-dates" class="text-[11px] font-black text-slate-700 mt-0.5">27 June – 30 June 2026</p>
+          </div>
+          <div>
+            <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Destination</p>
+            <p id="desktop-card-dest" class="text-[11px] font-black text-slate-700 mt-0.5">Uttarakhand, India</p>
+          </div>
+        </div>
       </div>
     </div>
   </aside>
