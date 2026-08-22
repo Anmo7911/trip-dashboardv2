@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#25262B">
+  <title>Bharat Way</title>
+
+  <!-- =====================================================
+       FONTS
+  ====================================================== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Noto+Sans+Bengali:wght@300;400;500&family=Noto+Sans+Devanagari:wght@300;400;500&family=Noto+Sans+Gujarati:wght@300;400;500&family=Noto+Sans+Gurmukhi:wght@300;400;500&family=Noto+Sans+Kannada:wght@300;400;500&family=Noto+Sans+Malayalam:wght@300;400;500&family=Noto+Sans+Oriya:wght@300;400;500&family=Noto+Sans+Tamil:wght@300;400;500&family=Noto+Sans+Telugu:wght@300;400;500&family=Noto+Naskh+Arabic:wght@300;400;500&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    /* =====================================================
+       RESET
+    ====================================================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: #25262B;
+      font-family: "Inter", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* =====================================================
+       SPLASH
+    ====================================================== */
+    #splash {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #25262B;
+      overflow: hidden;
+      z-index: 99999;
+    }
+
+    /* =====================================================
+       SUBTLE BACKGROUND
+    ====================================================== */
+    #splash::before {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      pointer-events: none;
+      background:
+        radial-gradient(
+          circle at 62% 48%,
+          rgba(100, 45, 50, 0.14),
+          transparent 24%
+        ),
+        radial-gradient(
+          circle at 82% 47%,
+          rgba(160, 130, 55, 0.08),
+          transparent 25%
+        );
+      filter: blur(40px);
+      opacity: 0.75;
+    }
+
+    /* =====================================================
+       GREETING WRAPPER
+    ====================================================== */
+    .greeting-wrap {
+      position: absolute;
+      left: 50%;
+      top: 45%;
+      transform: translate(-50%, -50%);
+      width: max-content;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    /* =====================================================
+       EDITORIAL LUXURY: SHIMMER / GRADIENT MASK TYPOGRAPHY
+    ====================================================== */
+    .shimmer-text {
+      background: linear-gradient(
+        110deg,
+        #D2D3D8 0%,
+        #FFFFFF 28%,
+        #D4AF37 46%,
+        #FFFFFF 64%,
+        #CBCDD4 100%
+      );
+      background-size: 240% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: textShimmer 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    @keyframes textShimmer {
+      0% {
+        background-position: 120% 0;
+      }
+      100% {
+        background-position: -120% 0;
+      }
+    }
+
+    /* =====================================================
+       ANIMATED GREETING WORD ONLY
+    ====================================================== */
+    #greeting-word {
+      font-family: "Inter", "Noto Sans Devanagari", sans-serif;
+      font-size: clamp(28px, 5vw, 39px);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.7px;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translate3d(0, 9px, 0);
+      will-change: transform, opacity;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* =====================================================
+       STATIC USER NAME (No Motion)
+    ====================================================== */
+    #user-name-display {
+      font-family: "Inter", sans-serif;
+      font-size: clamp(28px, 5vw, 39px);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.7px;
+      white-space: nowrap;
+      user-select: none;
+      -webkit-user-select: none;
+      opacity: 1;
+    }
+
+    /* =====================================================
+       ENTER / EXIT (Applies strictly to greeting word)
+    ====================================================== */
+    #greeting-word.enter {
+      animation: greetingEnter 95ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes greetingEnter {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 9px, 0);
+      }
+      35% {
+        opacity: 0.65;
+        transform: translate3d(0, 5px, 0);
+      }
+      70% {
+        opacity: 0.92;
+        transform: translate3d(0, 2px, 0);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+    }
+
+    #greeting-word.exit {
+      animation: greetingExit 95ms cubic-bezier(0.55, 0, 0.85, 0.45) forwards;
+    }
+
+    @keyframes greetingExit {
+      0% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+      35% {
+        opacity: 0.95;
+        transform: translate3d(0, -3px, 0);
+      }
+      70% {
+        opacity: 0.55;
+        transform: translate3d(0, -6px, 0);
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(0, -9px, 0);
+      }
+    }
+
+    /* =====================================================
+       FINAL BRAND
+    ====================================================== */
+    #brand {
+      position: absolute;
+      left: 50%;
+      top: 45%;
+      transform: translate(-50%, calc(-50% + 8px));
+      text-align: center;
+      opacity: 0;
+      z-index: 3;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .brand-name {
+      font-family: "Inter", sans-serif;
+      font-size: clamp(29px, 5vw, 40px);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: -0.8px;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    /* Subtle soft bloom glow behind the brand */
+    .brand-name::before {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      color: rgba(255, 235, 190, 0.45);
+      filter: blur(12px);
+      opacity: 0;
+      transition: opacity 350ms ease;
+    }
+
+    /* Dynamic divider line that draws outward */
+    .brand-line {
+      width: 0;
+      height: 1px;
+      margin: 12px auto 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(238, 238, 239, 0.8) 50%,
+        transparent 100%
+      );
+      opacity: 0;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+    }
+
+    /* =====================================================
+       BRAND REVEAL & POLISH
+    ====================================================== */
+    #brand.show {
+      animation: brandReveal 220ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    #brand.show .brand-name::before {
+      opacity: 1;
+    }
+
+    #brand.show .brand-line {
+      animation: lineDraw 380ms cubic-bezier(0.25, 1, 0.5, 1) 90ms forwards;
+    }
+
+    @keyframes brandReveal {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, calc(-50% + 8px));
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    @keyframes lineDraw {
+      0% {
+        width: 0;
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.9;
+      }
+      100% {
+        width: 48px;
+        opacity: 0.7;
+      }
+    }
+
+    /* =====================================================
+       MOBILE
+    ====================================================== */
+    @media (max-width: 480px) {
+      #greeting-word,
+      #user-name-display {
+        font-size: 29px;
+        letter-spacing: -0.6px;
+      }
+
+      .brand-name {
+        font-size: 29px;
+      }
+    }
+
+    /* =====================================================
+       LARGE SCREEN
+    ====================================================== */
+    @media (min-width: 900px) {
+      #greeting-word,
+      #user-name-display {
+        font-size: 39px;
+      }
+
+      .brand-name {
+        font-size: 40px;
+      }
+    }
+
+    /* =====================================================
+       REDUCED MOTION
+    ====================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      #greeting-word,
+      #brand,
+      .shimmer-text,
+      .brand-line {
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =====================================================
+       SPLASH SCREEN
+  ====================================================== -->
+  <div id="splash">
+
+    <!-- GREETING -->
+    <div id="greeting-wrap" class="greeting-wrap">
+      <div id="greeting-word" class="shimmer-text"></div>
+      <div id="user-name-display" class="shimmer-text"></div>
+    </div>
+
+    <!-- FINAL BRAND -->
+    <div id="brand">
+      <div class="brand-name shimmer-text" data-text="Bharat Way">
+        Bharat Way
+      </div>
+      <div class="brand-line"></div>
+    </div>
+
+  </div>
+
+  <script>
+    /* =====================================================
+       INDIAN GREETINGS
+    ====================================================== */
+    const greetings = [
+      { text: "नमस्ते", lang: "hi" },
+      { text: "Hello", lang: "en" },
+      { text: "வணக்கம்", lang: "ta" },
+      { text: "নমস্কার", lang: "bn" },
+      { text: "ನಮಸ್ಕಾರ", lang: "kn" },
+      { text: "നമസ്കാരം", lang: "ml" },
+      { text: "ਨਮਸਕਾਰ", lang: "pa" },
+      { text: "سلام", lang: "ur" },
+      { text: "નમસ્તે", lang: "gu" },
+      { text: "नमस्कार", lang: "mr" },
+    ];
+
+    /* =====================================================
+       SPEED SETTINGS (Uniform Fastest Speed)
+    ====================================================== */
+    const FIRST_HOLD = 80;
+    const NORMAL_HOLD = 80;
+    const FINAL_HOLD = 80;
+    const ENTER_TIME = 75;
+    const EXIT_TIME = 75;
+    const GAP_TIME = 10;
+    const BRAND_HOLD = 450;
+    const FINAL_FADE = 160;
+
+    /* =====================================================
+       ELEMENTS & PARAMS
+    ====================================================== */
+    const greetingWord = document.getElementById("greeting-word");
+    const userNameDisplay = document.getElementById("user-name-display");
+    const greetingWrap = document.getElementById("greeting-wrap");
+    const brand = document.getElementById("brand");
+    const splash = document.getElementById("splash");
+
+    // Extract user name from query param
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawName = urlParams.get('name') || '';
+    const cleanName = rawName.trim();
+
+    // Render static name suffix once
+    if (cleanName) {
+      userNameDisplay.textContent = `, ${cleanName}`;
+    }
+
+    /* =====================================================
+       WAIT
+    ====================================================== */
+    function wait(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    /* =====================================================
+       SET GREETING
+    ====================================================== */
+    function setGreeting(item) {
+      greetingWord.textContent = item.text;
+      greetingWord.setAttribute("lang", item.lang);
+    }
+
+    /* =====================================================
+       ENTER
+    ====================================================== */
+    async function enterGreeting(item) {
+      setGreeting(item);
+      greetingWord.classList.remove("exit", "enter");
+      greetingWord.style.opacity = "0";
+      greetingWord.style.transform = "translate3d(0, 9px, 0)";
+      void greetingWord.offsetWidth;
+      greetingWord.classList.add("enter");
+      await wait(ENTER_TIME);
+    }
+
+    /* =====================================================
+       CHANGE GREETING
+    ====================================================== */
+    async function changeGreeting(next) {
+      greetingWord.classList.remove("enter");
+      greetingWord.classList.add("exit");
+      await wait(EXIT_TIME);
+
+      greetingWord.classList.remove("exit");
+      greetingWord.style.opacity = "0";
+      greetingWord.style.transform = "translate3d(0, 9px, 0)";
+
+      setGreeting(next);
+      void greetingWord.offsetWidth;
+      await wait(GAP_TIME);
+
+      greetingWord.classList.add("enter");
+      await wait(ENTER_TIME);
+    }
+
+    /* =====================================================
+       MAIN SPLASH
+    ====================================================== */
+    async function startSplash() {
+      // FIRST GREETING
+      await enterGreeting(greetings[0]);
+      await wait(NORMAL_HOLD);
+
+      // GREETING LOOP
+      for (let i = 1; i < greetings.length; i++) {
+        await changeGreeting(greetings[i]);
+        await wait(NORMAL_HOLD);
+      }
+
+      // FINAL GREETING EXIT
+      greetingWord.classList.remove("enter");
+      greetingWord.classList.add("exit");
+      await wait(EXIT_TIME);
+
+      // Hide greeting & static user name before brand appears
+      if (greetingWrap) {
+        greetingWrap.style.visibility = "hidden";
+      }
+
+      // BHARAT WAY
+      brand.classList.add("show");
+      await wait(BRAND_HOLD);
+
+      // SIGNAL PARENT APP
+      if (window.parent) {
+        window.parent.postMessage('ANIMATION_COMPLETE', '*');
+      }
+
+      await wait(700);
+
+      // CLEANUP
+      if (splash) {
+        splash.remove();
+      }
+    }
+
+    /* =====================================================
+       START
+    ====================================================== */
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", startSplash);
+    } else {
+      startSplash();
+    }
+  </script>
+</body>
+</html>
