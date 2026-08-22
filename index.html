@@ -1379,242 +1379,198 @@
   </header>
 
     
-  <!-- =========================================
-     TAB 1: SPEND VIEW
-     Elevated Mobile Cards — No Outer Background
+ <!-- =========================================
+     TAB 1: SPEND VIEW (Side-by-Side on Desktop)
      ========================================= -->
-<main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-5xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-8 px-4 lg:px-8 space-y-4 lg:space-y-6 relative z-40 lg:z-20">
+  <main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-6xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-6 px-4 lg:px-8 relative z-40 lg:z-20">
 
-  <!-- 3D BENTO GRID -->
-  <!-- Mobile: no outer background, cards stay elevated -->
-  <div id="ui-top-cards-wrapper" class="transition-all duration-500 overflow-hidden opacity-100 origin-top">
-    
-    <!-- Mobile height matched to Code 2: 150px -->
-    <div class="flex flex-row gap-2.5 lg:gap-6 h-[150px] lg:h-[180px] w-full relative">
+    <!-- DESKTOP 2-COLUMN GRID WRAPPER (Mobile Stacks Identically) -->
+    <div class="flex flex-col lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start space-y-4 lg:space-y-0">
 
-      <!-- Left Column: Flippable Balance Card -->
-      <div id="balance-col" class="transition-all duration-[600ms] ease-[cubic-bezier(0.25,1,0.5,1)] h-full z-20 w-[calc(50%-5px)] lg:w-7/12">
+      <!-- LEFT COLUMN: SUMMARY BENTO CARDS (5 cols on Desktop) -->
+      <div id="ui-top-cards-wrapper" class="w-full lg:col-span-5 transition-all duration-500 overflow-hidden opacity-100 origin-top">
         
-        <div class="card-scene h-full w-full">
-          
-          <div id="card-flipper-engine" onclick="flipBalanceCard()" class="card-flipper cursor-pointer select-none">
+        <div class="flex flex-row lg:flex-col gap-2.5 lg:gap-4 h-[150px] lg:h-auto w-full relative">
 
-            <!-- Front of Balance Card -->
-          <div id="balance-card" class="face-front w-full h-full p-4 rounded-[26px] lg:rounded-[28px] border border-white/80 bg-gradient-to-b from-emerald-50/90 to-emerald-100/70 shadow-sm transition-all duration-300 flex flex-col justify-between items-center text-center relative active:scale-[0.98]">
+          <!-- Flippable Balance Card -->
+          <div id="balance-col" class="transition-all duration-[600ms] ease-[cubic-bezier(0.25,1,0.5,1)] h-full lg:h-[160px] z-20 w-[calc(50%-5px)] lg:w-full">
+            <div class="card-scene h-full w-full">
+              <div id="card-flipper-engine" onclick="flipBalanceCard()" class="card-flipper cursor-pointer select-none">
 
-              <div class="hidden lg:flex absolute right-1 top-1/2 -translate-y-1/2 items-center justify-center pointer-events-none opacity-[0.12] z-0">
-                <i data-lucide="wallet" class="w-24 h-24 text-emerald-900 stroke-[1.2]"></i>
-              </div>
+                <!-- Front -->
+                <div id="balance-card" class="face-front w-full h-full p-4 rounded-[26px] border border-white/80 bg-gradient-to-b from-emerald-50/90 to-emerald-100/70 shadow-sm transition-all duration-300 flex flex-col justify-between items-center text-center relative active:scale-[0.98]">
+                  <div class="hidden lg:flex absolute right-2 top-1/2 -translate-y-1/2 items-center justify-center pointer-events-none opacity-[0.12] z-0">
+                    <i data-lucide="wallet" class="w-20 h-20 text-emerald-900 stroke-[1.2]"></i>
+                  </div>
 
-              <div class="w-full flex-1 flex flex-col items-center justify-center relative z-10">
-                
-                <div class="flex items-center justify-center gap-1.5 mb-1">
-                  <span class="relative flex h-2 w-2 shrink-0">
-                    <span id="dot-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-emerald-400"></span>
-                    <span id="dot-main" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
+                  <div class="w-full flex-1 flex flex-col items-center justify-center relative z-10">
+                    <div class="flex items-center justify-center gap-1.5 mb-1">
+                      <span class="relative flex h-2 w-2 shrink-0">
+                        <span id="dot-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-emerald-400"></span>
+                        <span id="dot-main" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                      </span>
+                      <p id="balance-label" class="text-[9.5px] font-black text-emerald-600 uppercase tracking-widest leading-none">
+                        Remaining
+                      </p>
+                    </div>
 
-                  <p id="balance-label" class="text-[9.5px] font-black text-emerald-600 uppercase tracking-widest leading-none">
-                    Remaining
-                  </p>
+                    <p id="stat-balance" class="text-3xl font-black text-emerald-700 tracking-tight text-center leading-none">
+                      ₹0
+                    </p>
+                  </div>
+
+                  <div id="balance-hint-footer" class="text-[9px] font-bold uppercase tracking-wider text-emerald-700/80 flex items-center justify-center gap-1.5 transition-colors duration-500 w-full relative z-10">
+                    <span>Allocations</span>
+                    <i data-lucide="layers" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+                  </div>
                 </div>
 
-                <p id="stat-balance" class="text-3xl lg:text-4xl font-black text-emerald-700 tracking-tight text-center leading-none">
+                <!-- Back -->
+                <div class="face-back w-full h-full p-4 rounded-[26px] border border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 shadow-xl text-slate-100 flex flex-col justify-between">
+                  <div class="flex justify-between items-center w-full border-b border-slate-700/80 pb-1.5 px-1">
+                    <p class="text-[10px] lg:text-xs font-black uppercase tracking-widest text-indigo-400">
+                      Budget Allocations
+                    </p>
+                    <i data-lucide="x" class="w-4 h-4 text-slate-400 hover:text-white transition-colors"></i>
+                  </div>
+                  <div id="back-bars-grid" class="grid grid-cols-2 gap-x-4 gap-y-1.5 w-full text-[10px] lg:text-xs font-bold px-1 overflow-y-auto max-h-[90px] lg:max-h-[105px]"></div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Budget & Spent (Stacked on Mobile, Row or Dual Cards on Desktop) -->
+          <div id="stats-col" class="transition-all duration-[500ms] ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col sm:flex-col lg:grid lg:grid-cols-2 justify-between h-full lg:h-auto w-[calc(50%-5px)] lg:w-full gap-2.5 lg:gap-3">
+
+            <!-- Total Budget -->
+            <div id="ui-budget-wrapper" class="w-full h-[calc(50%-6px)] lg:h-[76px] rounded-[22px] overflow-hidden">
+              <div class="budget-scene-mount h-full w-full">
+                <div id="ui-budget-flip-engine" class="budget-card-inner-engine w-full h-full">
+
+                  <div class="budget-front bg-white border border-slate-200/80 shadow-sm px-3.5 py-2 lg:px-4 rounded-[22px] w-full h-full flex items-center justify-between">
+                    <div class="flex flex-col justify-center text-left">
+                      <p class="text-[8px] lg:text-[9.5px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
+                        Total Budget
+                      </p>
+                      <p id="stat-budget" class="text-sm lg:text-lg font-black text-slate-800">
+                        ₹0
+                      </p>
+                    </div>
+                    <div class="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
+                      <i data-lucide="wallet-cards" class="w-4 h-4"></i>
+                    </div>
+                  </div>
+
+                  <div class="budget-back bg-gradient-to-b from-emerald-50 to-emerald-100 border border-emerald-100 p-2 text-center rounded-[22px] w-full h-full flex flex-col justify-center items-center">
+                    <p id="ui-peek-title-row" class="text-[10px] font-black tracking-wide text-emerald-600 uppercase"></p>
+                    <p id="ui-peek-notes-row" class="text-[9px] font-semibold text-emerald-600/90 truncate w-full mt-0.5"></p>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Spent Card -->
+            <div id="ui-spent-hero-card" onclick="toggleLedger()" class="w-full h-[calc(50%-6px)] lg:h-[76px] bg-rose-50/70 border border-rose-100/80 shadow-sm px-3.5 py-2 lg:px-4 rounded-[22px] flex items-center justify-between cursor-pointer transition-all duration-300 hover:bg-rose-50 active:scale-[0.98]">
+              <div class="flex flex-col justify-center text-left">
+                <div class="flex items-center gap-1 mb-0.5">
+                  <p id="ui-spent-label" class="text-[8px] lg:text-[9.5px] font-black text-rose-500 uppercase tracking-wider">
+                    Spent
+                  </p>
+                  <i data-lucide="receipt" class="w-2.5 h-2.5 text-rose-500"></i>
+                </div>
+                <p id="stat-spent" class="text-sm lg:text-lg font-black text-rose-600">
                   ₹0
                 </p>
-
               </div>
-
-              <div id="balance-hint-footer" class="text-[9px] font-bold uppercase tracking-wider text-emerald-700/80 flex items-center justify-center gap-1.5 transition-colors duration-500 w-full relative z-10">
-                <span>Allocations</span>
-                <i data-lucide="layers" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+              <div class="w-8 h-8 rounded-xl bg-rose-100/60 flex items-center justify-center text-rose-500 shrink-0">
+                <i data-lucide="trending-up" class="w-4 h-4"></i>
               </div>
-
-            </div>
-
-            
-            <!-- Back of Balance Card -->
-            <div class="face-back w-full h-full p-4 rounded-[26px] lg:rounded-[28px] border border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 shadow-xl text-slate-100 flex flex-col justify-between">
-
-              <div class="flex justify-between items-center w-full border-b border-slate-700/80 pb-1.5 px-1">
-                <p class="text-[10px] lg:text-xs font-black uppercase tracking-widest text-indigo-400">
-                  Budget Allocations
-                </p>
-
-                <i data-lucide="x" class="w-4 h-4 text-slate-400 hover:text-white transition-colors"></i>
-              </div>
-
-              <div id="back-bars-grid" class="grid grid-cols-2 gap-x-6 gap-y-1.5 w-full text-[10px] lg:text-xs font-bold px-1 overflow-y-auto max-h-[90px] lg:max-h-[110px]"></div>
-
             </div>
 
           </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: EXPENSE ENTRY FORM (7 cols on Desktop) -->
+      <div id="ui-form-wrapper" class="w-full lg:col-span-7 transition-all duration-500 overflow-hidden opacity-100 origin-top">
+        <div class="bg-white rounded-[32px] p-5 lg:p-6 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] relative overflow-hidden">
+
+          <!-- Frosted Glass Lock Overlay -->
+          <div id="expense-lock-overlay" class="hidden absolute inset-0 z-[60] flex flex-col items-center justify-center rounded-[32px] border border-slate-200 bg-white/80 backdrop-blur-sm transition-all duration-300">
+            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-2 text-slate-600">
+              <i data-lucide="lock" class="w-6 h-6"></i>
+            </div>
+            <p class="text-xs font-black text-slate-600 uppercase tracking-widest lock-text-pulse">Adding Expenses Paused</p>
+          </div>
+
+          <form id="expenseForm" class="space-y-3.5 relative z-10">
+
+            <!-- Header & Date Picker -->
+            <div class="flex items-center justify-between">
+              <h3 class="text-[9.5px] font-black text-slate-400 uppercase tracking-widest">Enter New Expense</h3>
+              <div class="flex items-center gap-1 bg-indigo-50/40 hover:bg-indigo-50 border border-indigo-100/70 px-2.5 py-1 rounded-lg cursor-pointer transition-colors">
+                <i data-lucide="calendar" class="w-3 h-3 text-indigo-600"></i>
+                <input type="date" id="todayDate" name="date" required class="bg-transparent text-[10px] font-black text-indigo-600 uppercase tracking-wider outline-none cursor-pointer">
+              </div>
+            </div>
+
+            <!-- Minimal Large Amount Input -->
+            <div class="flex items-center gap-2 border-b border-slate-100/90 pb-2 pt-0.5">
+              <span class="text-2xl lg:text-3xl font-black text-slate-300">₹</span>
+              <input type="number" name="amount" placeholder="0" required class="w-full bg-transparent outline-none font-black text-3xl lg:text-4xl text-slate-800 placeholder-slate-200 tracking-tight">
+            </div>
+
+            <!-- Payment Mode & Category -->
+            <div class="grid grid-cols-2 gap-2.5">
+              <div class="bg-slate-50/80 hover:bg-slate-100/80 transition-colors rounded-2xl border border-slate-100/80 px-3.5 py-2.5 flex items-center gap-2">
+                <i data-lucide="credit-card" class="w-4 h-4 text-indigo-500 shrink-0"></i>
+                <select name="paidVia" class="w-full bg-transparent text-xs font-black uppercase tracking-wider text-slate-700 outline-none appearance-none cursor-pointer">
+                  <option value="UPI" selected>UPI</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Card">Card</option>
+                  <option value="Cheque">Cheque</option>
+                </select>
+              </div>
+
+              <div class="bg-slate-50/80 hover:bg-slate-100/80 transition-colors rounded-2xl border border-slate-100/80 px-3.5 py-2.5 flex items-center gap-2">
+                <i data-lucide="layout-grid" class="w-4 h-4 text-emerald-500 shrink-0"></i>
+                <select name="category" class="w-full bg-transparent text-xs font-black uppercase tracking-wider text-slate-700 outline-none appearance-none cursor-pointer">
+                  <option>Food</option>
+                  <option>Entry Fee</option>
+                  <option>Fare</option>
+                  <option>Stay</option>
+                  <option>Water</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Notes Text Input -->
+            <div class="bg-slate-50/80 rounded-2xl border border-slate-100/80 px-3.5 py-2.5 flex items-center gap-2">
+              <i data-lucide="message-square" class="w-4 h-4 text-slate-400 shrink-0"></i>
+              <input type="text" name="notes" placeholder="What was this for?" class="w-full bg-transparent text-xs font-bold text-slate-700 outline-none placeholder-slate-400">
+            </div>
+
+            <input type="hidden" name="lastActionAmount" id="lastActionAmount">
+            <input type="hidden" name="lastActionNotes" id="lastActionNotes">
+            <button type="submit" id="hidden-submit-btn" class="hidden"></button>
+
+            <!-- Swipe To Save Bar -->
+            <div id="swipe-track" class="w-full bg-slate-950 rounded-2xl h-[50px] relative flex items-center select-none overflow-hidden touch-none shadow-md mt-1">
+              <span id="swipe-text" class="absolute w-full text-center text-slate-400 font-black text-[11px] uppercase tracking-[0.2em] pointer-events-none transition-all duration-300">
+                Swipe to Save
+              </span>
+              <div id="swipe-thumb" class="absolute left-1 w-[42px] h-[42px] bg-white rounded-xl shadow flex items-center justify-center cursor-grab active:cursor-grabbing text-slate-900 z-10">
+                <i data-lucide="chevrons-right" class="w-4 h-4 stroke-[3]"></i>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
 
-
-      <!-- Right Column: Total Budget & Spent -->
-      <div id="stats-col" class="transition-all duration-[500ms] ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col justify-between h-full w-[calc(50%-5px)] lg:w-5/12 gap-2.5">
-
-        <!-- Total Budget -->
-        <!-- Mobile height matched to Code 2 -->
-        <div id="ui-budget-wrapper" class="w-full h-[calc(50%-6px)] lg:h-[calc(50%-5px)] rounded-[22px] lg:rounded-[22px] overflow-hidden">
-
-          <div class="budget-scene-mount h-full w-full">
-
-            <div id="ui-budget-flip-engine" class="budget-card-inner-engine w-full h-full">
-
-              <!-- Front -->
-              <div class="budget-front bg-white border border-slate-200/80 shadow-sm px-3.5 py-2 lg:px-4 rounded-[22px] w-full h-full flex items-center justify-between">
-
-                <div class="flex flex-col justify-center text-left">
-
-                  <p class="text-[8px] lg:text-[9.5px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
-                    Total Budget
-                  </p>
-
-                  <p id="stat-budget" class="text-sm lg:text-xl font-black text-slate-800">
-                    ₹0
-                  </p>
-
-                </div>
-
-                <div class="w-8 h-8 lg:w-8 lg:h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
-
-                  <i data-lucide="wallet-cards" class="w-4 h-4 lg:w-4 lg:h-4"></i>
-
-                </div>
-
-              </div>
-
-              <!-- Back -->
-              <div class="budget-back bg-gradient-to-b from-emerald-50 to-emerald-100 border border-emerald-100 p-2 text-center rounded-[22px] w-full h-full flex flex-col justify-center items-center">
-
-                <p id="ui-peek-title-row" class="text-[10px] font-black tracking-wide text-emerald-600 uppercase"></p>
-
-                <p id="ui-peek-notes-row" class="text-[9px] font-semibold text-emerald-600/90 truncate w-full mt-0.5"></p>
-
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-
-        <!-- Spent -->
-        <!-- Mobile height matched to Code 2 -->
-        <div id="ui-spent-hero-card" onclick="toggleLedger()" class="w-full h-[calc(50%-6px)] lg:h-[calc(50%-5px)] bg-rose-50/70 border border-rose-100/80 shadow-sm px-3.5 py-2 lg:px-4 rounded-[22px] flex items-center justify-between cursor-pointer transition-all duration-300 hover:bg-rose-50 active:scale-[0.98]">
-
-          <div class="flex flex-col justify-center text-left">
-
-            <div class="flex items-center gap-1 mb-0.5">
-
-              <p id="ui-spent-label" class="text-[8px] lg:text-[9.5px] font-black text-rose-500 uppercase tracking-wider">
-                Spent
-              </p>
-
-              <i data-lucide="receipt" class="w-2.5 h-2.5 text-rose-500"></i>
-
-            </div>
-
-            <p id="stat-spent" class="text-sm lg:text-xl font-black text-rose-600">
-              ₹0
-            </p>
-
-          </div>
-
-          <div class="w-8 h-8 lg:w-8 lg:h-8 rounded-xl bg-rose-100/60 flex items-center justify-center text-rose-500 shrink-0">
-
-            <i data-lucide="trending-up" class="w-4 h-4 lg:w-4 lg:h-4"></i>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-  </div>
-
-    
-
-    <!-- NEW EXPENSE ENTRY FORM -->
-    <div id="ui-form-wrapper" class="transition-all duration-500 overflow-hidden opacity-100 origin-top">
-      <div class="bg-white rounded-[32px] p-6 lg:p-7 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] relative overflow-hidden">
-
-        <!-- Frosted Glass Lock Overlay -->
-        <div id="expense-lock-overlay" class="hidden absolute inset-0 z-[60] flex flex-col items-center justify-center rounded-[32px] border border-slate-200 bg-white/80 backdrop-blur-sm transition-all duration-300">
-          <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-2 text-slate-600">
-            <i data-lucide="lock" class="w-6 h-6"></i>
-          </div>
-          <p class="text-xs font-black text-slate-600 uppercase tracking-widest lock-text-pulse">Adding Expenses Paused</p>
-        </div>
-
-        <form id="expenseForm" class="space-y-4 relative z-10">
-
-          <!-- Header & Date Picker -->
-          <div class="flex items-center justify-between">
-            <h3 class="text-[9.5px] font-black text-slate-400 uppercase tracking-widest">Enter New Expense</h3>
-            <div class="flex items-center gap-1 bg-indigo-50/40 hover:bg-indigo-50 border border-indigo-100/70 px-2.5 py-1 rounded-lg cursor-pointer transition-colors">
-              <i data-lucide="calendar" class="w-3 h-3 text-indigo-600"></i>
-              <input type="date" id="todayDate" name="date" required class="bg-transparent text-[10px] font-black text-indigo-600 uppercase tracking-wider outline-none cursor-pointer">
-            </div>
-          </div>
-
-          <!-- Minimal Large Amount Input -->
-          <div class="flex items-center gap-2 border-b border-slate-100/90 pb-3 pt-1">
-            <span class="text-3xl font-black text-slate-300">₹</span>
-            <input type="number" name="amount" placeholder="0" required class="w-full bg-transparent outline-none font-black text-4xl text-slate-800 placeholder-slate-200 tracking-tight">
-          </div>
-
-          <!-- Payment Mode & Category (Light Rounded Pills) -->
-          <div class="grid grid-cols-2 gap-3">
-            <!-- Payment Mode -->
-            <div class="bg-slate-50/80 hover:bg-slate-100/80 transition-colors rounded-2xl border border-slate-100/80 px-4 py-3 flex items-center gap-2.5">
-              <i data-lucide="credit-card" class="w-4 h-4 text-indigo-500 shrink-0"></i>
-              <select name="paidVia" class="w-full bg-transparent text-xs font-black uppercase tracking-wider text-slate-700 outline-none appearance-none cursor-pointer">
-                <option value="UPI" selected>UPI</option>
-                <option value="Cash">Cash</option>
-                <option value="Card">Card</option>
-                <option value="Cheque">Cheque</option>
-              </select>
-            </div>
-
-            <!-- Category -->
-            <div class="bg-slate-50/80 hover:bg-slate-100/80 transition-colors rounded-2xl border border-slate-100/80 px-4 py-3 flex items-center gap-2.5">
-              <i data-lucide="layout-grid" class="w-4 h-4 text-emerald-500 shrink-0"></i>
-              <select name="category" class="w-full bg-transparent text-xs font-black uppercase tracking-wider text-slate-700 outline-none appearance-none cursor-pointer">
-                <option>Food</option>
-                <option>Entry Fee</option>
-                <option>Fare</option>
-                <option>Stay</option>
-                <option>Water</option>
-                <option>Other</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Notes Text Input -->
-          <div class="bg-slate-50/80 rounded-2xl border border-slate-100/80 px-4 py-3.5 flex items-center gap-2.5">
-            <i data-lucide="message-square" class="w-4 h-4 text-slate-400 shrink-0"></i>
-            <input type="text" name="notes" placeholder="What was this for?" class="w-full bg-transparent text-xs font-bold text-slate-700 outline-none placeholder-slate-400">
-          </div>
-
-          <input type="hidden" name="lastActionAmount" id="lastActionAmount">
-          <input type="hidden" name="lastActionNotes" id="lastActionNotes">
-          <button type="submit" id="hidden-submit-btn" class="hidden"></button>
-
-          <!-- Swipe To Save Bar -->
-          <div id="swipe-track" class="w-full bg-slate-950 rounded-2xl h-[56px] relative flex items-center select-none overflow-hidden touch-none shadow-md mt-1">
-            <span id="swipe-text" class="absolute w-full text-center text-slate-400 font-black text-[11px] uppercase tracking-[0.2em] pointer-events-none transition-all duration-300">
-              Swipe to Save
-            </span>
-            <div id="swipe-thumb" class="absolute left-1.5 w-[46px] h-[46px] bg-white rounded-xl shadow flex items-center justify-center cursor-grab active:cursor-grabbing text-slate-900 z-10">
-              <i data-lucide="chevrons-right" class="w-5 h-5 stroke-[3]"></i>
-            </div>
-          </div>
-        </form>
-      </div>
     </div>
 
    
@@ -2522,25 +2478,27 @@
 
     // Handles the Bento layout transition when flipping the Balance Card
     function flipBalanceCard() { 
-      const flipper = document.getElementById('card-flipper-engine'); 
-      const balanceCol = document.getElementById('balance-col');
-      const statsCol = document.getElementById('stats-col');
-      const isDesktop = window.innerWidth >= 1024;
-      
-      flipper.classList.toggle('flipper-rotated'); 
+  const flipper = document.getElementById('card-flipper-engine'); 
+  const balanceCol = document.getElementById('balance-col');
+  const statsCol = document.getElementById('stats-col');
+  const isDesktop = window.innerWidth >= 1024;
+  
+  flipper.classList.toggle('flipper-rotated'); 
 
-      if (flipper.classList.contains('flipper-rotated')) {
-        balanceCol.style.width = '100%';
-        statsCol.style.width = '0px';
-        statsCol.style.opacity = '0';
-        statsCol.style.transform = 'translateX(10px) scale(0.95)';
-      } else {
-        balanceCol.style.width = isDesktop ? '58.333333%' : 'calc(50% - 6px)';
-        statsCol.style.width = isDesktop ? '41.666667%' : 'calc(50% - 6px)';
-        statsCol.style.opacity = '1';
-        statsCol.style.transform = 'translateX(0px) scale(1)';
-      }
+  if (!isDesktop) {
+    if (flipper.classList.contains('flipper-rotated')) {
+      balanceCol.style.width = '100%';
+      statsCol.style.width = '0px';
+      statsCol.style.opacity = '0';
+      statsCol.style.transform = 'translateX(10px) scale(0.95)';
+    } else {
+      balanceCol.style.width = 'calc(50% - 6px)';
+      statsCol.style.width = 'calc(50% - 6px)';
+      statsCol.style.opacity = '1';
+      statsCol.style.transform = 'translateX(0px) scale(1)';
     }
+  }
+}
 
     // Fetch member names specifically for the login dropdown
     async function fetchLoginMembers() {
