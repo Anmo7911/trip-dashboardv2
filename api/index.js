@@ -212,7 +212,7 @@ const popupType = text(setting(28, 'b')).toUpperCase() || 'NOTIFICATION';
   }).reverse();
 
   const isEncrypted = text(meta.security_status).toLowerCase() === 'encrypted';
-  const defaultSecureAvatar = text(meta.default_secure_avatar) || 'https://blogger.googleusercontent.com/img/a/AVvXsEjMM5kJ6bdUIS9uMB7njQxBtn9O0VoPAp1RCvLFAkheTxSubxscFUStS1wV00BdrUR0AClFHOZlsJdCqCnQOau0MO8RuKobfzKAy1ixV7fo-6yqab8Ztd0t0A_V0XS4SqDsZMKnewl0GwdomQcXUve58wGv_2W1z6zhm4MKYCApsPoBtY-arhMfKVsJ1gPQ';
+  const defaultSecureAvatar = 'https://blogger.googleusercontent.com/img/a/AVvXsEjMM5kJ6bdUIS9uMB7njQxBtn9O0VoPAp1RCvLFAkheTxSubxscFUStS1wV00BdrUR0AClFHOZlsJdCqCnQOau0MO8RuKobfzKAy1ixV7fo-6yqab8Ztd0t0A_V0XS4SqDsZMKnewl0GwdomQcXUve58wGv_2W1z6zhm4MKYCApsPoBtY-arhMfKVsJ1gPQ';
   
   const rawCoordinatorBg = memberMeta.coordinator_bg || '';
   const rawMemberBg = memberMeta.member_bg || '';
@@ -227,10 +227,9 @@ const popupType = text(setting(28, 'b')).toUpperCase() || 'NOTIFICATION';
     const roleName = text(r.col_b);
     const bgLink = roleName.toLowerCase().includes('coordinator') ? coordinatorBg : memberBg;
     let finalName = rawName;
-    let finalImg = await resolveAsset(r.col_c);
+    let finalImg = isEncrypted ? defaultSecureAvatar : await resolveAsset(r.col_c);
     if (isEncrypted) {
       finalName = applySecurityMask(finalName);
-      finalImg = defaultSecureAvatar;
     }
     members.push({
       id: r.id,
