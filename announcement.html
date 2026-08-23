@@ -200,7 +200,7 @@
       max-width: 480px;
     }
 
-    /* Indicators & CTA */
+    /* Dynamic Dots Container */
     .carousel-dots {
       display: flex;
       justify-content: center;
@@ -276,6 +276,8 @@
       <div class="slide-bg active" style="background-image: url('https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?auto=format&fit=crop&w=1920&q=80');"></div>
       <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1920&q=80');"></div>
       <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?auto=format&fit=crop&w=1920&q=80');"></div>
+      <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80');"></div>
+      <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1920&q=80');"></div>
     </div>
 
     <!-- Vignette Shadow Layer -->
@@ -285,23 +287,20 @@
     <div class="static-bottom-content">
       <div class="content-wrapper">
         <div class="trip-tag">SEASON 2026</div>
-        <h2 class="trip-title">Discover Our Next Destinations</h2>
+        <h2 class="trip-title">Coimbatore: THe Route to Munnar</h2>
         <p class="trip-desc">Explore hand-picked routes, curated itineraries, and unforgettable adventures worldwide.</p>
         
-        <div class="carousel-dots">
-          <span class="dot active" onclick="setSlide(0)"></span>
-          <span class="dot" onclick="setSlide(1)"></span>
-          <span class="dot" onclick="setSlide(2)"></span>
-        </div>
+        <!-- Generated Dynamically by JS -->
+        <div class="carousel-dots" id="dotsContainer"></div>
         
-        <a href="https://up-roadways.vercel.app/" target="_blank" rel="noopener noreferrer" class="cta-btn">Explore Journey</a>
+        <a href="https://www.youtube.com/watch?v=OiQOFdTKeRM" target="_blank" rel="noopener noreferrer" class="cta-btn">Explore Journey</a>
       </div>
     </div>
   </div>
 
   <script>
     const slides = document.querySelectorAll('.slide-bg');
-    const dots = document.querySelectorAll('.dot');
+    const dotsContainer = document.getElementById('dotsContainer');
     const audio = document.getElementById('bgAudio');
     const soundBtn = document.getElementById('soundBtn');
     const container = document.getElementById('container');
@@ -309,6 +308,17 @@
     let currentIndex = 0;
     let autoSlideTimer;
     let isMuted = false;
+
+    // Generate pagination dots automatically based on slide count
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('span');
+      dot.classList.add('dot');
+      if (idx === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => setSlide(idx));
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
 
     // Carousel Display Logic
     function showSlide(index) {
