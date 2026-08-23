@@ -2658,15 +2658,23 @@
 }
 
     // Fetch member names specifically for the login dropdown
+    // Fetch member names and verify Announcement Mode for guest visitors
     async function fetchLoginMembers() {
       try {
-        const data = await apiRequest('members');
+        const data = await apiRequest('dashboard');
+        
+        // Redirect if Announcement Mode is active
+        if (data && data.announcementMode === 'ENABLED') {
+          window.location.replace('/announcement.html');
+          return;
+        }
+
         if (data && data.members) {
           cachedMembersList = data.members;
           populateLoginDropdown(data.members);
         }
       } catch (err) {
-        console.error("Could not fetch member list for login:", err);
+        console.error("Could not fetch initial data for login:", err);
       } finally {
         attemptCustomSplashHide();
       }
