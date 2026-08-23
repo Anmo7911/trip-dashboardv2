@@ -447,6 +447,30 @@
     // Initialize
     attemptPlayAudio();
     startAutoSlide();
+
+    // ==========================================
+    // ANNOUNCEMENT MODE SYNC & REVERSE REDIRECT
+    // ==========================================
+    async function checkAnnouncementStatus() {
+      try {
+        const res = await fetch('/api/index?action=dashboard');
+        if (!res.ok) return;
+        const data = await res.json();
+        
+        // If Admin toggles Announcement Mode to DISABLED, redirect to main app
+        if (data && data.announcementMode !== 'ENABLED') {
+          window.location.replace('/');
+        }
+      } catch (err) {
+        console.error('Status check failed:', err);
+      }
+    }
+
+    // Check immediately on load and poll every 15 seconds
+    checkAnnouncementStatus();
+    setInterval(checkAnnouncementStatus, 15000);
+
+    
   </script>
 </body>
 </html>
