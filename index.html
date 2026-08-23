@@ -1536,31 +1536,26 @@
       </div>
       
      <!-- Live Notice Container -->
+
 <div id="notice-container"
-  class="hidden overflow-hidden w-full bg-slate-50 border-b border-slate-200 -mt-2 pt-4 pb-1 relative z-10">
+  class="hidden overflow-hidden w-auto bg-slate-50 border-b border-slate-200 -mt-2 pt-4 pb-1 relative z-10 -mx-4 sm:-mx-8 lg:-mx-16">
   <div id="notice-slider" class="carousel-track">
-    
     <!-- Standard Notice Slot -->
-    <div class="carousel-item px-2 lg:px-6 pb-1">
+    <div class="carousel-item px-4 pb-1">
       <div
-        class="bg-indigo-50 border border-indigo-100 rounded-full px-4 py-1.5 flex items-center gap-2 justify-center w-full max-w-[92%] sm:max-w-lg lg:max-w-3xl mx-auto shadow-sm">
+        class="bg-indigo-50 border border-indigo-100 rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto">
         <span class="relative flex h-2 w-2 flex-shrink-0"></span>
-        <p id="ui-trip-notice" class="text-[11px] lg:text-xs font-bold text-indigo-700 truncate text-center"></p>
+        <p id="ui-trip-notice" class="text-[11px] font-bold text-indigo-700 truncate text-center"></p>
       </div>
     </div>
-
     <!-- Warning Notice Slot -->
-    <div class="carousel-item px-2 lg:px-6 pb-1">
+    <div class="carousel-item px-4 pb-1">
       <div
-        class="bg-rose-50 border border-rose-100 rounded-full px-4 py-1.5 flex items-center gap-2 justify-center w-full max-w-[92%] sm:max-w-lg lg:max-w-3xl mx-auto warning-pulse shadow-sm">
-        <span class="relative flex h-2 w-2 flex-shrink-0">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
-        </span>
-        <p id="ui-warning-notice" class="text-[11px] lg:text-xs font-bold text-rose-700 truncate text-center"></p>
+        class="bg-rose-50 border border-rose-100 rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto warning-pulse">
+        <span class="relative flex h-2 w-2 flex-shrink-0"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span></span>
+        <p id="ui-warning-notice" class="text-[11px] font-bold text-rose-700 truncate text-center"></p>
       </div>
     </div>
-
   </div>
 </div>
 
