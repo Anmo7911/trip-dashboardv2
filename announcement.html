@@ -18,26 +18,20 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    body {
-      background-color: #0b1120;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000;
     }
 
-    /* Mobile Container Frame */
-    .mobile-frame {
+    /* Responsive Fullscreen Wrapper */
+    .announcement-container {
       position: relative;
-      width: 100%;
-      max-width: 390px;
-      height: 844px;
-      background: #000;
-      border-radius: 44px;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
       overflow: hidden;
-      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9);
-      border: 6px solid #1e293b;
     }
 
     /* Top Controls (Mute/Audio + Close) */
@@ -50,11 +44,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .icon-btn {
-      width: 38px;
-      height: 38px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       background: rgba(0, 0, 0, 0.45);
       backdrop-filter: blur(10px);
@@ -64,7 +60,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 15px;
+      font-size: 16px;
       transition: background 0.2s ease, transform 0.15s ease;
     }
 
@@ -108,9 +104,9 @@
       pointer-events: none;
       background: linear-gradient(
         180deg,
-        rgba(0, 0, 0, 0.72) 0%,
-        rgba(0, 0, 0, 0.15) 35%,
-        rgba(0, 0, 0, 0.45) 60%,
+        rgba(0, 0, 0, 0.75) 0%,
+        rgba(0, 0, 0, 0.2) 35%,
+        rgba(0, 0, 0, 0.4) 60%,
         rgba(0, 0, 0, 0.95) 100%
       );
     }
@@ -118,7 +114,7 @@
     /* Static Header Text */
     .hero-announcement-header {
       position: absolute;
-      top: 110px;
+      top: 100px;
       left: 0;
       right: 0;
       z-index: 20;
@@ -132,7 +128,7 @@
 
     .hero-title-top {
       font-family: 'Oswald', sans-serif;
-      font-size: 34px;
+      font-size: clamp(28px, 4vw, 48px);
       font-weight: 300;
       line-height: 1.1;
       letter-spacing: 4px;
@@ -143,9 +139,9 @@
 
     .hero-title-bottom {
       font-family: 'Oswald', sans-serif;
-      font-size: 42px;
+      font-size: clamp(36px, 6vw, 68px);
       font-weight: 800;
-      line-height: 1;
+      line-height: 1.05;
       letter-spacing: 2px;
       text-transform: uppercase;
       color: #f8fafc;
@@ -159,13 +155,24 @@
       left: 0;
       right: 0;
       z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
       color: #ffffff;
-      padding: 32px 24px 44px;
+      padding: 32px 24px clamp(32px, 5vh, 60px);
+    }
+
+    .content-wrapper {
+      width: 100%;
+      max-width: 540px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .trip-tag {
-      font-size: 11px;
+      font-size: clamp(11px, 1.2vw, 13px);
       font-weight: 700;
       letter-spacing: 2.5px;
       text-transform: uppercase;
@@ -176,21 +183,21 @@
     .trip-title {
       font-family: 'Playfair Display', serif;
       font-style: italic;
-      font-size: 26px;
+      font-size: clamp(24px, 3.5vw, 38px);
       font-weight: 800;
       line-height: 1.2;
       letter-spacing: 0.3px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       color: #ffffff;
       text-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
     }
 
     .trip-desc {
-      font-size: 13px;
-      line-height: 1.5;
+      font-size: clamp(13px, 1.4vw, 16px);
+      line-height: 1.6;
       color: #cbd5e1;
-      margin-bottom: 22px;
-      padding: 0 8px;
+      margin-bottom: 24px;
+      max-width: 480px;
     }
 
     /* Indicators & CTA */
@@ -198,7 +205,7 @@
       display: flex;
       justify-content: center;
       gap: 8px;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
 
     .dot {
@@ -211,19 +218,20 @@
     }
 
     .dot.active {
-      width: 24px;
+      width: 28px;
       border-radius: 4px;
       background: #ffffff;
     }
 
     .cta-btn {
       width: 100%;
-      padding: 16px;
+      max-width: 360px;
+      padding: 16px 28px;
       background: #0d9488;
       color: #ffffff;
       border: none;
       border-radius: 14px;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
@@ -232,17 +240,20 @@
       transition: transform 0.15s ease, background-color 0.2s ease;
     }
 
+    .cta-btn:hover {
+      background: #0f766e;
+    }
+
     .cta-btn:active {
       transform: scale(0.98);
-      background: #0f766e;
     }
   </style>
 </head>
 <body>
 
-  <div class="mobile-frame" id="frame">
-    <!-- Continuous Melodious Background Audio -->
-    <audio id="bgAudio" loop preload="auto">
+  <div class="announcement-container" id="container">
+    <!-- Continuous Background Audio -->
+    <audio id="bgAudio" loop preload="auto" autoplay playsinline>
       <source src="https://www.image2url.com/r2/default/audio/1787467169564-5505bd10-c21e-498d-bed9-18e2a421d075.mp3" type="audio/mpeg">
     </audio>
 
@@ -258,11 +269,11 @@
       <div class="hero-title-bottom">ANNOUNCEMENT</div>
     </div>
 
-    <!-- Background Images (Cross-Dissolve Only) -->
+    <!-- Background Images -->
     <div class="carousel-container" id="carousel">
-      <div class="slide-bg active" style="background-image: url('https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?auto=format&fit=crop&w=1000&q=80');"></div>
-      <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1000&q=80');"></div>
-      <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?auto=format&fit=crop&w=1000&q=80');"></div>
+      <div class="slide-bg active" style="background-image: url('https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?auto=format&fit=crop&w=1920&q=80');"></div>
+      <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1920&q=80');"></div>
+      <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?auto=format&fit=crop&w=1920&q=80');"></div>
     </div>
 
     <!-- Vignette Shadow Layer -->
@@ -270,17 +281,19 @@
 
     <!-- Static Bottom Content -->
     <div class="static-bottom-content">
-      <div class="trip-tag">SEASON 2026</div>
-      <h2 class="trip-title">Discover Our Next Destinations</h2>
-      <p class="trip-desc">Explore hand-picked routes, curated itineraries, and unforgettable adventures worldwide.</p>
-      
-      <div class="carousel-dots">
-        <span class="dot active" onclick="setSlide(0)"></span>
-        <span class="dot" onclick="setSlide(1)"></span>
-        <span class="dot" onclick="setSlide(2)"></span>
+      <div class="content-wrapper">
+        <div class="trip-tag">SEASON 2026</div>
+        <h2 class="trip-title">Discover Our Next Destinations</h2>
+        <p class="trip-desc">Explore hand-picked routes, curated itineraries, and unforgettable adventures worldwide.</p>
+        
+        <div class="carousel-dots">
+          <span class="dot active" onclick="setSlide(0)"></span>
+          <span class="dot" onclick="setSlide(1)"></span>
+          <span class="dot" onclick="setSlide(2)"></span>
+        </div>
+        
+        <button class="cta-btn">Explore Journey</button>
       </div>
-      
-      <button class="cta-btn">Explore Journey</button>
     </div>
   </div>
 
@@ -289,7 +302,7 @@
     const dots = document.querySelectorAll('.dot');
     const audio = document.getElementById('bgAudio');
     const soundBtn = document.getElementById('soundBtn');
-    const frame = document.getElementById('frame');
+    const container = document.getElementById('container');
 
     let currentIndex = 0;
     let autoSlideTimer;
@@ -329,18 +342,42 @@
       startAutoSlide();
     }
 
-    // Audio Autoplay & Toggle (Handles modern browser autoplay policies)
-    function playAudio() {
+    // Audio Autoplay Management
+    function attemptPlayAudio() {
       if (!isMuted) {
-        audio.play().catch(() => {
-          // Awaiting first user gesture if browser blocks initial autoplay
+        audio.play().then(() => {
+          soundBtn.textContent = '🔊';
+        }).catch(() => {
+          // If browser blocks unmuted autoplay, mute first to bypass restriction, then prompt on first click
+          audio.muted = true;
+          audio.play().then(() => {
+            soundBtn.textContent = '🔇';
+          }).catch(() => {});
         });
       }
     }
 
+    // Unlock full audio on first interaction
+    const unlockAudio = () => {
+      if (!isMuted) {
+        audio.muted = false;
+        audio.play();
+        soundBtn.textContent = '🔊';
+      }
+      window.removeEventListener('click', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+      window.removeEventListener('keydown', unlockAudio);
+    };
+
+    window.addEventListener('click', unlockAudio, { once: true });
+    window.addEventListener('touchstart', unlockAudio, { once: true });
+    window.addEventListener('keydown', unlockAudio, { once: true });
+
+    // Sound Toggle Button
     soundBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (audio.paused) {
+      if (audio.paused || audio.muted) {
+        audio.muted = false;
         audio.play();
         isMuted = false;
         soundBtn.textContent = '🔊';
@@ -351,21 +388,15 @@
       }
     });
 
-    // Start sound on first user touch/interaction
-    document.addEventListener('pointerdown', function initAudio() {
-      playAudio();
-      document.removeEventListener('pointerdown', initAudio);
-    }, { once: true });
-
     // Touch & Swipe Gestures
     let touchStartX = 0;
     let touchEndX = 0;
 
-    frame.addEventListener('touchstart', (e) => {
+    container.addEventListener('touchstart', (e) => {
       touchStartX = e.changedTouches[0].screenX;
     }, { passive: true });
 
-    frame.addEventListener('touchend', (e) => {
+    container.addEventListener('touchend', (e) => {
       touchEndX = e.changedTouches[0].screenX;
       handleSwipe();
     }, { passive: true });
@@ -383,13 +414,28 @@
 
     // Dismiss Overlay
     document.getElementById('closeBtn').addEventListener('click', () => {
-      frame.style.display = 'none';
+      container.style.display = 'none';
       clearInterval(autoSlideTimer);
       audio.pause();
     });
 
+    // Keyboard navigation (Desktop support)
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') {
+        nextSlide();
+        resetAutoSlide();
+      } else if (e.key === 'ArrowLeft') {
+        prevSlide();
+        resetAutoSlide();
+      } else if (e.key === 'Escape') {
+        container.style.display = 'none';
+        clearInterval(autoSlideTimer);
+        audio.pause();
+      }
+    });
+
     // Initialize
-    playAudio();
+    attemptPlayAudio();
     startAutoSlide();
   </script>
 </body>
