@@ -42,6 +42,105 @@
 
   <style>
 
+    /* =========================================
+   AUTHENTICATION CARD & SCANNER ANIMATIONS
+   ========================================= */
+@keyframes laserSweep {
+  0% { top: -10%; opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { top: 105%; opacity: 0; }
+}
+
+@keyframes digitPop {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+@keyframes successBounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+.digit-pop { 
+  animation: digitPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+}
+
+.shake-grid { 
+  animation: errorShake 0.45s ease-in-out both; 
+}
+
+.auth-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-scanner {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: linear-gradient(180deg, transparent 0%, rgba(79, 70, 229, 0.2) 80%, rgba(79, 70, 229, 0.8) 100%);
+  border-bottom: 2px solid #4f46e5;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 10;
+}
+
+.auth-card.scanning .card-scanner {
+  animation: laserSweep 1.1s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  opacity: 1;
+}
+
+.select-wrapper { 
+  position: relative; 
+}
+
+.select-wrapper::after {
+  content: '▾';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+  font-size: 14px;
+}
+
+.pin-field {
+  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+.pin-field:focus {
+  border-color: #4f46e5 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+.pin-field.success { 
+  border-color: #22c55e !important; 
+  color: #22c55e !important; 
+  animation: successBounce 0.4s ease forwards; 
+}
+
+.pin-field.error { 
+  border-color: #ef4444 !important; 
+  color: #ef4444 !important; 
+}
+
+    
+
     /* 10-Second Attention Grabber Animation */
 @keyframes bookmarkAttentionPulse {
   0%, 85%, 100% {
@@ -1231,37 +1330,50 @@
 
 
   <!-- =========================================
-       LOGIN SCREEN OVERLAY
-       Forces user to authenticate before viewing data
-       ========================================= -->
-  <div id="login-overlay"
-  class="hidden fixed inset-0 z-[10000] bg-slate-900/50 backdrop-blur-xl flex items-center justify-center p-4 font-sans">
-    <div id="login-card"
-      class="max-w-sm w-full bg-white/95 rounded-3xl shadow-2xl p-6 border border-slate-200 text-center">
-      <div
-        class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner border border-indigo-100">
-        <i data-lucide="lock" class="w-6 h-6 stroke-[2.5]"></i>
-      </div>
-      <h2 class="text-xl font-black text-slate-800 tracking-wide uppercase mb-1">Member Authentication</h2>
-      <p class="text-slate-400 text-xs font-medium mb-6">Select your Name & enter Trip PIN</p>
+     LOGIN SCREEN OVERLAY
+     ========================================= -->
+<div id="login-overlay" class="hidden fixed inset-0 z-[10000] bg-slate-900/60 backdrop-blur-xl flex items-center justify-center p-4 font-sans">
+  <div id="login-card" class="auth-card max-w-sm w-full bg-white rounded-[32px] shadow-2xl p-7 sm:p-8 border border-slate-100 text-center relative">
+    <div class="card-scanner"></div>
 
-      <div class="space-y-4 text-left">
-        <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Select Your Name</label>
-          <!-- Names injected here dynamically by JS -->
-          <select id="login-name-select" class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold outline-none appearance-none cursor-pointer text-slate-700"></select>
-        </div>
-        <div>
-          <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Enter 4-Digit PIN</label>
-          <input type="password" id="login-pin-input" pattern="\d*" maxlength="4" placeholder="••••" class="w-full text-center tracking-[0.5em] py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-black text-xl">
-        </div>
-        <p id="login-error-msg"
-          class="text-rose-500 text-center text-[11px] font-black hidden uppercase tracking-wider">Invalid PIN! Try
-          again.</p>
-        <button onclick="processAppLogin()" id="login-submit-btn" class="w-full bg-slate-900 text-white font-black py-4 rounded-xl active:scale-95 transition shadow-lg mt-2">Sign In</button>
-      </div>
+    <!-- Header Badge -->
+    <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-indigo-100 shadow-inner">
+      <i data-lucide="lock" class="w-6 h-6 stroke-[2.5]"></i>
     </div>
+
+    <h2 class="text-lg font-black text-slate-900 tracking-wide uppercase mb-1">Member Authentication</h2>
+    <p class="text-slate-400 text-xs font-semibold mb-6">Select your Name & enter Trip PIN</p>
+
+    <form onsubmit="processAppLogin(event)" class="space-y-4 text-left">
+      <!-- Name Select Field -->
+      <div>
+        <label class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-1.5 block">Select Your Name</label>
+        <div class="select-wrapper">
+          <select id="login-name-select" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold outline-none appearance-none cursor-pointer text-slate-800 focus:border-indigo-500 transition-colors">
+            <!-- Dynamic Member Options injected here -->
+          </select>
+        </div>
+      </div>
+
+      <!-- 4-Box PIN Input Grid -->
+      <div>
+        <label class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-1.5 block">Enter 4-Digit PIN</label>
+        <div class="grid grid-cols-4 gap-2.5" id="login-pin-grid">
+          <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-field w-full h-13 text-center text-xl font-black bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 outline-none" oninput="handlePinInput(this, 0)" onkeydown="handlePinBack(event, this, 0)" autocomplete="off">
+          <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-field w-full h-13 text-center text-xl font-black bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 outline-none" oninput="handlePinInput(this, 1)" onkeydown="handlePinBack(event, this, 1)" autocomplete="off">
+          <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-field w-full h-13 text-center text-xl font-black bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 outline-none" oninput="handlePinInput(this, 2)" onkeydown="handlePinBack(event, this, 2)" autocomplete="off">
+          <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-field w-full h-13 text-center text-xl font-black bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 outline-none" oninput="handlePinInput(this, 3)" onkeydown="handlePinBack(event, this, 3)" autocomplete="off">
+        </div>
+      </div>
+
+      <p id="login-error-msg" class="text-rose-500 text-center text-xs font-bold hidden uppercase tracking-wider min-h-[16px]">Invalid PIN! Try again.</p>
+
+      <button type="submit" id="login-submit-btn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-2xl active:scale-95 transition shadow-lg text-xs uppercase tracking-widest mt-1">
+        Sign In
+      </button>
+    </form>
   </div>
+</div>
 
   <!-- =========================================
        LOGOUT CONFIRMATION SCREEN
@@ -3991,55 +4103,140 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     }
 
     // ==========================================
+    // 4-DIGIT PIN INPUT INTERACTION HANDLERS
+    // ==========================================
+    function handlePinInput(input, idx) {
+      input.value = input.value.replace(/[^0-9]/g, '');
+      const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
+      
+      if (input.value) {
+        input.classList.remove('digit-pop');
+        void input.offsetWidth;
+        input.classList.add('digit-pop');
+
+        if (idx < 3) {
+          inputs[idx + 1].focus();
+        } else if (idx === 3) {
+          processAppLogin();
+        }
+      }
+    }
+
+    function handlePinBack(e, input, idx) {
+      const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
+      if (e.key === 'Backspace' && !input.value && idx > 0) {
+        inputs[idx - 1].focus();
+        inputs[idx - 1].value = '';
+      }
+    }
+
+    function getEnteredPin() {
+      const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
+      let pin = '';
+      inputs.forEach(inp => pin += inp.value);
+      return pin;
+    }
+
+    // ==========================================
     // AUTHENTICATION LOGIC (Login/Logout)
     // ==========================================
-    function processAppLogin() {
+    function processAppLogin(e) {
+      if (e && e.preventDefault) e.preventDefault();
+
       const selectedName = document.getElementById('login-name-select').value;
-      const typedPin = document.getElementById('login-pin-input').value;
-      const loginCard = document.getElementById('login-card');
+      const typedPin = getEnteredPin();
+      const card = document.getElementById('login-card');
       const errorMsg = document.getElementById('login-error-msg');
       const btn = document.getElementById('login-submit-btn');
+      const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
       
-      // Validate length before trying server
-      if (!typedPin || typedPin.length < 4) { triggerLoginError(); return; }
+      if (!typedPin || typedPin.length < 4) {
+        triggerLoginError();
+        return;
+      }
       
-      btn.innerHTML = '<div class="w-5 h-5 border-4 border-t-white border-slate-500 rounded-full animate-spin mx-auto"></div>';
       errorMsg.classList.add('hidden');
+      card.classList.add('scanning');
+      btn.innerHTML = '<div class="w-5 h-5 border-2 border-t-white border-slate-500 rounded-full animate-spin mx-auto"></div>';
       
-      // Send to the Vercel API to evaluate against the Supabase member PIN DB
       apiRequest('login', { name: selectedName, pin: typedPin })
-  .then((result) => {
-    if (result.success) {
-      localStorage.setItem('trekLoggedInUser', result.name);
-      localStorage.setItem('trekLoggedInPIN', typedPin);
-      document.getElementById('login-overlay').classList.add('hidden');
+        .then((result) => {
+          card.classList.remove('scanning');
+          if (result.success) {
+            inputs.forEach((inp, i) => {
+              setTimeout(() => {
+                inp.classList.remove('error');
+                inp.classList.add('success');
+              }, i * 50);
+            });
 
-      // 👉 Trigger the splash loader animation
-      showCustomSplash();
+            setTimeout(() => {
+              localStorage.setItem('trekLoggedInUser', result.name);
+              localStorage.setItem('trekLoggedInPIN', typedPin);
+              document.getElementById('login-overlay').classList.add('hidden');
+              btn.innerText = "Sign In";
+              inputs.forEach(inp => {
+                inp.value = '';
+                inp.classList.remove('success', 'error');
+              });
 
-      fetchInitialData();
-    } else {
-            btn.innerText = "Unlock App";
+              showCustomSplash();
+              fetchInitialData();
+            }, 400);
+          } else {
+            btn.innerText = "Sign In";
             triggerLoginError();
           }
         })
         .catch(error => {
           console.error(error);
-          btn.innerText = "Unlock App";
+          card.classList.remove('scanning');
+          btn.innerText = "Sign In";
           triggerLoginError();
         });
     }
 
-    // UX function to visually shake the login modal on failure
     function triggerLoginError() {
-      const loginCard = document.getElementById('login-card');
+      const grid = document.getElementById('login-pin-grid');
       const errorMsg = document.getElementById('login-error-msg');
-      const pinInput = document.getElementById('login-pin-input');
+      const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
       
       errorMsg.classList.remove('hidden');
-      pinInput.value = ""; // Clear input immediately
-      loginCard.classList.add('animate-shake'); // Shake CSS class
-      setTimeout(() => { loginCard.classList.remove('animate-shake'); }, 400);
+      grid.classList.add('shake-grid');
+      inputs.forEach(inp => inp.classList.add('error'));
+
+      setTimeout(() => {
+        grid.classList.remove('shake-grid');
+        inputs.forEach(inp => {
+          inp.value = '';
+          inp.classList.remove('error');
+        });
+        if (inputs[0]) inputs[0].focus();
+      }, 600);
+    }
+
+    function processLogOut() {
+      toggleMoreMenu(); 
+      
+      localStorage.removeItem('trekLoggedInUser'); 
+      localStorage.removeItem('trekLoggedInPIN'); 
+      
+      const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
+      inputs.forEach(inp => {
+        inp.value = '';
+        inp.classList.remove('success', 'error');
+      });
+      
+      const loginBtn = document.getElementById('login-submit-btn');
+      if (loginBtn) loginBtn.innerText = "Sign In";
+
+      const selectDropdown = document.getElementById('login-name-select');
+      if (selectDropdown && cachedMembersList && cachedMembersList.length > 0) {
+        selectDropdown.innerHTML = cachedMembersList.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
+      }
+      
+      document.getElementById('login-overlay').classList.remove('hidden');
+      lucide.createIcons();
     }
 
     // ==========================================
