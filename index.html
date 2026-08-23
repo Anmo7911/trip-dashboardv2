@@ -3176,8 +3176,14 @@
    // THE MASTER RENDER ENGINE
    // Receives fresh data and updates the DOM
    // ==========================================
-   function renderApp(data) { 
+  function renderApp(data) { 
      if (!data) return;
+
+     // Automatic Redirect if Announcement Mode is Enabled in Admin
+     if (data.announcementMode === 'ENABLED') {
+       window.location.replace('/announcement.html');
+       return;
+     }
 
      document.title = data.tripName || "Bharat Way";
      refreshMenuSignOffButton(data);
