@@ -159,9 +159,10 @@ async function dashboard() {
   const contributionToggle = text(setting(23, 'b')).toUpperCase();
   const checklistVisibility = text(setting(24, 'b')).toUpperCase() || 'VISIBLE';
   const checklistRevokeVisibility = text(setting(24, 'c')).toUpperCase() || 'VISIBLE';
+  const announcementMode = text(setting(29, 'b')).toUpperCase() || 'DISABLED';
 
   // 10-Second Dynamic Broadcast Popup Settings (Row 28)
-const popupType = text(setting(28, 'b')).toUpperCase() || 'NOTIFICATION';
+  const popupType = text(setting(28, 'b')).toUpperCase() || 'NOTIFICATION';
   const popupTitle = text(setting(28, 'c'));
   const popupMessage = text(setting(28, 'd'));
   const popupStatus = text(setting(28, 'e')).toUpperCase() || 'DISABLED';
@@ -303,7 +304,7 @@ const popupType = text(setting(28, 'b')).toUpperCase() || 'NOTIFICATION';
 
   const totalExpenses = Object.values(categorySpent).reduce((a, b) => a + b, 0);
   return {
-    appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus, checklistVisibility, checklistRevokeVisibility,
+    appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus, checklistVisibility, checklistRevokeVisibility, announcementMode,
     popupConfig: { type: popupType, title: popupTitle, message: popupMessage, status: popupStatus, pushedAt: popupPushedAt },
     securityStatus: meta.security_status || 'normal',
     chiefCoordinatorSignature, eidStampImage, rawEidStamp, tripName, secondaryTitle,
@@ -482,7 +483,7 @@ async function adminPushBroadcast(payload) {
     col_c: title || '',
     col_d: message || '',
     col_e: status || 'ENABLED',
-    col_f: String(Date.now()) // Unique instant trigger key
+    col_f: String(Date.now())
   };
 
   const { data: rows } = await supabase.from('settings_sheet').select('*').eq('row_number', 28);
@@ -492,7 +493,6 @@ async function adminPushBroadcast(payload) {
     await supabase.from('settings_sheet').insert({ row_number: 28, ...patch });
   }
 
-  // Chat message insertion removed completely
   return dashboard();
 }
 
