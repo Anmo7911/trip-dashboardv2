@@ -158,24 +158,34 @@
     
 
     /* 10-Second Attention Grabber Animation */
-@keyframes bookmarkAttentionPulse {
+/* 10-Second Vertical Shake Animation */
+@keyframes bookmarkVerticalShake {
   0%, 85%, 100% {
-    transform: translateY(-50%) scale(1);
-    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+    transform: translateY(-50%);
   }
-  90% {
-    transform: translateY(-50%) scale(1.12);
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.85);
+  87% {
+    transform: translateY(calc(-50% - 8px));
+  }
+  89% {
+    transform: translateY(calc(-50% + 6px));
+  }
+  91% {
+    transform: translateY(calc(-50% - 6px));
+  }
+  93% {
+    transform: translateY(calc(-50% + 4px));
   }
   95% {
-    transform: translateY(-50%) scale(0.95);
+    transform: translateY(calc(-50% - 2px));
+  }
+  97% {
+    transform: translateY(-50%);
   }
 }
 
 .anim-bookmark-pulse {
-  animation: bookmarkAttentionPulse 10s infinite ease-in-out;
+  animation: bookmarkVerticalShake 10s infinite ease-in-out;
 }
-
     
 
 
