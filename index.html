@@ -119,6 +119,19 @@
 }
 
 .pin-field {
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Ensures perfect square */
+  border-radius: 16px; /* Soft rounded corners */
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  color: #0f172a;
+  font-size: 26px;
+  font-weight: 800;
+  text-align: center;
+  outline: none;
+  font-family: inherit;
+  -webkit-text-security: disc; /* Forces dot bullet masking on iOS/Android WebKit */
+  text-security: disc;
   transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
 
@@ -1357,14 +1370,14 @@
 
       <!-- 4-Box PIN Input Grid -->
       <div>
-        <label class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-1.5 block">Enter 4-Digit PIN</label>
-        <div class="grid grid-cols-4 gap-2.5" id="login-pin-grid">
-          <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-field w-full h-13 text-center text-xl font-black bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 outline-none" oninput="handlePinInput(this, 0)" onkeydown="handlePinBack(event, this, 0)" autocomplete="off">
-          <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-field w-full h-13 text-center text-xl font-black bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 outline-none" oninput="handlePinInput(this, 1)" onkeydown="handlePinBack(event, this, 1)" autocomplete="off">
-          <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-field w-full h-13 text-center text-xl font-black bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 outline-none" oninput="handlePinInput(this, 2)" onkeydown="handlePinBack(event, this, 2)" autocomplete="off">
-          <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-field w-full h-13 text-center text-xl font-black bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 outline-none" oninput="handlePinInput(this, 3)" onkeydown="handlePinBack(event, this, 3)" autocomplete="off">
-        </div>
-      </div>
+  <label class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-1.5 block">Enter 4-Digit PIN</label>
+  <div class="grid grid-cols-4 gap-3 max-w-[280px] mx-auto" id="login-pin-grid">
+    <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-field" oninput="handlePinInput(this, 0)" onkeydown="handlePinBack(event, this, 0)" autocomplete="off">
+    <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-field" oninput="handlePinInput(this, 1)" onkeydown="handlePinBack(event, this, 1)" autocomplete="off">
+    <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-field" oninput="handlePinInput(this, 2)" onkeydown="handlePinBack(event, this, 2)" autocomplete="off">
+    <input type="password" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="pin-field" oninput="handlePinInput(this, 3)" onkeydown="handlePinBack(event, this, 3)" autocomplete="off">
+  </div>
+</div>
 
       <p id="login-error-msg" class="text-rose-500 text-center text-xs font-bold hidden uppercase tracking-wider min-h-[16px]">Invalid PIN! Try again.</p>
 
