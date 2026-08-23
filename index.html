@@ -4119,36 +4119,48 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     // 4-DIGIT PIN INPUT INTERACTION HANDLERS
     // ==========================================
     function handlePinInput(input, idx) {
-      input.value = input.value.replace(/[^0-9]/g, '');
-      const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
-      
-      if (input.value) {
-        input.classList.remove('digit-pop');
-        void input.offsetWidth;
-        input.classList.add('digit-pop');
+  const raw = input.value.replace(/[^0-9]/g, '');
+  const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
+  
+  if (raw) {
+    const digit = raw.slice(-1);
+    input.dataset.value = digit;
+    input.value = '•'; // Immediately masks to dot
 
-        if (idx < 3) {
-          inputs[idx + 1].focus();
-        } else if (idx === 3) {
-          processAppLogin();
-        }
-      }
-    }
+    input.classList.remove('digit-pop');
+    void input.offsetWidth;
+    input.classList.add('digit-pop');
 
-    function handlePinBack(e, input, idx) {
-      const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
-      if (e.key === 'Backspace' && !input.value && idx > 0) {
-        inputs[idx - 1].focus();
-        inputs[idx - 1].value = '';
-      }
+    if (idx < 3) {
+      inputs[idx + 1].focus();
+    } else if (idx === 3) {
+      processAppLogin();
     }
+  } else {
+    input.dataset.value = '';
+    input.value = '';
+  }
+}
 
-    function getEnteredPin() {
-      const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
-      let pin = '';
-      inputs.forEach(inp => pin += inp.value);
-      return pin;
+function handlePinBack(e, input, idx) {
+  const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
+  if (e.key === 'Backspace') {
+    input.dataset.value = '';
+    input.value = '';
+    if (idx > 0) {
+      inputs[idx - 1].focus();
+      inputs[idx - 1].dataset.value = '';
+      inputs[idx - 1].value = '';
     }
+  }
+}
+
+function getEnteredPin() {
+  const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
+  let pin = '';
+  inputs.forEach(inp => pin += (inp.dataset.value || ''));
+  return pin;
+}
 
     // ==========================================
     // AUTHENTICATION LOGIC (Login/Logout)
@@ -4236,9 +4248,10 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       
       const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
       inputs.forEach(inp => {
-        inp.value = '';
-        inp.classList.remove('success', 'error');
-      });
+  inp.dataset.value = '';
+  inp.value = '';
+  inp.classList.remove('error', 'success');
+});
       
       const loginBtn = document.getElementById('login-submit-btn');
       if (loginBtn) loginBtn.innerText = "Sign In";
