@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upcoming Trip Announcement</title>
+  <!-- Google Fonts: Oswald, Inter, and Playfair Display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Oswald:wght@300;400;800&family=Playfair+Display:ital,wght@1,600;1,800&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #0b1120;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* Mobile Container Frame */
+    .mobile-frame {
+      position: relative;
+      width: 100%;
+      max-width: 390px;
+      height: 844px;
+      background: #000;
+      border-radius: 44px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9);
+      border: 6px solid #1e293b;
+    }
+
+    /* Top Controls (Mute/Audio + Close) */
+    .top-controls {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      right: 24px;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(0, 0, 0, 0.75);
+    }
+    
+    .icon-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* Full-Screen Dissolve Image Carousel */
+    .carousel-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .slide-bg {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.2s;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .slide-bg.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Vignette Gradient Overlay */
+    .overlay-gradient {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.72) 0%,
+        rgba(0, 0, 0, 0.15) 35%,
+        rgba(0, 0, 0, 0.45) 60%,
+        rgba(0, 0, 0, 0.95) 100%
+      );
+    }
+
+    /* Static Header Text */
+    .hero-announcement-header {
+      position: absolute;
+      top: 110px;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      pointer-events: none;
+      padding: 0 20px;
+    }
+
+    .hero-title-top {
+      font-family: 'Oswald', sans-serif;
+      font-size: 34px;
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-shadow: 0 4px 18px rgba(0, 0, 0, 0.85), 0 2px 6px rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-title-bottom {
+      font-family: 'Oswald', sans-serif;
+      font-size: 42px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #f8fafc;
+      text-shadow: 0 4px 18px rgba(0, 0, 0, 0.85), 0 2px 6px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Static Bottom Content */
+    .static-bottom-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      text-align: center;
+      color: #ffffff;
+      padding: 32px 24px 44px;
+    }
+
+    .trip-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .trip-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: 0.3px;
+      margin-bottom: 10px;
+      color: #ffffff;
+      text-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
+    }
+
+    .trip-desc {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #cbd5e1;
+      margin-bottom: 22px;
+      padding: 0 8px;
+    }
+
+    /* Indicators & CTA */
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.35);
+      cursor: pointer;
+      transition: all 0.35s ease;
+    }
+
+    .dot.active {
+      width: 24px;
+      border-radius: 4px;
+      background: #ffffff;
+    }
+
+    .cta-btn {
+      width: 100%;
+      padding: 16px;
+      background: #0d9488;
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(13, 148, 136, 0.45);
+      transition: transform 0.15s ease, background-color 0.2s ease;
+    }
+
+    .cta-btn:active {
+      transform: scale(0.98);
+      background: #0f766e;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-frame" id="frame">
+    <!-- Continuous Melodious Background Audio -->
+    <audio id="bgAudio" loop preload="auto">
+      <source src="https://www.image2url.com/r2/default/audio/1787467169564-5505bd10-c21e-498d-bed9-18e2a421d075.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Top Action Buttons -->
+    <div class="top-controls">
+      <button class="icon-btn" id="soundBtn" aria-label="Toggle Sound">🔊</button>
+      <button class="icon-btn" id="closeBtn" aria-label="Close Announcement">✕</button>
+    </div>
+
+    <!-- Static Header -->
+    <div class="hero-announcement-header">
+      <div class="hero-title-top">UPCOMING TRIP</div>
+      <div class="hero-title-bottom">ANNOUNCEMENT</div>
+    </div>
+
+    <!-- Background Images (Cross-Dissolve Only) -->
+    <div class="carousel-container" id="carousel">
+      <div class="slide-bg active" style="background-image: url('https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?auto=format&fit=crop&w=1000&q=80');"></div>
+      <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1000&q=80');"></div>
+      <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?auto=format&fit=crop&w=1000&q=80');"></div>
+    </div>
+
+    <!-- Vignette Shadow Layer -->
+    <div class="overlay-gradient"></div>
+
+    <!-- Static Bottom Content -->
+    <div class="static-bottom-content">
+      <div class="trip-tag">SEASON 2026</div>
+      <h2 class="trip-title">Discover Our Next Destinations</h2>
+      <p class="trip-desc">Explore hand-picked routes, curated itineraries, and unforgettable adventures worldwide.</p>
+      
+      <div class="carousel-dots">
+        <span class="dot active" onclick="setSlide(0)"></span>
+        <span class="dot" onclick="setSlide(1)"></span>
+        <span class="dot" onclick="setSlide(2)"></span>
+      </div>
+      
+      <button class="cta-btn">Explore Journey</button>
+    </div>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide-bg');
+    const dots = document.querySelectorAll('.dot');
+    const audio = document.getElementById('bgAudio');
+    const soundBtn = document.getElementById('soundBtn');
+    const frame = document.getElementById('frame');
+
+    let currentIndex = 0;
+    let autoSlideTimer;
+    let isMuted = false;
+
+    // Carousel Display Logic
+    function showSlide(index) {
+      slides.forEach(slide => slide.classList.remove('active'));
+      dots.forEach(dot => dot.classList.remove('active'));
+
+      slides[index].classList.add('active');
+      dots[index].classList.add('active');
+      currentIndex = index;
+    }
+
+    function nextSlide() {
+      const nextIndex = (currentIndex + 1) % slides.length;
+      showSlide(nextIndex);
+    }
+
+    function prevSlide() {
+      const prevIndex = (currentIndex - 1 + slides.length) % slides.length;
+      showSlide(prevIndex);
+    }
+
+    function setSlide(index) {
+      showSlide(index);
+      resetAutoSlide();
+    }
+
+    function startAutoSlide() {
+      autoSlideTimer = setInterval(nextSlide, 4500);
+    }
+
+    function resetAutoSlide() {
+      clearInterval(autoSlideTimer);
+      startAutoSlide();
+    }
+
+    // Audio Autoplay & Toggle (Handles modern browser autoplay policies)
+    function playAudio() {
+      if (!isMuted) {
+        audio.play().catch(() => {
+          // Awaiting first user gesture if browser blocks initial autoplay
+        });
+      }
+    }
+
+    soundBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (audio.paused) {
+        audio.play();
+        isMuted = false;
+        soundBtn.textContent = '🔊';
+      } else {
+        audio.pause();
+        isMuted = true;
+        soundBtn.textContent = '🔇';
+      }
+    });
+
+    // Start sound on first user touch/interaction
+    document.addEventListener('pointerdown', function initAudio() {
+      playAudio();
+      document.removeEventListener('pointerdown', initAudio);
+    }, { once: true });
+
+    // Touch & Swipe Gestures
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    frame.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    frame.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const swipeDistance = touchEndX - touchStartX;
+      if (swipeDistance < -40) {
+        nextSlide();
+        resetAutoSlide();
+      } else if (swipeDistance > 40) {
+        prevSlide();
+        resetAutoSlide();
+      }
+    }
+
+    // Dismiss Overlay
+    document.getElementById('closeBtn').addEventListener('click', () => {
+      frame.style.display = 'none';
+      clearInterval(autoSlideTimer);
+      audio.pause();
+    });
+
+    // Initialize
+    playAudio();
+    startAutoSlide();
+  </script>
+</body>
+</html>
