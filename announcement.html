@@ -34,7 +34,7 @@
       overflow: hidden;
     }
 
-    /* Top Controls (Mute/Audio + Close) */
+    /* Top Controls (Mute/Audio) */
     .top-controls {
       position: absolute;
       top: 24px;
@@ -42,7 +42,7 @@
       right: 24px;
       z-index: 50;
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
       max-width: 1200px;
       margin: 0 auto;
@@ -224,17 +224,20 @@
     }
 
     .cta-btn {
+      display: inline-block;
       width: 100%;
       max-width: 360px;
       padding: 16px 28px;
       background: #0d9488;
       color: #ffffff;
+      text-decoration: none;
       border: none;
       border-radius: 14px;
       font-size: 15px;
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
+      text-align: center;
       cursor: pointer;
       box-shadow: 0 8px 24px rgba(13, 148, 136, 0.45);
       transition: transform 0.15s ease, background-color 0.2s ease;
@@ -257,10 +260,9 @@
       <source src="https://www.image2url.com/r2/default/audio/1787467169564-5505bd10-c21e-498d-bed9-18e2a421d075.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Top Action Buttons -->
+    <!-- Top Action Button -->
     <div class="top-controls">
       <button class="icon-btn" id="soundBtn" aria-label="Toggle Sound">🔊</button>
-      <button class="icon-btn" id="closeBtn" aria-label="Close Announcement">✕</button>
     </div>
 
     <!-- Static Header -->
@@ -292,7 +294,7 @@
           <span class="dot" onclick="setSlide(2)"></span>
         </div>
         
-        <button class="cta-btn">Explore Journey</button>
+        <a href="https://up-roadways.vercel.app/" target="_blank" rel="noopener noreferrer" class="cta-btn">Explore Journey</a>
       </div>
     </div>
   </div>
@@ -348,7 +350,6 @@
         audio.play().then(() => {
           soundBtn.textContent = '🔊';
         }).catch(() => {
-          // If browser blocks unmuted autoplay, mute first to bypass restriction, then prompt on first click
           audio.muted = true;
           audio.play().then(() => {
             soundBtn.textContent = '🔇';
@@ -357,7 +358,6 @@
       }
     }
 
-    // Unlock full audio on first interaction
     const unlockAudio = () => {
       if (!isMuted) {
         audio.muted = false;
@@ -412,14 +412,7 @@
       }
     }
 
-    // Dismiss Overlay
-    document.getElementById('closeBtn').addEventListener('click', () => {
-      container.style.display = 'none';
-      clearInterval(autoSlideTimer);
-      audio.pause();
-    });
-
-    // Keyboard navigation (Desktop support)
+    // Keyboard navigation
     window.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight') {
         nextSlide();
@@ -427,10 +420,6 @@
       } else if (e.key === 'ArrowLeft') {
         prevSlide();
         resetAutoSlide();
-      } else if (e.key === 'Escape') {
-        container.style.display = 'none';
-        clearInterval(autoSlideTimer);
-        audio.pause();
       }
     });
 
