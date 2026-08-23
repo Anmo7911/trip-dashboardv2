@@ -1506,7 +1506,8 @@
     <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-100 via-slate-100/60 to-transparent pointer-events-none z-10"></div>
 
     <!-- Outer header container height locked so cards below never shift -->
-    <div class="relative z-20 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-2.5 pb-8 flex flex-col justify-start h-[190px] sm:h-[210px]">
+    <!-- Outer header container with increased height for desktop -->
+<div class="relative z-20 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-2.5 pb-8 flex flex-col justify-start h-[190px] sm:h-[210px] lg:h-[235px]">
       
       <!-- Top Action Bar: Floating Chat Button (Mobile Only) -->
       <div class="flex items-center justify-end w-full h-9 sm:h-10">
@@ -1538,7 +1539,7 @@
    
 <!-- Live Notice Container (Expanded Size for Desktop) -->
 <div id="notice-container"
-  class="hidden overflow-hidden w-screen relative left-1/2 -translate-x-1/2 mt-[40px] lg:mt-[45px] pb-1 z-20 pointer-events-none">
+  class="hidden overflow-hidden w-screen relative left-1/2 -translate-x-1/2 mt-[40px] lg:mt-[45px] pb-1 lg:pb-3 z-20 pointer-events-none">
   <div id="notice-slider" class="carousel-track pointer-events-auto">
     <!-- Standard Notice Slot -->
     <div class="carousel-item px-4 pb-1">
