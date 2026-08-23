@@ -1249,30 +1249,83 @@
   </div>
 
   <!-- =========================================
-       APP LOCK SCREEN (Trip Concluded State)
-       Overlays entire app if trip is marked finished/archived
+       APP LOCK SCREEN (Trip Concluded State - Split View)
        ========================================= -->
   <div id="live-lock-screen"
-    class="hidden fixed inset-0 z-[9999] bg-slate-900 flex items-center justify-center p-4 font-sans backdrop-blur-md">
-    <div
-      class="max-w-sm w-full bg-slate-50 rounded-3xl shadow-2xl overflow-hidden text-center p-8 border border-slate-200">
-      <div
-        class="w-16 h-16 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-        <!-- Lock icon SVG -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-          stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-        </svg>
-      </div>
-      <h1 class="text-2xl font-black text-slate-900 mb-2">Trip Concluded</h1>
-      <p class="text-slate-500 text-sm mb-8 leading-relaxed">The financial ledger has been officially settled and
-        archived. Live access is no longer available. Contact Admin for trip reports.</p>
+    class="hidden fixed inset-0 z-[9999] bg-[#090e17]/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 font-sans overflow-y-auto">
+    
+    <div class="grid grid-cols-1 md:grid-cols-[1.1fr_1fr] max-w-[760px] w-full bg-[#0f172a] border border-[#1e293b] rounded-3xl overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] text-slate-100 my-auto">
+      
+      <!-- Left Column: Stepper Timeline -->
+      <div class="p-6 sm:p-9 border-b md:border-b-0 md:border-r border-[#1e293b] flex flex-col justify-center">
+        <h3 class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-6">
+          Lifecycle Progress
+        </h3>
+        
+        <div class="relative pl-7 before:content-[''] before:absolute before:left-[7px] before:top-1.5 before:bottom-1.5 before:w-[2px] before:bg-[#1e293b] space-y-6">
+          
+          <!-- Step 1 -->
+          <div class="relative">
+            <span class="absolute -left-7 top-0.5 w-4 h-4 rounded-full bg-emerald-500 border-[3px] border-[#0f172a] shadow-[0_0_0_2px_rgba(16,185,129,0.3)]"></span>
+            <h5 class="text-sm font-semibold text-slate-100">Active Trip Operations</h5>
+            <p class="text-xs text-slate-400 mt-0.5">Receipt collection & expense tracking</p>
+          </div>
 
-      <a href="mailto:officialanmol1609@gmail.com?subject=Trek App - Archive Request"
-        class="inline-block w-full bg-slate-900 active:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition-colors decoration-none">
-        Contact Admin
-      </a>
+          <!-- Step 2 -->
+          <div class="relative">
+            <span class="absolute -left-7 top-0.5 w-4 h-4 rounded-full bg-emerald-500 border-[3px] border-[#0f172a] shadow-[0_0_0_2px_rgba(16,185,129,0.3)]"></span>
+            <h5 class="text-sm font-semibold text-slate-100">Settlement & Balancing</h5>
+            <p class="text-xs text-slate-400 mt-0.5">Debt calculations and approvals</p>
+          </div>
+
+          <!-- Step 3 (Current / Active) -->
+          <div class="relative">
+            <span class="absolute -left-7 top-0.5 w-4 h-4 rounded-full bg-rose-500 border-[3px] border-[#0f172a] shadow-[0_0_0_2px_rgba(239,68,68,0.4),0_0_12px_rgba(239,68,68,0.6)]"></span>
+            <h5 class="text-sm font-semibold text-rose-400">Archived & Locked</h5>
+            <p class="text-xs text-slate-400 mt-0.5">Read-only cold storage mode</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right Column: Status Summary & Actions -->
+      <div class="p-6 sm:p-9 bg-[#0b1120] flex flex-col justify-between">
+        <div>
+          <span class="inline-block text-[11px] uppercase text-sky-400 font-bold tracking-wider mb-1.5">
+            Current Status
+          </span>
+          <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            Trip Concluded
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
+            The financial ledger has been officially settled and archived. Live modifications are no longer permitted.
+          </p>
+
+          <!-- Dynamic Info Box -->
+          <div class="bg-[#131d33] border border-[#1e293b] rounded-xl p-4 mt-5 space-y-2.5 text-xs">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Workspace State</span>
+              <strong class="text-rose-400">Locked (Read-Only)</strong>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Transactions</span>
+              <strong id="concluded-tx-count" class="text-slate-200">Settled</strong>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400">Settlement Result</span>
+              <strong class="text-emerald-400">100% Resolved</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-7 flex gap-2.5">
+          <a href="mailto:officialanmol1609@gmail.com?subject=Trip%20Ledger%20Access%20Request"
+            class="flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white transition active:scale-95 text-center shadow-lg">
+            Contact Admin
+          </a>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -3315,16 +3368,24 @@
        }
      }// <-- Properly closing if (data.styles)
       
-      // 2. Check the global trip live status
+     // 2. Check the global trip live status
       const lockScreen = document.getElementById('live-lock-screen');
       if (data.appStatus === "CLOSED" || data.appStatus === "LOCKED") {
         lockScreen.classList.remove('hidden');
         document.body.classList.add('overflow-hidden', 'touch-none');
+        
+        // Dynamically populate settled transactions count
+        const txCountEl = document.getElementById('concluded-tx-count');
+        if (txCountEl && data.transactions) {
+          txCountEl.innerText = `${data.transactions.length} Transactions`;
+        }
         return; 
       } else {
         lockScreen.classList.add('hidden');
         document.body.classList.remove('overflow-hidden', 'touch-none');
       }
+
+    
       
       globalActiveDataPayloadBackup = data;
       
