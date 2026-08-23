@@ -1535,25 +1535,25 @@
         </div>
       </div>
       
-      <!-- Live Notice Container (Warning / Standard slider) -->
-<!-- Live Notice Container (42px top margin on Mobile, 45px on Desktop) -->
+   
+<!-- Live Notice Container (Expanded Size for Desktop) -->
 <div id="notice-container"
-  class="hidden overflow-hidden w-screen relative left-1/2 -translate-x-1/2 mt-[42px] lg:mt-[45px] pb-1 z-20 pointer-events-none">
+  class="hidden overflow-hidden w-screen relative left-1/2 -translate-x-1/2 mt-[40px] lg:mt-[45px] pb-1 z-20 pointer-events-none">
   <div id="notice-slider" class="carousel-track pointer-events-auto">
     <!-- Standard Notice Slot -->
     <div class="carousel-item px-4 pb-1">
       <div
-        class="bg-indigo-50/90 backdrop-blur-md border border-indigo-100/80 shadow-sm rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto">
-        <span class="relative flex h-2 w-2 flex-shrink-0"></span>
-        <p id="ui-trip-notice" class="text-[11px] font-bold text-indigo-700 truncate text-center"></p>
+        class="bg-indigo-50/90 backdrop-blur-md border border-indigo-100/80 shadow-sm rounded-full px-3 py-1 lg:px-5 lg:py-2 flex items-center gap-2 lg:gap-2.5 justify-center max-w-md lg:max-w-xl mx-auto">
+        <span class="relative flex h-2 w-2 lg:h-2.5 lg:w-2.5 flex-shrink-0"></span>
+        <p id="ui-trip-notice" class="text-[11px] lg:text-xs font-bold text-indigo-700 truncate text-center"></p>
       </div>
     </div>
     <!-- Warning Notice Slot -->
     <div class="carousel-item px-4 pb-1">
       <div
-        class="bg-rose-50/90 backdrop-blur-md border border-rose-100/80 shadow-sm rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto warning-pulse">
-        <span class="relative flex h-2 w-2 flex-shrink-0"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span></span>
-        <p id="ui-warning-notice" class="text-[11px] font-bold text-rose-700 truncate text-center"></p>
+        class="bg-rose-50/90 backdrop-blur-md border border-rose-100/80 shadow-sm rounded-full px-3 py-1 lg:px-5 lg:py-2 flex items-center gap-2 lg:gap-2.5 justify-center max-w-md lg:max-w-xl mx-auto warning-pulse">
+        <span class="relative flex h-2 w-2 lg:h-2.5 lg:w-2.5 flex-shrink-0"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 lg:h-2.5 lg:w-2.5 bg-rose-500"></span></span>
+        <p id="ui-warning-notice" class="text-[11px] lg:text-xs font-bold text-rose-700 truncate text-center"></p>
       </div>
     </div>
   </div>
