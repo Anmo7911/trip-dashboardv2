@@ -233,6 +233,18 @@
             <i data-lucide="toggle-left" class="w-4 h-4"></i> Global App Switches
           </h3>
 
+          <!-- Announcement Mode Switch -->
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
+            <div class="pr-2">
+              <p class="text-xs font-bold text-white">Announcement Mode</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Redirect users to announcement page</p>
+            </div>
+            <select onchange="saveSetting(29, 'b', this.value, 'Announcement mode updated')" id="setAnnouncementMode" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+              <option value="DISABLED">DISABLED (Off)</option>
+              <option value="ENABLED">ENABLED (Redirect)</option>
+            </select>
+          </div>
+
           <!-- Itinerary Checklist Visibility Switch -->
           <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
             <div class="pr-2">
@@ -373,10 +385,10 @@
         </div>
 
         <div class="flex justify-end pt-1">
-  <button type="button" id="pushBroadcastBtn" onclick="pushInstantBroadcast()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 active:scale-95 transition shadow-md">
-    <i data-lucide="send" class="w-3.5 h-3.5"></i> Instant Push Live
-  </button>
-</div>
+          <button type="button" id="pushBroadcastBtn" onclick="pushInstantBroadcast()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 active:scale-95 transition shadow-md">
+            <i data-lucide="send" class="w-3.5 h-3.5"></i> Instant Push Live
+          </button>
+        </div>
       </div>
 
       <!-- Checklist Tasks Header -->
@@ -1084,6 +1096,11 @@
       document.getElementById('setContriStatus').value = d.contributionToggle || 'ACTIVE';
       document.getElementById('setSignOffStatus').value = d.signOffStatus || 'closed';
       document.getElementById('setSecurityStatus').value = d.securityStatus || 'normal';
+
+      // Announcement Mode Sync
+      if (document.getElementById('setAnnouncementMode')) {
+        document.getElementById('setAnnouncementMode').value = d.announcementMode || 'DISABLED';
+      }
 
       // Checklist Settings Sync
       document.getElementById('setChecklistVisibility').value = d.checklistVisibility || 'VISIBLE';
