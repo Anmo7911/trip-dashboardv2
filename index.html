@@ -1535,14 +1535,14 @@
         </div>
       </div>
       
-      <!-- Live Notice Container (Warning / Standard slider) -->
+      <!-- Live Notice Container (Transparent Background) -->
 <div id="notice-container"
-  class="hidden overflow-hidden w-screen relative left-1/2 -translate-x-1/2 bg-slate-50 border-b border-slate-200 -mt-2 pt-4 pb-1 z-10">
+  class="hidden overflow-hidden w-full bg-transparent -mt-2 pt-2 pb-1 relative z-10">
   <div id="notice-slider" class="carousel-track">
     <!-- Standard Notice Slot -->
     <div class="carousel-item px-4 pb-1">
       <div
-        class="bg-indigo-50 border border-indigo-100 rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto">
+        class="bg-indigo-50/90 backdrop-blur-sm border border-indigo-100/80 rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto shadow-sm">
         <span class="relative flex h-2 w-2 flex-shrink-0"></span>
         <p id="ui-trip-notice" class="text-[11px] font-bold text-indigo-700 truncate text-center"></p>
       </div>
@@ -1550,13 +1550,16 @@
     <!-- Warning Notice Slot -->
     <div class="carousel-item px-4 pb-1">
       <div
-        class="bg-rose-50 border border-rose-100 rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto warning-pulse">
+        class="bg-rose-50/90 backdrop-blur-sm border border-rose-100/80 rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto warning-pulse shadow-sm">
         <span class="relative flex h-2 w-2 flex-shrink-0"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span></span>
         <p id="ui-warning-notice" class="text-[11px] font-bold text-rose-700 truncate text-center"></p>
       </div>
     </div>
   </div>
 </div>
+
+
+      
   </header>
 
     
