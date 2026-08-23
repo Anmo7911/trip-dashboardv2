@@ -4119,48 +4119,48 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     // 4-DIGIT PIN INPUT INTERACTION HANDLERS
     // ==========================================
     function handlePinInput(input, idx) {
-  const raw = input.value.replace(/[^0-9]/g, '');
-  const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
-  
-  if (raw) {
-    const digit = raw.slice(-1);
-    input.dataset.value = digit;
-    input.value = '•'; // Immediately masks to dot
+      const raw = input.value.replace(/[^0-9]/g, '');
+      const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
+      
+      if (raw) {
+        const digit = raw.slice(-1);
+        input.dataset.value = digit;
+        input.value = '•'; // Immediately masks to dot on mobile & desktop
 
-    input.classList.remove('digit-pop');
-    void input.offsetWidth;
-    input.classList.add('digit-pop');
+        input.classList.remove('digit-pop');
+        void input.offsetWidth;
+        input.classList.add('digit-pop');
 
-    if (idx < 3) {
-      inputs[idx + 1].focus();
-    } else if (idx === 3) {
-      processAppLogin();
+        if (idx < 3) {
+          inputs[idx + 1].focus();
+        } else if (idx === 3) {
+          processAppLogin();
+        }
+      } else {
+        input.dataset.value = '';
+        input.value = '';
+      }
     }
-  } else {
-    input.dataset.value = '';
-    input.value = '';
-  }
-}
 
-function handlePinBack(e, input, idx) {
-  const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
-  if (e.key === 'Backspace') {
-    input.dataset.value = '';
-    input.value = '';
-    if (idx > 0) {
-      inputs[idx - 1].focus();
-      inputs[idx - 1].dataset.value = '';
-      inputs[idx - 1].value = '';
+    function handlePinBack(e, input, idx) {
+      const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
+      if (e.key === 'Backspace') {
+        input.dataset.value = '';
+        input.value = '';
+        if (idx > 0) {
+          inputs[idx - 1].focus();
+          inputs[idx - 1].dataset.value = '';
+          inputs[idx - 1].value = '';
+        }
+      }
     }
-  }
-}
 
-function getEnteredPin() {
-  const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
-  let pin = '';
-  inputs.forEach(inp => pin += (inp.dataset.value || ''));
-  return pin;
-}
+    function getEnteredPin() {
+      const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
+      let pin = '';
+      inputs.forEach(inp => pin += (inp.dataset.value || ''));
+      return pin;
+    }
 
     // ==========================================
     // AUTHENTICATION LOGIC (Login/Logout)
@@ -4200,7 +4200,9 @@ function getEnteredPin() {
               localStorage.setItem('trekLoggedInPIN', typedPin);
               document.getElementById('login-overlay').classList.add('hidden');
               btn.innerText = "Sign In";
+              
               inputs.forEach(inp => {
+                inp.dataset.value = '';
                 inp.value = '';
                 inp.classList.remove('success', 'error');
               });
@@ -4233,6 +4235,7 @@ function getEnteredPin() {
       setTimeout(() => {
         grid.classList.remove('shake-grid');
         inputs.forEach(inp => {
+          inp.dataset.value = '';
           inp.value = '';
           inp.classList.remove('error');
         });
@@ -4248,10 +4251,10 @@ function getEnteredPin() {
       
       const inputs = document.querySelectorAll('#login-pin-grid .pin-field');
       inputs.forEach(inp => {
-  inp.dataset.value = '';
-  inp.value = '';
-  inp.classList.remove('error', 'success');
-});
+        inp.dataset.value = '';
+        inp.value = '';
+        inp.classList.remove('success', 'error');
+      });
       
       const loginBtn = document.getElementById('login-submit-btn');
       if (loginBtn) loginBtn.innerText = "Sign In";
@@ -4265,6 +4268,8 @@ function getEnteredPin() {
       lucide.createIcons();
     }
 
+
+    
     // ==========================================
     // BOTTOM SHEET MENU BEHAVIORS ("More" Tab)
     // ==========================================
