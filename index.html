@@ -4,6 +4,9 @@
 
 <head>
 
+  <!-- Include Chart.js via CDN for Spend Trend Graph -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <link rel="apple-touch-icon" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG">
 
   <!-- Mobile Responsive Viewport Setup (Fixes Mobile Scaling) -->
@@ -1697,6 +1700,35 @@
       </div>
 
     </div>
+
+
+
+    <!-- SPEND TREND GRAPH CARD -->
+<div id="ui-spend-chart-wrapper" class="w-full mt-4 lg:mt-6 transition-all duration-500 overflow-hidden opacity-100">
+  <div class="bg-white rounded-[32px] p-5 lg:p-6 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)]">
+    
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+          <i data-lucide="trending-up" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <h3 class="text-xs font-black text-slate-800 uppercase tracking-wide">Daily Spend Trend</h3>
+          <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Cumulative Spend vs. Trip Budget</p>
+        </div>
+      </div>
+      <span id="chart-pace-badge" class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-100">
+        On Track
+      </span>
+    </div>
+
+    <!-- Chart Canvas Container -->
+    <div class="relative w-full h-[180px] sm:h-[220px]">
+      <canvas id="spendTrendChart"></canvas>
+    </div>
+
+  </div>
+</div>
 
    
 
@@ -3468,6 +3500,7 @@
       }).reverse();
 
       renderLedgerList();
+     renderSpendTrendChart(data);
       triggerSequentialWaveEffects(data);
       
       // --- ROUTE/PLACES RENDERING ENGINE ---
@@ -3982,69 +4015,72 @@ const places = payload.places.filter(p => p.tripDay || p.location);
     
     
     function toggleLedger() {
-      isLedgerActive = !isLedgerActive;
-      
-      const mainView = document.getElementById('view-spend');
-      const topCards = document.getElementById('ui-top-cards-wrapper');
-      const formWrap = document.getElementById('ui-form-wrapper');
-      const ledgerBox = document.getElementById('ui-ledger-container');
-      const header = document.getElementById('app-header');
+  isLedgerActive = !isLedgerActive;
+  
+  const mainView = document.getElementById('view-spend');
+  const topCards = document.getElementById('ui-top-cards-wrapper');
+  const formWrap = document.getElementById('ui-form-wrapper');
+  const ledgerBox = document.getElementById('ui-ledger-container');
+  const header = document.getElementById('app-header');
+  const chartWrap = document.getElementById('ui-spend-chart-wrapper'); // <-- Added
 
-      if (isLedgerActive) {
-        // Expand the ledger
-        renderLedgerList();
+  if (isLedgerActive) {
+    // Expand the ledger
+    renderLedgerList();
 
-        // 1. Move the view behind the sticky header so ledger scrolls underneath
-        if (mainView) {
-          mainView.classList.remove('z-40');
-          mainView.classList.add('z-20');
-        }
-
-        // 2. Make header sticky on mobile
-        if (header) {
-          header.classList.remove('relative');
-          header.classList.add('sticky');
-        }
-
-        // 3. Hide standard cards & form
-        topCards.classList.add('hidden');
-        formWrap.classList.add('hidden');
-        
-        // 4. Show and animate ledger
-        ledgerBox.classList.remove('hidden');
-        setTimeout(() => {
-          ledgerBox.classList.remove('opacity-0', 'translate-y-10');
-        }, 50);
-
-      } else {
-        // 1. Restore container layer above header so cards sit in front
-        if (mainView) {
-          mainView.classList.remove('z-20');
-          mainView.classList.add('z-40');
-        }
-
-        // 2. Restore non-sticky header for standard Spend form on mobile
-        if (header) {
-          header.classList.remove('sticky');
-          header.classList.add('relative');
-        }
-
-        // 3. Hide ledger
-        ledgerBox.classList.add('opacity-0', 'translate-y-10');
-        setTimeout(() => { ledgerBox.classList.add('hidden'); }, 300);
-
-        // 4. Bring back standard Spend cards & form
-        topCards.classList.remove('hidden');
-        formWrap.classList.remove('hidden');
-        
-        topCards.style.maxHeight = '300px';
-        topCards.style.opacity = '1';
-        formWrap.style.maxHeight = '500px';
-        formWrap.style.opacity = '1';
-      }
-      
-      lucide.createIcons();
+    // 1. Move the view behind the sticky header so ledger scrolls underneath
+    if (mainView) {
+      mainView.classList.remove('z-40');
+      mainView.classList.add('z-20');
     }
+
+    // 2. Make header sticky on mobile
+    if (header) {
+      header.classList.remove('relative');
+      header.classList.add('sticky');
+    }
+
+    // 3. Hide standard cards, form & chart
+    topCards.classList.add('hidden');
+    formWrap.classList.add('hidden');
+    if (chartWrap) chartWrap.classList.add('hidden'); // <-- Added
+    
+    // 4. Show and animate ledger
+    ledgerBox.classList.remove('hidden');
+    setTimeout(() => {
+      ledgerBox.classList.remove('opacity-0', 'translate-y-10');
+    }, 50);
+
+  } else {
+    // 1. Restore container layer above header so cards sit in front
+    if (mainView) {
+      mainView.classList.remove('z-20');
+      mainView.classList.add('z-40');
+    }
+
+    // 2. Restore non-sticky header for standard Spend form on mobile
+    if (header) {
+      header.classList.remove('sticky');
+      header.classList.add('relative');
+    }
+
+    // 3. Hide ledger
+    ledgerBox.classList.add('opacity-0', 'translate-y-10');
+    setTimeout(() => { ledgerBox.classList.add('hidden'); }, 300);
+
+    // 4. Bring back standard Spend cards, form & chart
+    topCards.classList.remove('hidden');
+    formWrap.classList.remove('hidden');
+    if (chartWrap) chartWrap.classList.remove('hidden'); // <-- Added
+    
+    topCards.style.maxHeight = '300px';
+    topCards.style.opacity = '1';
+    formWrap.style.maxHeight = '500px';
+    formWrap.style.opacity = '1';
+  }
+  
+  lucide.createIcons();
+}
 
     // ==========================================
     // HTML5 CANVAS SIGNATURE CAPTURE ENGINE
@@ -6022,6 +6058,135 @@ async function executePendingChecklistAction() {
   showTab('transactions', btnEl);
 }
 
+
+
+    let spendTrendChartInstance = null;
+
+function renderSpendTrendChart(data) {
+  const canvas = document.getElementById('spendTrendChart');
+  if (!canvas || !data || !data.transactions) return;
+
+  const totalBudget = (data.stats && data.stats.budget) || 0;
+  const transactions = [...data.transactions].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  // 1. Group expenses by date (YYYY-MM-DD)
+  const dailyMap = {};
+  transactions.forEach(t => {
+    if (!t.date) return;
+    const d = new Date(t.date);
+    if (isNaN(d.getTime())) return;
+    const key = d.toISOString().split('T')[0];
+    dailyMap[key] = (dailyMap[key] || 0) + (parseFloat(t.amount) || 0);
+  });
+
+  // 2. Prepare cumulative daily points
+  const sortedDates = Object.keys(dailyMap).sort();
+  const labels = [];
+  const cumulativeData = [];
+  let runningSum = 0;
+
+  if (sortedDates.length === 0) {
+    labels.push('Start');
+    cumulativeData.push(0);
+  } else {
+    sortedDates.forEach(dateStr => {
+      const d = new Date(dateStr);
+      labels.push(d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }));
+      runningSum += dailyMap[dateStr];
+      cumulativeData.push(runningSum);
+    });
+  }
+
+  // 3. Update Status Badge
+  const paceBadge = document.getElementById('chart-pace-badge');
+  if (paceBadge) {
+    if (runningSum > totalBudget) {
+      paceBadge.className = 'px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-100';
+      paceBadge.innerText = 'Over Budget';
+    } else if (runningSum > totalBudget * 0.8) {
+      paceBadge.className = 'px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-50 text-amber-600 border border-amber-100';
+      paceBadge.innerText = 'High Burn';
+    } else {
+      paceBadge.className = 'px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-100';
+      paceBadge.innerText = 'On Track';
+    }
+  }
+
+  // 4. Destroy existing chart instance on re-render
+  if (spendTrendChartInstance) {
+    spendTrendChartInstance.destroy();
+  }
+
+  const ctx = canvas.getContext('2d');
+  
+  // Gradient fill under the curve
+  const gradient = ctx.createLinearGradient(0, 0, 0, 180);
+  gradient.addColorStop(0, 'rgba(99, 102, 241, 0.25)');
+  gradient.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+
+  spendTrendChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Cumulative Spend',
+          data: cumulativeData,
+          borderColor: '#4f46e5',
+          backgroundColor: gradient,
+          borderWidth: 2.5,
+          tension: 0.35,
+          fill: true,
+          pointBackgroundColor: '#4f46e5',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6
+        },
+        {
+          label: 'Total Budget',
+          data: labels.map(() => totalBudget),
+          borderColor: '#e2e8f0',
+          borderWidth: 1.5,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0f172a',
+          titleFont: { size: 10, weight: 'bold' },
+          bodyFont: { size: 11, weight: 'bold' },
+          padding: 8,
+          cornerRadius: 10,
+          callbacks: {
+            label: (ctx) => ` ₹${Math.round(ctx.raw).toLocaleString('en-IN')}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: '#94a3b8', font: { size: 9, weight: 'bold' } }
+        },
+        y: {
+          grid: { color: '#f1f5f9' },
+          ticks: {
+            color: '#94a3b8',
+            font: { size: 9, weight: 'bold' },
+            callback: (val) => '₹' + Math.round(val).toLocaleString('en-IN')
+          }
+        }
+      }
+    }
+  });
+}
     
 
     
