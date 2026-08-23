@@ -310,6 +310,9 @@
     const soundBtn = document.getElementById('soundBtn');
     const container = document.getElementById('container');
 
+    // Set initial audio volume to 40%
+    audio.volume = 0.4;
+
     let currentIndex = 0;
     let autoSlideTimer;
     let isMuted = false;
@@ -362,6 +365,7 @@
     // Audio Autoplay Management
     function attemptPlayAudio() {
       if (!isMuted) {
+        audio.volume = 0.4;
         audio.play().then(() => {
           soundBtn.textContent = '🔊';
         }).catch(() => {
@@ -376,6 +380,7 @@
     const unlockAudio = () => {
       if (!isMuted) {
         audio.muted = false;
+        audio.volume = 0.4;
         audio.play();
         soundBtn.textContent = '🔊';
       }
@@ -393,6 +398,7 @@
       e.stopPropagation();
       if (audio.paused || audio.muted) {
         audio.muted = false;
+        audio.volume = 0.4;
         audio.play();
         isMuted = false;
         soundBtn.textContent = '🔊';
