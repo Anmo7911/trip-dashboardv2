@@ -1535,38 +1535,28 @@
         </div>
       </div>
       
-      <!-- Frosted Notice & Warning Bar (Anchored at exact original position) -->
-     <!-- Moved slightly downward using bottom-9 -->
-<div id="notice-container" class="absolute bottom-9 left-0 right-0 max-w-md lg:max-w-5xl mx-auto px-4 w-full">
-        <div class="overflow-hidden w-full">
-          <div id="notice-slider" class="carousel-track">
-            <!-- Notice Slot -->
-            <div class="carousel-item px-1">
-              <div class="bg-white/85 backdrop-blur-md border border-white/90 rounded-full px-3.5 py-1.5 flex items-center justify-between shadow-sm cursor-pointer hover:bg-white/95 transition-all">
-                <div class="flex items-center gap-2 min-w-0 pr-2">
-                  <div class="w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
-                    <i data-lucide="alert-circle" class="w-3.5 h-3.5 stroke-[2.5]"></i>
-                  </div>
-                  <p id="ui-trip-notice" class="text-[10.5px] font-black text-rose-900 truncate tracking-wide"></p>
-                </div>
-                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
-              </div>
-            </div>
-            <!-- Warning Notice Slot -->
-            <div class="carousel-item px-1">
-              <div class="bg-rose-50/90 backdrop-blur-md border border-rose-200 rounded-full px-3.5 py-1.5 flex items-center justify-between shadow-sm cursor-pointer">
-                <div class="flex items-center gap-2 min-w-0 pr-2">
-                  <div class="w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-                    <i data-lucide="alert-triangle" class="w-3.5 h-3.5 stroke-[2.5]"></i>
-                  </div>
-                  <p id="ui-warning-notice" class="text-[10.5px] font-black text-rose-900 truncate tracking-wide"></p>
-                </div>
-                <i data-lucide="chevron-right" class="w-4 h-4 text-rose-400 shrink-0"></i>
-              </div>
-            </div>
-          </div>
-        </div>
+      <!-- Live Notice Container (Warning / Standard slider) -->
+<div id="notice-container"
+  class="hidden overflow-hidden w-full bg-slate-50 border-b border-slate-200 -mt-2 pt-4 pb-1 relative z-10">
+  <div id="notice-slider" class="carousel-track">
+    <!-- Standard Notice Slot -->
+    <div class="carousel-item px-4 pb-1">
+      <div
+        class="bg-indigo-50 border border-indigo-100 rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto">
+        <span class="relative flex h-2 w-2 flex-shrink-0"></span>
+        <p id="ui-trip-notice" class="text-[11px] font-bold text-indigo-700 truncate text-center"></p>
       </div>
+    </div>
+    <!-- Warning Notice Slot -->
+    <div class="carousel-item px-4 pb-1">
+      <div
+        class="bg-rose-50 border border-rose-100 rounded-full px-3 py-1 flex items-center gap-2 justify-center max-w-md mx-auto warning-pulse">
+        <span class="relative flex h-2 w-2 flex-shrink-0"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span></span>
+        <p id="ui-warning-notice" class="text-[11px] font-bold text-rose-700 truncate text-center"></p>
+      </div>
+    </div>
+  </div>
+</div>
   </header>
 
     
