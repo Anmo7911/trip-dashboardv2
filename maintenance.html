@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Maintenance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --font-main: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: "Space Mono", monospace;
+    --accent: #ffffff;
+    --mask-size: 280px;
+    --feather: 90px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #080808;
+    font-family: var(--font-main);
+    color: #e4e7e5;
+}
+
+/* Background Subtle Grid Texture */
+.grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+}
+
+/* Giant Typography Layers */
+.void-bg,
+.void-reveal {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transition: padding 0.3s ease, align-items 0.3s ease;
+}
+
+.big-title {
+    font-size: clamp(44px, 12vw, 170px);
+    line-height: 0.9;
+    letter-spacing: -0.06em;
+    font-weight: 900;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.void-bg h1 {
+    color: #141414;
+}
+
+/* Feathered Radial Mask Reveal */
+.void-reveal {
+    -webkit-mask-image: radial-gradient(
+        circle calc(var(--mask-size) / 2) at var(--x, 50%) var(--y, 50%),
+        black 0%,
+        black calc(100% - var(--feather)),
+        transparent 100%
+    );
+    mask-image: radial-gradient(
+        circle calc(var(--mask-size) / 2) at var(--x, 50%) var(--y, 50%),
+        black 0%,
+        black calc(100% - var(--feather)),
+        transparent 100%
+    );
+    will-change: mask-image, -webkit-mask-image;
+}
+
+.void-reveal h1 {
+    color: var(--accent);
+    text-shadow: 0 0 50px rgba(255, 255, 255, 0.4);
+}
+
+/* Center Card */
+.void-center-card {
+    position: absolute;
+    top: calc(50% - 45px);
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+    z-index: 20;
+    background: transparent;
+    padding: 32px 40px;
+    border-radius: 20px;
+    border: none;
+    width: min(90vw, 420px);
+}
+
+.card-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.tag-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: blink 1.6s infinite ease-in-out;
+}
+
+.void-center-card p {
+    margin-top: 14px;
+    color: #929292;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* Custom Cursor Reticle */
+.custom-cursor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 100;
+    will-change: transform;
+    transform: translate(-50%, -50%);
+}
+
+.cursor-crosshair {
+    width: 54px;
+    height: 54px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cursor-crosshair::after {
+    content: "";
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent);
+}
+
+/* Responsive Footer Meta */
+.void-meta {
+    position: absolute;
+    left: 36px;
+    right: 36px;
+    bottom: 32px;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: #555555;
+    letter-spacing: 0.15em;
+    z-index: 20;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.8); }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --mask-size: 200px;
+        --feather: 60px;
+    }
+
+    .void-bg,
+    .void-reveal {
+        align-items: flex-start;
+        padding-top: 14vh;
+    }
+
+    .big-title {
+        font-size: clamp(38px, 11vw, 64px);
+    }
+
+    .void-center-card {
+        top: calc(56% - 45px);
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px 24px;
+        width: 88vw;
+    }
+
+    .void-center-card p {
+        font-size: 12.5px;
+        line-height: 1.55;
+    }
+
+    .void-meta {
+        left: 20px;
+        right: 20px;
+        bottom: 24px;
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 480px) {
+    .void-meta span:nth-child(2) {
+        display: none;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- Background Layer -->
+<div class="void-bg">
+    <h1 class="big-title">We'll be<br>back shortly.</h1>
+</div>
+
+<!-- Feathered Masked Reveal Layer -->
+<div class="void-reveal" id="voidReveal">
+    <h1 class="big-title">We'll be<br>back shortly.</h1>
+</div>
+
+<!-- Foreground Center Card -->
+<div class="void-center-card">
+    <div class="card-tag">
+        <span class="tag-dot"></span>
+        Maintenance Mode
+    </div>
+    <p>We are upgrading our core infrastructure to improve performance and reliability. Back shortly.</p>
+</div>
+
+<!-- Cursor Reticle -->
+<div class="custom-cursor" id="voidCursor">
+    <div class="cursor-crosshair"></div>
+</div>
+
+<!-- Corner Metadata HUD -->
+<div class="void-meta">
+    <span>SYS // 02</span>
+    <span>LATENCY: ZERO_SYNC</span>
+    <span>UPGRADE: IN_PROGRESS</span>
+</div>
+
+<script>
+const voidReveal = document.getElementById('voidReveal');
+const voidCursor = document.getElementById('voidCursor');
+
+const state = {
+    targetX: window.innerWidth / 2,
+    targetY: window.innerHeight / 2,
+    currentX: window.innerWidth / 2,
+    currentY: window.innerHeight / 2,
+    lerpSpeed: 0.1,
+    isIdle: true,
+    idleTimer: null,
+    angle: 0
+};
+
+function updatePointer(x, y) {
+    state.targetX = x;
+    state.targetY = y;
+    state.isIdle = false;
+
+    clearTimeout(state.idleTimer);
+    state.idleTimer = setTimeout(() => {
+        state.isIdle = true;
+    }, 2500);
+}
+
+window.addEventListener('mousemove', (e) => updatePointer(e.clientX, e.clientY), { passive: true });
+
+window.addEventListener('touchmove', (e) => {
+    if (e.touches[0]) updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: true });
+
+window.addEventListener('touchstart', (e) => {
+    if (e.touches[0]) updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: true });
+
+window.addEventListener('pointerdown', (e) => {
+    const ripple = document.createElement('div');
+    ripple.style.position = 'fixed';
+    ripple.style.left = `${e.clientX}px`;
+    ripple.style.top = `${e.clientY}px`;
+    ripple.style.width = '1px';
+    ripple.style.height = '1px';
+    ripple.style.borderRadius = '50%';
+    ripple.style.border = '1px solid rgba(255, 255, 255, 0.4)';
+    ripple.style.transform = 'translate(-50%, -50%) scale(0)';
+    ripple.style.transition = 'transform 0.65s cubic-bezier(0.1, 0.8, 0.2, 1), opacity 0.65s ease-out';
+    ripple.style.pointerEvents = 'none';
+    ripple.style.zIndex = '999';
+
+    document.body.appendChild(ripple);
+
+    requestAnimationFrame(() => {
+        ripple.style.transform = 'translate(-50%, -50%) scale(320)';
+        ripple.style.opacity = '0';
+    });
+
+    setTimeout(() => ripple.remove(), 700);
+});
+
+function animate() {
+    if (state.isIdle) {
+        state.angle += 0.015;
+        const radiusX = window.innerWidth * 0.12;
+        const radiusY = window.innerHeight * 0.08;
+        state.targetX = (window.innerWidth / 2) + Math.cos(state.angle) * radiusX;
+        state.targetY = (window.innerHeight / 2) + Math.sin(state.angle * 1.4) * radiusY;
+    }
+
+    state.currentX += (state.targetX - state.currentX) * state.lerpSpeed;
+    state.currentY += (state.targetY - state.currentY) * state.lerpSpeed;
+
+    const x = state.currentX.toFixed(2);
+    const y = state.currentY.toFixed(2);
+
+    voidReveal.style.setProperty('--x', `${x}px`);
+    voidReveal.style.setProperty('--y', `${y}px`);
+    voidCursor.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+
+    requestAnimationFrame(animate);
+}
+
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>
