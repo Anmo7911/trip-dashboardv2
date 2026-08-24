@@ -7090,7 +7090,9 @@ function updatePosScreenPreview() {
     basePrefix = posPastTripMetadata.tripCode || "EXP";
   }
   
-  let storeTitle = title2 ? `${title1.toUpperCase()}<br>${title2.toUpperCase()}` : title1.toUpperCase();
+  let storeTitle = title2 
+  ? `${title1.toUpperCase()}<br><span style="font-weight: 400; font-size: 0.95em;">${title2.toUpperCase()}</span>` 
+  : title1.toUpperCase();
   let filterTag = "ALL EXPENSES";
   let invPrefix = basePrefix;
 
