@@ -336,21 +336,42 @@
   box-shadow: none;
 }
 
-.printer-slot {
-  width: 92%;
-  height: 6px;
-  background: #08090c;
-  border-radius: 3px;
-  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.08);
+/* Cylindrical Slot Backplate */
+.printer-slot-backplate {
+  width: 86%;
+  height: 9px;
+  background: linear-gradient(180deg, #020305 0%, #0c0f14 50%, #000000 100%);
+  border-radius: 5px;
+  box-shadow: 
+    inset 0 3px 6px #000000,
+    0 1px 0 rgba(255, 255, 255, 0.08);
+  position: relative;
+  z-index: 5;
 }
 
+/* Paper Emerging Mask matching slot strip */
 .receipt-mask {
-  width: 88%;
-  position: relative;
-  margin-top: -3px;
+  position: absolute;
+  top: calc(100% - 20px);
+  left: 7%;
+  width: 86%;
   overflow: hidden;
-  z-index: 10;
+  z-index: 40;
   height: 0;
+  pointer-events: auto;
+}
+
+/* Top Ejection Throat Shadow overlay */
+.receipt-mask::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 18px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 50;
 }
 
 .receipt-roll {
@@ -2668,12 +2689,13 @@
         <button type="button" class="btn-edge btn-download" id="downloadBtn" disabled>DOWNLOAD</button>
       </div>
 
-      <div class="printer-slot"></div>
-    </div>
+      <!-- Cylindrical Slot Strip -->
+      <div class="printer-slot-backplate"></div>
 
-    <!-- Paper Roll Stream Output -->
-    <div class="receipt-mask" id="receiptMask">
-      <div class="receipt-roll" id="receiptRoll"></div>
+      <!-- Emerging Paper Mask with Ejection Shadow -->
+      <div class="receipt-mask" id="receiptMask">
+        <div class="receipt-roll" id="receiptRoll"></div>
+      </div>
     </div>
   </div>
 
@@ -7179,7 +7201,8 @@ function initPosListeners() {
       posPrintAudio.currentTime = 0;
       posPrintAudio.play().catch(() => {});
 
-      const duration = Math.max(1200, (segmentHeight / 110) * 1000);
+      const PRINT_SPEED_PX_PER_SEC = 110;
+      const duration = Math.max(1200, (segmentHeight / PRINT_SPEED_PX_PER_SEC) * 1000);
       const startTime = performance.now();
 
       function animatePrint(currentTime) {
