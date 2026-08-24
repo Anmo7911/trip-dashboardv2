@@ -6808,7 +6808,7 @@ const POS_SVG_BACKUP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/20
 const POS_ALL_CATEGORIES = ['Food', 'Stay', 'Fare', 'Water', 'Entry Fee', 'Other'];
 
 let posSelectedCategories = new Set(POS_ALL_CATEGORIES);
-let posSelectedDate = null; // Default to null so all trip transactions load immediately
+let posSelectedDate = null;
 let posPreparedBill = null;
 let posInvoiceCounter = 101;
 let posCachedLogo = null;
@@ -6922,12 +6922,10 @@ function updatePosScreenPreview() {
   
   // Safe Filter Live Transactions
   const filtered = transactions.filter(t => {
-    // 1. Category check (case-insensitive)
     const tCat = (t.category || 'Other').trim();
     const matchCat = Array.from(posSelectedCategories).some(c => c.toLowerCase() === tCat.toLowerCase());
     if (!matchCat) return false;
 
-    // 2. Date check
     if (posSelectedDate && t.date) {
       try {
         const d = new Date(t.date);
@@ -6961,7 +6959,7 @@ function updatePosScreenPreview() {
   const invoiceNo = `${invPrefix}-${String(posInvoiceCounter).padStart(6, '0')}`;
   const netTotal = filtered.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
 
-  // Sync category button active states
+  // Sync category button states
   document.querySelectorAll('#categoryGrid .cat-btn[data-cat]').forEach(btn => {
     const cat = btn.dataset.cat;
     const isSelected = Array.from(posSelectedCategories).some(c => c.toLowerCase() === cat.toLowerCase());
@@ -7087,7 +7085,6 @@ function createPosReceiptSegmentHTML(billData, timeString) {
   `;
 }
 
-// POS Hardware Action Binder
 let posListenersInitialized = false;
 
 function initPosListeners() {
@@ -7168,7 +7165,6 @@ function initPosListeners() {
       segment.innerHTML = createPosReceiptSegmentHTML(posPreparedBill, timeString);
       if (receiptRoll) receiptRoll.prepend(segment);
 
-      // Force synchronous reflow to obtain exact height
       void segment.offsetHeight;
       const segmentHeight = Math.max(180, segment.getBoundingClientRect().height);
       const newTotalHeight = previousTotalHeight + segmentHeight;
@@ -7340,8 +7336,9 @@ function initPosListeners() {
       }
     });
   }
+}
 
-// Initialize listeners on load
+// Initialize listeners cleanly
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initPosListeners);
 } else {
