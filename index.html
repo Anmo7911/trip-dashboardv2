@@ -377,12 +377,13 @@
 .receipt-roll {
   width: 100%;
   background: #ffffff;
-  /* Added subtle side inner shadows to give a curved physical paper ribbon feel */
+  /* Added a stronger outer soft ambient shadow and side depth shadows to clearly separate white bill on white backgrounds */
   box-shadow: 
-    0 16px 36px rgba(0, 0, 0, 0.5),
-    0 3px 10px rgba(0, 0, 0, 0.25),
-    inset 4px 0 6px rgba(0, 0, 0, 0.03),
-    inset -4px 0 6px rgba(0, 0, 0, 0.03);
+    0 20px 45px rgba(0, 0, 0, 0.65),
+    0 4px 15px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    inset 4px 0 6px rgba(0, 0, 0, 0.04),
+    inset -4px 0 6px rgba(0, 0, 0, 0.04);
   position: relative;
   transform: translateY(0);
   will-change: transform;
