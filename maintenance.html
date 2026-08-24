@@ -92,7 +92,7 @@ html, body {
     text-shadow: 0 0 50px rgba(255, 255, 255, 0.4);
 }
 
-/* Center Card */
+/* Center Card (Shifted Up by 45px) */
 .void-center-card {
     position: absolute;
     top: calc(50% - 45px);
@@ -186,12 +186,16 @@ html, body {
     50% { opacity: 0.3; transform: scale(0.8); }
 }
 
+/* =========================================================
+   RESPONSIVE BREAKPOINTS (MOBILE VIEW ADJUSTMENTS)
+========================================================= */
 @media (max-width: 768px) {
     :root {
         --mask-size: 200px;
         --feather: 60px;
     }
 
+    /* Shift Big Text to Top Area */
     .void-bg,
     .void-reveal {
         align-items: flex-start;
@@ -202,6 +206,7 @@ html, body {
         font-size: clamp(38px, 11vw, 64px);
     }
 
+    /* Maintenance Card Adjusted for Mobile */
     .void-center-card {
         top: calc(56% - 45px);
         left: 50%;
@@ -301,6 +306,7 @@ window.addEventListener('touchstart', (e) => {
     if (e.touches[0]) updatePointer(e.touches[0].clientX, e.touches[0].clientY);
 }, { passive: true });
 
+// Ripple Click Effect
 window.addEventListener('pointerdown', (e) => {
     const ripple = document.createElement('div');
     ripple.style.position = 'fixed';
@@ -348,6 +354,21 @@ function animate() {
 }
 
 requestAnimationFrame(animate);
+
+// Real-Time Maintenance Poller
+async function checkMaintenanceStatus() {
+    try {
+        const res = await fetch('/api/index?action=dashboard');
+        if (res.ok) {
+            const data = await res.json();
+            if (data && data.maintenanceMode !== 'ENABLED') {
+                window.location.replace('/');
+            }
+        }
+    } catch (err) {}
+}
+
+setInterval(checkMaintenanceStatus, 10000);
 </script>
 </body>
 </html>
