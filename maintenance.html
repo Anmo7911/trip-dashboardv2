@@ -195,11 +195,11 @@ html, body {
         --feather: 60px;
     }
 
-    /* Shift Big Text to Top Area */
+    /* Shifted Big Text Down by an additional 35px */
     .void-bg,
     .void-reveal {
         align-items: flex-start;
-        padding-top: 14vh;
+        padding-top: calc(14vh + 35px);
     }
 
     .big-title {
@@ -334,10 +334,22 @@ window.addEventListener('pointerdown', (e) => {
 function animate() {
     if (state.isIdle) {
         state.angle += 0.015;
-        const radiusX = window.innerWidth * 0.12;
-        const radiusY = window.innerHeight * 0.08;
-        state.targetX = (window.innerWidth / 2) + Math.cos(state.angle) * radiusX;
-        state.targetY = (window.innerHeight / 2) + Math.sin(state.angle * 1.4) * radiusY;
+        const isMobile = window.innerWidth <= 768;
+
+        if (isMobile) {
+            // Target the mobile revealing text area (padding-top: calc(14vh + 35px))
+            const textCenterY = (window.innerHeight * 0.14) + 35 + 50;
+            const radiusX = window.innerWidth * 0.28;
+            const radiusY = 25;
+            state.targetX = (window.innerWidth / 2) + Math.cos(state.angle) * radiusX;
+            state.targetY = textCenterY + Math.sin(state.angle * 1.4) * radiusY;
+        } else {
+            // Default desktop idle path
+            const radiusX = window.innerWidth * 0.12;
+            const radiusY = window.innerHeight * 0.08;
+            state.targetX = (window.innerWidth / 2) + Math.cos(state.angle) * radiusX;
+            state.targetY = (window.innerHeight / 2) + Math.sin(state.angle * 1.4) * radiusY;
+        }
     }
 
     state.currentX += (state.targetX - state.currentX) * state.lerpSpeed;
