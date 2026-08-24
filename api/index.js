@@ -9,6 +9,8 @@ const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: { persistSession: false, autoRefreshToken: false }
 });
 
+const gasUrl = process.env.GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwWAOUP4c2_G8FgWFF1zCbI1sg9lLMOhPAUQF5XH9a5R0gyRp5rX42UKpjr3-B41XJk0w/exec';
+
 function text(v) { return v === null || v === undefined ? '' : String(v).trim(); }
 function number(v) { const n = parseFloat(v); return Number.isFinite(n) ? n : 0; }
 
@@ -730,6 +732,31 @@ async function updatePollVote(msgId, pollText) {
 }
 
 // -------------------------------------------------------------
+// GOOGLE APPS SCRIPT PROXY (PAST TRIPS)
+// -------------------------------------------------------------
+async function fetchPastTripFromGoogleSheet(tripName) {
+  if (!gasUrl || gasUrl.startsWith('YOUR_')) {
+    throw new Error('Google Apps Script URL not configured');
+  }
+
+  const response = await fetch(gasUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'past-trip-ledger',
+      tripName: text(tripName)
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Google Sheets fetch failed with status: ${response.status}`);
+  }
+
+  return await response.json();
+}
+
+
+// -------------------------------------------------------------
 // MAIN API ROUTER
 // -------------------------------------------------------------
 export default async function handler(req, res) {
@@ -742,6 +769,7 @@ export default async function handler(req, res) {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
 
     switch (action) {
+      
       // Member Actions
       case 'dashboard': return json(res, 200, await dashboard());
       case 'login': return json(res, 200, await verifyMemberPIN(body.name, body.pin));
@@ -753,6 +781,7 @@ export default async function handler(req, res) {
       case 'change-pin': return json(res, 200, await changeMemberPIN(body.name, body.oldPin, body.newPin));
       case 'checklist-claim': return json(res, 200, await claimChecklistItem(body.id, body.userName));
       case 'checklist-revoke': return json(res, 200, await revokeChecklistItem(body.id, body.userName));
+      case 'past-trip-ledger': return json(res, 200, await fetchPastTripFromGoogleSheet(body.tripName));
 
       // Admin Actions
       case 'admin-login': return json(res, 200, await adminLogin(body.username, body.password));
