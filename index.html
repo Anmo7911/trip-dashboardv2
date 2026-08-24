@@ -3345,6 +3345,13 @@
           return;
         }
 
+        // ADD THIS: Redirect if Maintenance Mode is active
+        if (data && data.maintenanceMode === 'ENABLED') {
+          window.location.replace('/maintenance.html'); // Use /mig.html if you saved it with that name
+          return;
+        }
+        
+
         if (data && data.members) {
           cachedMembersList = data.members;
           populateLoginDropdown(data.members);
@@ -3866,6 +3873,12 @@
      // Automatic Redirect if Announcement Mode is Enabled in Admin
      if (data.announcementMode === 'ENABLED') {
        window.location.replace('/announcement.html');
+       return;
+     }
+
+     // ADD THIS: Automatic Redirect if Maintenance Mode is Enabled in Admin
+     if (data.maintenanceMode === 'ENABLED') {
+       window.location.replace('/maintenance.html'); // Use /mig.html if you saved it with that name
        return;
      }
 
