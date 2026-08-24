@@ -7079,33 +7079,33 @@ function updatePosScreenPreview() {
 
   let title1 = "BHARAT WAY";
   let title2 = "EXPEDITION";
-  let basePrefix = "EXP";
+  let basePrefix = "VOF0725";
 
   if (posActiveTripMode === '__LIVE__') {
     title1 = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.tripName) ? globalActiveDataPayloadBackup.tripName : "BHARAT WAY";
     title2 = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.secondaryTitle) ? globalActiveDataPayloadBackup.secondaryTitle : "EXPEDITION";
+    basePrefix = (globalActiveDataPayloadBackup && (globalActiveDataPayloadBackup.tripCode || globalActiveDataPayloadBackup.liveTripCode)) 
+      ? (globalActiveDataPayloadBackup.tripCode || globalActiveDataPayloadBackup.liveTripCode) 
+      : "VOF0725";
   } else if (posPastTripMetadata) {
     title1 = posPastTripMetadata.tripName || "BHARAT WAY";
     title2 = posPastTripMetadata.secondaryTitle || "";
-    basePrefix = posPastTripMetadata.tripCode || "EXP";
+    basePrefix = posPastTripMetadata.tripCode || "VOF0725";
   }
   
   let storeTitle = title2 
-  ? `${title1.toUpperCase()}<br><span style="font-weight: 400; font-size: 0.95em;">${title2.toUpperCase()}</span>` 
-  : title1.toUpperCase();
-  let filterTag = "ALL EXPENSES";
-  let invPrefix = basePrefix;
+    ? `${title1.toUpperCase()}<br><span style="font-weight: 400; font-size: 0.95em;">${title2.toUpperCase()}</span>` 
+    : title1.toUpperCase();
 
+  let filterTag = "ALL EXPENSES";
   if (posSelectedCategories.size === 1) {
-    const singleCat = Array.from(posSelectedCategories)[0];
-    filterTag = singleCat.toUpperCase();
-    invPrefix = singleCat.slice(0, 2).toUpperCase();
+    filterTag = Array.from(posSelectedCategories)[0].toUpperCase();
   } else if (posSelectedCategories.size < POS_ALL_CATEGORIES.length && posSelectedCategories.size > 0) {
     filterTag = Array.from(posSelectedCategories).map(c => c.toUpperCase()).join('+');
-    invPrefix = "MULTI";
   }
 
-  const invoiceNo = `${invPrefix}-${String(posInvoiceCounter).padStart(6, '0')}`;
+  // Invoice format: TRIPCODE-000101
+  const invoiceNo = `${basePrefix}-${String(posInvoiceCounter).padStart(6, '0')}`;
   const netTotal = filtered.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
 
   document.querySelectorAll('#categoryGrid .cat-btn[data-cat]').forEach(btn => {
@@ -7141,6 +7141,7 @@ function updatePosScreenPreview() {
       storeTitle,
       filterTag,
       invoiceNo,
+      tripCode: basePrefix,
       dateString: displayDateStr,
       netTotal
     };
@@ -7221,6 +7222,7 @@ function createPosReceiptSegmentHTML(billData, timeString) {
     <div class="center">
       <div class="bold" style="font-size: 9px; margin-top: 2px;">EXPENSE VERIFIED & AUDITED</div>
       <div style="font-size: 7.5px; margin-top: 2px;">PLEASE KEEP THIS VOUCHER</div>
+      <div class="bold" style="font-size: 8px; letter-spacing: 0.5px; margin-top: 2px;">*** ${billData.tripCode} ***</div>
 
       <div class="footer-note">
         All references verified against financial ledger records.<br />
