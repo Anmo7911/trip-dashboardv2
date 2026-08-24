@@ -6817,7 +6817,7 @@ function renderSpendTrendChart(data) {
 }
 
 
-    // ==========================================
+ // ==========================================
 // POS BILL PRINTING & HARDWARE ENGINE
 // ==========================================
 const POS_RAW_LOGO = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG";
@@ -6827,7 +6827,7 @@ const POS_SVG_BACKUP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/20
 const POS_ALL_CATEGORIES = ['Food', 'Stay', 'Fare', 'Water', 'Entry Fee', 'Other'];
 
 let posSelectedCategories = new Set(POS_ALL_CATEGORIES);
-let posSelectedDate = null;
+let posSelectedDate = null; // Default to null so all trip transactions load immediately
 let posPreparedBill = null;
 let posInvoiceCounter = 101;
 let posCachedLogo = null;
@@ -6930,10 +6930,8 @@ function playPosTearSound() {
 
 function initPosTerminalData() {
   const dateInput = document.getElementById('posDateInput');
-  if (dateInput && !dateInput.value) {
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.value = today;
-    posSelectedDate = today;
+  if (dateInput) {
+    dateInput.value = posSelectedDate || '';
   }
   updatePosScreenPreview();
 }
@@ -6948,7 +6946,7 @@ function updatePosScreenPreview() {
     const matchCat = Array.from(posSelectedCategories).some(c => c.toLowerCase() === tCat.toLowerCase());
     if (!matchCat) return false;
 
-    // 2. Safe Date check (won't crash on irregular date values)
+    // 2. Date check
     if (posSelectedDate && t.date) {
       try {
         const d = new Date(t.date);
@@ -6974,7 +6972,7 @@ function updatePosScreenPreview() {
     const singleCat = Array.from(posSelectedCategories)[0];
     filterTag = singleCat.toUpperCase();
     invPrefix = singleCat.slice(0, 2).toUpperCase();
-  } else if (posSelectedCategories.size < POS_ALL_CATEGORIES.length) {
+  } else if (posSelectedCategories.size < POS_ALL_CATEGORIES.length && posSelectedCategories.size > 0) {
     filterTag = Array.from(posSelectedCategories).map(c => c.toUpperCase()).join('+');
     invPrefix = "MULTI";
   }
@@ -6982,7 +6980,7 @@ function updatePosScreenPreview() {
   const invoiceNo = `${invPrefix}-${String(posInvoiceCounter).padStart(6, '0')}`;
   const netTotal = filtered.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
 
-  // Sync category buttons
+  // Sync category button active states
   document.querySelectorAll('#categoryGrid .cat-btn[data-cat]').forEach(btn => {
     const cat = btn.dataset.cat;
     const isSelected = Array.from(posSelectedCategories).some(c => c.toLowerCase() === cat.toLowerCase());
@@ -7028,8 +7026,93 @@ function updatePosScreenPreview() {
   }
 }
 
-// Direct self-invoking event binder (handles both early and late script execution)
+function createPosReceiptSegmentHTML(billData, timeString) {
+  let rowsHTML = '';
+  billData.items.forEach(item => {
+    const safeNote = item.notes || item.category || 'Expense';
+    const safeUtr = (item.utr && item.utr !== 'undefined') ? item.utr : 'N/A';
+    const amountVal = parseFloat(item.amount) || 0;
+
+    rowsHTML += `
+      <tr>
+        <td>${safeNote}</td>
+        <td class="col-center utr-text">${safeUtr}</td>
+        <td class="col-right">${amountVal.toFixed(2)}</td>
+      </tr>
+    `;
+  });
+
+  const activeLogo = posCachedLogo || POS_SVG_BACKUP;
+
+  return `
+    <div class="center">
+      <div class="receipt-logo-wrap">
+        <img src="${activeLogo}" alt="Logo" class="receipt-logo" />
+      </div>
+      <div class="title bold">${billData.storeTitle}</div>
+      <div class="sub-info">
+        Expense Reimbursement & Settlement<br />
+        Audit Verified | Digital Pass Record
+      </div>
+    </div>
+
+    <hr class="dashed-line" />
+
+    <div class="row">
+      <span>DATE: ${billData.dateString}</span>
+      <span>TIME: ${timeString}</span>
+    </div>
+    <div class="row">
+      <span>INVOICE: #${billData.invoiceNo}</span>
+      <span>TAG: <strong>${billData.filterTag}</strong></span>
+    </div>
+
+    <hr class="dashed-line" />
+
+    <table class="item-table">
+      <thead>
+        <tr>
+          <th style="width: 44%;">EXPENSE</th>
+          <th class="col-center" style="width: 32%;">UTR NO.</th>
+          <th class="col-right" style="width: 24%;">AMT</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHTML}
+      </tbody>
+    </table>
+
+    <hr class="dashed-line" />
+
+    <div class="row total-row">
+      <span>NET TOTAL</span>
+      <span>₹ ${billData.netTotal.toFixed(2)}</span>
+    </div>
+
+    <hr class="dashed-line" />
+
+    <div class="center">
+      <div class="bold" style="font-size: 9px; margin-top: 2px;">EXPENSE VERIFIED & AUDITED</div>
+      <div style="font-size: 7.5px; margin-top: 2px;">PLEASE KEEP THIS VOUCHER</div>
+
+      <div class="footer-note">
+        All references verified against financial ledger records.<br />
+        Computer-generated voucher. No physical signature required.
+      </div>
+
+      <div class="powered-by">Powered by Bharat Way</div>
+      <div class="bold" style="font-size: 8px; letter-spacing: 0.5px;">*** EXPENSE STATEMENT ***</div>
+    </div>
+  `;
+}
+
+// POS Hardware Action Binder
+let posListenersInitialized = false;
+
 function initPosListeners() {
+  if (posListenersInitialized) return;
+  posListenersInitialized = true;
+
   const catGrid = document.getElementById('categoryGrid');
   const dateInput = document.getElementById('posDateInput');
   const clearDateBtn = document.getElementById('posClearDateBtn');
@@ -7104,7 +7187,9 @@ function initPosListeners() {
       segment.innerHTML = createPosReceiptSegmentHTML(posPreparedBill, timeString);
       if (receiptRoll) receiptRoll.prepend(segment);
 
-      const segmentHeight = segment.offsetHeight || 200;
+      // Force synchronous reflow to obtain exact height
+      void segment.offsetHeight;
+      const segmentHeight = Math.max(180, segment.getBoundingClientRect().height);
       const newTotalHeight = previousTotalHeight + segmentHeight;
 
       if (receiptRoll) receiptRoll.style.transform = `translateY(-${segmentHeight}px)`;
@@ -7125,7 +7210,7 @@ function initPosListeners() {
         const progress = Math.min(elapsed / duration, 1);
 
         const currentYOffset = -segmentHeight * (1 - progress);
-        const currentMaskHeight = previousTotalHeight + segmentHeight * progress;
+        const currentMaskHeight = previousTotalHeight + (segmentHeight * progress);
 
         if (receiptRoll) receiptRoll.style.transform = `translateY(${currentYOffset}px)`;
         if (receiptMask) receiptMask.style.height = `${currentMaskHeight}px`;
@@ -7266,7 +7351,7 @@ function initPosListeners() {
   }
 }
 
-// Safely execute listener setup regardless of document readiness
+// Initialize listeners on load
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initPosListeners);
 } else {
