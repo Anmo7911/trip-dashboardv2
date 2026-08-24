@@ -6891,6 +6891,21 @@ let posAudioCtx = null;
 let posActiveTripMode = '__LIVE__';
 let posPastTripData = null;
 let posPastTripMetadata = null;
+let posLiveTripCode = null;
+
+// Fetch Live Trip Code from 'Upcoming' tab (cell A2)
+async function fetchLiveTripCode() {
+  if (posLiveTripCode) return;
+  try {
+    const res = await apiRequest('past-trip-ledger', { tripName: 'Upcoming' });
+    if (res && res.success && res.tripCode) {
+      posLiveTripCode = res.tripCode;
+      updatePosScreenPreview();
+    }
+  } catch (e) {
+    console.warn("Could not fetch live trip code from Upcoming tab:", e);
+  }
+}
 
 // Sound Effects
 const posPrintAudio = new Audio('https://mp3tourl.com/audio/1787550364214-360e734d-d360-4675-9a76-484d456b96e0.mp3');
@@ -7050,6 +7065,7 @@ function initPosTerminalData() {
     dateInput.value = posSelectedDate || '';
   }
   populatePosTripDropdown();
+  fetchLiveTripCode();
   updatePosScreenPreview();
 }
 
@@ -7084,9 +7100,8 @@ function updatePosScreenPreview() {
   if (posActiveTripMode === '__LIVE__') {
     title1 = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.tripName) ? globalActiveDataPayloadBackup.tripName : "BHARAT WAY";
     title2 = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.secondaryTitle) ? globalActiveDataPayloadBackup.secondaryTitle : "EXPEDITION";
-    basePrefix = (globalActiveDataPayloadBackup && (globalActiveDataPayloadBackup.tripCode || globalActiveDataPayloadBackup.liveTripCode)) 
-      ? (globalActiveDataPayloadBackup.tripCode || globalActiveDataPayloadBackup.liveTripCode) 
-      : "VOF0725";
+    basePrefix = posLiveTripCode || (globalActiveDataPayloadBackup && (globalActiveDataPayloadBackup.tripCode || globalActiveDataPayloadBackup.liveTripCode)) || "VOF0725";
+  
   } else if (posPastTripMetadata) {
     title1 = posPastTripMetadata.tripName || "BHARAT WAY";
     title2 = posPastTripMetadata.secondaryTitle || "";
