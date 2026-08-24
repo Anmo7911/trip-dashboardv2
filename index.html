@@ -4,6 +4,12 @@
 
 <head>
 
+  <!-- Include html2canvas for POS Receipt Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- POS Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
   <!-- Include Chart.js via CDN for Spend Trend Graph -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -44,6 +50,436 @@
   <meta name="theme-color" content="#4f46e5">
 
   <style>
+
+    /* =========================================
+   POS PRINTER ENGINE & HARDWARE STYLES
+   ========================================= */
+.pos-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  font-family: 'Space Mono', 'Courier Prime', monospace;
+}
+
+.pos-terminal {
+  width: 100%;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  border-radius: 18px 18px 10px 10px;
+  padding: 14px 16px 12px;
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.65), inset 0 1px 1px rgba(255, 255, 255, 0.15), inset 0 -2px 6px rgba(0, 0, 0, 0.5);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.pos-terminal.vibrating {
+  animation: terminal-shake 0.12s infinite;
+}
+
+.terminal-screen {
+  width: 100%;
+  background: #090c10;
+  border-radius: 8px;
+  padding: 8px 10px;
+  border: 1px solid #334155;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.screen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #1e293b;
+  padding-bottom: 4px;
+}
+
+.screen-title {
+  font-size: 8.5px;
+  color: #94a3b8;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.status-indicator-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-text {
+  color: #38ef7d;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.status-light {
+  width: 6px;
+  height: 6px;
+  background: #38ef7d;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #38ef7d;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.status-light.printing {
+  background: #ffab00;
+  box-shadow: 0 0 8px #ffab00;
+  animation: blink 0.35s infinite alternate;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.cat-btn {
+  background: #121720;
+  color: #8da0b6;
+  border: 1px solid #232c3a;
+  border-radius: 4px;
+  padding: 5px 2px;
+  font-family: inherit;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.cat-btn:hover {
+  background: #19212d;
+  color: #cbd5e1;
+}
+
+.cat-btn.active {
+  background: #183325;
+  color: #38ef7d;
+  border-color: #38ef7d;
+  box-shadow: 0 0 5px rgba(56, 239, 125, 0.2);
+}
+
+.cat-btn.btn-all.active {
+  background: #232d3d;
+  color: #60a5fa;
+  border-color: #3b82f6;
+  box-shadow: 0 0 5px rgba(96, 165, 250, 0.25);
+}
+
+.date-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.date-input-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.date-input {
+  width: 100%;
+  background: #121720;
+  color: #60a5fa;
+  border: 1px solid #232c3a;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  outline: none;
+  cursor: pointer;
+  color-scheme: dark;
+  transition: all 0.15s ease;
+  min-height: 26px;
+}
+
+.btn-clear-date {
+  background: #1e2430;
+  color: #8da0b6;
+  border: 1px solid #2b3545;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: 7.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-clear-date:hover {
+  background: #2b3545;
+  color: #ff7b72;
+  border-color: #ff7b72;
+}
+
+.screen-summary-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 4px;
+  border-top: 1px solid #1e293b;
+}
+
+.screen-info-label {
+  font-size: 7px;
+  color: #64748b;
+  line-height: 1.1;
+}
+
+.screen-info-val {
+  font-size: 8px;
+  color: #e2e8f0;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.screen-total {
+  font-size: 13px;
+  font-weight: 700;
+  color: #38ef7d;
+  line-height: 1.1;
+}
+
+.terminal-controls {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.btn-edge {
+  padding: 8px 4px;
+  border-radius: 4px;
+  border: 1px solid #3e4856;
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+  min-height: 32px;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.btn-print {
+  background: #1b2822;
+  color: #38ef7d;
+  border-color: #2b5642;
+}
+
+.btn-print:hover:not(:disabled) {
+  background: #23362e;
+  border-color: #38ef7d;
+  box-shadow: 0 0 8px rgba(56, 239, 125, 0.25);
+}
+
+.btn-tear {
+  background: #2b2121;
+  color: #ff7b72;
+  border-color: #583333;
+}
+
+.btn-tear:hover:not(:disabled) {
+  background: #382929;
+  border-color: #ff7b72;
+  box-shadow: 0 0 8px rgba(255, 123, 114, 0.25);
+}
+
+.btn-download {
+  background: #1a2536;
+  color: #60a5fa;
+  border-color: #2b456d;
+}
+
+.btn-download:hover:not(:disabled) {
+  background: #22344d;
+  border-color: #60a5fa;
+  box-shadow: 0 0 8px rgba(96, 165, 250, 0.25);
+}
+
+.btn-edge:disabled {
+  background: #14171d;
+  color: #495462;
+  border-color: #242b35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.printer-slot {
+  width: 92%;
+  height: 6px;
+  background: #08090c;
+  border-radius: 3px;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.receipt-mask {
+  width: 88%;
+  position: relative;
+  margin-top: -3px;
+  overflow: hidden;
+  z-index: 10;
+  height: 0;
+}
+
+.receipt-roll {
+  width: 100%;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  position: relative;
+  transform: translateY(0);
+  will-change: transform;
+}
+
+.receipt-roll::after {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  left: 0;
+  right: 0;
+  height: 7px;
+  background: linear-gradient(135deg, #ffffff 4px, transparent 0), linear-gradient(-135deg, #ffffff 4px, transparent 0);
+  background-size: 8px 8px;
+  background-repeat: repeat-x;
+}
+
+.receipt-segment {
+  width: 100%;
+  color: #1a1a1a;
+  padding: 16px 14px;
+  font-size: 9px;
+  line-height: 1.35;
+  position: relative;
+  border-bottom: 2px dashed #94a3b8;
+}
+
+.receipt-segment:last-child {
+  border-bottom: none;
+  padding-bottom: 24px;
+}
+
+.receipt-mask.tearing {
+  animation: tearOffAnim 0.7s forwards ease-out;
+}
+
+.receipt-logo-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 6px;
+  width: 100%;
+  min-height: 48px;
+}
+
+.receipt-logo {
+  width: 78px;
+  max-height: 60px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.receipt-segment .center { text-align: center; }
+.receipt-segment .bold { font-weight: 700; }
+.receipt-segment .title { font-size: 12px; letter-spacing: 0.5px; margin-bottom: 2px; }
+.receipt-segment .sub-info { font-size: 7.5px; color: #444; line-height: 1.3; }
+.receipt-segment .dashed-line { border: none; border-top: 1px dashed #777; margin: 6px 0; }
+.receipt-segment .row { display: flex; justify-content: space-between; margin-bottom: 2.5px; font-size: 8px; }
+
+.item-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 3px 0;
+}
+
+.item-table th {
+  text-align: left;
+  font-size: 8px;
+  padding-bottom: 3px;
+  border-bottom: 1px dashed #777;
+}
+
+.item-table td {
+  font-size: 8.5px;
+  padding: 2.5px 0;
+  word-break: break-word;
+}
+
+.col-right { text-align: right; }
+.col-center { text-align: center; }
+
+.utr-text {
+  font-family: 'Space Mono', monospace;
+  letter-spacing: -0.3px;
+  font-size: 7.5px;
+  color: #334155;
+}
+
+.total-row {
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 3px;
+  padding-top: 3px;
+  border-top: 1px dashed #444;
+}
+
+.footer-note {
+  font-size: 7px;
+  color: #555;
+  margin: 7px 0 5px;
+  line-height: 1.25;
+}
+
+.powered-by {
+  font-size: 7.5px;
+  color: #555;
+  margin-bottom: 2px;
+}
+
+@keyframes terminal-shake {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-0.5px, 0.5px); }
+  50% { transform: translate(0.5px, -0.5px); }
+  75% { transform: translate(-0.5px, -0.5px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes tearOffAnim {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  35% { transform: translateY(12px) rotate(4deg) skewX(2deg); }
+  100% { transform: translateY(180px) rotate(14deg) scale(0.9); opacity: 0; }
+}
 
     /* =========================================
    AUTHENTICATION CARD & SCANNER ANIMATIONS
@@ -1059,6 +1495,12 @@
           <span>Transactions</span>
         </button>
 
+        <!-- 5.1 POS Bill Print Button -->
+<button onclick="showTab('pos', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="pos">
+  <i data-lucide="printer" class="w-4 h-4"></i>
+  <span>Print Bill POS</span>
+</button>
+
         <!-- 6. Trip Gallery Button -->
         <button onclick="showTab('gallery', this)" class="desktop-nav-btn w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="gallery">
           <i data-lucide="camera" class="w-4 h-4"></i>
@@ -1803,6 +2245,10 @@
       <button type="button" onclick="downloadLedgerCSV()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors active:scale-90 outline-none" title="Download CSV">
         <i data-lucide="download" class="w-4 h-4 stroke-[2.5]"></i>
       </button>
+      <!-- POS Terminal Trigger Button -->
+<button type="button" onclick="showTab('pos', null)" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors active:scale-90 outline-none" title="Print Bill POS">
+  <i data-lucide="printer" class="w-4 h-4 stroke-[2.5]"></i>
+</button>
     </div>
   </div>
 
@@ -2148,6 +2594,93 @@
   </main>
 
     <!-- =========================================
+     TAB: POS THERMAL RECEIPT PRINT VIEW
+     ========================================= -->
+<main id="view-pos" class="tab-content w-full max-w-md lg:max-w-4xl mx-auto pt-4 px-4 lg:p-8 space-y-6 pb-24 relative z-20">
+
+  <!-- Top Navigation Header -->
+  <div class="flex items-center justify-between px-1">
+    <div class="flex items-center gap-2.5">
+      <div class="w-10 h-10 rounded-2xl bg-slate-900 text-emerald-400 flex items-center justify-center border border-slate-800 shadow-md shrink-0">
+        <i data-lucide="printer" class="w-5 h-5 stroke-[2.5]"></i>
+      </div>
+      <div>
+        <h2 class="text-base lg:text-lg font-black uppercase tracking-tight text-slate-900">POS Bill Terminal</h2>
+        <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Thermal receipt printing engine</p>
+      </div>
+    </div>
+    <button type="button" onclick="showTab('spend', document.querySelector('.nav-btn'))" class="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-[10px] font-black text-slate-600 uppercase tracking-wider hover:bg-slate-50 active:scale-95 transition flex items-center gap-1.5 shadow-sm">
+      <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back
+    </button>
+  </div>
+
+  <!-- Terminal & Continuous Roll Mount -->
+  <div class="pos-wrapper pt-2">
+    <!-- Hardware Body -->
+    <div class="pos-terminal" id="terminal">
+      
+      <!-- Screen -->
+      <div class="terminal-screen">
+        <div class="screen-header">
+          <span class="screen-title">EXPENSE CONFIG</span>
+          <div class="status-indicator-wrap">
+            <span class="status-text" id="statusText">READY</span>
+            <div class="status-light" id="statusLight"></div>
+          </div>
+        </div>
+
+        <!-- Categories Filter Grid -->
+        <div class="category-grid" id="categoryGrid">
+          <button type="button" class="cat-btn btn-all active" id="btnAll">ALL</button>
+          <button type="button" class="cat-btn" data-cat="Food">FOOD</button>
+          <button type="button" class="cat-btn" data-cat="Stay">STAY</button>
+          <button type="button" class="cat-btn" data-cat="Fare">FARE</button>
+          <button type="button" class="cat-btn" data-cat="Water">WATER</button>
+          <button type="button" class="cat-btn" data-cat="Entry Fee">ENTRY</button>
+          <button type="button" class="cat-btn" data-cat="Other">OTHER</button>
+        </div>
+
+        <!-- Date Filter Row -->
+        <div class="date-filter-row">
+          <div class="date-input-wrap">
+            <input type="date" class="date-input" id="posDateInput" />
+          </div>
+          <button type="button" class="btn-clear-date" id="posClearDateBtn" title="Clear Date Filter">✕ ALL DATES</button>
+        </div>
+
+        <!-- Live Summary -->
+        <div class="screen-summary-footer">
+          <div>
+            <div class="screen-info-label" id="screenInvoiceLabel">SELECT A FILTER</div>
+            <div class="screen-info-val" id="screenItemCount">0 EXPENSES</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="screen-info-label">TOTAL</div>
+            <div class="screen-total" id="screenTotal">₹ 0.00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Control Buttons -->
+      <div class="terminal-controls">
+        <button type="button" class="btn-edge btn-print" id="printBtn">PRINT BILL</button>
+        <button type="button" class="btn-edge btn-tear" id="tearBtn" disabled>TEAR OFF</button>
+        <button type="button" class="btn-edge btn-download" id="downloadBtn" disabled>DOWNLOAD</button>
+      </div>
+
+      <div class="printer-slot"></div>
+    </div>
+
+    <!-- Paper Roll Stream Output -->
+    <div class="receipt-mask" id="receiptMask">
+      <div class="receipt-roll" id="receiptRoll"></div>
+    </div>
+  </div>
+
+</main>
+
+    
+    <!-- =========================================
      TAB 7: TRIP GALLERY (Full Desktop View)
      ========================================= -->
 <main id="view-gallery" class="tab-content w-full max-w-5xl mx-auto pt-4 px-4 lg:p-8 space-y-6 pb-12">
@@ -2384,6 +2917,19 @@
         </div>
       </a>
 
+      <!-- Print Bill POS Option -->
+<div onclick="toggleMoreMenu(); showTab('pos', null);" class="col-span-2 flex items-center p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
+  <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mr-2.5 shrink-0">
+    <i data-lucide="printer" class="w-4 h-4"></i>
+  </div>
+  <div class="flex-1 overflow-hidden">
+    <p class="text-[11px] font-black text-slate-700 uppercase tracking-widest truncate">Print Bill (POS)</p>
+    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 truncate">Thermal Receipt Printer</p>
+  </div>
+  <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
+</div>
+      
+
       <!-- 3. Split Row: About Us (20%) + Past Archives (80%) -->
       <div class="col-span-2 flex items-center gap-2.5">
         <!-- About Us Button (20%) -->
@@ -2572,9 +3118,12 @@
   // Hide header completely on Archives, About, and Gallery tabs; show on all other tabs
   const header = document.getElementById('app-header');
   if (header) {
-    if (tabId === 'archives' || tabId === 'about' || tabId === 'gallery') {
-      header.classList.add('hidden');
-    } else {
+    if (tabId === 'archives' || tabId === 'about' || tabId === 'gallery' || tabId === 'pos') {
+  header.classList.add('hidden');
+  if (tabId === 'pos') {
+    initPosTerminalData();
+  }
+} else {
       header.classList.remove('hidden');
       if (targetViewId === 'spend' && tabId !== 'transactions') {
         header.classList.remove('sticky');
@@ -6265,6 +6814,499 @@ function renderSpendTrendChart(data) {
     }
   });
 }
+
+
+    // ==========================================
+// POS BILL PRINTING & HARDWARE ENGINE
+// ==========================================
+const POS_RAW_LOGO = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG";
+const POS_PROXY_LOGO = "https://wsrv.nl/?url=" + encodeURIComponent(POS_RAW_LOGO) + "&output=png";
+const POS_SVG_BACKUP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' stroke='%23000' stroke-width='4' fill='none'/><path d='M30 65 L50 25 L70 65 Z' fill='%23000'/><circle cx='50' cy='50' r='8' fill='%23fff'/></svg>";
+
+const POS_ALL_CATEGORIES = ['Food', 'Stay', 'Fare', 'Water', 'Entry Fee', 'Other'];
+
+let posSelectedCategories = new Set(POS_ALL_CATEGORIES);
+let posSelectedDate = null;
+let posPreparedBill = null;
+let posInvoiceCounter = 101;
+let posCachedLogo = null;
+let posIsPrinting = false;
+let posPrintedCount = 0;
+let posAudioCtx = null;
+
+// Sound Effects
+const posPrintAudio = new Audio('https://mp3tourl.com/audio/1787550364214-360e734d-d360-4675-9a76-484d456b96e0.mp3');
+posPrintAudio.preload = 'auto';
+
+async function preloadPosLogo() {
+  try {
+    const res = await fetch(POS_PROXY_LOGO, { mode: 'cors' });
+    if (res.ok) {
+      const blob = await res.blob();
+      posCachedLogo = await processPosGrayscale(blob);
+    } else {
+      posCachedLogo = POS_SVG_BACKUP;
+    }
+  } catch (e) {
+    posCachedLogo = POS_SVG_BACKUP;
+  }
+}
+preloadPosLogo();
+
+function processPosGrayscale(blob) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = imgData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        if (d[i + 3] === 0) continue;
+        let luma = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+        luma = Math.min(255, Math.max(0, (luma - 128) * 1.8 + 128 * 0.85));
+        d[i] = luma;
+        d[i + 1] = luma;
+        d[i + 2] = luma;
+      }
+      ctx.putImageData(imgData, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
+function getPosAudioCtx() {
+  if (!posAudioCtx) {
+    posAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (posAudioCtx.state === 'suspended') {
+    posAudioCtx.resume();
+  }
+  return posAudioCtx;
+}
+
+function playPosTearSound() {
+  const ctx = getPosAudioCtx();
+  const startTime = ctx.currentTime;
+  const dur = 0.55;
+  const bufferSize = Math.floor(ctx.sampleRate * dur);
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+
+  for (let i = 0; i < bufferSize; i++) {
+    const t = i / bufferSize;
+    const baseNoise = Math.random() * 2 - 1;
+    const crackle = Math.random() > 0.94 ? (Math.random() * 2 - 1) * 2.2 : 0;
+    data[i] = (baseNoise * 0.7 + crackle) * (Math.sin(t * Math.PI) * Math.pow(1 - t, 0.7));
+  }
+
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(1400, startTime);
+  filter.frequency.exponentialRampToValueAtTime(4500, startTime + 0.15);
+  filter.frequency.exponentialRampToValueAtTime(800, startTime + dur);
+  filter.Q.setValueAtTime(1.8, startTime);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.9, startTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, startTime + dur);
+
+  source.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+  source.start(startTime);
+}
+
+function initPosTerminalData() {
+  const dateInput = document.getElementById('posDateInput');
+  if (dateInput && !dateInput.value) {
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.value = today;
+    posSelectedDate = today;
+  }
+  updatePosScreenPreview();
+}
+
+function updatePosScreenPreview() {
+  const transactions = globalLedgerDataBackup || [];
+  
+  // Filter Live Transactions
+  const filtered = transactions.filter(t => {
+    // 1. Category check (case-insensitive)
+    const tCat = (t.category || 'Other').trim();
+    const matchCat = Array.from(posSelectedCategories).some(c => c.toLowerCase() === tCat.toLowerCase());
+    if (!matchCat) return false;
+
+    // 2. Date check
+    if (posSelectedDate && t.date) {
+      const txDatePart = new Date(t.date).toISOString().split('T')[0];
+      if (txDatePart !== posSelectedDate) return false;
+    }
+    return true;
+  });
+
+  const title1 = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.tripName) ? globalActiveDataPayloadBackup.tripName : "BHARAT WAY";
+  const title2 = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.secondaryTitle) ? globalActiveDataPayloadBackup.secondaryTitle : "EXPEDITION";
+  
+  let storeTitle = `${title1} - ${title2}`.toUpperCase();
+  let filterTag = "ALL EXPENSES";
+  let invPrefix = "EXP";
+
+  if (posSelectedCategories.size === 1) {
+    const singleCat = Array.from(posSelectedCategories)[0];
+    filterTag = singleCat.toUpperCase();
+    invPrefix = singleCat.slice(0, 2).toUpperCase();
+  } else if (posSelectedCategories.size < POS_ALL_CATEGORIES.length) {
+    filterTag = Array.from(posSelectedCategories).map(c => c.toUpperCase()).join('+');
+    invPrefix = "MULTI";
+  }
+
+  const invoiceNo = `${invPrefix}-${String(posInvoiceCounter).padStart(6, '0')}`;
+  const netTotal = filtered.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+
+  // Sync category buttons
+  document.querySelectorAll('#categoryGrid .cat-btn[data-cat]').forEach(btn => {
+    const cat = btn.dataset.cat;
+    const isSelected = Array.from(posSelectedCategories).some(c => c.toLowerCase() === cat.toLowerCase());
+    btn.classList.toggle('active', isSelected);
+  });
+
+  const btnAll = document.getElementById('btnAll');
+  if (btnAll) {
+    btnAll.classList.toggle('active', posSelectedCategories.size === POS_ALL_CATEGORIES.length);
+  }
+
+  const screenInvoiceLabel = document.getElementById('screenInvoiceLabel');
+  const screenItemCount = document.getElementById('screenItemCount');
+  const screenTotal = document.getElementById('screenTotal');
+  const printBtn = document.getElementById('printBtn');
+
+  if (filtered.length > 0) {
+    if (screenInvoiceLabel) screenInvoiceLabel.textContent = `INV #${invoiceNo}`;
+    if (screenItemCount) screenItemCount.textContent = `${filtered.length} EXPENSES`;
+    if (screenTotal) screenTotal.textContent = `₹ ${netTotal.toFixed(2)}`;
+    if (printBtn && !posIsPrinting) printBtn.disabled = false;
+
+    let displayDateStr = "ALL DATES";
+    if (posSelectedDate) {
+      const parts = posSelectedDate.split('-');
+      displayDateStr = `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    posPreparedBill = {
+      items: filtered,
+      storeTitle,
+      filterTag,
+      invoiceNo,
+      dateString: displayDateStr,
+      netTotal
+    };
+  } else {
+    if (screenInvoiceLabel) screenInvoiceLabel.textContent = `NO EXPENSES FOUND`;
+    if (screenItemCount) screenItemCount.textContent = `0 EXPENSES`;
+    if (screenTotal) screenTotal.textContent = `₹ 0.00`;
+    if (printBtn && !posIsPrinting) printBtn.disabled = true;
+    posPreparedBill = null;
+  }
+}
+
+function createPosReceiptSegmentHTML(billData, timeString) {
+  let rowsHTML = '';
+  billData.items.forEach(item => {
+    const safeNote = item.notes || item.category || 'Expense';
+    const safeUtr = (item.utr && item.utr !== 'undefined') ? item.utr : 'N/A';
+    const amountVal = parseFloat(item.amount) || 0;
+
+    rowsHTML += `
+      <tr>
+        <td>${safeNote}</td>
+        <td class="col-center utr-text">${safeUtr}</td>
+        <td class="col-right">${amountVal.toFixed(2)}</td>
+      </tr>
+    `;
+  });
+
+  const activeLogo = posCachedLogo || POS_SVG_BACKUP;
+
+  return `
+    <div class="center">
+      <div class="receipt-logo-wrap">
+        <img src="${activeLogo}" alt="Logo" class="receipt-logo" />
+      </div>
+      <div class="title bold">${billData.storeTitle}</div>
+      <div class="sub-info">
+        Expense Reimbursement & Settlement<br />
+        Audit Verified | Digital Pass Record
+      </div>
+    </div>
+
+    <hr class="dashed-line" />
+
+    <div class="row">
+      <span>DATE: ${billData.dateString}</span>
+      <span>TIME: ${timeString}</span>
+    </div>
+    <div class="row">
+      <span>INVOICE: #${billData.invoiceNo}</span>
+      <span>TAG: <strong>${billData.filterTag}</strong></span>
+    </div>
+
+    <hr class="dashed-line" />
+
+    <table class="item-table">
+      <thead>
+        <tr>
+          <th style="width: 44%;">EXPENSE</th>
+          <th class="col-center" style="width: 32%;">UTR NO.</th>
+          <th class="col-right" style="width: 24%;">AMT</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHTML}
+      </tbody>
+    </table>
+
+    <hr class="dashed-line" />
+
+    <div class="row total-row">
+      <span>NET TOTAL</span>
+      <span>₹ ${billData.netTotal.toFixed(2)}</span>
+    </div>
+
+    <hr class="dashed-line" />
+
+    <div class="center">
+      <div class="bold" style="font-size: 9px; margin-top: 2px;">EXPENSE VERIFIED & AUDITED</div>
+      <div style="font-size: 7.5px; margin-top: 2px;">PLEASE KEEP THIS VOUCHER</div>
+
+      <div class="footer-note">
+        All references verified against financial ledger records.<br />
+        Computer-generated voucher. No physical signature required.
+      </div>
+
+      <div class="powered-by">Powered by Bharat Way</div>
+      <div class="bold" style="font-size: 8px; letter-spacing: 0.5px;">*** EXPENSE STATEMENT ***</div>
+    </div>
+  `;
+}
+
+// Event Listeners for POS Terminal
+document.addEventListener('DOMContentLoaded', () => {
+  const catGrid = document.getElementById('categoryGrid');
+  const dateInput = document.getElementById('posDateInput');
+  const clearDateBtn = document.getElementById('posClearDateBtn');
+  const printBtn = document.getElementById('printBtn');
+  const tearBtn = document.getElementById('tearBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+
+  if (catGrid) {
+    catGrid.addEventListener('click', (e) => {
+      if (posIsPrinting) return;
+      const btn = e.target.closest('.cat-btn');
+      if (!btn) return;
+
+      if (btn.id === 'btnAll') {
+        if (posSelectedCategories.size === POS_ALL_CATEGORIES.length) {
+          posSelectedCategories.clear();
+        } else {
+          posSelectedCategories = new Set(POS_ALL_CATEGORIES);
+        }
+      } else {
+        const cat = btn.dataset.cat;
+        if (posSelectedCategories.has(cat)) {
+          posSelectedCategories.delete(cat);
+        } else {
+          posSelectedCategories.add(cat);
+        }
+      }
+      updatePosScreenPreview();
+    });
+  }
+
+  if (dateInput) {
+    dateInput.addEventListener('change', (e) => {
+      if (posIsPrinting) return;
+      posSelectedDate = e.target.value || null;
+      updatePosScreenPreview();
+    });
+  }
+
+  if (clearDateBtn) {
+    clearDateBtn.addEventListener('click', () => {
+      if (posIsPrinting) return;
+      posSelectedDate = null;
+      if (dateInput) dateInput.value = '';
+      updatePosScreenPreview();
+    });
+  }
+
+  if (printBtn) {
+    printBtn.addEventListener('click', () => {
+      if (posIsPrinting || !posPreparedBill) return;
+
+      posIsPrinting = true;
+      printBtn.disabled = true;
+      if (tearBtn) tearBtn.disabled = true;
+      if (downloadBtn) downloadBtn.disabled = true;
+
+      const receiptMask = document.getElementById('receiptMask');
+      const receiptRoll = document.getElementById('receiptRoll');
+      const terminal = document.getElementById('terminal');
+      const statusLight = document.getElementById('statusLight');
+      const statusText = document.getElementById('statusText');
+
+      if (receiptMask) receiptMask.classList.remove('tearing');
+
+      const now = new Date();
+      const timeString = now.toTimeString().split(' ')[0];
+      const previousTotalHeight = receiptRoll.scrollHeight;
+
+      const segment = document.createElement('div');
+      segment.className = 'receipt-segment';
+      segment.innerHTML = createPosReceiptSegmentHTML(posPreparedBill, timeString);
+      receiptRoll.prepend(segment);
+
+      const segmentHeight = segment.offsetHeight;
+      const newTotalHeight = previousTotalHeight + segmentHeight;
+
+      receiptRoll.style.transform = `translateY(-${segmentHeight}px)`;
+      receiptMask.style.height = `${previousTotalHeight}px`;
+
+      if (terminal) terminal.classList.add('vibrating');
+      if (statusLight) statusLight.classList.add('printing');
+      if (statusText) statusText.textContent = 'PRINTING';
+
+      posPrintAudio.currentTime = 0;
+      posPrintAudio.play().catch(() => {});
+
+      const duration = Math.max(1200, (segmentHeight / 110) * 1000);
+      const startTime = performance.now();
+
+      function animatePrint(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        const currentYOffset = -segmentHeight * (1 - progress);
+        const currentMaskHeight = previousTotalHeight + segmentHeight * progress;
+
+        receiptRoll.style.transform = `translateY(${currentYOffset}px)`;
+        receiptMask.style.height = `${currentMaskHeight}px`;
+
+        if (progress < 1) {
+          requestAnimationFrame(animatePrint);
+        } else {
+          posPrintAudio.pause();
+          posPrintAudio.currentTime = 0;
+
+          receiptRoll.style.transform = `translateY(0px)`;
+          receiptMask.style.height = `${newTotalHeight}px`;
+
+          if (terminal) terminal.classList.remove('vibrating');
+          if (statusLight) statusLight.classList.remove('printing');
+          if (statusText) statusText.textContent = 'PRINTED';
+
+          posPrintedCount++;
+          posInvoiceCounter++;
+
+          setTimeout(() => {
+            if (statusText) statusText.textContent = 'READY';
+            printBtn.disabled = false;
+            if (tearBtn) tearBtn.disabled = false;
+            if (downloadBtn) downloadBtn.disabled = false;
+            posIsPrinting = false;
+            updatePosScreenPreview();
+          }, 400);
+        }
+      }
+
+      requestAnimationFrame(animatePrint);
+    });
+  }
+
+  if (tearBtn) {
+    tearBtn.addEventListener('click', () => {
+      if (posPrintedCount === 0 || posIsPrinting) return;
+
+      tearBtn.disabled = true;
+      playPosTearSound();
+
+      const receiptMask = document.getElementById('receiptMask');
+      const receiptRoll = document.getElementById('receiptRoll');
+
+      if (receiptMask) receiptMask.classList.add('tearing');
+
+      setTimeout(() => {
+        if (receiptRoll) {
+          receiptRoll.innerHTML = '';
+          receiptRoll.style.transform = 'translateY(0)';
+        }
+        if (receiptMask) {
+          receiptMask.style.height = '0px';
+          receiptMask.classList.remove('tearing');
+        }
+        posPrintedCount = 0;
+        if (downloadBtn) downloadBtn.disabled = true;
+      }, 700);
+    });
+  }
+
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', async () => {
+      if (posIsPrinting || posPrintedCount === 0) return;
+
+      const receiptRoll = document.getElementById('receiptRoll');
+      if (!receiptRoll) return;
+
+      downloadBtn.disabled = true;
+      const originalText = downloadBtn.textContent;
+      downloadBtn.textContent = 'SAVING...';
+
+      try {
+        const clone = receiptRoll.cloneNode(true);
+        clone.style.transform = 'none';
+        clone.style.position = 'fixed';
+        clone.style.top = '-9999px';
+        clone.style.left = '0';
+        clone.style.width = '360px';
+        clone.style.boxShadow = 'none';
+        document.body.appendChild(clone);
+
+        const canvas = await html2canvas(clone, {
+          scale: 3,
+          backgroundColor: '#ffffff',
+          logging: false,
+          useCORS: true,
+          allowTaint: true
+        });
+
+        document.body.removeChild(clone);
+
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = `Expense_Bill_Roll.png`;
+        link.click();
+      } catch (err) {
+        console.error('Error exporting receipt image:', err);
+      } finally {
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = originalText;
+      }
+    });
+  }
+});
+
+
     
 
     
