@@ -233,6 +233,18 @@
             <i data-lucide="toggle-left" class="w-4 h-4"></i> Global App Switches
           </h3>
 
+          <!-- Maintenance Mode Switch -->
+          <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
+            <div class="pr-2">
+              <p class="text-xs font-bold text-white">Maintenance Mode</p>
+              <p class="text-[9px] text-slate-400 mt-0.5">Redirect all visitors to maintenance page</p>
+            </div>
+            <select onchange="saveSetting(30, 'b', this.value, 'Maintenance mode updated')" id="setMaintenanceMode" class="bg-slate-900 border border-slate-700 text-xs font-bold rounded-lg px-2.5 py-1.5 text-indigo-400 outline-none">
+              <option value="DISABLED">DISABLED (Off)</option>
+              <option value="ENABLED">ENABLED (Redirect)</option>
+            </select>
+          </div>
+
           <!-- Announcement Mode Switch -->
           <div class="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800">
             <div class="pr-2">
@@ -1100,6 +1112,11 @@
       // Announcement Mode Sync
       if (document.getElementById('setAnnouncementMode')) {
         document.getElementById('setAnnouncementMode').value = d.announcementMode || 'DISABLED';
+      }
+
+      // Maintenance Mode Sync
+      if (document.getElementById('setMaintenanceMode')) {
+        document.getElementById('setMaintenanceMode').value = d.maintenanceMode || 'DISABLED';
       }
 
       // Checklist Settings Sync
