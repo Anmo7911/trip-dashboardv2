@@ -4294,7 +4294,8 @@ if (deskBookmark) deskBookmark.style.display = isChecklistVisible ? 'block' : 'n
 if (data.checklist) {
   renderChecklistTab(data.checklist);
 }
-      attemptCustomSplashHide();
+attemptCustomSplashHide();
+hideCustomSplash();
     }
     
     // ==========================================
@@ -4956,27 +4957,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       }
     }
     
-    // Purges local storage tokens and kicks back to login screen
-    function processLogOut() {
-      toggleMoreMenu(); 
-      
-      localStorage.removeItem('trekLoggedInUser'); 
-      localStorage.removeItem('trekLoggedInPIN'); 
-      
-      const pinInput = document.getElementById('login-pin-input');
-      if (pinInput) pinInput.value = "";
-      
-      const loginBtn = document.getElementById('login-submit-btn');
-      if (loginBtn) loginBtn.innerText = "Sign In";
-
-      // Re-map the active members for the dropdown menu
-      const selectDropdown = document.getElementById('login-name-select');
-      if (selectDropdown && cachedMembersList && cachedMembersList.length > 0) {
-        selectDropdown.innerHTML = cachedMembersList.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
-      }
-      
-      document.getElementById('login-overlay').classList.remove('hidden');
-    }
+   
 
     // ==========================================
     // E-ID CARD LOGIC
@@ -7274,92 +7255,91 @@ function initPosListeners() {
   }
 
   if (downloadBtn) {
-  downloadBtn.addEventListener('click', async () => {
-    if (posIsPrinting || posPrintedCount === 0) return;
+    downloadBtn.addEventListener('click', async () => {
+      if (posIsPrinting || posPrintedCount === 0) return;
 
-    const receiptRoll = document.getElementById('receiptRoll');
-    if (!receiptRoll) return;
+      const receiptRoll = document.getElementById('receiptRoll');
+      if (!receiptRoll) return;
 
-    downloadBtn.disabled = true;
-    const originalText = downloadBtn.textContent;
-    downloadBtn.textContent = 'SAVING...';
+      downloadBtn.disabled = true;
+      const originalText = downloadBtn.textContent;
+      downloadBtn.textContent = 'SAVING...';
 
-    try {
-      const clone = receiptRoll.cloneNode(true);
-      clone.style.transform = 'none';
-      clone.style.position = 'fixed';
-      clone.style.top = '-9999px';
-      clone.style.left = '0';
-      clone.style.width = '360px';
-      clone.style.boxShadow = 'none';
-      document.body.appendChild(clone);
+      try {
+        const clone = receiptRoll.cloneNode(true);
+        clone.style.transform = 'none';
+        clone.style.position = 'fixed';
+        clone.style.top = '-9999px';
+        clone.style.left = '0';
+        clone.style.width = '360px';
+        clone.style.boxShadow = 'none';
+        document.body.appendChild(clone);
 
-      const canvas = await html2canvas(clone, {
-        scale: 2.5,
-        backgroundColor: '#ffffff',
-        logging: false,
-        useCORS: true,
-        allowTaint: true
-      });
+        const canvas = await html2canvas(clone, {
+          scale: 2.5,
+          backgroundColor: '#ffffff',
+          logging: false,
+          useCORS: true,
+          allowTaint: true
+        });
 
-      document.body.removeChild(clone);
+        document.body.removeChild(clone);
 
-      canvas.toBlob(async (blob) => {
-        if (!blob) {
-          downloadBtn.disabled = false;
-          downloadBtn.textContent = originalText;
-          return;
-        }
-
-        const fileName = `Expense_Bill_Roll_${Date.now()}.png`;
-
-        // Detect iOS devices (iPhone, iPad, iPod, or iPad on iPadOS)
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-        // 1. iOS Only: Open Share Sheet (Save Image / Files)
-        if (isIOS && navigator.canShare) {
-          const file = new File([blob], fileName, { type: 'image/png' });
-          if (navigator.canShare({ files: [file] })) {
-            try {
-              await navigator.share({
-                files: [file],
-                title: 'POS Expense Receipt',
-                text: 'Here is your trip expense receipt.'
-              });
-            } catch (shareErr) {
-              if (shareErr.name !== 'AbortError') {
-                console.warn('Share error:', shareErr);
-              }
-            }
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
             downloadBtn.disabled = false;
             downloadBtn.textContent = originalText;
             return;
           }
-        }
 
-        // 2. Direct Download for All Other Devices (Android, Windows, Mac, Linux)
-        const blobUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 1500);
+          const fileName = `Expense_Bill_Roll_${Date.now()}.png`;
 
+          // Device detection for iOS
+          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+          if (isIOS && navigator.share) {
+            const file = new File([blob], fileName, { type: 'image/png' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              try {
+                await navigator.share({
+                  files: [file],
+                  title: 'POS Expense Receipt',
+                  text: 'Here is your trip expense receipt.'
+                });
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = originalText;
+                return;
+              } catch (shareErr) {
+                if (shareErr.name !== 'AbortError') {
+                  console.warn('Share error:', shareErr);
+                }
+              }
+            }
+          }
+
+          // Direct file download for Android, PC, Mac, Linux
+          const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 1500);
+
+          downloadBtn.disabled = false;
+          downloadBtn.textContent = originalText;
+        }, 'image/png');
+
+      } catch (err) {
+        console.error('Error exporting receipt image:', err);
         downloadBtn.disabled = false;
         downloadBtn.textContent = originalText;
-      }, 'image/png');
-
-    } catch (err) {
-      console.error('Error exporting receipt image:', err);
-      downloadBtn.disabled = false;
-      downloadBtn.textContent = originalText;
-      showToast("Download failed. Try again.");
-    }
-  });
-}
+        showToast("Download failed. Try again.");
+      }
+    });
+  }
 
 // Initialize listeners on load
 if (document.readyState === 'loading') {
