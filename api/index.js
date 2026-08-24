@@ -162,6 +162,7 @@ async function dashboard() {
   const checklistVisibility = text(setting(24, 'b')).toUpperCase() || 'VISIBLE';
   const checklistRevokeVisibility = text(setting(24, 'c')).toUpperCase() || 'VISIBLE';
   const announcementMode = text(setting(29, 'b')).toUpperCase() || 'DISABLED';
+  const maintenanceMode = text(setting(30, 'b')).toUpperCase() || 'DISABLED';
 
   // 10-Second Dynamic Broadcast Popup Settings (Row 28)
   const popupType = text(setting(28, 'b')).toUpperCase() || 'NOTIFICATION';
@@ -306,7 +307,7 @@ async function dashboard() {
 
   const totalExpenses = Object.values(categorySpent).reduce((a, b) => a + b, 0);
   return {
-    appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus, checklistVisibility, checklistRevokeVisibility, announcementMode,
+    appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus, checklistVisibility, checklistRevokeVisibility, announcementMode, maintenanceMode,
     popupConfig: { type: popupType, title: popupTitle, message: popupMessage, status: popupStatus, pushedAt: popupPushedAt },
     securityStatus: meta.security_status || 'normal',
     chiefCoordinatorSignature, eidStampImage, rawEidStamp, tripName, secondaryTitle,
