@@ -7261,50 +7261,84 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (downloadBtn) {
-    downloadBtn.addEventListener('click', async () => {
-      if (posIsPrinting || posPrintedCount === 0) return;
+  downloadBtn.addEventListener('click', async () => {
+    if (posIsPrinting || posPrintedCount === 0) return;
 
-      const receiptRoll = document.getElementById('receiptRoll');
-      if (!receiptRoll) return;
+    const receiptRoll = document.getElementById('receiptRoll');
+    if (!receiptRoll) return;
 
-      downloadBtn.disabled = true;
-      const originalText = downloadBtn.textContent;
-      downloadBtn.textContent = 'SAVING...';
+    downloadBtn.disabled = true;
+    const originalText = downloadBtn.textContent;
+    downloadBtn.textContent = 'SAVING...';
 
-      try {
-        const clone = receiptRoll.cloneNode(true);
-        clone.style.transform = 'none';
-        clone.style.position = 'fixed';
-        clone.style.top = '-9999px';
-        clone.style.left = '0';
-        clone.style.width = '360px';
-        clone.style.boxShadow = 'none';
-        document.body.appendChild(clone);
+    try {
+      const clone = receiptRoll.cloneNode(true);
+      clone.style.transform = 'none';
+      clone.style.position = 'fixed';
+      clone.style.top = '-9999px';
+      clone.style.left = '0';
+      clone.style.width = '360px';
+      clone.style.boxShadow = 'none';
+      document.body.appendChild(clone);
 
-        const canvas = await html2canvas(clone, {
-          scale: 3,
-          backgroundColor: '#ffffff',
-          logging: false,
-          useCORS: true,
-          allowTaint: true
-        });
+      const canvas = await html2canvas(clone, {
+        scale: 2.5,
+        backgroundColor: '#ffffff',
+        logging: false,
+        useCORS: true,
+        allowTaint: true
+      });
 
-        document.body.removeChild(clone);
+      document.body.removeChild(clone);
 
-        const image = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = image;
-        link.download = `Expense_Bill_Roll.png`;
-        link.click();
-      } catch (err) {
-        console.error('Error exporting receipt image:', err);
-      } finally {
+      // Convert Canvas to Blob for iOS/Cross-Platform Compatibility
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+          downloadBtn.disabled = false;
+          downloadBtn.textContent = originalText;
+          return;
+        }
+
+        const fileName = `Expense_Bill_Roll_${Date.now()}.png`;
+        const file = new File([blob], fileName, { type: 'image/png' });
+
+        // 1. iOS Native Share Sheet (Save Image / Files)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: 'POS Expense Receipt',
+              text: 'Here is your trip expense receipt.'
+            });
+          } catch (shareErr) {
+            if (shareErr.name !== 'AbortError') {
+              console.warn('Share dismissed or failed:', shareErr);
+            }
+          }
+        } else {
+          // 2. Fallback for Desktop & Android browsers
+          const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 1500);
+        }
+
         downloadBtn.disabled = false;
         downloadBtn.textContent = originalText;
-      }
-    });
-  }
-});
+      }, 'image/png');
+
+    } catch (err) {
+      console.error('Error exporting receipt image:', err);
+      downloadBtn.disabled = false;
+      downloadBtn.textContent = originalText;
+      showToast("Download failed. Try again.");
+    }
+  });
+}
 
 
     
