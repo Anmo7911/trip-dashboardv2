@@ -51,6 +51,39 @@
 
   <style>
 
+
+    /* POS Trip Selector Dropdown */
+.trip-filter-row {
+  width: 100%;
+}
+
+.trip-select {
+  width: 100%;
+  background: #121720;
+  color: #a5b4fc;
+  border: 1px solid #232c3a;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  outline: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  min-height: 26px;
+  transition: all 0.15s ease;
+}
+
+.trip-select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 5px rgba(99, 102, 241, 0.25);
+}
+
+
+
+    
+
     /* =========================================
    POS PRINTER ENGINE & HARDWARE STYLES
    ========================================= */
@@ -2649,7 +2682,7 @@
     <!-- Hardware Body -->
     <div class="pos-terminal" id="terminal">
       
-      <!-- Screen -->
+     <!-- Screen -->
       <div class="terminal-screen">
         <div class="screen-header">
           <span class="screen-title">EXPENSE CONFIG</span>
@@ -2657,6 +2690,13 @@
             <span class="status-text" id="statusText">READY</span>
             <div class="status-light" id="statusLight"></div>
           </div>
+        </div>
+
+        <!-- Trip Selection Dropdown (Live vs Past Trips) -->
+        <div class="trip-filter-row">
+          <select id="posTripSelect" class="trip-select" onchange="handlePosTripChange(this.value)">
+            <option value="__LIVE__">● CURRENT LIVE TRIP</option>
+          </select>
         </div>
 
         <!-- Categories Filter Grid -->
@@ -6846,6 +6886,270 @@ let posCachedLogo = null;
 let posIsPrinting = false;
 let posPrintedCount = 0;
 let posAudioCtx = null;
+
+// Past Trip State
+let posActiveTripMode = '__LIVE__';
+let posPastTripData = null;
+let posPastTripMetadata = null;
+
+// Sound Effects
+const posPrintAudio = new Audio('https://mp3tourl.com/audio/1787550364214-360e734d-d360-4675-9a76-484d456b96e0.mp3');
+posPrintAudio.preload = 'auto';
+
+async function preloadPosLogo() {
+  try {
+    const res = await fetch(POS_PROXY_LOGO, { mode: 'cors' });
+    if (res.ok) {
+      const blob = await res.blob();
+      posCachedLogo = await processPosGrayscale(blob);
+    } else {
+      posCachedLogo = POS_SVG_BACKUP;
+    }
+  } catch (e) {
+    posCachedLogo = POS_SVG_BACKUP;
+  }
+}
+preloadPosLogo();
+
+function processPosGrayscale(blob) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = imgData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        if (d[i + 3] === 0) continue;
+        let luma = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114;
+        luma = Math.min(255, Math.max(0, (luma - 128) * 1.8 + 128 * 0.85));
+        d[i] = luma;
+        d[i + 1] = luma;
+        d[i + 2] = luma;
+      }
+      ctx.putImageData(imgData, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
+function getPosAudioCtx() {
+  if (!posAudioCtx) {
+    posAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (posAudioCtx.state === 'suspended') {
+    posAudioCtx.resume();
+  }
+  return posAudioCtx;
+}
+
+function playPosTearSound() {
+  const ctx = getPosAudioCtx();
+  const startTime = ctx.currentTime;
+  const dur = 0.55;
+  const bufferSize = Math.floor(ctx.sampleRate * dur);
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+
+  for (let i = 0; i < bufferSize; i++) {
+    const t = i / bufferSize;
+    const baseNoise = Math.random() * 2 - 1;
+    const crackle = Math.random() > 0.94 ? (Math.random() * 2 - 1) * 2.2 : 0;
+    data[i] = (baseNoise * 0.7 + crackle) * (Math.sin(t * Math.PI) * Math.pow(1 - t, 0.7));
+  }
+
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(1400, startTime);
+  filter.frequency.exponentialRampToValueAtTime(4500, startTime + 0.15);
+  filter.frequency.exponentialRampToValueAtTime(800, startTime + dur);
+  filter.Q.setValueAtTime(1.8, startTime);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.9, startTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, startTime + dur);
+
+  source.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+  source.start(startTime);
+}
+
+function populatePosTripDropdown() {
+  const select = document.getElementById('posTripSelect');
+  if (!select) return;
+
+  const pastTrips = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.pastTrips) || [];
+  
+  let optionsHtml = '<option value="__LIVE__">● CURRENT LIVE TRIP</option>';
+  pastTrips.forEach(trip => {
+    if (trip.name && trip.name.trim() !== '') {
+      const selectedAttr = (posActiveTripMode === trip.name) ? 'selected' : '';
+      optionsHtml += `<option value="${trip.name}" ${selectedAttr}>📁 ${trip.name.toUpperCase()}</option>`;
+    }
+  });
+
+  select.innerHTML = optionsHtml;
+}
+
+async function handlePosTripChange(selectedTrip) {
+  posActiveTripMode = selectedTrip;
+  const statusText = document.getElementById('statusText');
+  const statusLight = document.getElementById('statusLight');
+  const printBtn = document.getElementById('printBtn');
+
+  if (selectedTrip === '__LIVE__') {
+    posPastTripData = null;
+    posPastTripMetadata = null;
+    updatePosScreenPreview();
+    return;
+  }
+
+  if (statusText) statusText.textContent = 'FETCHING...';
+  if (statusLight) statusLight.className = 'status-light printing';
+  if (printBtn) printBtn.disabled = true;
+
+  try {
+    const res = await apiRequest('past-trip-ledger', { tripName: selectedTrip });
+    if (res && res.success) {
+      posPastTripData = res.transactions || [];
+      posPastTripMetadata = {
+        tripName: res.tripName || selectedTrip,
+        secondaryTitle: res.secondaryTitle || '',
+        tripCode: res.tripCode || 'EXP'
+      };
+      showToast(`${selectedTrip} Data Loaded`);
+    } else {
+      showToast(res.error || "Failed to load trip");
+      posPastTripData = [];
+    }
+  } catch (err) {
+    console.error("Past trip fetch error:", err);
+    showToast("Network error fetching past trip");
+    posPastTripData = [];
+  } finally {
+    if (statusText) statusText.textContent = 'READY';
+    if (statusLight) statusLight.className = 'status-light';
+    updatePosScreenPreview();
+  }
+}
+
+function initPosTerminalData() {
+  const dateInput = document.getElementById('posDateInput');
+  if (dateInput) {
+    dateInput.value = posSelectedDate || '';
+  }
+  populatePosTripDropdown();
+  updatePosScreenPreview();
+}
+
+function updatePosScreenPreview() {
+  const transactions = (posActiveTripMode === '__LIVE__') 
+    ? (globalLedgerDataBackup || []) 
+    : (posPastTripData || []);
+  
+  const filtered = transactions.filter(t => {
+    const tCat = (t.category || 'Other').trim();
+    const matchCat = Array.from(posSelectedCategories).some(c => c.toLowerCase() === tCat.toLowerCase());
+    if (!matchCat) return false;
+
+    if (posSelectedDate && t.date) {
+      try {
+        const d = new Date(t.date);
+        if (!isNaN(d.getTime())) {
+          const txDatePart = d.toISOString().split('T')[0];
+          if (txDatePart !== posSelectedDate) return false;
+        }
+      } catch (_) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  let title1 = "BHARAT WAY";
+  let title2 = "EXPEDITION";
+  let basePrefix = "EXP";
+
+  if (posActiveTripMode === '__LIVE__') {
+    title1 = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.tripName) ? globalActiveDataPayloadBackup.tripName : "BHARAT WAY";
+    title2 = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.secondaryTitle) ? globalActiveDataPayloadBackup.secondaryTitle : "EXPEDITION";
+  } else if (posPastTripMetadata) {
+    title1 = posPastTripMetadata.tripName || "BHARAT WAY";
+    title2 = posPastTripMetadata.secondaryTitle || "";
+    basePrefix = posPastTripMetadata.tripCode || "EXP";
+  }
+  
+  let storeTitle = title2 ? `${title1} - ${title2}`.toUpperCase() : title1.toUpperCase();
+  let filterTag = "ALL EXPENSES";
+  let invPrefix = basePrefix;
+
+  if (posSelectedCategories.size === 1) {
+    const singleCat = Array.from(posSelectedCategories)[0];
+    filterTag = singleCat.toUpperCase();
+    invPrefix = singleCat.slice(0, 2).toUpperCase();
+  } else if (posSelectedCategories.size < POS_ALL_CATEGORIES.length && posSelectedCategories.size > 0) {
+    filterTag = Array.from(posSelectedCategories).map(c => c.toUpperCase()).join('+');
+    invPrefix = "MULTI";
+  }
+
+  const invoiceNo = `${invPrefix}-${String(posInvoiceCounter).padStart(6, '0')}`;
+  const netTotal = filtered.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+
+  document.querySelectorAll('#categoryGrid .cat-btn[data-cat]').forEach(btn => {
+    const cat = btn.dataset.cat;
+    const isSelected = Array.from(posSelectedCategories).some(c => c.toLowerCase() === cat.toLowerCase());
+    btn.classList.toggle('active', isSelected);
+  });
+
+  const btnAll = document.getElementById('btnAll');
+  if (btnAll) {
+    btnAll.classList.toggle('active', posSelectedCategories.size === POS_ALL_CATEGORIES.length);
+  }
+
+  const screenInvoiceLabel = document.getElementById('screenInvoiceLabel');
+  const screenItemCount = document.getElementById('screenItemCount');
+  const screenTotal = document.getElementById('screenTotal');
+  const printBtn = document.getElementById('printBtn');
+
+  if (filtered.length > 0) {
+    if (screenInvoiceLabel) screenInvoiceLabel.textContent = `INV #${invoiceNo}`;
+    if (screenItemCount) screenItemCount.textContent = `${filtered.length} EXPENSES`;
+    if (screenTotal) screenTotal.textContent = `₹ ${netTotal.toFixed(2)}`;
+    if (printBtn && !posIsPrinting) printBtn.disabled = false;
+
+    let displayDateStr = "ALL DATES";
+    if (posSelectedDate) {
+      const parts = posSelectedDate.split('-');
+      displayDateStr = `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    posPreparedBill = {
+      items: filtered,
+      storeTitle,
+      filterTag,
+      invoiceNo,
+      dateString: displayDateStr,
+      netTotal
+    };
+  } else {
+    if (screenInvoiceLabel) screenInvoiceLabel.textContent = `NO EXPENSES FOUND`;
+    if (screenItemCount) screenItemCount.textContent = `0 EXPENSES`;
+    if (screenTotal) screenTotal.textContent = `₹ 0.00`;
+    if (printBtn && !posIsPrinting) printBtn.disabled = true;
+    posPreparedBill = null;
+  }
+}
 
 // Sound Effects
 const posPrintAudio = new Audio('https://mp3tourl.com/audio/1787550364214-360e734d-d360-4675-9a76-484d456b96e0.mp3');
