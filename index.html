@@ -3054,6 +3054,12 @@
        ========================================= -->
   <script>
 
+    // Check for secret URL parameter and save bypass session
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('preview') === 'admin') {
+  sessionStorage.setItem('maintenanceBypass', 'true');
+}
+
     // ==========================================
     // VERCEL / SUPABASE API BRIDGE
     // ==========================================
@@ -3344,6 +3350,9 @@
           window.location.replace('/announcement.html');
           return;
         }
+
+        // Check if Secret Preview Bypass is active
+        const hasBypass = sessionStorage.getItem('maintenanceBypass') === 'true';
 
         // ADD THIS: Redirect if Maintenance Mode is active
         if (data && data.maintenanceMode === 'ENABLED') {
@@ -3875,6 +3884,10 @@
        window.location.replace('/announcement.html');
        return;
      }
+
+
+    // Check if Secret Preview Bypass is active
+     const hasBypass = sessionStorage.getItem('maintenanceBypass') === 'true';
 
      // ADD THIS: Automatic Redirect if Maintenance Mode is Enabled in Admin
      if (data.maintenanceMode === 'ENABLED') {
