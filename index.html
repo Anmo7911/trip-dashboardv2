@@ -6342,12 +6342,13 @@ function showCustomSplash() {
 
 function hideCustomSplash() {
   const splash = document.getElementById('custom-splash-screen');
-  if (splash && !splash.classList.contains('hidden')) {
+  if (splash) {
     splash.classList.add('iris-reveal-exit');
     setTimeout(() => {
       splash.classList.add('hidden');
       splash.classList.remove('iris-reveal-exit');
       splash.style.pointerEvents = 'none';
+      splash.style.display = 'none';
     }, 850);
   }
 }
@@ -6940,17 +6941,24 @@ function initPosTerminalData() {
 function updatePosScreenPreview() {
   const transactions = globalLedgerDataBackup || [];
   
-  // Filter Live Transactions
+  // Safe Filter Live Transactions
   const filtered = transactions.filter(t => {
     // 1. Category check (case-insensitive)
     const tCat = (t.category || 'Other').trim();
     const matchCat = Array.from(posSelectedCategories).some(c => c.toLowerCase() === tCat.toLowerCase());
     if (!matchCat) return false;
 
-    // 2. Date check
+    // 2. Safe Date check (won't crash on irregular date values)
     if (posSelectedDate && t.date) {
-      const txDatePart = new Date(t.date).toISOString().split('T')[0];
-      if (txDatePart !== posSelectedDate) return false;
+      try {
+        const d = new Date(t.date);
+        if (!isNaN(d.getTime())) {
+          const txDatePart = d.toISOString().split('T')[0];
+          if (txDatePart !== posSelectedDate) return false;
+        }
+      } catch (_) {
+        return false;
+      }
     }
     return true;
   });
@@ -7020,88 +7028,8 @@ function updatePosScreenPreview() {
   }
 }
 
-function createPosReceiptSegmentHTML(billData, timeString) {
-  let rowsHTML = '';
-  billData.items.forEach(item => {
-    const safeNote = item.notes || item.category || 'Expense';
-    const safeUtr = (item.utr && item.utr !== 'undefined') ? item.utr : 'N/A';
-    const amountVal = parseFloat(item.amount) || 0;
-
-    rowsHTML += `
-      <tr>
-        <td>${safeNote}</td>
-        <td class="col-center utr-text">${safeUtr}</td>
-        <td class="col-right">${amountVal.toFixed(2)}</td>
-      </tr>
-    `;
-  });
-
-  const activeLogo = posCachedLogo || POS_SVG_BACKUP;
-
-  return `
-    <div class="center">
-      <div class="receipt-logo-wrap">
-        <img src="${activeLogo}" alt="Logo" class="receipt-logo" />
-      </div>
-      <div class="title bold">${billData.storeTitle}</div>
-      <div class="sub-info">
-        Expense Reimbursement & Settlement<br />
-        Audit Verified | Digital Pass Record
-      </div>
-    </div>
-
-    <hr class="dashed-line" />
-
-    <div class="row">
-      <span>DATE: ${billData.dateString}</span>
-      <span>TIME: ${timeString}</span>
-    </div>
-    <div class="row">
-      <span>INVOICE: #${billData.invoiceNo}</span>
-      <span>TAG: <strong>${billData.filterTag}</strong></span>
-    </div>
-
-    <hr class="dashed-line" />
-
-    <table class="item-table">
-      <thead>
-        <tr>
-          <th style="width: 44%;">EXPENSE</th>
-          <th class="col-center" style="width: 32%;">UTR NO.</th>
-          <th class="col-right" style="width: 24%;">AMT</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rowsHTML}
-      </tbody>
-    </table>
-
-    <hr class="dashed-line" />
-
-    <div class="row total-row">
-      <span>NET TOTAL</span>
-      <span>₹ ${billData.netTotal.toFixed(2)}</span>
-    </div>
-
-    <hr class="dashed-line" />
-
-    <div class="center">
-      <div class="bold" style="font-size: 9px; margin-top: 2px;">EXPENSE VERIFIED & AUDITED</div>
-      <div style="font-size: 7.5px; margin-top: 2px;">PLEASE KEEP THIS VOUCHER</div>
-
-      <div class="footer-note">
-        All references verified against financial ledger records.<br />
-        Computer-generated voucher. No physical signature required.
-      </div>
-
-      <div class="powered-by">Powered by Bharat Way</div>
-      <div class="bold" style="font-size: 8px; letter-spacing: 0.5px;">*** EXPENSE STATEMENT ***</div>
-    </div>
-  `;
-}
-
-// Event Listeners for POS Terminal
-document.addEventListener('DOMContentLoaded', () => {
+// Direct self-invoking event binder (handles both early and late script execution)
+function initPosListeners() {
   const catGrid = document.getElementById('categoryGrid');
   const dateInput = document.getElementById('posDateInput');
   const clearDateBtn = document.getElementById('posClearDateBtn');
@@ -7169,18 +7097,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const now = new Date();
       const timeString = now.toTimeString().split(' ')[0];
-      const previousTotalHeight = receiptRoll.scrollHeight;
+      const previousTotalHeight = receiptRoll ? receiptRoll.scrollHeight : 0;
 
       const segment = document.createElement('div');
       segment.className = 'receipt-segment';
       segment.innerHTML = createPosReceiptSegmentHTML(posPreparedBill, timeString);
-      receiptRoll.prepend(segment);
+      if (receiptRoll) receiptRoll.prepend(segment);
 
-      const segmentHeight = segment.offsetHeight;
+      const segmentHeight = segment.offsetHeight || 200;
       const newTotalHeight = previousTotalHeight + segmentHeight;
 
-      receiptRoll.style.transform = `translateY(-${segmentHeight}px)`;
-      receiptMask.style.height = `${previousTotalHeight}px`;
+      if (receiptRoll) receiptRoll.style.transform = `translateY(-${segmentHeight}px)`;
+      if (receiptMask) receiptMask.style.height = `${previousTotalHeight}px`;
 
       if (terminal) terminal.classList.add('vibrating');
       if (statusLight) statusLight.classList.add('printing');
@@ -7199,8 +7127,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentYOffset = -segmentHeight * (1 - progress);
         const currentMaskHeight = previousTotalHeight + segmentHeight * progress;
 
-        receiptRoll.style.transform = `translateY(${currentYOffset}px)`;
-        receiptMask.style.height = `${currentMaskHeight}px`;
+        if (receiptRoll) receiptRoll.style.transform = `translateY(${currentYOffset}px)`;
+        if (receiptMask) receiptMask.style.height = `${currentMaskHeight}px`;
 
         if (progress < 1) {
           requestAnimationFrame(animatePrint);
@@ -7208,8 +7136,8 @@ document.addEventListener('DOMContentLoaded', () => {
           posPrintAudio.pause();
           posPrintAudio.currentTime = 0;
 
-          receiptRoll.style.transform = `translateY(0px)`;
-          receiptMask.style.height = `${newTotalHeight}px`;
+          if (receiptRoll) receiptRoll.style.transform = `translateY(0px)`;
+          if (receiptMask) receiptMask.style.height = `${newTotalHeight}px`;
 
           if (terminal) terminal.classList.remove('vibrating');
           if (statusLight) statusLight.classList.remove('printing');
@@ -7261,85 +7189,89 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (downloadBtn) {
-  downloadBtn.addEventListener('click', async () => {
-    if (posIsPrinting || posPrintedCount === 0) return;
+    downloadBtn.addEventListener('click', async () => {
+      if (posIsPrinting || posPrintedCount === 0) return;
 
-    const receiptRoll = document.getElementById('receiptRoll');
-    if (!receiptRoll) return;
+      const receiptRoll = document.getElementById('receiptRoll');
+      if (!receiptRoll) return;
 
-    downloadBtn.disabled = true;
-    const originalText = downloadBtn.textContent;
-    downloadBtn.textContent = 'SAVING...';
+      downloadBtn.disabled = true;
+      const originalText = downloadBtn.textContent;
+      downloadBtn.textContent = 'SAVING...';
 
-    try {
-      const clone = receiptRoll.cloneNode(true);
-      clone.style.transform = 'none';
-      clone.style.position = 'fixed';
-      clone.style.top = '-9999px';
-      clone.style.left = '0';
-      clone.style.width = '360px';
-      clone.style.boxShadow = 'none';
-      document.body.appendChild(clone);
+      try {
+        const clone = receiptRoll.cloneNode(true);
+        clone.style.transform = 'none';
+        clone.style.position = 'fixed';
+        clone.style.top = '-9999px';
+        clone.style.left = '0';
+        clone.style.width = '360px';
+        clone.style.boxShadow = 'none';
+        document.body.appendChild(clone);
 
-      const canvas = await html2canvas(clone, {
-        scale: 2.5,
-        backgroundColor: '#ffffff',
-        logging: false,
-        useCORS: true,
-        allowTaint: true
-      });
+        const canvas = await html2canvas(clone, {
+          scale: 2.5,
+          backgroundColor: '#ffffff',
+          logging: false,
+          useCORS: true,
+          allowTaint: true
+        });
 
-      document.body.removeChild(clone);
+        document.body.removeChild(clone);
 
-      // Convert Canvas to Blob for iOS/Cross-Platform Compatibility
-      canvas.toBlob(async (blob) => {
-        if (!blob) {
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            downloadBtn.disabled = false;
+            downloadBtn.textContent = originalText;
+            return;
+          }
+
+          const fileName = `Expense_Bill_Roll_${Date.now()}.png`;
+          const file = new File([blob], fileName, { type: 'image/png' });
+
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({
+                files: [file],
+                title: 'POS Expense Receipt',
+                text: 'Here is your trip expense receipt.'
+              });
+            } catch (shareErr) {
+              if (shareErr.name !== 'AbortError') {
+                console.warn('Share dismissed or failed:', shareErr);
+              }
+            }
+          } else {
+            const blobUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 1500);
+          }
+
           downloadBtn.disabled = false;
           downloadBtn.textContent = originalText;
-          return;
-        }
+        }, 'image/png');
 
-        const fileName = `Expense_Bill_Roll_${Date.now()}.png`;
-        const file = new File([blob], fileName, { type: 'image/png' });
-
-        // 1. iOS Native Share Sheet (Save Image / Files)
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            await navigator.share({
-              files: [file],
-              title: 'POS Expense Receipt',
-              text: 'Here is your trip expense receipt.'
-            });
-          } catch (shareErr) {
-            if (shareErr.name !== 'AbortError') {
-              console.warn('Share dismissed or failed:', shareErr);
-            }
-          }
-        } else {
-          // 2. Fallback for Desktop & Android browsers
-          const blobUrl = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = blobUrl;
-          link.download = fileName;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          setTimeout(() => URL.revokeObjectURL(blobUrl), 1500);
-        }
-
+      } catch (err) {
+        console.error('Error exporting receipt image:', err);
         downloadBtn.disabled = false;
         downloadBtn.textContent = originalText;
-      }, 'image/png');
-
-    } catch (err) {
-      console.error('Error exporting receipt image:', err);
-      downloadBtn.disabled = false;
-      downloadBtn.textContent = originalText;
-      showToast("Download failed. Try again.");
-    }
-  });
+        showToast("Download failed. Try again.");
+      }
+    });
+  }
 }
 
+// Safely execute listener setup regardless of document readiness
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initPosListeners);
+} else {
+  initPosListeners();
+}
 
     
 
