@@ -7481,6 +7481,19 @@ function initPosListeners() {
   if (posListenersInitialized) return;
   posListenersInitialized = true;
 
+  const terminal = document.getElementById('terminal');
+  if (terminal) {
+    terminal.addEventListener('click', (e) => {
+      const clickable = e.target.closest('button, select, .cat-btn, .btn-edge, .btn-power, .btn-clear-date');
+      if (clickable) {
+        if (!posPowerState && clickable.id !== 'powerBtn') return;
+        if (clickable.disabled) return;
+
+        playPosClickSound();
+      }
+    });
+  }
+
   const catGrid = document.getElementById('categoryGrid');
   const dateInput = document.getElementById('posDateInput');
   const clearDateBtn = document.getElementById('posClearDateBtn');
@@ -7861,6 +7874,33 @@ function togglePosPower() {
   }
   lucide.createIcons();
 }
+
+
+    // Tactical POS Button Click / Keypad Tone
+function playPosClickSound() {
+  try {
+    const ctx = getPosAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(850, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.035);
+
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.035);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.035);
+  } catch (e) {
+    console.warn("Click sound error:", e);
+  }
+}
+
+    
     
 </script>
 
