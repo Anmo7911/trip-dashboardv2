@@ -7116,6 +7116,29 @@ async function fetchLiveTripCode() {
 const posPrintAudio = new Audio('https://mp3tourl.com/audio/1787550364214-360e734d-d360-4675-9a76-484d456b96e0.mp3');
 posPrintAudio.preload = 'auto';
 
+// ---> PASTE STEP 1 HERE <---
+const posBootAudio = new Audio('https://mp3tourl.com/audio/1787659553982-86ffb2ff-5846-4063-8349-55053ba81ff3.mp3');
+posBootAudio.preload = 'auto';
+posBootAudio.loop = true;
+
+function playPosBootSound() {
+  try {
+    posBootAudio.currentTime = 0;
+    posBootAudio.loop = true;
+    posBootAudio.play().catch(e => console.warn("Boot audio play error:", e));
+  } catch (e) {
+    console.warn("Boot audio error:", e);
+  }
+}
+
+function stopPosBootSound() {
+  try {
+    posBootAudio.pause();
+    posBootAudio.currentTime = 0;
+  } catch (e) {}
+}
+// ---------------------------
+
 async function preloadPosLogo() {
   try {
     const res = await fetch(POS_PROXY_LOGO, { mode: 'cors' });
@@ -7805,10 +7828,11 @@ function togglePosPower() {
   const screenTotal = document.getElementById('screenTotal');
 
   clearPosBootTimers();
+  stopPosBootSound();
 
   if (posPowerState) {
-    // 1. Play startup beep tone
-    playPosBeepSound();
+    // 1. Play custom audio in loop
+    playPosBootSound();
 
     // 2. Turn ON hardware and activate button illumination
     terminal.classList.remove('powered-off');
@@ -7837,8 +7861,9 @@ function togglePosPower() {
     }, 1000);
     posBootTimers.push(timer1);
 
-    // Phase 3 (After 2s): Complete boot & restore normal summary values
+    // Phase 3 (After 2s): Stop audio loop, complete boot & restore normal values
     const timer2 = setTimeout(() => {
+      stopPosBootSound();
       terminal.classList.remove('booting');
       
       // Deselect all category buttons
@@ -7847,14 +7872,14 @@ function togglePosPower() {
       if (statusText) statusText.textContent = 'READY';
       if (statusLight) statusLight.className = 'status-light';
 
-      // Updates summary screen to "NO EXPENSES FOUND / 0 EXPENSES / ₹ 0.00"
       updatePosScreenPreview();
       lucide.createIcons();
     }, 2000);
     posBootTimers.push(timer2);
 
   } else {
-    // POWER OFF: Clear boot sequences, selections & power down
+    // POWER OFF: Stop audio, clear selections & power down
+    stopPosBootSound();
     terminal.classList.remove('booting');
     posSelectedCategories.clear();
     updatePosScreenPreview();
