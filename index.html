@@ -51,17 +51,36 @@
 
   <style>
 
-    /* --- POS POWER OFF STATES --- */
+  /* --- POS POWER OFF STYLING (Matches Tear/Download disabled buttons) --- */
 .pos-terminal.powered-off .trip-select,
 .pos-terminal.powered-off .cat-btn,
 .pos-terminal.powered-off .date-input,
-.pos-terminal.powered-off .btn-clear-date,
-.pos-terminal.powered-off .btn-print,
-.pos-terminal.powered-off .btn-tear,
-.pos-terminal.powered-off .btn-download {
-  opacity: 0.25;
+.pos-terminal.powered-off .btn-clear-date {
+  background: #14171d !important;
+  color: #495462 !important;
+  border-color: #242b35 !important;
   pointer-events: none;
-  filter: grayscale(80%);
+  box-shadow: none !important;
+}
+
+/* Lock summary footer height so the machine size stays constant and never shrinks */
+.screen-summary-footer {
+  min-height: 32px;
+}
+
+#posPowerBtn.is-on {
+  color: #38ef7d !important; /* Green when on */
+  border-color: #2b5642 !important;
+  background: #1b2822 !important;
+}
+
+@keyframes terminalBootBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+.pos-terminal.pos-booting-anim .terminal-screen,
+.pos-terminal.pos-booting-anim .terminal-controls {
+  animation: terminalBootBlink 0.3s ease-in-out 6 alternate;
 }
 .pos-terminal.powered-off #posPowerBtn {
   opacity: 1 !important;
@@ -2744,15 +2763,8 @@
       
      <!-- Screen -->
       <div class="terminal-screen">
-        <div class="screen-header">
-          <div class="screen-header">
-  <div class="flex items-center gap-1.5">
-    <span class="screen-title">EXPENSE CONFIG</span>
-    <!-- Power On/Off Button -->
-    <button type="button" id="posPowerBtn" onclick="togglePosPower()" title="Power On/Off" style="background: none; border: none; cursor: pointer; padding: 2px; color: #ef4444;" class="transition hover:scale-110 active:scale-95 outline-none">
-      <i data-lucide="power" class="w-3.5 h-3.5 stroke-[2.5]"></i>
-    </button>
-  </div>
+       <div class="screen-header">
+  <span class="screen-title">EXPENSE CONFIG</span>
   <div class="status-indicator-wrap">
     <span class="status-text" id="statusText">OFF</span>
     <div class="status-light" id="statusLight"></div>
