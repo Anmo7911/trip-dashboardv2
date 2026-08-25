@@ -104,8 +104,12 @@
   box-shadow: 0 0 8px rgba(255, 123, 114, 0.25) !important;
 }
 
-/* Gray out only the interactive elements, keeping the header & status light bright */
-.pos-terminal.powered-off .terminal-screen > *:not(.screen-header),
+/* Blanks out the screen content completely while preserving exact height and width */
+.pos-terminal.powered-off .terminal-screen > *:not(.screen-header) {
+  visibility: hidden !important;
+}
+
+/* Dims the action buttons below the screen */
 .pos-terminal.powered-off .terminal-controls button:not(#powerBtn) {
   opacity: 0.25 !important;
   pointer-events: none !important;
