@@ -52,6 +52,52 @@
   <style>
 
 
+    /* =========================================
+   POS POWER BUTTON & POWERED-OFF STATE
+   ========================================= */
+.terminal-controls {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 0.75fr 36px; /* Resized download + 36px power button */
+  gap: 5px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.btn-power {
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.btn-power.active {
+  background: #1b2822;
+  color: #38ef7d;
+  border: 1px solid #2b5642;
+  box-shadow: 0 0 8px rgba(56, 239, 125, 0.25);
+}
+
+.btn-power.inactive {
+  background: #2b2121;
+  color: #ff7b72;
+  border: 1px solid #583333;
+  box-shadow: 0 0 8px rgba(255, 123, 114, 0.25);
+}
+
+/* Powered OFF Terminal Lock State */
+.pos-terminal.powered-off .terminal-screen,
+.pos-terminal.powered-off .terminal-controls button:not(#powerBtn) {
+  opacity: 0.35;
+  pointer-events: none !important;
+}
+
+    
+
     /* POS Trip Selector Dropdown */
 .trip-filter-row {
   width: 100%;
@@ -2736,6 +2782,9 @@
         <button type="button" class="btn-edge btn-print" id="printBtn">PRINT BILL</button>
         <button type="button" class="btn-edge btn-tear" id="tearBtn" disabled>TEAR OFF</button>
         <button type="button" class="btn-edge btn-download" id="downloadBtn" disabled>DOWNLOAD</button>
+        <button type="button" class="btn-power active" id="powerBtn" onclick="togglePosPower()" title="Power ON/OFF">
+          <i data-lucide="power" class="w-4 h-4 stroke-[2.5]"></i>
+        </button>
       </div>
 
       <!-- Cylindrical Slot Strip -->
@@ -7589,6 +7638,47 @@ if (document.readyState === 'loading') {
 } else {
   initPosListeners();
 }
+
+    // POS Power State Tracker
+let posPowerState = true;
+
+function togglePosPower() {
+  posPowerState = !posPowerState;
+  const terminal = document.getElementById('terminal');
+  const powerBtn = document.getElementById('powerBtn');
+  const statusText = document.getElementById('statusText');
+  const statusLight = document.getElementById('statusLight');
+  const printBtn = document.getElementById('printBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+
+  if (posPowerState) {
+    terminal.classList.remove('powered-off');
+    powerBtn.classList.remove('inactive');
+    powerBtn.classList.add('active');
+    if (statusText) statusText.textContent = 'READY';
+    if (statusLight) {
+      statusLight.className = 'status-light';
+      statusLight.style.background = '';
+      statusLight.style.boxShadow = '';
+    }
+    updatePosScreenPreview();
+  } else {
+    terminal.classList.add('powered-off');
+    powerBtn.classList.remove('active');
+    powerBtn.classList.add('inactive');
+    if (statusText) statusText.textContent = 'OFF';
+    if (statusLight) {
+      statusLight.className = 'status-light';
+      statusLight.style.background = '#ff7b72';
+      statusLight.style.boxShadow = '0 0 6px #ff7b72';
+    }
+    if (printBtn) printBtn.disabled = true;
+    if (downloadBtn) downloadBtn.disabled = true;
+  }
+  lucide.createIcons();
+}
+
+    
 </script>
 
 
