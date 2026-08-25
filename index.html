@@ -104,10 +104,10 @@
   box-shadow: 0 0 8px rgba(255, 123, 114, 0.25) !important;
 }
 
-/* Disables entire POS when powered off */
-.pos-terminal.powered-off .terminal-screen,
+/* Gray out only the interactive elements, keeping the header & status light bright */
+.pos-terminal.powered-off .terminal-screen > *:not(.screen-header),
 .pos-terminal.powered-off .terminal-controls button:not(#powerBtn) {
-  opacity: 0.3 !important;
+  opacity: 0.25 !important;
   pointer-events: none !important;
 }
 
