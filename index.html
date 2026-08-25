@@ -51,6 +51,18 @@
 
   <style>
 
+/* =========================================
+   Crisp QR Image
+   ========================================= */
+    #eid-qr img,
+#eid-qr canvas {
+  width: 62px !important;
+  height: 62px !important;
+  display: block !important;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
    /* =========================================
    POS BOOTING / SELF-TEST FLASH STYLES
    ========================================= */
@@ -5313,12 +5325,14 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       const token = member.verificationToken || member.token || '';
       const verifyUrl = `${window.location.origin}/verify.html?type=member&token=${encodeURIComponent(token)}`;
 
+      // Render at high-DPI (180x180) with Medium error correction for clean, crisp scanning
       new QRCode(qr, {
         text: verifyUrl,
-        width: 62,
-        height: 62,
-        colorDark: "#0f172a",
-        colorLight: "#ffffff"
+        width: 180,
+        height: 180,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
       });
     }
 
