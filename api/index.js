@@ -247,6 +247,7 @@ async function dashboard() {
       designation: roleName,
       memberRole: text(r.col_h),
       verification: text(r.col_i) || 'Verified',
+      verificationToken: text(r.verification_token) ||
       contribution: memberContributions[rawName] || 0,
       mobile: text(r.col_o),
       email: text(r.col_p),
@@ -758,6 +759,132 @@ async function fetchPastTripFromGoogleSheet(tripName) {
 
 
 // -------------------------------------------------------------
+// DYNAMIC QR VERIFICATION ENGINE
+// -------------------------------------------------------------
+async function recordPosInvoice(billData) {
+  if (!billData || !billData.invoiceNo) throw new Error('Invoice data required');
+
+  const invoiceNo = text(billData.invoiceNo);
+  
+  // Check if invoice already exists in database
+  const { data: existing } = await supabase
+    .from('pos_invoices')
+    .select('*')
+    .eq('invoice_no', invoiceNo)
+    .maybeSingle();
+
+  if (existing) {
+    return { success: true, token: existing.token, invoiceNo: existing.invoice_no };
+  }
+
+  const generatedToken = `BILL_${crypto.randomBytes(8).toString('hex').toUpperCase()}`;
+
+  const { data: inserted, error } = await supabase.from('pos_invoices').insert({
+    token: generatedToken,
+    invoice_no: invoiceNo,
+    trip_code: text(billData.tripCode) || 'EXP',
+    store_title: billData.storeTitle || 'BHARAT WAY EXPEDITION',
+    filter_tag: text(billData.filterTag) || 'ALL EXPENSES',
+    date_string: text(billData.dateString) || '',
+    time_string: text(billData.timeString) || '',
+    items: Array.isArray(billData.items) ? billData.items : [],
+    net_total: number(billData.netTotal),
+    is_verified: true
+  }).select('*').single();
+
+  if (error) throw error;
+  return { success: true, token: inserted.token, invoiceNo: inserted.invoice_no };
+}
+
+async function verifyToken(type, token) {
+  const queryType = text(type).toLowerCase();
+  const queryToken = text(token);
+
+  if (!queryToken) {
+    return { valid: false, error: 'Missing verification token' };
+  }
+
+  // 1. MEMBER PASS VERIFICATION
+  if (queryType === 'member') {
+    const { data: member, error } = await supabase
+      .from('members_sheet')
+      .select('*')
+      .eq('verification_token', queryToken)
+      .maybeSingle();
+
+    if (error || !member) {
+      return { valid: false, error: 'Member pass token is unrecognized or invalid' };
+    }
+
+    const [settingsResult, memberMetaResult] = await Promise.all([
+      supabase.from('settings_sheet').select('*').in('row_number', [2, 10]),
+      supabase.from('member_sheet_meta').select('chief_coordinator_signature').limit(1).maybeSingle()
+    ]);
+
+    const settings = settingsResult.data || [];
+    const getSetting = (row, col) => settings.find(r => r.row_number === row)?.[`col_${col}`] || '';
+    
+    const tripName = text(getSetting(10, 'c')) || text(getSetting(2, 'b')) || 'BHARAT WAY';
+    const eidSubheading = text(getSetting(10, 'b'));
+    const chiefSignature = await resolveAsset(memberMetaResult?.data?.chief_coordinator_signature);
+    const photoUrl = await resolveAsset(member.col_c);
+    const isVerified = text(member.col_i).toLowerCase() !== 'unverified';
+
+    return {
+      valid: true,
+      type: 'member',
+      isVerified,
+      member: {
+        name: text(member.col_a),
+        designation: text(member.col_b) || 'Member',
+        memberRole: text(member.col_h) || '-',
+        mobile: text(member.col_o) || '-',
+        email: text(member.col_p) || '-',
+        img: photoUrl,
+        chiefCoordinatorSignature: chiefSignature,
+        tripName,
+        eidSubheading,
+        token: queryToken
+      }
+    };
+  }
+
+  // 2. POS VOUCHER / BILL VERIFICATION
+  if (queryType === 'bill') {
+    const { data: invoice, error } = await supabase
+      .from('pos_invoices')
+      .select('*')
+      .eq('token', queryToken)
+      .maybeSingle();
+
+    if (error || !invoice) {
+      return { valid: false, error: 'POS voucher token does not exist in ledger records' };
+    }
+
+    return {
+      valid: true,
+      type: 'bill',
+      isVerified: Boolean(invoice.is_verified),
+      bill: {
+        storeTitle: invoice.store_title,
+        dateString: invoice.date_string,
+        timeString: invoice.time_string,
+        invoiceNo: invoice.invoice_no,
+        filterTag: invoice.filter_tag,
+        tripCode: invoice.trip_code,
+        netTotal: number(invoice.net_total),
+        items: invoice.items || [],
+        token: invoice.token
+      }
+    };
+  }
+
+  return { valid: false, error: 'Invalid verification type parameter' };
+}
+
+
+
+// -------------------------------------------------------------
 // MAIN API ROUTER
 // -------------------------------------------------------------
 export default async function handler(req, res) {
@@ -805,6 +932,10 @@ export default async function handler(req, res) {
       case 'admin-save-checklist': return json(res, 200, await adminSaveChecklist(body));
       case 'admin-delete-checklist': return json(res, 200, await adminDeleteChecklist(body.id));
       case 'admin-upload': return json(res, 200, await adminUploadFile(body));
+
+      // Dynamic Verification Actions
+      case 'verify': return json(res, 200, await verifyToken(req.query?.type || body?.type, req.query?.token || body?.token));
+      case 'record-pos-invoice': return json(res, 200, await recordPosInvoice(body));
 
       // Admin Chat Extensions
       case 'admin-send-message': return json(res, 200, await saveSquadMessage(body.sender || 'Admin', body.text));
