@@ -51,7 +51,7 @@
 
   <style>
 
-    /* =========================================
+   /* =========================================
    POS BOOTING / SELF-TEST FLASH STYLES
    ========================================= */
 .pos-terminal.booting .cat-btn {
@@ -101,11 +101,21 @@
   pointer-events: none !important;
 }
 
-.pos-terminal.booting .terminal-screen > * {
+/* Ensure all screen contents and labels stay 100% visible during boot */
+.pos-terminal.booting .terminal-screen > *,
+.pos-terminal.booting .screen-info-val,
+.pos-terminal.booting .screen-total,
+.pos-terminal.booting .screen-info-label {
   visibility: visible !important;
   opacity: 1 !important;
 }
-    
+
+/* Prevent interacting with dropdown, date picker, or power button while booting */
+.pos-terminal.booting .trip-select,
+.pos-terminal.booting .date-input,
+.pos-terminal.booting #powerBtn {
+  pointer-events: none !important;
+}
 
 
     /* =========================================
@@ -7754,7 +7764,12 @@ function playPosBeepSound() {
 
 // Updated Power Toggle with 1-Second Button Self-Test
 let posPowerState = true;
-let posBootTimer = null;
+let posBootTimers = [];
+
+function clearPosBootTimers() {
+  posBootTimers.forEach(timer => clearTimeout(timer));
+  posBootTimers = [];
+}
 
 function togglePosPower() {
   posPowerState = !posPowerState;
@@ -7765,27 +7780,45 @@ function togglePosPower() {
   const printBtn = document.getElementById('printBtn');
   const downloadBtn = document.getElementById('downloadBtn');
 
-  if (posBootTimer) clearTimeout(posBootTimer);
+  const screenInvoiceLabel = document.getElementById('screenInvoiceLabel');
+  const screenItemCount = document.getElementById('screenItemCount');
+  const screenTotal = document.getElementById('screenTotal');
+
+  clearPosBootTimers();
 
   if (posPowerState) {
     // 1. Play startup beep tone
     playPosBeepSound();
 
-    // 2. Activate 2-second self-test illumination
+    // 2. Turn ON hardware and activate button illumination
     terminal.classList.remove('powered-off');
     terminal.classList.add('booting');
     powerBtn.classList.remove('inactive');
     powerBtn.classList.add('active');
 
-    if (statusText) statusText.textContent = 'SYSTEM TEST';
     if (statusLight) {
       statusLight.className = 'status-light printing';
       statusLight.style.background = '';
       statusLight.style.boxShadow = '';
     }
 
-    // 3. After 2 seconds, remove highlight and deselect all buttons
-    posBootTimer = setTimeout(() => {
+    // Phase 1 (0s - 1s): Display "BOOTING..."
+    if (statusText) statusText.textContent = 'BOOTING';
+    if (screenInvoiceLabel) screenInvoiceLabel.textContent = 'TERMINAL OS';
+    if (screenItemCount) screenItemCount.textContent = 'BOOTING...';
+    if (screenTotal) screenTotal.textContent = '---';
+
+    // Phase 2 (1s - 2s): Display "SYSTEM CHECK....."
+    const timer1 = setTimeout(() => {
+      if (statusText) statusText.textContent = 'CHECKING';
+      if (screenInvoiceLabel) screenInvoiceLabel.textContent = 'SELF TEST';
+      if (screenItemCount) screenItemCount.textContent = 'SYSTEM CHECK.....';
+      if (screenTotal) screenTotal.textContent = 'OK';
+    }, 1000);
+    posBootTimers.push(timer1);
+
+    // Phase 3 (After 2s): Complete boot & restore normal summary values
+    const timer2 = setTimeout(() => {
       terminal.classList.remove('booting');
       
       // Deselect all category buttons
@@ -7794,12 +7827,14 @@ function togglePosPower() {
       if (statusText) statusText.textContent = 'READY';
       if (statusLight) statusLight.className = 'status-light';
 
+      // Updates summary screen to "NO EXPENSES FOUND / 0 EXPENSES / ₹ 0.00"
       updatePosScreenPreview();
       lucide.createIcons();
     }, 2000);
+    posBootTimers.push(timer2);
 
   } else {
-    // POWER OFF: Clear selections & power down
+    // POWER OFF: Clear boot sequences, selections & power down
     terminal.classList.remove('booting');
     posSelectedCategories.clear();
     updatePosScreenPreview();
