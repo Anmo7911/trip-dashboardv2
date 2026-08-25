@@ -7067,6 +7067,84 @@ let posIsPrinting = false;
 let posPrintedCount = 0;
 let posAudioCtx = null;
 
+
+    let posAudioCtx = null;
+
+// ==========================================
+// DETERMINISTIC INVOICE MATRIX GENERATOR
+// ==========================================
+function getDeterministicInvoiceNumber(tripCode, selectedCategories, selectedDate) {
+  const STD_CATEGORIES = ['Entry', 'Fare', 'Food', 'Other', 'Stay', 'Water'];
+  
+  // Normalize category naming differences
+  const normalizeCat = (c) => {
+    const lower = (c || '').toLowerCase().trim();
+    if (lower.startsWith('entry')) return 'Entry';
+    if (lower === 'fare') return 'Fare';
+    if (lower === 'food') return 'Food';
+    if (lower === 'other') return 'Other';
+    if (lower === 'stay') return 'Stay';
+    if (lower === 'water') return 'Water';
+    return c;
+  };
+
+  const activeNormalized = Array.from(selectedCategories)
+    .map(normalizeCat)
+    .filter(c => STD_CATEGORIES.includes(c));
+
+  // Sort active categories strictly by standard alphabetical order
+  const sortedSelected = STD_CATEGORIES.filter(c => activeNormalized.includes(c));
+  const count = sortedSelected.length;
+
+  // 1. Prefix Rules: "00" for All Dates, 2-digit "DD" for specific day
+  let datePrefix = "00";
+  if (selectedDate) {
+    const parts = selectedDate.split('-');
+    if (parts.length === 3 && parts[2]) {
+      datePrefix = parts[2].padStart(2, '0');
+    }
+  }
+
+  // 2. Combination Index Matrix (Method 2 Lookup)
+  if (count === 6) {
+    // All 6 Categories (Master): 0001 (All Dates) or [DD]00 (Date Filtered)
+    return selectedDate ? `${tripCode}-${datePrefix}00` : `${tripCode}-0001`;
+  }
+
+  let comboCode = "00";
+
+  if (count === 1) {
+    // 1-Category: 01 to 06
+    const idx = STD_CATEGORIES.indexOf(sortedSelected[0]) + 1;
+    comboCode = String(idx).padStart(2, '0');
+  } else if (count >= 2 && count <= 5) {
+    // Lexicographical combination generator
+    const getCombinations = (arr, k) => {
+      if (k === 1) return arr.map(el => [el]);
+      const result = [];
+      for (let i = 0; i <= arr.length - k; i++) {
+        const head = arr[i];
+        const tailCombos = getCombinations(arr.slice(i + 1), k - 1);
+        tailCombos.forEach(tail => result.push([head, ...tail]));
+      }
+      return result;
+    };
+
+    const allCombos = getCombinations(STD_CATEGORIES, count);
+    const selectedKey = sortedSelected.join('+');
+    const comboIndex = allCombos.findIndex(c => c.join('+') === selectedKey);
+
+    const baseOffsets = { 2: 11, 3: 31, 4: 51, 5: 71 };
+    if (comboIndex !== -1 && baseOffsets[count] !== undefined) {
+      comboCode = String(baseOffsets[count] + comboIndex);
+    }
+  }
+
+  return `${tripCode}-${datePrefix}${comboCode}`;
+}
+
+
+
 // --- BACKGROUND PREFETCH CACHE ---
 const posTripCache = {};
 
@@ -7367,8 +7445,8 @@ function updatePosScreenPreview() {
     filterTag = Array.from(posSelectedCategories).map(c => c.toUpperCase()).join('+');
   }
 
-  // Invoice format: TRIPCODE-000101
-  const invoiceNo = `${basePrefix}-${String(posInvoiceCounter).padStart(6, '0')}`;
+ // Deterministic Invoice: [TRIPCODE]-[DATE_OR_GLOBAL_PREFIX][COMBO_INDEX]
+  const invoiceNo = getDeterministicInvoiceNumber(basePrefix, posSelectedCategories, posSelectedDate);
   const netTotal = filtered.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
 
   document.querySelectorAll('#categoryGrid .cat-btn[data-cat]').forEach(btn => {
@@ -7633,7 +7711,6 @@ function initPosListeners() {
           if (statusText) statusText.textContent = 'PRINTED';
 
           posPrintedCount++;
-          posInvoiceCounter++;
 
           setTimeout(() => {
             if (statusText) statusText.textContent = 'READY';
