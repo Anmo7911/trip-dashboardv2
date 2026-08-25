@@ -29,33 +29,38 @@
     }
 
     /* =========================================
-       AUTHENTIC RUBBER STAMP STYLING
+       AUTHENTIC CIRCULAR RUBBER STAMP STYLING
        ========================================= */
     .stamp-seal {
       display: inline-flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 4px 8px;
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
       text-transform: uppercase;
       font-weight: 900;
-      border-radius: 6px;
       user-select: none;
       transform: rotate(-12deg);
-      border: 2.5px solid currentColor;
-      box-shadow: 0 0 0 1.5px currentColor inset;
-      line-height: 1;
+      border: 2px solid currentColor;
+      box-shadow: 0 0 0 2px currentColor inset;
+      line-height: 1.1;
+      text-align: center;
+      padding: 4px;
+      position: relative;
+      flex-shrink: 0;
     }
 
     .stamp-verified {
       color: #059669; /* Emerald Green */
-      background: rgba(16, 185, 129, 0.08);
+      background: rgba(16, 185, 129, 0.07);
       text-shadow: 0 0 0.5px rgba(5, 150, 105, 0.4);
     }
 
     .stamp-unverified {
       color: #dc2626; /* Crimson Red */
-      background: rgba(239, 68, 68, 0.08);
+      background: rgba(239, 68, 68, 0.07);
       text-shadow: 0 0 0.5px rgba(220, 38, 38, 0.4);
     }
 
@@ -151,24 +156,18 @@
       animation: scanSweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     }
 
-    
- #eid-qr canvas {
-  display: none !important;
-}
+    #eid-qr canvas {
+      display: none !important;
+    }
 
-#eid-qr img {
-  width: 62px !important;
-  height: 62px !important;
-  display: block !important;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
-
-    
+    #eid-qr img {
+      width: 62px !important;
+      height: 62px !important;
+      display: block !important;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
   </style>
-
-
-  
 </head>
 <body class="bg-slate-100/70 min-h-screen text-slate-800 flex flex-col justify-between p-4 sm:p-6 select-none relative">
 
@@ -238,16 +237,16 @@
             <p id="eid-subtitle" class="text-[7.5px] font-bold tracking-[0.18em] text-slate-400 uppercase mt-0.5 truncate w-full hidden"></p>
           </div>
 
-          <!-- Photo Section with Authentic Stamp Overlay -->
+          <!-- Photo Section with Authentic Circular Stamp Overlay -->
           <div id="eid-photo-container" class="h-[185px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 overflow-hidden">
             <img id="eid-photo" src="" class="w-full h-full object-cover object-top grayscale contrast-125">
             
-            <!-- STAMP SEAL OVERLAY -->
+            <!-- CIRCULAR STAMP SEAL OVERLAY -->
             <div id="eid-stamp-mount" class="absolute bottom-2 right-2 pointer-events-none z-30">
               <div id="eid-stamp-seal" class="stamp-seal stamp-verified">
-                <span class="text-[6.5px] font-black tracking-widest opacity-80">BHARAT WAY</span>
-                <span class="text-[11px] tracking-wider my-0.5" id="eid-stamp-label">VERIFIED</span>
-                <span class="text-[6px] font-mono tracking-tighter" id="eid-stamp-date">PASS 2026</span>
+                <span class="text-[6px] font-black tracking-widest opacity-80 uppercase">★ BHARAT WAY ★</span>
+                <span class="text-[10px] font-black tracking-wider border-y border-current py-0.5 my-0.5 w-[85%]" id="eid-stamp-label">VERIFIED</span>
+                <span class="text-[5.5px] font-mono tracking-tight" id="eid-stamp-date">PASS 2026</span>
               </div>
             </div>
           </div>
@@ -346,12 +345,12 @@
 
         <hr class="dashed-line" />
 
-        <!-- AUTHENTIC POS VOUCHER AUDIT STAMP -->
+        <!-- AUTHENTIC POS VOUCHER AUDIT CIRCULAR STAMP -->
         <div class="flex justify-center my-3">
-          <div id="pos-bill-stamp" class="stamp-seal stamp-verified" style="transform: rotate(-8deg); padding: 5px 12px;">
-            <span class="text-[7px] font-black tracking-widest">BHARAT WAY AUDIT</span>
-            <span class="text-[11px] tracking-wider my-0.5" id="pos-stamp-status">★ SETTLED & VERIFIED ★</span>
-            <span class="text-[6.5px] font-mono tracking-wider" id="pos-stamp-hash">LEDGER HASH MATCHED</span>
+          <div id="pos-bill-stamp" class="stamp-seal stamp-verified" style="transform: rotate(-8deg); width: 84px; height: 84px;">
+            <span class="text-[6px] font-black tracking-widest opacity-90">★ AUDIT LOG ★</span>
+            <span class="text-[8px] font-black tracking-wide border-y border-current py-0.5 my-0.5 w-[90%]" id="pos-stamp-status">SETTLED & OK</span>
+            <span class="text-[5.5px] font-mono tracking-tighter" id="pos-stamp-hash">HASH MATCHED</span>
           </div>
         </div>
 
@@ -385,10 +384,10 @@
       </div>
 
       <div class="flex justify-center my-2">
-        <div class="stamp-seal stamp-unverified" style="transform: rotate(-10deg);">
-          <span class="text-[7px] font-black">SECURITY ALERT</span>
-          <span class="text-[12px] my-0.5">VOID / UNVERIFIED</span>
-          <span class="text-[6.5px] font-mono">TOKEN MISMATCH</span>
+        <div class="stamp-seal stamp-unverified" style="transform: rotate(-10deg); width: 84px; height: 84px;">
+          <span class="text-[6px] font-black tracking-wider opacity-90">★ SECURITY ★</span>
+          <span class="text-[8.5px] font-black tracking-widest border-y border-current py-0.5 my-0.5 w-[90%]">VOID RECORD</span>
+          <span class="text-[5.5px] font-mono tracking-tighter">MISMATCH</span>
         </div>
       </div>
 
@@ -586,12 +585,12 @@
 
       if (isVerified) {
         stampEl.className = "stamp-seal stamp-verified";
-        stampStatus.innerText = "★ SETTLED & VERIFIED ★";
-        stampHash.innerText = "LEDGER HASH MATCHED";
+        stampStatus.innerText = "SETTLED & OK";
+        stampHash.innerText = "HASH MATCHED";
       } else {
         stampEl.className = "stamp-seal stamp-unverified";
-        stampStatus.innerText = "★ UNVERIFIED / PENDING ★";
-        stampHash.innerText = "AUDIT SIGNATURE MISSING";
+        stampStatus.innerText = "UNVERIFIED";
+        stampHash.innerText = "SIGN MISSING";
       }
 
       switchState('state-bill');
