@@ -51,6 +51,25 @@
 
   <style>
 
+    /* =========================================
+   POS BOOTING / SELF-TEST FLASH STYLES
+   ========================================= */
+.pos-terminal.booting .cat-btn,
+.pos-terminal.booting .btn-clear-date,
+.pos-terminal.booting .btn-edge {
+  background: #183325 !important;
+  color: #38ef7d !important;
+  border-color: #38ef7d !important;
+  box-shadow: 0 0 8px rgba(56, 239, 125, 0.4) !important;
+  pointer-events: none !important;
+}
+
+.pos-terminal.booting .terminal-screen > * {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+    
+
 
     /* =========================================
    POS POWER BUTTON & POWERED-OFF STATE
@@ -7673,7 +7692,32 @@ if (document.readyState === 'loading') {
 
 
 
-    let posPowerState = true;
+// Hardware Synthesized POS Beep Sound
+function playPosBeepSound() {
+  try {
+    const ctx = getPosAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1050, ctx.currentTime); // Crisp 1050Hz POS terminal tone
+
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.16);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.16);
+  } catch (e) {
+    console.warn("Beep audio error:", e);
+  }
+}
+
+// Updated Power Toggle with 1-Second Button Self-Test
+let posPowerState = true;
+let posBootTimer = null;
 
 function togglePosPower() {
   posPowerState = !posPowerState;
@@ -7684,25 +7728,47 @@ function togglePosPower() {
   const printBtn = document.getElementById('printBtn');
   const downloadBtn = document.getElementById('downloadBtn');
 
+  if (posBootTimer) clearTimeout(posBootTimer);
+
   if (posPowerState) {
+    // 1. Play startup beep sound
+    playPosBeepSound();
+
+    // 2. Remove powered-off lock and start 1-second self-test boot flash
     terminal.classList.remove('powered-off');
+    terminal.classList.add('booting');
     powerBtn.classList.remove('inactive');
     powerBtn.classList.add('active');
-    if (statusText) statusText.textContent = 'READY';
+
+    if (statusText) statusText.textContent = 'SYSTEM TEST';
     if (statusLight) {
-      statusLight.className = 'status-light';
+      statusLight.className = 'status-light printing';
       statusLight.style.background = '';
       statusLight.style.boxShadow = '';
     }
-    updatePosScreenPreview();
+
+    // 3. After exactly 1 second, restore default operational state
+    posBootTimer = setTimeout(() => {
+      terminal.classList.remove('booting');
+      posSelectedCategories = new Set(POS_ALL_CATEGORIES);
+      
+      if (statusText) statusText.textContent = 'READY';
+      if (statusLight) statusLight.className = 'status-light';
+      
+      updatePosScreenPreview();
+      lucide.createIcons();
+    }, 1000);
+
   } else {
-    // Unselect all category buttons and clear selections
+    // POWER OFF: Clear selections & power down
+    terminal.classList.remove('booting');
     posSelectedCategories.clear();
     updatePosScreenPreview();
 
     terminal.classList.add('powered-off');
     powerBtn.classList.remove('active');
     powerBtn.classList.add('inactive');
+
     if (statusText) statusText.textContent = 'OFF';
     if (statusLight) {
       statusLight.className = 'status-light';
