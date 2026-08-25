@@ -58,23 +58,29 @@
 .terminal-controls {
   width: 100%;
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr 44px; /* Print, Tear Off, Download, and Power button side-by-side */
-  gap: 5px;
+  grid-template-columns: 1.1fr 0.9fr 0.9fr 36px; /* 4 columns: Print, Tear, Download, Power */
+  gap: 3px;
   margin-bottom: 8px;
   align-items: center;
+  min-width: 0;
+}
+
+/* Prevents button text from forcing a wrap */
+.terminal-controls > * {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .btn-power {
-  padding: 8px 4px;
+  height: 32px;
   border-radius: 4px;
-  font-family: inherit;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
   transition: all 0.15s ease;
-  min-height: 32px;
-  user-select: none;
   outline: none;
 }
 
