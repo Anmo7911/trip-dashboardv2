@@ -7680,6 +7680,10 @@ function togglePosPower() {
     }
     updatePosScreenPreview();
   } else {
+    // Unselect all category buttons and clear selections
+    posSelectedCategories.clear();
+    updatePosScreenPreview();
+
     terminal.classList.add('powered-off');
     powerBtn.classList.remove('active');
     powerBtn.classList.add('inactive');
