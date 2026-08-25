@@ -54,13 +54,50 @@
     /* =========================================
    POS BOOTING / SELF-TEST FLASH STYLES
    ========================================= */
-.pos-terminal.booting .cat-btn,
-.pos-terminal.booting .btn-clear-date,
-.pos-terminal.booting .btn-edge {
+.pos-terminal.booting .cat-btn {
   background: #183325 !important;
   color: #38ef7d !important;
   border-color: #38ef7d !important;
-  box-shadow: 0 0 8px rgba(56, 239, 125, 0.4) !important;
+  box-shadow: 0 0 8px rgba(56, 239, 125, 0.35) !important;
+  pointer-events: none !important;
+}
+
+.pos-terminal.booting .cat-btn.btn-all {
+  background: #232d3d !important;
+  color: #60a5fa !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 8px rgba(96, 165, 250, 0.35) !important;
+}
+
+.pos-terminal.booting .btn-clear-date {
+  background: #2b3545 !important;
+  color: #ff7b72 !important;
+  border-color: #ff7b72 !important;
+  box-shadow: 0 0 8px rgba(255, 123, 114, 0.3) !important;
+  pointer-events: none !important;
+}
+
+.pos-terminal.booting .btn-print {
+  background: #23362e !important;
+  color: #38ef7d !important;
+  border-color: #38ef7d !important;
+  box-shadow: 0 0 8px rgba(56, 239, 125, 0.35) !important;
+  pointer-events: none !important;
+}
+
+.pos-terminal.booting .btn-tear {
+  background: #382929 !important;
+  color: #ff7b72 !important;
+  border-color: #ff7b72 !important;
+  box-shadow: 0 0 8px rgba(255, 123, 114, 0.35) !important;
+  pointer-events: none !important;
+}
+
+.pos-terminal.booting .btn-download {
+  background: #22344d !important;
+  color: #60a5fa !important;
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 8px rgba(96, 165, 250, 0.35) !important;
   pointer-events: none !important;
 }
 
@@ -7731,10 +7768,10 @@ function togglePosPower() {
   if (posBootTimer) clearTimeout(posBootTimer);
 
   if (posPowerState) {
-    // 1. Play startup beep sound
+    // 1. Play startup beep tone
     playPosBeepSound();
 
-    // 2. Remove powered-off lock and start 1-second self-test boot flash
+    // 2. Activate 2-second self-test illumination
     terminal.classList.remove('powered-off');
     terminal.classList.add('booting');
     powerBtn.classList.remove('inactive');
@@ -7747,17 +7784,19 @@ function togglePosPower() {
       statusLight.style.boxShadow = '';
     }
 
-    // 3. After exactly 1 second, restore default operational state
+    // 3. After 2 seconds, remove highlight and deselect all buttons
     posBootTimer = setTimeout(() => {
       terminal.classList.remove('booting');
-      posSelectedCategories = new Set(POS_ALL_CATEGORIES);
       
+      // Deselect all category buttons
+      posSelectedCategories.clear();
+
       if (statusText) statusText.textContent = 'READY';
       if (statusLight) statusLight.className = 'status-light';
-      
+
       updatePosScreenPreview();
       lucide.createIcons();
-    }, 1000);
+    }, 2000);
 
   } else {
     // POWER OFF: Clear selections & power down
