@@ -300,19 +300,19 @@
 
         <hr class="dashed-line" />
 
-        <!-- Net Total Row with Overlaid Primary Stamp Directly Over Amount -->
+        <!-- Net Total Row with Overlaid Primary Stamp Moved 7px Left -->
         <div class="relative py-1 my-0.5">
           <div class="row total-row">
             <span>NET TOTAL</span>
             <span id="pos-bill-total">₹ 0.00</span>
           </div>
 
-          <!-- MAIN PRIMARY STAMP OVERLAY (DIRECTLY OVER NET AMOUNT) -->
+          <!-- MAIN PRIMARY STAMP OVERLAY (POSITIONED OVER NET AMOUNT) -->
           <img 
             id="pos-stamp-main" 
             src="" 
             alt="Main Settlement Stamp" 
-            class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none z-20 w-[96px] h-[96px] object-contain mix-blend-multiply transition-all duration-300"
+            class="absolute right-[7px] top-1/2 -translate-y-1/2 pointer-events-none z-20 w-[96px] h-[96px] object-contain mix-blend-multiply transition-all duration-300"
           />
         </div>
 
@@ -361,25 +361,6 @@
     </div>
 
   </main>
-
-  <!-- TEST SWITCHER BAR -->
-  <footer class="w-full max-w-sm mx-auto pt-3 border-t border-slate-200/80 text-center space-y-2">
-    <p class="text-[8.5px] font-bold text-slate-400 uppercase tracking-widest">Test Gateway Scenarios</p>
-    <div class="grid grid-cols-4 gap-1.5 text-[8.5px] font-black uppercase tracking-wider">
-      <button onclick="simulateVerification('member-verified')" class="py-2 bg-white hover:bg-slate-50 border border-slate-200 text-indigo-600 rounded-xl active:scale-95 transition shadow-sm">
-        Pass OK
-      </button>
-      <button onclick="simulateVerification('member-unverified')" class="py-2 bg-white hover:bg-slate-50 border border-slate-200 text-rose-600 rounded-xl active:scale-95 transition shadow-sm">
-        Pass Void
-      </button>
-      <button onclick="simulateVerification('bill-verified')" class="py-2 bg-white hover:bg-slate-50 border border-slate-200 text-emerald-600 rounded-xl active:scale-95 transition shadow-sm">
-        Bill OK
-      </button>
-      <button onclick="simulateVerification('fraud')" class="py-2 bg-white hover:bg-slate-50 border border-slate-200 text-rose-700 rounded-xl active:scale-95 transition shadow-sm">
-        Fraud
-      </button>
-    </div>
-  </footer>
 
   <!-- CONTROLLER SCRIPT -->
   <script>
@@ -563,7 +544,7 @@
       const mainStampEl = document.getElementById('pos-stamp-main');
       if (mainStampEl) {
         const randomRot = getRandom(-15, 12);
-        const randomOffsetX = getRandom(-6, 6);
+        const randomOffsetX = getRandom(-4, 4);
         const randomOffsetY = getRandom(-4, 4);
         const randomOpacity = getRandom(0.86, 0.96);
 
@@ -575,7 +556,7 @@
       switchState('state-bill');
     }
 
-    // SIMULATE SCENARIOS (FOR LOCAL DEV TESTING)
+    // SIMULATE SCENARIOS (FALLBACK / PREVIEW)
     function simulateVerification(scenario) {
       switchState('state-loading');
 
