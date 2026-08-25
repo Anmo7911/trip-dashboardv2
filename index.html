@@ -4389,11 +4389,19 @@ if (mobBookmark) mobBookmark.style.display = isChecklistVisible ? 'block' : 'non
 if (deskBookmark) deskBookmark.style.display = isChecklistVisible ? 'block' : 'none';
 
 if (data.checklist) {
-  renderChecklistTab(data.checklist);
-}
-attemptCustomSplashHide();
-hideCustomSplash();
-    }
+     renderChecklistTab(data.checklist);
+   }
+   attemptCustomSplashHide();
+   hideCustomSplash();
+
+   // --- ADD THIS BACKGROUND PREFETCH CODE HERE ---
+   if (data.pastTrips && data.pastTrips.length > 0) {
+     setTimeout(() => {
+       prefetchPastTrips(data.pastTrips);
+     }, 2000);
+   }
+} // <--- This closes the renderApp(data) function
+  
     
     // ==========================================
     // EXPENSE SUBMISSION EVENT LISTENER
@@ -6913,6 +6921,31 @@ let posIsPrinting = false;
 let posPrintedCount = 0;
 let posAudioCtx = null;
 
+// --- BACKGROUND PREFETCH CACHE ---
+const posTripCache = {};
+
+async function prefetchPastTrips(pastTrips) {
+  if (!pastTrips || pastTrips.length === 0) return;
+  for (const trip of pastTrips) {
+    const tripName = trip.name;
+    if (!tripName || posTripCache[tripName]) continue;
+    try {
+      const res = await apiRequest('past-trip-ledger', { tripName: tripName });
+      if (res && res.success) {
+        posTripCache[tripName] = {
+          transactions: res.transactions || [],
+          metadata: {
+            tripName: res.tripName || tripName,
+            secondaryTitle: res.secondaryTitle || '',
+            tripCode: res.tripCode || trip.tripCode || 'EXP'
+          }
+        };
+      }
+    } catch (err) {
+      console.warn(`Background prefetch failed for ${tripName}:`, err);
+    }
+  }
+}
 // Past Trip State
 let posActiveTripMode = '__LIVE__';
 let posPastTripData = null;
@@ -7056,6 +7089,14 @@ async function handlePosTripChange(selectedTrip) {
     return;
   }
 
+  // Load instantly if already cached in background
+  if (posTripCache[selectedTrip]) {
+    posPastTripData = posTripCache[selectedTrip].transactions;
+    posPastTripMetadata = posTripCache[selectedTrip].metadata;
+    updatePosScreenPreview();
+    return;
+  }
+
   if (statusText) statusText.textContent = 'FETCHING...';
   if (statusLight) statusLight.className = 'status-light printing';
   if (printBtn) printBtn.disabled = true;
@@ -7069,14 +7110,17 @@ async function handlePosTripChange(selectedTrip) {
         secondaryTitle: res.secondaryTitle || '',
         tripCode: res.tripCode || 'EXP'
       };
-      showToast(`${selectedTrip} Data Loaded`);
+      
+      posTripCache[selectedTrip] = {
+        transactions: posPastTripData,
+        metadata: posPastTripMetadata
+      };
     } else {
       showToast(res.error || "Failed to load trip");
       posPastTripData = [];
     }
   } catch (err) {
     console.error("Past trip fetch error:", err);
-    showToast("Network error fetching past trip");
     posPastTripData = [];
   } finally {
     if (statusText) statusText.textContent = 'READY';
