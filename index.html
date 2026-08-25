@@ -104,16 +104,18 @@
   box-shadow: 0 0 8px rgba(255, 123, 114, 0.25) !important;
 }
 
-/* Dim the screen filter inputs and buttons */
+/* Dim the screen filter inputs, grid, and placeholder labels */
 .pos-terminal.powered-off .trip-filter-row,
 .pos-terminal.powered-off .category-grid,
-.pos-terminal.powered-off .date-filter-row {
+.pos-terminal.powered-off .date-filter-row,
+.pos-terminal.powered-off .screen-summary-footer .screen-info-label {
   opacity: 0.25 !important;
   pointer-events: none !important;
 }
 
-/* Blank out only the summary footer while keeping exact screen height */
-.pos-terminal.powered-off .screen-summary-footer {
+/* Blank out only the live values (expenses count and total amount) */
+.pos-terminal.powered-off .screen-info-val,
+.pos-terminal.powered-off .screen-total {
   visibility: hidden !important;
 }
 
@@ -125,7 +127,9 @@
 
     
 
-    /* POS TRIP SELECTOR */
+    /* =========================================
+   POS TRIP SELECTOR
+   ========================================= */
 .trip-filter-row {
   width: 100%;
 }
