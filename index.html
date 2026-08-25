@@ -5306,13 +5306,15 @@ const places = payload.places.filter(p => p.tripDay || p.location);
 
     function buildQR(member) {
       const qr = document.getElementById('eid-qr');
+      if (!qr) return;
       qr.innerHTML = '';
-      const isVerified = String(member.verification || '').toLowerCase().trim() === 'verified';
-      const statusText = isVerified ? 'VERIFIED' : 'UNVERIFIED';
-      const securePayload = `${member.name} | ${member.designation || 'Member'} | STATUS: ${statusText}`;
+
+      // Generate dynamic verification URL with token
+      const token = member.verificationToken || member.token || '';
+      const verifyUrl = `${window.location.origin}/verify.html?type=member&token=${encodeURIComponent(token)}`;
 
       new QRCode(qr, {
-        text: securePayload,
+        text: verifyUrl,
         width: 62,
         height: 62,
         colorDark: "#0f172a",
@@ -7495,7 +7497,7 @@ function updatePosScreenPreview() {
   }
 }
 
-function createPosReceiptSegmentHTML(billData, timeString) {
+function createPosReceiptSegmentHTML(billData, timeString, qrId) {
   let rowsHTML = '';
   billData.items.forEach(item => {
     const safeNote = item.notes || item.category || 'Expense';
@@ -7564,6 +7566,12 @@ function createPosReceiptSegmentHTML(billData, timeString) {
       <div class="bold" style="font-size: 9px; margin-top: 2px;">EXPENSE VERIFIED & AUDITED</div>
       <div style="font-size: 7.5px; margin-top: 2px;">PLEASE KEEP THIS VOUCHER</div>
       <div class="bold" style="font-size: 12px; letter-spacing: 1px; margin: 4px 0 2px;">*** ${billData.tripCode} ***</div>
+
+      <!-- DYNAMIC POS VERIFICATION QR -->
+      <div style="margin: 8px 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div id="${qrId}" style="width: 60px; height: 60px; display: inline-block;"></div>
+        <span style="font-size: 6px; font-family: monospace; color: #555; margin-top: 3px; letter-spacing: 0.3px;">SCAN TO VERIFY AUDIT LEDGER</span>
+      </div>
 
       <div class="footer-note">
         All references verified against financial ledger records.<br />
@@ -7644,7 +7652,7 @@ function initPosListeners() {
   }
 
   if (printBtn) {
-    printBtn.addEventListener('click', () => {
+    printBtn.addEventListener('click', async () => {
       if (posIsPrinting || !posPreparedBill) return;
 
       posIsPrinting = true;
@@ -7658,26 +7666,64 @@ function initPosListeners() {
       const statusLight = document.getElementById('statusLight');
       const statusText = document.getElementById('statusText');
 
-      if (receiptMask) receiptMask.classList.remove('tearing');
+      if (statusText) statusText.textContent = 'SAVING...';
+      if (statusLight) statusLight.className = 'status-light printing';
 
       const now = new Date();
       const timeString = now.toTimeString().split(' ')[0];
-      const previousTotalHeight = receiptRoll ? receiptRoll.scrollHeight : 0;
 
+      // 1. Record POS invoice in Supabase and obtain verification token
+      let invoiceToken = `BILL_${Date.now()}`;
+      try {
+        const recordRes = await apiRequest('record-pos-invoice', {
+          invoiceNo: posPreparedBill.invoiceNo,
+          tripCode: posPreparedBill.tripCode,
+          storeTitle: posPreparedBill.storeTitle,
+          filterTag: posPreparedBill.filterTag,
+          dateString: posPreparedBill.dateString,
+          timeString: timeString,
+          items: posPreparedBill.items,
+          netTotal: posPreparedBill.netTotal
+        });
+        if (recordRes && recordRes.token) {
+          invoiceToken = recordRes.token;
+        }
+      } catch (err) {
+        console.warn('Could not record POS invoice to server, fallback token used:', err);
+      }
+
+      if (receiptMask) receiptMask.classList.remove('tearing');
+
+      const previousTotalHeight = receiptRoll ? receiptRoll.scrollHeight : 0;
+      const uniqueQrId = `pos-qr-${Date.now()}`;
+
+      // 2. Render segment HTML with QR container
       const segment = document.createElement('div');
       segment.className = 'receipt-segment';
-      segment.innerHTML = createPosReceiptSegmentHTML(posPreparedBill, timeString);
+      segment.innerHTML = createPosReceiptSegmentHTML(posPreparedBill, timeString, uniqueQrId);
       if (receiptRoll) receiptRoll.prepend(segment);
 
+      // 3. Generate dynamic verification QR code URL
+      const qrEl = document.getElementById(uniqueQrId);
+      if (qrEl) {
+        const billVerifyUrl = `${window.location.origin}/verify.html?type=bill&token=${encodeURIComponent(invoiceToken)}`;
+        new QRCode(qrEl, {
+          text: billVerifyUrl,
+          width: 60,
+          height: 60,
+          colorDark: "#000000",
+          colorLight: "#ffffff"
+        });
+      }
+
       void segment.offsetHeight;
-      const segmentHeight = Math.max(180, segment.getBoundingClientRect().height);
+      const segmentHeight = Math.max(220, segment.getBoundingClientRect().height);
       const newTotalHeight = previousTotalHeight + segmentHeight;
 
       if (receiptRoll) receiptRoll.style.transform = `translateY(-${segmentHeight}px)`;
       if (receiptMask) receiptMask.style.height = `${previousTotalHeight}px`;
 
       if (terminal) terminal.classList.add('vibrating');
-      if (statusLight) statusLight.classList.add('printing');
       if (statusText) statusText.textContent = 'PRINTING';
 
       posPrintAudio.currentTime = 0;
