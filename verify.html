@@ -192,7 +192,7 @@
       <p class="text-[9.5px] font-bold text-slate-400 uppercase tracking-widest mt-1">Checking Ledger Cryptographic Signature...</p>
     </div>
 
-    <!-- 2. MEMBER E-ID VERIFIED CARD (IDENTICAL TO MAIN APP E-ID) -->
+    <!-- 2. MEMBER E-ID VERIFIED CARD -->
     <div id="state-member" class="hidden w-full max-w-[320px] bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.18)] relative flex flex-col rounded-sm border border-slate-200 overflow-hidden">
       
       <!-- Split Card Surface -->
@@ -204,8 +204,8 @@
             E-ID
           </div>
           <div class="w-[1.5px] h-10 bg-white/40 my-2"></div>
-          <div id="eid-vertical-title" style="writing-mode: vertical-rl; transform: rotate(180deg);" class="text-[20px] font-black tracking-widest uppercase whitespace-nowrap flex items-center justify-start leading-none">
-            EXPEDITION
+          <div id="eid-vertical-status" style="writing-mode: vertical-rl; transform: rotate(180deg);" class="text-[34px] font-black tracking-wider uppercase whitespace-nowrap flex items-center justify-start leading-none">
+            VERIFIED
           </div>
         </div>
 
@@ -224,7 +224,7 @@
           <div id="eid-photo-container" class="h-[185px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 overflow-hidden">
             <img id="eid-photo" src="" class="w-full h-full object-cover object-top grayscale contrast-125">
             
-            <!-- STAMP SEAL OVERLAY (REPLACES TEXT) -->
+            <!-- STAMP SEAL OVERLAY -->
             <div id="eid-stamp-mount" class="absolute bottom-2 right-2 pointer-events-none z-30">
               <div id="eid-stamp-seal" class="stamp-seal stamp-verified">
                 <span class="text-[6.5px] font-black tracking-widest opacity-80">BHARAT WAY</span>
@@ -273,7 +273,7 @@
 
     </div>
 
-    <!-- 3. POS BILL VERIFIED CARD (IDENTICAL TO POS PRINTED THERMAL RECEIPT) -->
+    <!-- 3. POS BILL VERIFIED CARD -->
     <div id="state-bill" class="hidden w-full max-w-[340px] receipt-roll rounded-sm overflow-visible">
       
       <div class="receipt-segment">
@@ -381,7 +381,7 @@
 
   </main>
 
-  <!-- TEST SWITCHER BAR (To Easily Preview All Scenarios) -->
+  <!-- TEST SWITCHER BAR -->
   <footer class="w-full max-w-sm mx-auto pt-3 border-t border-slate-200/80 text-center space-y-2">
     <p class="text-[8.5px] font-bold text-slate-400 uppercase tracking-widest">Test Gateway Scenarios</p>
     <div class="grid grid-cols-4 gap-1.5 text-[8.5px] font-black uppercase tracking-wider">
@@ -404,7 +404,7 @@
   <script>
     lucide.createIcons();
 
-    // LIVE RUNNING SERVER CLOCK
+    // LIVE RUNNING SERVER CLOCK (IST)
     function updateClock() {
       const now = new Date();
       const timeStr = now.toLocaleTimeString('en-IN', { hour12: false, timeZone: 'Asia/Kolkata' });
@@ -431,7 +431,7 @@
       const type = params.get('type');
       const token = params.get('token');
 
-      // Default demo preview if opened without query parameters
+      // Default demo preview if opened directly without query parameters
       if (!type || !token) {
         simulateVerification('member-verified');
         return;
@@ -440,21 +440,26 @@
       switchState('state-loading');
 
       try {
-        const res = await fetch(`/api/verify?type=${encodeURIComponent(type)}&token=${encodeURIComponent(token)}`);
+        const res = await fetch(`/api/index?action=verify&type=${encodeURIComponent(type)}&token=${encodeURIComponent(token)}`, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
         const data = await res.json();
 
         if (res.ok && data.valid) {
-          if (type === 'member') {
+          if (type === 'member' && data.member) {
             renderMember(data.member, data.isVerified !== false);
-          } else if (type === 'bill') {
+          } else if (type === 'bill' && data.bill) {
             renderBill(data.bill, data.isVerified !== false);
+          } else {
+            switchState('state-fraud');
           }
         } else {
           switchState('state-fraud');
         }
       } catch (err) {
-        console.warn('API endpoint offline, showing test simulation');
-        simulateVerification(type === 'bill' ? 'bill-verified' : 'member-verified');
+        console.error('Verification query failed:', err);
+        switchState('state-fraud');
       }
     }
 
@@ -466,11 +471,27 @@
       document.getElementById('eid-role').innerText = m.memberRole || '-';
       document.getElementById('eid-mobile').innerText = m.mobile || '-';
       document.getElementById('eid-email').innerText = m.email || '-';
-      document.getElementById('eid-photo').src = m.img || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG';
+      
+      const photoEl = document.getElementById('eid-photo');
+      if (photoEl) {
+        photoEl.src = m.img || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG';
+      }
+
+      // Subtitle Check
+      const subtitleEl = document.getElementById('eid-subtitle');
+      if (subtitleEl) {
+        if (m.eidSubheading && m.eidSubheading.trim() !== "") {
+          subtitleEl.innerText = m.eidSubheading;
+          subtitleEl.classList.remove('hidden');
+        } else {
+          subtitleEl.classList.add('hidden');
+        }
+      }
 
       // Chief Signature
-      if (m.chiefCoordinatorSignature) {
-        document.getElementById('eid-chief-sign').src = m.chiefCoordinatorSignature;
+      const signImg = document.getElementById('eid-chief-sign');
+      if (signImg && m.chiefCoordinatorSignature) {
+        signImg.src = m.chiefCoordinatorSignature;
       }
 
       // Stamp Style Adaptation
@@ -480,8 +501,10 @@
       const photoBorder = document.getElementById('eid-photo-container');
       const titleText = document.getElementById('eid-title');
       const signText = document.getElementById('eid-sign-text');
+      const verticalStatusText = document.getElementById('eid-vertical-status');
 
       if (isVerified) {
+        if (verticalStatusText) verticalStatusText.innerText = "VERIFIED";
         stampSeal.className = "stamp-seal stamp-verified";
         stampLabel.innerText = "VERIFIED";
         leftBar.className = "w-[52px] bg-indigo-600 flex flex-col justify-between items-center py-4 text-white shrink-0 select-none overflow-hidden transition-colors duration-500";
@@ -489,6 +512,7 @@
         titleText.className = "text-[16px] font-black tracking-tight uppercase text-indigo-700 leading-tight w-full truncate";
         signText.className = "text-[7px] font-black uppercase tracking-widest text-indigo-700 border-t border-slate-300 pt-0.5 w-[85%]";
       } else {
+        if (verticalStatusText) verticalStatusText.innerText = "UNVERIFIED";
         stampSeal.className = "stamp-seal stamp-unverified";
         stampLabel.innerText = "UNVERIFIED";
         leftBar.className = "w-[52px] bg-rose-600 flex flex-col justify-between items-center py-4 text-white shrink-0 select-none overflow-hidden transition-colors duration-500";
@@ -497,16 +521,19 @@
         signText.className = "text-[7px] font-black uppercase tracking-widest text-rose-700 border-t border-slate-300 pt-0.5 w-[85%]";
       }
 
-      // Build QR Code
+      // Build QR Code on Pass
       const qrContainer = document.getElementById('eid-qr');
-      qrContainer.innerHTML = '';
-      new QRCode(qrContainer, {
-        text: `${m.name} | ${m.designation || 'Member'} | TOKEN: ${m.token || 'MEM_99'}`,
-        width: 62,
-        height: 62,
-        colorDark: "#0f172a",
-        colorLight: "#ffffff"
-      });
+      if (qrContainer) {
+        qrContainer.innerHTML = '';
+        const currentUrl = window.location.href;
+        new QRCode(qrContainer, {
+          text: currentUrl,
+          width: 62,
+          height: 62,
+          colorDark: "#0f172a",
+          colorLight: "#ffffff"
+        });
+      }
 
       switchState('state-member');
     }
@@ -514,22 +541,24 @@
     // RENDER POS THERMAL RECEIPT (EXACT REPLICA OF POS BILL)
     function renderBill(b, isVerified) {
       document.getElementById('pos-bill-title').innerHTML = b.storeTitle || 'VALLEY OF FLOWERS<br><span style="font-weight: 400; font-size: 0.95em;">EXPEDITION</span>';
-      document.getElementById('pos-bill-date').innerText = b.dateString || '27/06/2026';
-      document.getElementById('pos-bill-time').innerText = b.timeString || '14:32:10';
-      document.getElementById('pos-bill-invoice').innerText = `#${b.invoiceNo || 'VOF0725-000101'}`;
+      document.getElementById('pos-bill-date').innerText = b.dateString || 'ALL DATES';
+      document.getElementById('pos-bill-time').innerText = b.timeString || '--:--:--';
+      document.getElementById('pos-bill-invoice').innerText = `#${b.invoiceNo || 'INV-0001'}`;
       document.getElementById('pos-bill-tag').innerText = b.filterTag || 'ALL EXPENSES';
       document.getElementById('pos-bill-total').innerText = `₹ ${(b.netTotal || 0).toFixed(2)}`;
-      document.getElementById('pos-bill-code').innerText = `*** ${b.tripCode || 'VOF0725'} ***`;
+      document.getElementById('pos-bill-code').innerText = `*** ${b.tripCode || 'EXP'} ***`;
 
       // Render Table Rows
       const tableBody = document.getElementById('pos-bill-items');
-      tableBody.innerHTML = (b.items || []).map(item => `
-        <tr>
-          <td>${item.notes || item.category || 'Expense'}</td>
-          <td class="col-center utr-text">${item.utr || 'N/A'}</td>
-          <td class="col-right">${parseFloat(item.amount || 0).toFixed(2)}</td>
-        </tr>
-      `).join('');
+      if (tableBody) {
+        tableBody.innerHTML = (b.items || []).map(item => `
+          <tr>
+            <td>${item.notes || item.category || 'Expense'}</td>
+            <td class="col-center utr-text">${item.utr || 'N/A'}</td>
+            <td class="col-right">${parseFloat(item.amount || 0).toFixed(2)}</td>
+          </tr>
+        `).join('');
+      }
 
       // Update POS Stamp Seal
       const stampEl = document.getElementById('pos-bill-stamp');
@@ -549,7 +578,7 @@
       switchState('state-bill');
     }
 
-    // SIMULATE SCENARIOS (FOR TESTING)
+    // SIMULATE SCENARIOS (FOR LOCAL DEV TESTING)
     function simulateVerification(scenario) {
       switchState('state-loading');
 
@@ -562,7 +591,7 @@
             mobile: '+91 98765 43210',
             email: 'officialanmol1609@gmail.com',
             tripName: 'VALLEY OF FLOWERS',
-            token: 'MEM_AUTH_90A81F',
+            token: 'DEMO_MEM_TOKEN',
             img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG'
           }, true);
         } else if (scenario === 'member-unverified') {
@@ -573,7 +602,7 @@
             mobile: '+91 91234 56789',
             email: 'guest@example.com',
             tripName: 'VALLEY OF FLOWERS',
-            token: 'MEM_UNVERIFIED_22',
+            token: 'DEMO_UNVERIFIED_TOKEN',
             img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG'
           }, false);
         } else if (scenario === 'bill-verified') {
@@ -594,10 +623,10 @@
         } else {
           switchState('state-fraud');
         }
-      }, 400);
+      }, 350);
     }
 
-    // Run verification on page load
+    // Run verification on initial page load
     window.onload = processVerification;
   </script>
 </body>
