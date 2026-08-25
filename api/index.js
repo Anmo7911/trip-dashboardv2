@@ -247,7 +247,7 @@ async function dashboard() {
       designation: roleName,
       memberRole: text(r.col_h),
       verification: text(r.col_i) || 'Verified',
-      verificationToken: text(r.verification_token) ||
+      verificationToken: text(r.verification_token) || '',
       contribution: memberContributions[rawName] || 0,
       mobile: text(r.col_o),
       email: text(r.col_p),
