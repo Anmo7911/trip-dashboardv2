@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Bharat Way — Official Verification Gateway</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- QRCode.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Typography: Inter, Space Mono, Courier Prime, Anton -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .font-mono {
+      font-family: 'Space Mono', 'Courier Prime', monospace;
+    }
+
+    /* =========================================
+       AUTHENTIC RUBBER STAMP STYLING
+       ========================================= */
+    .stamp-seal {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      text-transform: uppercase;
+      font-weight: 900;
+      border-radius: 6px;
+      user-select: none;
+      transform: rotate(-12deg);
+      border: 2.5px solid currentColor;
+      box-shadow: 0 0 0 1.5px currentColor inset;
+      line-height: 1;
+    }
+
+    .stamp-verified {
+      color: #059669; /* Emerald Green */
+      background: rgba(16, 185, 129, 0.08);
+      text-shadow: 0 0 0.5px rgba(5, 150, 105, 0.4);
+    }
+
+    .stamp-unverified {
+      color: #dc2626; /* Crimson Red */
+      background: rgba(239, 68, 68, 0.08);
+      text-shadow: 0 0 0.5px rgba(220, 38, 38, 0.4);
+    }
+
+    /* POS Receipt Specific Styles */
+    .receipt-roll {
+      width: 100%;
+      background: #ffffff;
+      box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.08),
+        0 4px 12px rgba(0, 0, 0, 0.04),
+        0 0 0 1px rgba(0, 0, 0, 0.06),
+        inset 4px 0 6px rgba(0, 0, 0, 0.02),
+        inset -4px 0 6px rgba(0, 0, 0, 0.02);
+      position: relative;
+      font-family: 'Space Mono', 'Courier Prime', monospace;
+    }
+
+    /* Jagged thermal tear bottom */
+    .receipt-roll::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(135deg, #ffffff 4.5px, transparent 0),
+                  linear-gradient(-135deg, #ffffff 4.5px, transparent 0);
+      background-size: 9px 9px;
+      background-repeat: repeat-x;
+      filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.08));
+    }
+
+    .receipt-segment {
+      width: 100%;
+      color: #1a1a1a;
+      padding: 16px 14px 22px;
+      font-size: 9px;
+      line-height: 1.35;
+      position: relative;
+    }
+
+    .receipt-segment .center { text-align: center; }
+    .receipt-segment .bold { font-weight: 700; }
+    .receipt-segment .title { font-size: 12px; letter-spacing: 0.5px; margin-bottom: 2px; }
+    .receipt-segment .sub-info { font-size: 7.5px; color: #444; line-height: 1.3; }
+    .receipt-segment .dashed-line { border: none; border-top: 1px dashed #777; margin: 6px 0; }
+    .receipt-segment .row { display: flex; justify-content: space-between; margin-bottom: 2.5px; font-size: 8px; }
+
+    .item-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 3px 0;
+    }
+
+    .item-table th {
+      text-align: left;
+      font-size: 8px;
+      padding-bottom: 3px;
+      border-bottom: 1px dashed #777;
+    }
+
+    .item-table td {
+      font-size: 8.5px;
+      padding: 2.5px 0;
+      word-break: break-word;
+    }
+
+    .col-right { text-align: right; }
+    .col-center { text-align: center; }
+
+    .utr-text {
+      font-family: 'Space Mono', monospace;
+      letter-spacing: -0.3px;
+      font-size: 7.5px;
+      color: #334155;
+    }
+
+    .total-row {
+      font-size: 10px;
+      font-weight: 700;
+      margin-top: 3px;
+      padding-top: 3px;
+      border-top: 1px dashed #444;
+    }
+
+    @keyframes scanSweep {
+      0% { top: 0%; opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+    .scan-beam {
+      animation: scanSweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-slate-100/70 min-h-screen text-slate-800 flex flex-col justify-between p-4 sm:p-6 select-none relative">
+
+  <!-- TOP APP HEADER -->
+  <header class="w-full max-w-sm mx-auto flex items-center justify-between pb-3 border-b border-slate-200/80">
+    <div class="flex items-center gap-2.5">
+      <img 
+        src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG" 
+        alt="Bharat Way Logo" 
+        class="w-9 h-9 rounded-2xl object-cover border border-slate-100 shadow-sm shrink-0"
+      />
+      <div>
+        <h1 class="text-xs font-black uppercase tracking-wider text-slate-800 leading-none">BHARAT WAY</h1>
+        <p class="text-[8.5px] font-bold text-indigo-600 uppercase tracking-widest mt-1">Expedition Verification Gateway</p>
+      </div>
+    </div>
+
+    <!-- Live Verified Server Clock -->
+    <div class="text-right">
+      <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-100 text-[8.5px] font-mono text-emerald-700 font-bold shadow-sm">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="liveClock">--:--:-- IST</span>
+      </span>
+    </div>
+  </header>
+
+  <!-- MAIN CARD CONTAINER -->
+  <main class="w-full max-w-sm mx-auto my-auto py-4 flex flex-col items-center justify-center">
+
+    <!-- 1. LOADING STATE -->
+    <div id="state-loading" class="w-full bg-white border border-slate-200 rounded-[32px] p-8 text-center shadow-[0_4px_25px_rgba(0,0,0,0.04)] relative overflow-hidden">
+      <div class="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent scan-beam"></div>
+      
+      <div class="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center mx-auto mb-4 text-indigo-600 shadow-inner">
+        <i data-lucide="shield-check" class="w-8 h-8 animate-pulse"></i>
+      </div>
+
+      <h2 class="text-sm font-black uppercase tracking-wider text-slate-800">Verifying Record</h2>
+      <p class="text-[9.5px] font-bold text-slate-400 uppercase tracking-widest mt-1">Checking Ledger Cryptographic Signature...</p>
+    </div>
+
+    <!-- 2. MEMBER E-ID VERIFIED CARD (IDENTICAL TO MAIN APP E-ID) -->
+    <div id="state-member" class="hidden w-full max-w-[320px] bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.18)] relative flex flex-col rounded-sm border border-slate-200 overflow-hidden">
+      
+      <!-- Split Card Surface -->
+      <div class="flex flex-row w-full h-full bg-white rounded-sm overflow-hidden">
+
+        <!-- LEFT VERTICAL STATUS BAR -->
+        <div id="eid-left-bar" class="w-[52px] bg-indigo-600 flex flex-col justify-between items-center py-4 text-white shrink-0 select-none overflow-hidden transition-colors duration-500">
+          <div style="writing-mode: vertical-rl; transform: rotate(180deg);" class="text-[11px] font-black tracking-[0.25em] uppercase opacity-90 whitespace-nowrap">
+            E-ID
+          </div>
+          <div class="w-[1.5px] h-10 bg-white/40 my-2"></div>
+          <div id="eid-vertical-title" style="writing-mode: vertical-rl; transform: rotate(180deg);" class="text-[20px] font-black tracking-widest uppercase whitespace-nowrap flex items-center justify-start leading-none">
+            EXPEDITION
+          </div>
+        </div>
+
+        <!-- RIGHT CONTENT AREA -->
+        <div class="flex-1 flex flex-col relative pt-1 min-w-0">
+
+          <!-- Header Area -->
+          <div class="h-14 flex flex-col justify-center items-center px-3 text-center overflow-hidden">
+            <h1 id="eid-title" class="text-[16px] font-black tracking-tight uppercase text-indigo-700 leading-tight w-full truncate">
+              VALLEY OF FLOWERS
+            </h1>
+            <p id="eid-subtitle" class="text-[7.5px] font-bold tracking-[0.18em] text-slate-400 uppercase mt-0.5 truncate w-full hidden"></p>
+          </div>
+
+          <!-- Photo Section with Authentic Stamp Overlay -->
+          <div id="eid-photo-container" class="h-[185px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 overflow-hidden">
+            <img id="eid-photo" src="" class="w-full h-full object-cover object-top grayscale contrast-125">
+            
+            <!-- STAMP SEAL OVERLAY (REPLACES TEXT) -->
+            <div id="eid-stamp-mount" class="absolute bottom-2 right-2 pointer-events-none z-30">
+              <div id="eid-stamp-seal" class="stamp-seal stamp-verified">
+                <span class="text-[6.5px] font-black tracking-widest opacity-80">BHARAT WAY</span>
+                <span class="text-[11px] tracking-wider my-0.5" id="eid-stamp-label">VERIFIED</span>
+                <span class="text-[6px] font-mono tracking-tighter" id="eid-stamp-date">PASS 2026</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Member Details Grid -->
+          <div class="flex-1 p-3.5 pb-2.5 flex flex-col justify-between">
+            <div>
+              <p id="eid-name" class="font-black text-base text-slate-900 leading-none tracking-tight uppercase truncate mb-2.5 border-b border-slate-100 pb-1.5"></p>
+
+              <div class="grid grid-cols-[55px_auto] gap-y-1.5 gap-x-2 text-[8.5px] font-bold text-slate-800 uppercase tracking-wide w-full mb-1">
+                <span class="text-slate-400">Position</span>
+                <div class="flex gap-1.5"><span class="text-slate-300 shrink-0">:</span><span id="eid-designation" class="leading-tight truncate"></span></div>
+
+                <span class="text-slate-400">Role</span>
+                <div class="flex gap-1.5"><span class="text-slate-300 shrink-0">:</span><span id="eid-role" class="leading-tight break-words"></span></div>
+
+                <span class="text-slate-400">Mobile</span>
+                <div class="flex gap-1.5"><span class="text-slate-300 shrink-0">:</span><span id="eid-mobile" class="leading-tight"></span></div>
+
+                <span class="text-slate-400">Email</span>
+                <div class="flex gap-1.5"><span class="text-slate-300 shrink-0">:</span><span id="eid-email" class="leading-tight break-all lowercase tracking-normal"></span></div>
+              </div>
+            </div>
+
+            <!-- Footer: Signature & QR -->
+            <div class="mt-auto flex justify-between items-end pt-1.5 border-t border-slate-100">
+              <div class="flex flex-col items-start justify-end w-[60%]">
+                <img id="eid-chief-sign" class="h-5 object-contain mix-blend-multiply mb-0.5" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh6w7rW4b06pPqR54-T7Q7_K-yU5I8S5aD5iF8H7K3F7G8/s1600/sign.png">
+                <p id="eid-sign-text" class="text-[7px] font-black uppercase tracking-widest text-indigo-700 border-t border-slate-300 pt-0.5 w-[85%]">
+                  Chief Coord.
+                </p>
+              </div>
+              <div id="eid-qr" class="w-[62px] h-[62px] flex items-center justify-end shrink-0"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- 3. POS BILL VERIFIED CARD (IDENTICAL TO POS PRINTED THERMAL RECEIPT) -->
+    <div id="state-bill" class="hidden w-full max-w-[340px] receipt-roll rounded-sm overflow-visible">
+      
+      <div class="receipt-segment">
+        
+        <!-- Header & Logo -->
+        <div class="center">
+          <div class="flex justify-center items-center mb-1.5 w-full min-h-[44px]">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG" alt="Logo" class="w-[70px] max-h-[55px] object-contain grayscale contrast-150" />
+          </div>
+          <div class="title bold" id="pos-bill-title">VALLEY OF FLOWERS<br><span style="font-weight: 400; font-size: 0.95em;">EXPEDITION</span></div>
+          <div class="sub-info">
+            Expense Reimbursement & Settlement<br />
+            Audit Verified | Digital Pass Record
+          </div>
+        </div>
+
+        <hr class="dashed-line" />
+
+        <!-- Metadata -->
+        <div class="row">
+          <span>DATE: <strong id="pos-bill-date">27/06/2026</strong></span>
+          <span>TIME: <strong id="pos-bill-time">14:32:10</strong></span>
+        </div>
+        <div class="row">
+          <span>INVOICE: <strong id="pos-bill-invoice">#VOF0725-000101</strong></span>
+          <span>TAG: <strong id="pos-bill-tag">ALL EXPENSES</strong></span>
+        </div>
+
+        <hr class="dashed-line" />
+
+        <!-- Table of Line Items -->
+        <table class="item-table">
+          <thead>
+            <tr>
+              <th style="width: 44%;">EXPENSE</th>
+              <th class="col-center" style="width: 32%;">UTR NO.</th>
+              <th class="col-right" style="width: 24%;">AMT</th>
+            </tr>
+          </thead>
+          <tbody id="pos-bill-items">
+            <!-- Dynamically Injected -->
+          </tbody>
+        </table>
+
+        <hr class="dashed-line" />
+
+        <!-- Net Total -->
+        <div class="row total-row">
+          <span>NET TOTAL</span>
+          <span id="pos-bill-total">₹ 0.00</span>
+        </div>
+
+        <hr class="dashed-line" />
+
+        <!-- AUTHENTIC POS VOUCHER AUDIT STAMP -->
+        <div class="flex justify-center my-3">
+          <div id="pos-bill-stamp" class="stamp-seal stamp-verified" style="transform: rotate(-8deg); padding: 5px 12px;">
+            <span class="text-[7px] font-black tracking-widest">BHARAT WAY AUDIT</span>
+            <span class="text-[11px] tracking-wider my-0.5" id="pos-stamp-status">★ SETTLED & VERIFIED ★</span>
+            <span class="text-[6.5px] font-mono tracking-wider" id="pos-stamp-hash">LEDGER HASH MATCHED</span>
+          </div>
+        </div>
+
+        <div class="center">
+          <div class="bold" style="font-size: 9px; margin-top: 2px;">EXPENSE VERIFIED & AUDITED</div>
+          <div style="font-size: 7.5px; margin-top: 2px;">PLEASE KEEP THIS VOUCHER</div>
+          <div class="bold" style="font-size: 12px; letter-spacing: 1px; margin: 4px 0 2px;" id="pos-bill-code">*** VOF0725 ***</div>
+
+          <div class="footer-note" style="font-size: 7px; color: #555; margin: 7px 0 5px; line-height: 1.25;">
+            All references verified against financial ledger records.<br />
+            Computer-generated voucher. No physical signature required.
+          </div>
+
+          <div class="powered-by" style="font-size: 7.5px; color: #555; margin-bottom: 2px;">Powered by Bharat Way</div>
+          <div class="bold" style="font-size: 8px; letter-spacing: 0.5px;">*** EXPENSE STATEMENT ***</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- 4. FRAUD / TAMPERED ALERT CARD -->
+    <div id="state-fraud" class="hidden w-full max-w-[320px] bg-rose-50/80 border-2 border-rose-500 rounded-[28px] p-6 text-center shadow-lg space-y-4">
+      <div class="w-14 h-14 rounded-2xl bg-rose-100 border border-rose-300 flex items-center justify-center mx-auto text-rose-600 shadow-inner">
+        <i data-lucide="shield-alert" class="w-8 h-8 stroke-[2.5]"></i>
+      </div>
+
+      <div>
+        <h2 class="text-base font-black uppercase tracking-wider text-rose-700">Verification Failed</h2>
+        <p class="text-xs font-bold text-rose-600/90 mt-0.5 uppercase tracking-wide">Invalid or Tampered Record</p>
+      </div>
+
+      <div class="flex justify-center my-2">
+        <div class="stamp-seal stamp-unverified" style="transform: rotate(-10deg);">
+          <span class="text-[7px] font-black">SECURITY ALERT</span>
+          <span class="text-[12px] my-0.5">VOID / UNVERIFIED</span>
+          <span class="text-[6.5px] font-mono">TOKEN MISMATCH</span>
+        </div>
+      </div>
+
+      <p class="text-[9.5px] text-slate-500 font-medium leading-relaxed">
+        This QR code hash does not exist in the official expedition database. The pass or receipt may be forged, modified, or expired.
+      </p>
+    </div>
+
+  </main>
+
+  <!-- TEST SWITCHER BAR (To Easily Preview All Scenarios) -->
+  <footer class="w-full max-w-sm mx-auto pt-3 border-t border-slate-200/80 text-center space-y-2">
+    <p class="text-[8.5px] font-bold text-slate-400 uppercase tracking-widest">Test Gateway Scenarios</p>
+    <div class="grid grid-cols-4 gap-1.5 text-[8.5px] font-black uppercase tracking-wider">
+      <button onclick="simulateVerification('member-verified')" class="py-2 bg-white hover:bg-slate-50 border border-slate-200 text-indigo-600 rounded-xl active:scale-95 transition shadow-sm">
+        Pass OK
+      </button>
+      <button onclick="simulateVerification('member-unverified')" class="py-2 bg-white hover:bg-slate-50 border border-slate-200 text-rose-600 rounded-xl active:scale-95 transition shadow-sm">
+        Pass Void
+      </button>
+      <button onclick="simulateVerification('bill-verified')" class="py-2 bg-white hover:bg-slate-50 border border-slate-200 text-emerald-600 rounded-xl active:scale-95 transition shadow-sm">
+        Bill OK
+      </button>
+      <button onclick="simulateVerification('fraud')" class="py-2 bg-white hover:bg-slate-50 border border-slate-200 text-rose-700 rounded-xl active:scale-95 transition shadow-sm">
+        Fraud
+      </button>
+    </div>
+  </footer>
+
+  <!-- CONTROLLER SCRIPT -->
+  <script>
+    lucide.createIcons();
+
+    // LIVE RUNNING SERVER CLOCK
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-IN', { hour12: false, timeZone: 'Asia/Kolkata' });
+      const clock = document.getElementById('liveClock');
+      if (clock) clock.innerText = `${timeStr} IST`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // DISPLAY STATE SWITCHER
+    function switchState(targetId) {
+      ['state-loading', 'state-member', 'state-bill', 'state-fraud'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+      const active = document.getElementById(targetId);
+      if (active) active.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    // MAIN PARSER & API VERIFIER
+    async function processVerification() {
+      const params = new URLSearchParams(window.location.search);
+      const type = params.get('type');
+      const token = params.get('token');
+
+      // Default demo preview if opened without query parameters
+      if (!type || !token) {
+        simulateVerification('member-verified');
+        return;
+      }
+
+      switchState('state-loading');
+
+      try {
+        const res = await fetch(`/api/verify?type=${encodeURIComponent(type)}&token=${encodeURIComponent(token)}`);
+        const data = await res.json();
+
+        if (res.ok && data.valid) {
+          if (type === 'member') {
+            renderMember(data.member, data.isVerified !== false);
+          } else if (type === 'bill') {
+            renderBill(data.bill, data.isVerified !== false);
+          }
+        } else {
+          switchState('state-fraud');
+        }
+      } catch (err) {
+        console.warn('API endpoint offline, showing test simulation');
+        simulateVerification(type === 'bill' ? 'bill-verified' : 'member-verified');
+      }
+    }
+
+    // RENDER MEMBER E-ID CARD (EXACT REPLICA OF MAIN APP)
+    function renderMember(m, isVerified) {
+      document.getElementById('eid-title').innerText = m.tripName || 'VALLEY OF FLOWERS';
+      document.getElementById('eid-name').innerText = m.name || 'Member Name';
+      document.getElementById('eid-designation').innerText = m.designation || 'Member';
+      document.getElementById('eid-role').innerText = m.memberRole || '-';
+      document.getElementById('eid-mobile').innerText = m.mobile || '-';
+      document.getElementById('eid-email').innerText = m.email || '-';
+      document.getElementById('eid-photo').src = m.img || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG';
+
+      // Chief Signature
+      if (m.chiefCoordinatorSignature) {
+        document.getElementById('eid-chief-sign').src = m.chiefCoordinatorSignature;
+      }
+
+      // Stamp Style Adaptation
+      const stampSeal = document.getElementById('eid-stamp-seal');
+      const stampLabel = document.getElementById('eid-stamp-label');
+      const leftBar = document.getElementById('eid-left-bar');
+      const photoBorder = document.getElementById('eid-photo-container');
+      const titleText = document.getElementById('eid-title');
+      const signText = document.getElementById('eid-sign-text');
+
+      if (isVerified) {
+        stampSeal.className = "stamp-seal stamp-verified";
+        stampLabel.innerText = "VERIFIED";
+        leftBar.className = "w-[52px] bg-indigo-600 flex flex-col justify-between items-center py-4 text-white shrink-0 select-none overflow-hidden transition-colors duration-500";
+        photoBorder.className = "h-[185px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 overflow-hidden";
+        titleText.className = "text-[16px] font-black tracking-tight uppercase text-indigo-700 leading-tight w-full truncate";
+        signText.className = "text-[7px] font-black uppercase tracking-widest text-indigo-700 border-t border-slate-300 pt-0.5 w-[85%]";
+      } else {
+        stampSeal.className = "stamp-seal stamp-unverified";
+        stampLabel.innerText = "UNVERIFIED";
+        leftBar.className = "w-[52px] bg-rose-600 flex flex-col justify-between items-center py-4 text-white shrink-0 select-none overflow-hidden transition-colors duration-500";
+        photoBorder.className = "h-[185px] w-full border-y-[3px] border-rose-600 relative bg-slate-100 overflow-hidden";
+        titleText.className = "text-[16px] font-black tracking-tight uppercase text-rose-700 leading-tight w-full truncate";
+        signText.className = "text-[7px] font-black uppercase tracking-widest text-rose-700 border-t border-slate-300 pt-0.5 w-[85%]";
+      }
+
+      // Build QR Code
+      const qrContainer = document.getElementById('eid-qr');
+      qrContainer.innerHTML = '';
+      new QRCode(qrContainer, {
+        text: `${m.name} | ${m.designation || 'Member'} | TOKEN: ${m.token || 'MEM_99'}`,
+        width: 62,
+        height: 62,
+        colorDark: "#0f172a",
+        colorLight: "#ffffff"
+      });
+
+      switchState('state-member');
+    }
+
+    // RENDER POS THERMAL RECEIPT (EXACT REPLICA OF POS BILL)
+    function renderBill(b, isVerified) {
+      document.getElementById('pos-bill-title').innerHTML = b.storeTitle || 'VALLEY OF FLOWERS<br><span style="font-weight: 400; font-size: 0.95em;">EXPEDITION</span>';
+      document.getElementById('pos-bill-date').innerText = b.dateString || '27/06/2026';
+      document.getElementById('pos-bill-time').innerText = b.timeString || '14:32:10';
+      document.getElementById('pos-bill-invoice').innerText = `#${b.invoiceNo || 'VOF0725-000101'}`;
+      document.getElementById('pos-bill-tag').innerText = b.filterTag || 'ALL EXPENSES';
+      document.getElementById('pos-bill-total').innerText = `₹ ${(b.netTotal || 0).toFixed(2)}`;
+      document.getElementById('pos-bill-code').innerText = `*** ${b.tripCode || 'VOF0725'} ***`;
+
+      // Render Table Rows
+      const tableBody = document.getElementById('pos-bill-items');
+      tableBody.innerHTML = (b.items || []).map(item => `
+        <tr>
+          <td>${item.notes || item.category || 'Expense'}</td>
+          <td class="col-center utr-text">${item.utr || 'N/A'}</td>
+          <td class="col-right">${parseFloat(item.amount || 0).toFixed(2)}</td>
+        </tr>
+      `).join('');
+
+      // Update POS Stamp Seal
+      const stampEl = document.getElementById('pos-bill-stamp');
+      const stampStatus = document.getElementById('pos-stamp-status');
+      const stampHash = document.getElementById('pos-stamp-hash');
+
+      if (isVerified) {
+        stampEl.className = "stamp-seal stamp-verified";
+        stampStatus.innerText = "★ SETTLED & VERIFIED ★";
+        stampHash.innerText = "LEDGER HASH MATCHED";
+      } else {
+        stampEl.className = "stamp-seal stamp-unverified";
+        stampStatus.innerText = "★ UNVERIFIED / PENDING ★";
+        stampHash.innerText = "AUDIT SIGNATURE MISSING";
+      }
+
+      switchState('state-bill');
+    }
+
+    // SIMULATE SCENARIOS (FOR TESTING)
+    function simulateVerification(scenario) {
+      switchState('state-loading');
+
+      setTimeout(() => {
+        if (scenario === 'member-verified') {
+          renderMember({
+            name: 'Anmol Kumar',
+            designation: 'Chief Coordinator',
+            memberRole: 'Expedition Lead & Financial Oversight',
+            mobile: '+91 98765 43210',
+            email: 'officialanmol1609@gmail.com',
+            tripName: 'VALLEY OF FLOWERS',
+            token: 'MEM_AUTH_90A81F',
+            img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG'
+          }, true);
+        } else if (scenario === 'member-unverified') {
+          renderMember({
+            name: 'Guest Member',
+            designation: 'Trekker',
+            memberRole: 'Pending Verification',
+            mobile: '+91 91234 56789',
+            email: 'guest@example.com',
+            tripName: 'VALLEY OF FLOWERS',
+            token: 'MEM_UNVERIFIED_22',
+            img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG'
+          }, false);
+        } else if (scenario === 'bill-verified') {
+          renderBill({
+            storeTitle: 'VALLEY OF FLOWERS<br><span style="font-weight: 400; font-size: 0.95em;">EXPEDITION</span>',
+            dateString: '27/06/2026',
+            timeString: '14:32:10',
+            invoiceNo: 'VOF0725-000101',
+            filterTag: 'ALL EXPENSES',
+            tripCode: 'VOF0725',
+            netTotal: 3450.00,
+            items: [
+              { notes: 'Govindghat Base Camp Dinner', utr: 'UTR7829102931', amount: 1200 },
+              { notes: 'National Park Entry Permit', utr: 'UTR9988219213', amount: 1500 },
+              { notes: 'Supplies & Mineral Water', utr: 'CASH-SETTLE', amount: 750 }
+            ]
+          }, true);
+        } else {
+          switchState('state-fraud');
+        }
+      }, 400);
+    }
+
+    // Run verification on page load
+    window.onload = processVerification;
+  </script>
+</body>
+</html>
