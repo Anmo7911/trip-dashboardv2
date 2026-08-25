@@ -51,6 +51,38 @@
 
   <style>
 
+    /* --- POS POWER OFF STATES --- */
+.pos-terminal.powered-off .trip-select,
+.pos-terminal.powered-off .cat-btn,
+.pos-terminal.powered-off .date-input,
+.pos-terminal.powered-off .btn-clear-date,
+.pos-terminal.powered-off .btn-print,
+.pos-terminal.powered-off .btn-tear,
+.pos-terminal.powered-off .btn-download {
+  opacity: 0.25;
+  pointer-events: none;
+  filter: grayscale(80%);
+}
+.pos-terminal.powered-off #posPowerBtn {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  color: #ef4444 !important; /* Always red when off */
+  border-color: #583333 !important;
+  background: #2b2121 !important;
+}
+#posPowerBtn.is-on {
+  color: #38ef7d !important; /* Green when on */
+  border-color: #2b5642 !important;
+  background: #1b2822 !important;
+}
+@keyframes terminalBootBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+.pos-booting-anim {
+  animation: terminalBootBlink 0.3s ease-in-out 6 alternate;
+}
+
     /* --- POS POWER & BOOT STYLES --- */
 .pos-terminal.powered-off .terminal-screen,
 .pos-terminal.powered-off .terminal-controls,
@@ -2770,11 +2802,13 @@
       </div>
 
       <!-- Control Buttons -->
-      <div class="terminal-controls">
-        <button type="button" class="btn-edge btn-print" id="printBtn">PRINT BILL</button>
-        <button type="button" class="btn-edge btn-tear" id="tearBtn" disabled>TEAR OFF</button>
-        <button type="button" class="btn-edge btn-download" id="downloadBtn" disabled>DOWNLOAD</button>
-      </div>
+<div class="terminal-controls" style="grid-template-columns: 1.2fr 1fr 0.9fr 38px; gap: 4px;">
+  <button type="button" class="btn-edge btn-print" id="printBtn">PRINT BILL</button>
+  <button type="button" class="btn-edge btn-tear" id="tearBtn" disabled>TEAR OFF</button>
+  <button type="button" class="btn-edge btn-download" id="downloadBtn" disabled>DOWNLOAD</button>
+  <!-- Circular Power Button -->
+  <button type="button" id="posPowerBtn" onclick="togglePosPower()" title="Power On/Off" class="btn-edge" style="background: #2b2121; color: #ef4444; border-color: #583333; border-radius: 4px; display: flex; align-items: center; justify-content: center; padding: 0; min-height: 32px;"><i data-lucide="power" class="w-4 h-4 stroke-[2.5]"></i></button>
+</div>
 
       <!-- Cylindrical Slot Strip -->
       <div class="printer-slot-backplate"></div>
@@ -7630,16 +7664,17 @@ if (document.readyState === 'loading') {
 
 
     // --- POS POWER & BEEP ENGINE ---
+// --- POS POWER, BOOT & BEEP ENGINE ---
 let posIsPoweredOn = false;
 
-function playPosBeep(freq = 800, duration = 0.05, type = 'sine') {
+function playPosBeep(freq = 800, duration = 0.04, type = 'sine') {
   try {
     const ctx = getPosAudioCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = type;
     osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
     osc.connect(gain);
     gain.connect(ctx.destination);
@@ -7648,45 +7683,50 @@ function playPosBeep(freq = 800, duration = 0.05, type = 'sine') {
   } catch (e) {}
 }
 
-// Global click beep for any terminal button click
+// Click beep for terminal buttons when powered on
 document.addEventListener('click', (e) => {
   if (e.target.closest('.pos-terminal')) {
     if (posIsPoweredOn && !e.target.closest('#posPowerBtn')) {
-      playPosBeep(950, 0.04);
+      playPosBeep(950, 0.03);
     }
   }
 });
 
 function togglePosPower() {
-  playPosBeep(500, 0.08);
+  playPosBeep(500, 0.06);
   const terminal = document.getElementById('terminal');
   const powerBtn = document.getElementById('posPowerBtn');
   const statusText = document.getElementById('statusText');
   const statusLight = document.getElementById('statusLight');
-  const screenTitle = document.querySelector('.screen-title');
+  
+  const screenInvoiceLabel = document.getElementById('screenInvoiceLabel');
+  const screenItemCount = document.getElementById('screenItemCount');
+  const screenTotal = document.getElementById('screenTotal');
 
   if (!posIsPoweredOn) {
-    // --- POWER ON SEQUENCE (2 Seconds) ---
+    // --- POWER ON (2-Second Boot Sequence) ---
     posIsPoweredOn = true;
     powerBtn.classList.add('is-on');
     terminal.classList.remove('powered-off');
-    terminal.classList.add('pos-booting');
+    terminal.classList.add('pos-booting-anim');
 
-    if (screenTitle) screenTitle.textContent = "STARTING SYSTEM...";
-    if (statusText) statusText.textContent = "BOOTING";
-    if (statusLight) statusLight.className = "status-light printing";
+    if (statusText) statusText.textContent = 'BOOTING';
+    if (statusLight) statusLight.className = 'status-light printing';
+    
+    // Show boot message on screen footer
+    if (screenInvoiceLabel) screenInvoiceLabel.textContent = 'SYSTEM';
+    if (screenItemCount) screenItemCount.textContent = 'STARTING SYSTEM...';
+    if (screenTotal) screenTotal.textContent = '---';
 
-    // Boot chime audio sequence
-    setTimeout(() => playPosBeep(1100, 0.1), 300);
-    setTimeout(() => playPosBeep(1500, 0.2), 600);
+    setTimeout(() => playPosBeep(1100, 0.08), 300);
+    setTimeout(() => playPosBeep(1400, 0.15), 600);
 
-    // After exactly 2 seconds, restore original active state
     setTimeout(() => {
-      terminal.classList.remove('pos-booting');
-      if (screenTitle) screenTitle.textContent = "EXPENSE CONFIG";
-      if (statusText) statusText.textContent = "READY";
-      if (statusLight) statusLight.className = "status-light";
-      updatePosScreenPreview();
+      terminal.classList.remove('pos-booting-anim');
+      if (statusText) statusText.textContent = 'READY';
+      if (statusLight) statusLight.className = 'status-light';
+      updatePosScreenPreview(); // Restores original screen text and numbers
+      lucide.createIcons();
     }, 2000);
 
   } else {
@@ -7694,24 +7734,43 @@ function togglePosPower() {
     posIsPoweredOn = false;
     powerBtn.classList.remove('is-on');
     terminal.classList.add('powered-off');
+
+    if (statusText) statusText.textContent = 'OFF';
+    if (statusLight) statusLight.className = 'status-light';
     
-    if (statusText) statusText.textContent = "OFF";
-    if (statusLight) statusLight.className = "status-light";
-    if (screenTitle) screenTitle.textContent = "POWER OFF";
-    
+    // Make the summary screen completely blank
+    if (screenInvoiceLabel) screenInvoiceLabel.textContent = '';
+    if (screenItemCount) screenItemCount.textContent = '';
+    if (screenTotal) screenTotal.textContent = '';
+
     showToast("Terminal Powered Off");
   }
 }
 
-// Default terminal to powered-off state when entering the POS tab for the first time
-const originalInitPos = window.initPosTerminalData;
+// Start terminal in Powered-Off state by default
+const originalInitPosFn = window.initPosTerminalData;
 window.initPosTerminalData = function() {
-  if (originalInitPos) originalInitPos();
-  if (!posIsPoweredOn) {
-    const terminal = document.getElementById('terminal');
-    if (terminal) terminal.classList.add('powered-off');
+  if (originalInitPosFn) originalInitPosFn();
+  const terminal = document.getElementById('terminal');
+  const powerBtn = document.getElementById('posPowerBtn');
+  const statusText = document.getElementById('statusText');
+  const statusLight = document.getElementById('statusLight');
+  const screenInvoiceLabel = document.getElementById('screenInvoiceLabel');
+  const screenItemCount = document.getElementById('screenItemCount');
+  const screenTotal = document.getElementById('screenTotal');
+
+  if (!posIsPoweredOn && terminal) {
+    terminal.classList.add('powered-off');
+    if (powerBtn) powerBtn.classList.remove('is-on');
+    if (statusText) statusText.textContent = 'OFF';
+    if (statusLight) statusLight.className = 'status-light';
+    if (screenInvoiceLabel) screenInvoiceLabel.textContent = '';
+    if (screenItemCount) screenItemCount.textContent = '';
+    if (screenTotal) screenTotal.textContent = '';
   }
 };
+
+    
 </script>
 
 
