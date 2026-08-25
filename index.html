@@ -7752,9 +7752,9 @@ function togglePosPower() {
     if (statusText) statusText.textContent = 'OFF';
     if (statusLight) statusLight.className = 'status-light';
     
-    // Make the summary screen completely blank
-    if (screenInvoiceLabel) screenInvoiceLabel.textContent = '';
-    if (screenItemCount) screenItemCount.textContent = '';
+    // Make summary screen blank using &nbsp; to lock container size and prevent shrinking
+    if (screenInvoiceLabel) screenInvoiceLabel.innerHTML = '&nbsp;';
+    if (screenItemCount) screenItemCount.innerHTML = '&nbsp;';
     if (screenTotal) screenTotal.textContent = '';
 
     showToast("Terminal Powered Off");
@@ -7778,8 +7778,8 @@ window.initPosTerminalData = function() {
     if (powerBtn) powerBtn.classList.remove('is-on');
     if (statusText) statusText.textContent = 'OFF';
     if (statusLight) statusLight.className = 'status-light';
-    if (screenInvoiceLabel) screenInvoiceLabel.textContent = '';
-    if (screenItemCount) screenItemCount.textContent = '';
+    if (screenInvoiceLabel) screenInvoiceLabel.innerHTML = '&nbsp;';
+    if (screenItemCount) screenItemCount.innerHTML = '&nbsp;';
     if (screenTotal) screenTotal.textContent = '';
   }
 };
