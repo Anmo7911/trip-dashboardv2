@@ -7740,23 +7740,30 @@ if (document.readyState === 'loading') {
 
 
 // Hardware Synthesized POS Beep Sound
+// Multi-Beep POS Hardware Boot Sequence Sound (Spans ~2 Seconds)
 function playPosBeepSound() {
   try {
     const ctx = getPosAudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    const beepOffsets = [0, 0.35, 0.70, 1.05, 1.40]; // 5 rhythmic beeps across the boot cycle
+    const beepDuration = 0.09;
 
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(1050, ctx.currentTime); // Crisp 1050Hz POS terminal tone
+    beepOffsets.forEach(offset => {
+      const startTime = ctx.currentTime + offset;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
 
-    gain.gain.setValueAtTime(0.25, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.16);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1150, startTime); // Crisp 1150Hz terminal frequency
 
-    osc.connect(gain);
-    gain.connect(ctx.destination);
+      gain.gain.setValueAtTime(0.22, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + beepDuration);
 
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.16);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(startTime);
+      osc.stop(startTime + beepDuration);
+    });
   } catch (e) {
     console.warn("Beep audio error:", e);
   }
