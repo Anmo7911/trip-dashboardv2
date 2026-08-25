@@ -201,16 +201,19 @@
             <p id="eid-subtitle" class="text-[7.5px] font-bold tracking-[0.18em] text-slate-400 uppercase mt-0.5 truncate w-full hidden"></p>
           </div>
 
-          <!-- Photo Section with Stamp Overlay -->
-          <div id="eid-photo-container" class="h-[185px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 overflow-hidden">
-            <img id="eid-photo" src="" class="w-full h-full object-cover object-top grayscale contrast-125">
+          <!-- Photo Section with Stamp Overlay Directly Across the Bottom Border Line -->
+          <div id="eid-photo-container" class="h-[185px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 z-10">
+            <!-- Cropped Photo -->
+            <div class="w-full h-full overflow-hidden">
+              <img id="eid-photo" src="" class="w-full h-full object-cover object-top grayscale contrast-125">
+            </div>
             
-            <!-- STAMP SEAL OVERLAY IMAGE -->
+            <!-- STAMP SEAL OVERLAY IMAGE (Straddles the photo & details border line) -->
             <img 
               id="eid-stamp-img" 
               src="" 
               alt="Pass Stamp" 
-              class="absolute bottom-1 right-1 pointer-events-none z-30 w-28 object-contain mix-blend-multiply transition-transform duration-300"
+              class="absolute bottom-0 right-2 pointer-events-none z-30 w-28 object-contain mix-blend-multiply transition-all duration-300"
             />
           </div>
 
@@ -300,14 +303,14 @@
 
         <hr class="dashed-line" />
 
-        <!-- Net Total Row with Overlaid Primary Stamp Moved 7px Left -->
+        <!-- Net Total Row with Overlaid Primary Stamp Moved 7px Left Directly Over Net Amount -->
         <div class="relative py-1 my-0.5">
           <div class="row total-row">
             <span>NET TOTAL</span>
             <span id="pos-bill-total">₹ 0.00</span>
           </div>
 
-          <!-- MAIN PRIMARY STAMP OVERLAY (POSITIONED OVER NET AMOUNT) -->
+          <!-- MAIN PRIMARY STAMP OVERLAY -->
           <img 
             id="pos-stamp-main" 
             src="" 
@@ -406,7 +409,16 @@
 
       // Default demo preview if opened directly without query parameters
       if (!type || !token) {
-        simulateVerification('member-verified');
+        renderMember({
+          name: 'Anmol Kumar',
+          designation: 'Chief Coordinator',
+          memberRole: 'Expedition Lead & Financial Oversight',
+          mobile: '+91 98765 43210',
+          email: 'officialanmol1609@gmail.com',
+          tripName: 'VALLEY OF FLOWERS',
+          token: 'DEMO_MEM_TOKEN',
+          img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG'
+        }, true);
         return;
       }
 
@@ -482,20 +494,21 @@
 
       if (stampImg) {
         stampImg.src = isVerified ? STAMP_ASSETS.verifiedMain : STAMP_ASSETS.unverified;
-        stampImg.style.transform = `rotate(${randomRot}deg) translate(${randomShiftX}px, ${randomShiftY}px)`;
+        // Center the stamp vertically over the bottom dividing line (50% offset)
+        stampImg.style.transform = `translate(${randomShiftX}px, calc(50% + ${randomShiftY}px)) rotate(${randomRot}deg)`;
         stampImg.style.opacity = getRandom(0.88, 0.96);
       }
 
       if (isVerified) {
         if (verticalStatusText) verticalStatusText.innerText = "VERIFIED";
         leftBar.className = "w-[52px] bg-indigo-600 flex flex-col justify-between items-center py-4 text-white shrink-0 select-none overflow-hidden transition-colors duration-500";
-        photoBorder.className = "h-[185px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 overflow-hidden";
+        photoBorder.className = "h-[185px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 z-10";
         titleText.className = "text-[16px] font-black tracking-tight uppercase text-indigo-700 leading-tight w-full truncate";
         signText.className = "text-[7px] font-black uppercase tracking-widest text-indigo-700 border-t border-slate-300 pt-0.5 w-[85%]";
       } else {
         if (verticalStatusText) verticalStatusText.innerText = "UNVERIFIED";
         leftBar.className = "w-[52px] bg-rose-600 flex flex-col justify-between items-center py-4 text-white shrink-0 select-none overflow-hidden transition-colors duration-500";
-        photoBorder.className = "h-[185px] w-full border-y-[3px] border-rose-600 relative bg-slate-100 overflow-hidden";
+        photoBorder.className = "h-[185px] w-full border-y-[3px] border-rose-600 relative bg-slate-100 z-10";
         titleText.className = "text-[16px] font-black tracking-tight uppercase text-rose-700 leading-tight w-full truncate";
         signText.className = "text-[7px] font-black uppercase tracking-widest text-rose-700 border-t border-slate-300 pt-0.5 w-[85%]";
       }
@@ -554,54 +567,6 @@
       }
 
       switchState('state-bill');
-    }
-
-    // SIMULATE SCENARIOS (FALLBACK / PREVIEW)
-    function simulateVerification(scenario) {
-      switchState('state-loading');
-
-      setTimeout(() => {
-        if (scenario === 'member-verified') {
-          renderMember({
-            name: 'Anmol Kumar',
-            designation: 'Chief Coordinator',
-            memberRole: 'Expedition Lead & Financial Oversight',
-            mobile: '+91 98765 43210',
-            email: 'officialanmol1609@gmail.com',
-            tripName: 'VALLEY OF FLOWERS',
-            token: 'DEMO_MEM_TOKEN',
-            img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG'
-          }, true);
-        } else if (scenario === 'member-unverified') {
-          renderMember({
-            name: 'Guest Member',
-            designation: 'Trekker',
-            memberRole: 'Pending Verification',
-            mobile: '+91 91234 56789',
-            email: 'guest@example.com',
-            tripName: 'VALLEY OF FLOWERS',
-            token: 'DEMO_UNVERIFIED_TOKEN',
-            img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG'
-          }, false);
-        } else if (scenario === 'bill-verified') {
-          renderBill({
-            storeTitle: 'VALLEY OF FLOWERS<br><span style="font-weight: 400; font-size: 0.95em;">EXPEDITION</span>',
-            dateString: '27/06/2026',
-            timeString: '14:32:10',
-            invoiceNo: 'VOF0725-000101',
-            filterTag: 'ALL EXPENSES',
-            tripCode: 'VOF0725',
-            netTotal: 3450.00,
-            items: [
-              { notes: 'Govindghat Base Camp Dinner', utr: 'UTR7829102931', amount: 1200 },
-              { notes: 'National Park Entry Permit', utr: 'UTR9988219213', amount: 1500 },
-              { notes: 'Supplies & Mineral Water', utr: 'CASH-SETTLE', amount: 750 }
-            ]
-          }, true);
-        } else {
-          switchState('state-fraud');
-        }
-      }, 350);
     }
 
     // Run verification on initial page load
