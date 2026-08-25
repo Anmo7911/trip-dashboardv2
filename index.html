@@ -7089,44 +7089,53 @@ async function handlePosTripChange(selectedTrip) {
     return;
   }
 
-  // Load instantly if already cached in background
-  if (posTripCache[selectedTrip]) {
-    posPastTripData = posTripCache[selectedTrip].transactions;
-    posPastTripMetadata = posTripCache[selectedTrip].metadata;
-    updatePosScreenPreview();
-    return;
-  }
-
+  // 1. Instantly show the "FETCHING..." status and orange glowing light
   if (statusText) statusText.textContent = 'FETCHING...';
   if (statusLight) statusLight.className = 'status-light printing';
   if (printBtn) printBtn.disabled = true;
 
-  try {
-    const res = await apiRequest('past-trip-ledger', { tripName: selectedTrip });
-    if (res && res.success) {
-      posPastTripData = res.transactions || [];
-      posPastTripMetadata = {
-        tripName: res.tripName || selectedTrip,
-        secondaryTitle: res.secondaryTitle || '',
-        tripCode: res.tripCode || 'EXP'
-      };
-      
-      posTripCache[selectedTrip] = {
-        transactions: posPastTripData,
-        metadata: posPastTripMetadata
-      };
-    } else {
-      showToast(res.error || "Failed to load trip");
-      posPastTripData = [];
+  // 2. Create a 2-second minimum timer promise for realism
+  const minDelay = new Promise(resolve => setTimeout(resolve, 2000));
+
+  let tripData = null;
+
+  // 3. Check if it's already in our background cache
+  if (posTripCache[selectedTrip]) {
+    tripData = posTripCache[selectedTrip];
+  } else {
+    // Fallback network fetch if not cached yet
+    try {
+      const res = await apiRequest('past-trip-ledger', { tripName: selectedTrip });
+      if (res && res.success) {
+        tripData = {
+          transactions: res.transactions || [],
+          metadata: {
+            tripName: res.tripName || selectedTrip,
+            secondaryTitle: res.secondaryTitle || '',
+            tripCode: res.tripCode || 'EXP'
+          }
+        };
+        posTripCache[selectedTrip] = tripData;
+      } else {
+        showToast(res.error || "Failed to load trip");
+        tripData = { transactions: [], metadata: null };
+      }
+    } catch (err) {
+      console.error("Past trip fetch error:", err);
+      tripData = { transactions: [], metadata: null };
     }
-  } catch (err) {
-    console.error("Past trip fetch error:", err);
-    posPastTripData = [];
-  } finally {
-    if (statusText) statusText.textContent = 'READY';
-    if (statusLight) statusLight.className = 'status-light';
-    updatePosScreenPreview();
   }
+
+  // 4. Wait for the 2-second animation to finish before updating the screen
+  await minDelay;
+
+  posPastTripData = tripData.transactions;
+  posPastTripMetadata = tripData.metadata;
+
+  // 5. Switch back to READY state and show the bill
+  if (statusText) statusText.textContent = 'READY';
+  if (statusLight) statusLight.className = 'status-light';
+  updatePosScreenPreview();
 }
 
 function initPosTerminalData() {
