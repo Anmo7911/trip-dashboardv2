@@ -150,7 +150,21 @@
     .scan-beam {
       animation: scanSweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     }
+
+    
+ /* Crisp High-DPI scaling for Pass QR */
+    #eid-qr img,
+    #eid-qr canvas {
+      width: 62px !important;
+      height: 62px !important;
+      display: block !important;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
   </style>
+
+
+  
 </head>
 <body class="bg-slate-100/70 min-h-screen text-slate-800 flex flex-col justify-between p-4 sm:p-6 select-none relative">
 
@@ -521,17 +535,18 @@
         signText.className = "text-[7px] font-black uppercase tracking-widest text-rose-700 border-t border-slate-300 pt-0.5 w-[85%]";
       }
 
-      // Build QR Code on Pass
+      // Build QR Code on Pass (High-DPI 180x180)
       const qrContainer = document.getElementById('eid-qr');
       if (qrContainer) {
         qrContainer.innerHTML = '';
         const currentUrl = window.location.href;
         new QRCode(qrContainer, {
           text: currentUrl,
-          width: 62,
-          height: 62,
-          colorDark: "#0f172a",
-          colorLight: "#ffffff"
+          width: 180,
+          height: 180,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.M
         });
       }
 
