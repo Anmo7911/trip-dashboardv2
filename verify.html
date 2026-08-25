@@ -152,15 +152,19 @@
     }
 
     
- /* Crisp High-DPI scaling for Pass QR */
-    #eid-qr img,
-    #eid-qr canvas {
-      width: 62px !important;
-      height: 62px !important;
-      display: block !important;
-      image-rendering: -webkit-optimize-contrast;
-      image-rendering: crisp-edges;
-    }
+ #eid-qr canvas {
+  display: none !important;
+}
+
+#eid-qr img {
+  width: 62px !important;
+  height: 62px !important;
+  display: block !important;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+    
   </style>
 
 
