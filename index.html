@@ -51,6 +51,32 @@
 
   <style>
 
+    /* --- POS POWER & BOOT STYLES --- */
+.pos-terminal.powered-off .terminal-screen,
+.pos-terminal.powered-off .terminal-controls,
+.pos-terminal.powered-off .receipt-mask {
+  opacity: 0.25;
+  filter: grayscale(90%);
+  pointer-events: none;
+}
+.pos-terminal.powered-off #posPowerBtn {
+  opacity: 1 !important;
+  filter: none !important;
+  pointer-events: auto !important;
+  color: #ef4444 !important; /* Red when off */
+}
+#posPowerBtn.is-on {
+  color: #38ef7d !important; /* Green when on */
+}
+
+@keyframes posBootBlink {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.15; filter: brightness(0.2); }
+}
+.pos-booting {
+  animation: posBootBlink 0.3s ease-in-out 6 alternate;
+}
+
 
     /* POS Trip Selector Dropdown */
 .trip-filter-row {
@@ -2685,7 +2711,19 @@
      <!-- Screen -->
       <div class="terminal-screen">
         <div class="screen-header">
-          <span class="screen-title">EXPENSE CONFIG</span>
+          <div class="screen-header">
+  <div class="flex items-center gap-1.5">
+    <span class="screen-title">EXPENSE CONFIG</span>
+    <!-- Power On/Off Button -->
+    <button type="button" id="posPowerBtn" onclick="togglePosPower()" title="Power On/Off" style="background: none; border: none; cursor: pointer; padding: 2px; color: #ef4444;" class="transition hover:scale-110 active:scale-95 outline-none">
+      <i data-lucide="power" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+    </button>
+  </div>
+  <div class="status-indicator-wrap">
+    <span class="status-text" id="statusText">OFF</span>
+    <div class="status-light" id="statusLight"></div>
+  </div>
+</div>
           <div class="status-indicator-wrap">
             <span class="status-text" id="statusText">READY</span>
             <div class="status-light" id="statusLight"></div>
@@ -7589,6 +7627,91 @@ if (document.readyState === 'loading') {
 } else {
   initPosListeners();
 }
+
+
+    // --- POS POWER & BEEP ENGINE ---
+let posIsPoweredOn = false;
+
+function playPosBeep(freq = 800, duration = 0.05, type = 'sine') {
+  try {
+    const ctx = getPosAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + duration);
+  } catch (e) {}
+}
+
+// Global click beep for any terminal button click
+document.addEventListener('click', (e) => {
+  if (e.target.closest('.pos-terminal')) {
+    if (posIsPoweredOn && !e.target.closest('#posPowerBtn')) {
+      playPosBeep(950, 0.04);
+    }
+  }
+});
+
+function togglePosPower() {
+  playPosBeep(500, 0.08);
+  const terminal = document.getElementById('terminal');
+  const powerBtn = document.getElementById('posPowerBtn');
+  const statusText = document.getElementById('statusText');
+  const statusLight = document.getElementById('statusLight');
+  const screenTitle = document.querySelector('.screen-title');
+
+  if (!posIsPoweredOn) {
+    // --- POWER ON SEQUENCE (2 Seconds) ---
+    posIsPoweredOn = true;
+    powerBtn.classList.add('is-on');
+    terminal.classList.remove('powered-off');
+    terminal.classList.add('pos-booting');
+
+    if (screenTitle) screenTitle.textContent = "STARTING SYSTEM...";
+    if (statusText) statusText.textContent = "BOOTING";
+    if (statusLight) statusLight.className = "status-light printing";
+
+    // Boot chime audio sequence
+    setTimeout(() => playPosBeep(1100, 0.1), 300);
+    setTimeout(() => playPosBeep(1500, 0.2), 600);
+
+    // After exactly 2 seconds, restore original active state
+    setTimeout(() => {
+      terminal.classList.remove('pos-booting');
+      if (screenTitle) screenTitle.textContent = "EXPENSE CONFIG";
+      if (statusText) statusText.textContent = "READY";
+      if (statusLight) statusLight.className = "status-light";
+      updatePosScreenPreview();
+    }, 2000);
+
+  } else {
+    // --- POWER OFF ---
+    posIsPoweredOn = false;
+    powerBtn.classList.remove('is-on');
+    terminal.classList.add('powered-off');
+    
+    if (statusText) statusText.textContent = "OFF";
+    if (statusLight) statusLight.className = "status-light";
+    if (screenTitle) screenTitle.textContent = "POWER OFF";
+    
+    showToast("Terminal Powered Off");
+  }
+}
+
+// Default terminal to powered-off state when entering the POS tab for the first time
+const originalInitPos = window.initPosTerminalData;
+window.initPosTerminalData = function() {
+  if (originalInitPos) originalInitPos();
+  if (!posIsPoweredOn) {
+    const terminal = document.getElementById('terminal');
+    if (terminal) terminal.classList.add('powered-off');
+  }
+};
 </script>
 
 
