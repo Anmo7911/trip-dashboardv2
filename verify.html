@@ -28,6 +28,337 @@
       font-family: 'Space Mono', 'Courier Prime', monospace;
     }
 
+    /* =========================================================
+       GATEWAY FULLSCREEN INITIAL LOADER
+    ========================================================= */
+    #initial-loader-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #fcfcfd;
+      transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.5s;
+    }
+
+    #initial-loader-overlay.loader-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .gateway {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      padding: clamp(16px, 4vh, 36px) clamp(16px, 5vw, 40px);
+      background: radial-gradient(circle at 50% 45%, #f5f6ff 0%, #fbfbfd 40%, #fcfcfd 75%);
+    }
+
+    .gateway-topbar {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+    }
+
+    .gateway-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: clamp(12px, 1.4vw, 14px);
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      color: #111827;
+    }
+
+    .gateway-brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid #e1e5fb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08);
+    }
+
+    .gateway-secure-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #64748b;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid #e5e7eb;
+      backdrop-filter: blur(4px);
+    }
+
+    .gateway-secure-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 6px #10b981aa;
+      animation: gatewaySecurePulse 1.8s infinite;
+    }
+
+    @keyframes gatewaySecurePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .gateway-center {
+      width: min(440px, 100%);
+      text-align: center;
+      position: relative;
+      margin: auto 0;
+      padding: 20px 0;
+    }
+
+    .qr-frame {
+      width: clamp(190px, 50vw, 220px);
+      height: clamp(190px, 50vw, 220px);
+      margin: 0 auto;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 28px;
+      box-shadow: 0 20px 50px -10px rgba(79, 70, 229, 0.09), 0 0 1px 1px rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+      animation: gatewayFrameIn .9s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    @keyframes gatewayFrameIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.92); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .qr-sim {
+      width: 138px;
+      height: 138px;
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(21, 1fr);
+      grid-template-rows: repeat(21, 1fr);
+      padding: 4px;
+      background: #fff;
+      border-radius: 4px;
+      animation: gatewayScanClarify 4.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      will-change: filter, opacity, transform;
+    }
+
+    @keyframes gatewayScanClarify {
+      0% { filter: blur(6px); opacity: 0.35; transform: scale(0.96); }
+      22% { filter: blur(4px); opacity: 0.55; }
+      55%, 85% { filter: blur(0px); opacity: 1; transform: scale(1); }
+      100% { filter: blur(6px); opacity: 0.35; transform: scale(0.96); }
+    }
+
+    .module-sim {
+      width: 100%;
+      height: 100%;
+      background: #182033;
+      border-radius: 0.5px;
+    }
+
+    .finder-sim {
+      position: absolute;
+      width: 35px;
+      height: 35px;
+      background: #182033;
+      padding: 5px;
+      z-index: 2;
+    }
+
+    .finder-sim::before {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: white;
+    }
+
+    .finder-sim::after {
+      content: "";
+      position: absolute;
+      width: 13px;
+      height: 13px;
+      background: #182033;
+      top: 11px;
+      left: 11px;
+    }
+
+    .finder-sim.top-left { top: 4px; left: 4px; }
+    .finder-sim.top-right { top: 4px; right: 4px; }
+    .finder-sim.bottom-left { bottom: 4px; left: 4px; }
+
+    .gateway-scanner {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      height: 46px;
+      z-index: 10;
+      pointer-events: none;
+      border-top: 1.5px solid #4f46e5;
+      background: linear-gradient(to bottom, rgba(79, 70, 229, 0.18), rgba(79, 70, 229, 0.04), transparent);
+      animation: gatewayScanQR 2.4s ease-in-out infinite alternate;
+    }
+
+    .gateway-scanner::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #6366f1;
+      box-shadow: 0 0 10px 1px #4f46e5cc;
+    }
+
+    .gateway-scanner::after {
+      content: "";
+      position: absolute;
+      top: -2.5px;
+      left: 0;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #4f46e5;
+      box-shadow: calc(clamp(190px, 50vw, 220px) - 37px) 0 0 #4f46e5;
+    }
+
+    @keyframes gatewayScanQR {
+      0% { top: 14px; opacity: 0.2; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { top: calc(100% - 60px); opacity: 0.2; }
+    }
+
+    .corner-g {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      z-index: 20;
+      border-color: #4f46e5;
+      border-style: solid;
+      opacity: .75;
+    }
+    .corner-g.one { top: 14px; left: 14px; border-width: 2px 0 0 2px; border-top-left-radius: 6px; }
+    .corner-g.two { top: 14px; right: 14px; border-width: 2px 2px 0 0; border-top-right-radius: 6px; }
+    .corner-g.three { bottom: 14px; left: 14px; border-width: 0 0 2px 2px; border-bottom-left-radius: 6px; }
+    .corner-g.four { bottom: 14px; right: 14px; border-width: 0 2px 2px 0; border-bottom-right-radius: 6px; }
+
+    .status-ring-g {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      right: 14px;
+      bottom: 14px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      display: grid;
+      place-items: center;
+      z-index: 30;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .status-ring-g::after {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #4f46e5;
+      animation: statusPulseG 1.2s ease-in-out infinite;
+    }
+    @keyframes statusPulseG {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.5); opacity: 0.3; }
+    }
+
+    .gateway-title {
+      margin-top: clamp(22px, 3.5vh, 32px);
+      font-size: clamp(21px, 3.5vw, 26px);
+      line-height: 1.25;
+      font-weight: 700;
+      letter-spacing: -0.6px;
+      color: #0f172a;
+      animation: gatewayTextIn .8s .15s both;
+    }
+
+    .gateway-subtitle {
+      margin: 10px auto 0;
+      max-width: 330px;
+      color: #717a8e;
+      font-size: clamp(12px, 1.6vw, 13px);
+      line-height: 1.6;
+      animation: gatewayTextIn .8s .25s both;
+    }
+
+    @keyframes gatewayTextIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .gateway-progress-wrap {
+      width: clamp(200px, 55vw, 260px);
+      margin: clamp(20px, 3vh, 28px) auto 0;
+    }
+
+    .gateway-progress {
+      width: 100%;
+      height: 3px;
+      background: #e8ebf3;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .gateway-progress-bar {
+      width: 36%;
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #ff7722, #4f46e5 50%, #138808);
+      animation: gatewayProgressMove 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    }
+
+    @keyframes gatewayProgressMove {
+      0% { transform: translateX(-120%); }
+      100% { transform: translateX(320%); }
+    }
+
+    .gateway-status {
+      margin-top: 14px;
+      color: #64748b;
+      font-size: clamp(8.5px, 1.2vw, 9.5px);
+      font-weight: 600;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      min-height: 14px;
+    }
+
+    .gateway-footer {
+      width: 100%;
+      text-align: center;
+      color: #94a3b8;
+      font-size: clamp(8px, 1.2vw, 9px);
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      z-index: 10;
+    }
+
     /* POS Receipt Specific Styles */
     .receipt-roll {
       width: 100%;
@@ -42,7 +373,6 @@
       font-family: 'Space Mono', 'Courier Prime', monospace;
     }
 
-    /* Jagged thermal tear bottom */
     .receipt-roll::after {
       content: "";
       position: absolute;
@@ -135,6 +465,61 @@
 </head>
 <body class="bg-slate-100/70 min-h-screen text-slate-800 flex flex-col justify-between p-4 sm:p-6 select-none relative">
 
+  <!-- =========================================================
+       PAGE INITIAL LOAD / REFRESH LOADER SCREEN
+  ========================================================= -->
+  <div id="initial-loader-overlay">
+    <div class="gateway">
+      <!-- TOP BAR -->
+      <header class="gateway-topbar">
+        <div class="gateway-brand">
+          <div class="gateway-brand-mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <span>Bharat Way</span>
+        </div>
+
+        <div class="gateway-secure-label">
+          <span class="gateway-secure-dot"></span>
+          Verified Gateway
+        </div>
+      </header>
+
+      <!-- CENTER CONTENT -->
+      <main class="gateway-center">
+        <div class="qr-frame">
+          <div class="corner-g one"></div>
+          <div class="corner-g two"></div>
+          <div class="corner-g three"></div>
+          <div class="corner-g four"></div>
+
+          <div class="qr-sim" id="loader-qr-pattern"></div>
+          <div class="gateway-scanner"></div>
+          <div class="status-ring-g"></div>
+        </div>
+
+        <h1 class="gateway-title">Bharat Way Verification</h1>
+        <p class="gateway-subtitle">Establishing an end-to-end encrypted session with the National Identity Gateway.</p>
+
+        <div class="gateway-progress-wrap">
+          <div class="gateway-progress">
+            <div class="gateway-progress-bar"></div>
+          </div>
+        </div>
+
+        <div class="gateway-status" id="loader-status-text">INITIALIZING GATEWAY</div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="gateway-footer">
+        BHARAT WAY SECURE INFRASTRUCTURE • 256-BIT ENCRYPTED
+      </footer>
+    </div>
+  </div>
+
   <!-- TOP APP HEADER -->
   <header class="w-full max-w-sm mx-auto flex items-center justify-between pb-3 border-b border-slate-200/80">
     <div class="flex items-center gap-2.5">
@@ -216,7 +601,7 @@
       </div>
     </div>
 
-    <!-- 1. LOADING STATE -->
+    <!-- 1. IN-PAGE SEARCH LOADING STATE -->
     <div id="state-loading" class="hidden w-full bg-white border border-slate-200 rounded-[32px] p-8 text-center shadow-[0_4px_25px_rgba(0,0,0,0.04)] relative overflow-hidden">
       <div class="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent scan-beam"></div>
       
@@ -422,14 +807,97 @@
   <script>
     lucide.createIcons();
 
+    // =========================================================
+    // INITIAL LOADER SETUP & QR PATTERN GENERATION
+    // =========================================================
+    let statusCycleTimer = null;
+
+    function buildLoaderQr() {
+      const qrEl = document.getElementById("loader-qr-pattern");
+      if (!qrEl) return;
+      qrEl.innerHTML = '';
+      const size = 21;
+      let seed = 849204;
+
+      function random() {
+        seed = (seed * 9301 + 49297) % 233280;
+        return seed / 233280;
+      }
+
+      for (let row = 0; row < size; row++) {
+        for (let col = 0; col < size; col++) {
+          const inFinder = 
+            (row < 7 && col < 7) ||
+            (row < 7 && col >= 14) ||
+            (row >= 14 && col < 7);
+
+          if (inFinder) continue;
+
+          if (random() > 0.54) {
+            const module = document.createElement("div");
+            module.className = "module-sim";
+            module.style.gridRow = row + 1;
+            module.style.gridColumn = col + 1;
+            qrEl.appendChild(module);
+          }
+        }
+      }
+
+      function createFinder(className) {
+        const finder = document.createElement("div");
+        finder.className = "finder-sim " + className;
+        qrEl.appendChild(finder);
+      }
+
+      createFinder("top-left");
+      createFinder("top-right");
+      createFinder("bottom-left");
+    }
+
+    function startStatusCycling() {
+      const statusEl = document.getElementById("loader-status-text");
+      if (!statusEl) return;
+      const messages = [
+        "INITIALIZING GATEWAY",
+        "SCANNING SECURE QR",
+        "DECRYPTING IDENTITY TOKEN",
+        "AUTHENTICATING WITH BHARAT WAY",
+        "FINALIZING HANDSHAKE"
+      ];
+      let currentIndex = 0;
+      statusEl.textContent = messages[0];
+      statusCycleTimer = setInterval(() => {
+        currentIndex = (currentIndex + 1) % messages.length;
+        statusEl.textContent = messages[currentIndex];
+      }, 700);
+    }
+
+    function dismissInitialLoader() {
+      if (statusCycleTimer) {
+        clearInterval(statusCycleTimer);
+        statusCycleTimer = null;
+      }
+      const overlay = document.getElementById('initial-loader-overlay');
+      if (overlay) {
+        overlay.classList.add('loader-hidden');
+        setTimeout(() => overlay.remove(), 550);
+      }
+    }
+
+    // Build the animated QR & start message cycle immediately
+    buildLoaderQr();
+    startStatusCycling();
+
+    // =========================================================
     // STAMP IMAGE ASSET REPOSITORY
+    // =========================================================
     const STAMP_ASSETS = {
       verifiedMain: 'https://blogger.googleusercontent.com/img/a/AVvXsEiTbKgUKDVSbMxy5yknNrlGRn_4wZ-L3hVlHgIXDk24-z20HTcgYgP5BAtDPWwdM0cJK1Xhu9zP7GbcQarVQKnHEtP4inLz23NzeCUhA9w5GTFmr8TgKirWUUaEwnM66IVhLx0qYZSRqZUfKaMCb0CWwzjTMtMGNMBY5icU6mPInN6uz-4pTLb-o7cJZmy5',
       unverified: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhuccuqfGVUJJ1McBPCDg3JG2g86rOTtEyKQZSPGfRGYW4jEGfy3-6aqBJ8du76CvqfJpNUNvDJn-yqw0SC-066uf8vsW2LOwC7YNrf8lt8oxzxHASURIK5orsxmiIuNueTXsCRedCMU5cqTOtlV4minno5KCuHNDMCgliAeAUsLoVk5HtITsrAUniDaton/s1571/d9b285183cdd6ab8de1b39d89277dffc.png'
     };
 
-    let activeSearchMode = 'member'; // 'member' or 'invoice'
-    const TRIP_CODE_LENGTH = 7; // e.g. VOF0725
+    let activeSearchMode = 'member';
+    const TRIP_CODE_LENGTH = 7;
 
     function getRandom(min, max) {
       return Math.random() * (max - min) + min;
@@ -476,7 +944,7 @@
       searchInput.focus();
     }
 
-    // INVOICE INPUT FORMATTER (Alphanumeric only + auto-hyphen)
+    // INVOICE INPUT FORMATTER
     const searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('input', function(e) {
       if (activeSearchMode === 'invoice') {
@@ -520,16 +988,19 @@
       }
     }
 
-    // INITIAL PROCESSOR (From URL params)
+    // INITIAL PROCESSOR (From URL params on Load/Refresh)
     async function processVerification() {
       const params = new URLSearchParams(window.location.search);
       const type = params.get('type');
       const token = params.get('token');
       const query = params.get('query');
 
-      // If opened directly without query parameters, display the ready/empty state
+      const minLoaderDelay = new Promise(resolve => setTimeout(resolve, 1400));
+
       if (!type && !token && !query) {
+        await minLoaderDelay;
         switchState('state-empty');
+        dismissInitialLoader();
         return;
       }
 
@@ -537,21 +1008,20 @@
         setSearchMode(type === 'bill' || type === 'invoice' ? 'invoice' : 'member');
       }
 
-      switchState('state-loading');
-
       try {
         const url = `/api/index?action=verify&type=${encodeURIComponent(type || '')}&token=${encodeURIComponent(token || '')}&query=${encodeURIComponent(query || '')}`;
-        const res = await fetch(url, {
+        const fetchPromise = fetch(url, {
           method: 'GET',
           headers: { 'Accept': 'application/json' }
-        });
-        const data = await res.json();
+        }).then(res => res.json().then(data => ({ ok: res.ok, data })));
 
-        if (res.ok && data.valid) {
-          if (data.type === 'member' && data.member) {
-            renderMember(data.member, data.isVerified !== false);
-          } else if (data.type === 'bill' && data.bill) {
-            renderBill(data.bill, data.isVerified !== false);
+        const [_, result] = await Promise.all([minLoaderDelay, fetchPromise]);
+
+        if (result.ok && result.data.valid) {
+          if (result.data.type === 'member' && result.data.member) {
+            renderMember(result.data.member, result.data.isVerified !== false);
+          } else if (result.data.type === 'bill' && result.data.bill) {
+            renderBill(result.data.bill, result.data.isVerified !== false);
           } else {
             switchState('state-fraud');
           }
@@ -560,7 +1030,10 @@
         }
       } catch (err) {
         console.error('Verification query failed:', err);
+        await minLoaderDelay;
         switchState('state-fraud');
+      } finally {
+        dismissInitialLoader();
       }
     }
 
