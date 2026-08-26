@@ -158,8 +158,52 @@
     </div>
   </header>
 
+  <!-- SEARCH & TOGGLE PANEL -->
+  <section class="w-full max-w-sm mx-auto mt-4 mb-2">
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm space-y-2.5">
+      
+      <!-- Type Toggle -->
+      <div class="grid grid-cols-2 p-1 bg-slate-100 rounded-xl gap-1">
+        <button 
+          type="button" 
+          id="toggle-member" 
+          onclick="setSearchMode('member')"
+          class="py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-white text-indigo-600 shadow-sm">
+          Member
+        </button>
+        <button 
+          type="button" 
+          id="toggle-invoice" 
+          onclick="setSearchMode('invoice')"
+          class="py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-slate-500 hover:text-slate-800">
+          Invoice
+        </button>
+      </div>
+
+      <!-- Search Input Form -->
+      <form onsubmit="handleManualSearch(event)" class="relative flex items-center gap-1.5">
+        <div class="relative flex-1">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Enter Member Name..."
+            autocomplete="off"
+            class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 rounded-xl pl-9 pr-3 py-2 text-xs font-bold text-slate-800 outline-none transition-all placeholder-slate-400 uppercase tracking-wide"
+          />
+        </div>
+        <button 
+          type="submit" 
+          id="searchBtn"
+          class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 active:scale-95 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-all shadow-sm shrink-0">
+          Verify
+        </button>
+      </form>
+    </div>
+  </section>
+
   <!-- MAIN CARD CONTAINER -->
-  <main class="w-full max-w-sm mx-auto my-auto py-4 flex flex-col items-center justify-center">
+  <main class="w-full max-w-sm mx-auto my-auto py-2 flex flex-col items-center justify-center">
 
     <!-- 1. LOADING STATE -->
     <div id="state-loading" class="w-full bg-white border border-slate-200 rounded-[32px] p-8 text-center shadow-[0_4px_25px_rgba(0,0,0,0.04)] relative overflow-hidden">
@@ -201,14 +245,12 @@
             <p id="eid-subtitle" class="text-[7.5px] font-bold tracking-[0.18em] text-slate-400 uppercase mt-0.5 truncate w-full hidden"></p>
           </div>
 
-          <!-- Photo Section with Stamp Overlay Directly Across the Bottom Border Line -->
+          <!-- Photo Section with Stamp Overlay -->
           <div id="eid-photo-container" class="h-[185px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 z-10">
-            <!-- Cropped Photo -->
             <div class="w-full h-full overflow-hidden">
               <img id="eid-photo" src="" class="w-full h-full object-cover object-top grayscale contrast-125">
             </div>
             
-            <!-- STAMP SEAL OVERLAY IMAGE (Straddles the photo & details border line) -->
             <img 
               id="eid-stamp-img" 
               src="" 
@@ -303,7 +345,7 @@
 
         <hr class="dashed-line" />
 
-        <!-- Net Total Row with Overlaid Primary Stamp Moved 7px Left Directly Over Net Amount -->
+        <!-- Net Total Row with Overlaid Primary Stamp -->
         <div class="relative py-1 my-0.5">
           <div class="row total-row">
             <span>NET TOTAL</span>
@@ -359,7 +401,7 @@
       </div>
 
       <p class="text-[9.5px] text-slate-500 font-medium leading-relaxed">
-        This QR code hash does not exist in the official expedition database. The pass or receipt may be forged, modified, or expired.
+        This record or token does not exist in the official expedition database. The pass or receipt may be forged, modified, or expired.
       </p>
     </div>
 
@@ -375,7 +417,9 @@
       unverified: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhuccuqfGVUJJ1McBPCDg3JG2g86rOTtEyKQZSPGfRGYW4jEGfy3-6aqBJ8du76CvqfJpNUNvDJn-yqw0SC-066uf8vsW2LOwC7YNrf8lt8oxzxHASURIK5orsxmiIuNueTXsCRedCMU5cqTOtlV4minno5KCuHNDMCgliAeAUsLoVk5HtITsrAUniDaton/s1571/d9b285183cdd6ab8de1b39d89277dffc.png'
     };
 
-    // Helper: Random number generator within min-max range
+    let activeSearchMode = 'member'; // 'member' or 'invoice'
+    const TRIP_CODE_LENGTH = 7; // e.g. VOF0725
+
     function getRandom(min, max) {
       return Math.random() * (max - min) + min;
     }
@@ -401,14 +445,79 @@
       lucide.createIcons();
     }
 
-    // MAIN PARSER & API VERIFIER
+    // SEARCH TOGGLE SWITCHER
+    function setSearchMode(mode) {
+      activeSearchMode = mode;
+      const memberBtn = document.getElementById('toggle-member');
+      const invoiceBtn = document.getElementById('toggle-invoice');
+      const searchInput = document.getElementById('searchInput');
+
+      if (mode === 'member') {
+        memberBtn.className = "py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-white text-indigo-600 shadow-sm";
+        invoiceBtn.className = "py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-slate-500 hover:text-slate-800";
+        searchInput.placeholder = "Enter Member Name...";
+      } else {
+        invoiceBtn.className = "py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-white text-indigo-600 shadow-sm";
+        memberBtn.className = "py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-slate-500 hover:text-slate-800";
+        searchInput.placeholder = "Enter Invoice No (e.g. VOF0725-0001)...";
+      }
+      searchInput.value = '';
+      searchInput.focus();
+    }
+
+    // INVOICE INPUT FORMATTER (Only letters and numbers, auto-hyphen after trip code)
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', function(e) {
+      if (activeSearchMode === 'invoice') {
+        let val = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if (val.length > TRIP_CODE_LENGTH) {
+          val = val.slice(0, TRIP_CODE_LENGTH) + '-' + val.slice(TRIP_CODE_LENGTH);
+        }
+        this.value = val;
+      }
+    });
+
+    // MANUAL SEARCH SUBMISSION
+    async function handleManualSearch(e) {
+      if (e) e.preventDefault();
+      const val = searchInput.value.trim();
+      if (!val) return;
+
+      switchState('state-loading');
+
+      try {
+        const res = await fetch(`/api/index?action=verify&type=${encodeURIComponent(activeSearchMode)}&query=${encodeURIComponent(val)}`, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+
+        if (res.ok && data.valid) {
+          if (data.type === 'member' && data.member) {
+            renderMember(data.member, data.isVerified !== false);
+          } else if (data.type === 'bill' && data.bill) {
+            renderBill(data.bill, data.isVerified !== false);
+          } else {
+            switchState('state-fraud');
+          }
+        } else {
+          switchState('state-fraud');
+        }
+      } catch (err) {
+        console.error('Search verification failed:', err);
+        switchState('state-fraud');
+      }
+    }
+
+    // INITIAL PROCESSOR (From URL params)
     async function processVerification() {
       const params = new URLSearchParams(window.location.search);
       const type = params.get('type');
       const token = params.get('token');
+      const query = params.get('query');
 
-      // Default demo preview if opened directly without query parameters
-      if (!type || !token) {
+      if (!type && !token && !query) {
+        // Default preview demo
         renderMember({
           name: 'Anmol Kumar',
           designation: 'Chief Coordinator',
@@ -422,19 +531,24 @@
         return;
       }
 
+      if (type) {
+        setSearchMode(type === 'bill' || type === 'invoice' ? 'invoice' : 'member');
+      }
+
       switchState('state-loading');
 
       try {
-        const res = await fetch(`/api/index?action=verify&type=${encodeURIComponent(type)}&token=${encodeURIComponent(token)}`, {
+        const url = `/api/index?action=verify&type=${encodeURIComponent(type || '')}&token=${encodeURIComponent(token || '')}&query=${encodeURIComponent(query || '')}`;
+        const res = await fetch(url, {
           method: 'GET',
           headers: { 'Accept': 'application/json' }
         });
         const data = await res.json();
 
         if (res.ok && data.valid) {
-          if (type === 'member' && data.member) {
+          if (data.type === 'member' && data.member) {
             renderMember(data.member, data.isVerified !== false);
-          } else if (type === 'bill' && data.bill) {
+          } else if (data.type === 'bill' && data.bill) {
             renderBill(data.bill, data.isVerified !== false);
           } else {
             switchState('state-fraud');
@@ -462,7 +576,6 @@
         photoEl.src = m.img || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG';
       }
 
-      // Subtitle Check
       const subtitleEl = document.getElementById('eid-subtitle');
       if (subtitleEl) {
         if (m.eidSubheading && m.eidSubheading.trim() !== "") {
@@ -473,13 +586,11 @@
         }
       }
 
-      // Chief Signature
       const signImg = document.getElementById('eid-chief-sign');
       if (signImg && m.chiefCoordinatorSignature) {
         signImg.src = m.chiefCoordinatorSignature;
       }
 
-      // Theme Adaptation & Overlay Image Stamp
       const leftBar = document.getElementById('eid-left-bar');
       const photoBorder = document.getElementById('eid-photo-container');
       const titleText = document.getElementById('eid-title');
@@ -487,14 +598,12 @@
       const verticalStatusText = document.getElementById('eid-vertical-status');
       const stampImg = document.getElementById('eid-stamp-img');
 
-      // Random realistic tilt & subtle offset for authenticity
       const randomRot = getRandom(-25, -15);
       const randomShiftX = getRandom(-4, 4);
       const randomShiftY = getRandom(-4, 4);
 
       if (stampImg) {
         stampImg.src = isVerified ? STAMP_ASSETS.verifiedMain : STAMP_ASSETS.unverified;
-        // Center the stamp vertically over the bottom dividing line (50% offset)
         stampImg.style.transform = `translate(${randomShiftX}px, calc(50% + ${randomShiftY}px)) rotate(${randomRot}deg)`;
         stampImg.style.opacity = getRandom(0.88, 0.96);
       }
@@ -513,13 +622,13 @@
         signText.className = "text-[7px] font-black uppercase tracking-widest text-rose-700 border-t border-slate-300 pt-0.5 w-[85%]";
       }
 
-      // Build QR Code on Pass (High-DPI 180x180)
+      // Build QR Code
       const qrContainer = document.getElementById('eid-qr');
       if (qrContainer) {
         qrContainer.innerHTML = '';
-        const currentUrl = window.location.href;
+        const verifyUrl = `${window.location.origin}/verify.html?type=member&query=${encodeURIComponent(m.name)}`;
         new QRCode(qrContainer, {
-          text: currentUrl,
+          text: verifyUrl,
           width: 180,
           height: 180,
           colorDark: "#000000",
@@ -531,7 +640,7 @@
       switchState('state-member');
     }
 
-    // RENDER POS THERMAL RECEIPT WITH PRIMARY OVERLAY STAMP ON NET TOTAL
+    // RENDER POS THERMAL RECEIPT
     function renderBill(b, isVerified) {
       document.getElementById('pos-bill-title').innerHTML = b.storeTitle || 'VALLEY OF FLOWERS<br><span style="font-weight: 400; font-size: 0.95em;">EXPEDITION</span>';
       document.getElementById('pos-bill-date').innerText = b.dateString || 'ALL DATES';
@@ -541,7 +650,6 @@
       document.getElementById('pos-bill-total').innerText = `₹ ${(b.netTotal || 0).toFixed(2)}`;
       document.getElementById('pos-bill-code').innerText = `*** ${b.tripCode || 'EXP'} ***`;
 
-      // Render Table Rows
       const tableBody = document.getElementById('pos-bill-items');
       if (tableBody) {
         tableBody.innerHTML = (b.items || []).map(item => `
@@ -553,7 +661,6 @@
         `).join('');
       }
 
-      // STAMP: DYNAMIC OVERLAY POSITIONED DIRECTLY ON NET AMOUNT WITH NATURAL TILT
       const mainStampEl = document.getElementById('pos-stamp-main');
       if (mainStampEl) {
         const randomRot = getRandom(-15, 12);
@@ -569,7 +676,7 @@
       switchState('state-bill');
     }
 
-    // Run verification on initial page load
+    // Initial run
     window.onload = processVerification;
   </script>
 </body>
