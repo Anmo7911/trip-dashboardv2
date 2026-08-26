@@ -796,24 +796,30 @@ async function recordPosInvoice(billData) {
   return { success: true, token: inserted.token, invoiceNo: inserted.invoice_no };
 }
 
-async function verifyToken(type, token) {
+async function verifyToken(type, token, queryParam) {
   const queryType = text(type).toLowerCase();
-  const queryToken = text(token);
+  const searchVal = text(queryParam || token);
 
-  if (!queryToken) {
-    return { valid: false, error: 'Missing verification token' };
+  if (!searchVal) {
+    return { valid: false, error: 'Missing search value or verification token' };
   }
 
-  // 1. MEMBER PASS VERIFICATION
+  // 1. MEMBER PASS VERIFICATION (Supports Token or Name Lookup)
   if (queryType === 'member') {
-    const { data: member, error } = await supabase
-      .from('members_sheet')
-      .select('*')
-      .eq('verification_token', queryToken)
-      .maybeSingle();
+    let query = supabase.from('members_sheet').select('*');
+
+    if (token && !queryParam) {
+      query = query.eq('verification_token', token);
+    } else {
+      // Case-insensitive lookup by member name
+      query = query.ilike('col_a', searchVal.trim());
+    }
+
+    const { data: memberRows, error } = await query.limit(1);
+    const member = memberRows?.[0];
 
     if (error || !member) {
-      return { valid: false, error: 'Member pass token is unrecognized or invalid' };
+      return { valid: false, error: 'Member record not found in ledger' };
     }
 
     const [settingsResult, memberMetaResult] = await Promise.all([
@@ -844,21 +850,27 @@ async function verifyToken(type, token) {
         chiefCoordinatorSignature: chiefSignature,
         tripName,
         eidSubheading,
-        token: queryToken
+        token: member.verification_token || ''
       }
     };
   }
 
-  // 2. POS VOUCHER / BILL VERIFICATION
-  if (queryType === 'bill') {
-    const { data: invoice, error } = await supabase
-      .from('pos_invoices')
-      .select('*')
-      .eq('token', queryToken)
-      .maybeSingle();
+  // 2. POS VOUCHER / BILL VERIFICATION (Supports Token or Invoice Number Lookup)
+  if (queryType === 'bill' || queryType === 'invoice') {
+    let query = supabase.from('pos_invoices').select('*');
+
+    if (token && !queryParam) {
+      query = query.eq('token', token);
+    } else {
+      // Direct invoice number match
+      query = query.ilike('invoice_no', searchVal.trim().replace(/^#/, ''));
+    }
+
+    const { data: invoiceRows, error } = await query.limit(1);
+    const invoice = invoiceRows?.[0];
 
     if (error || !invoice) {
-      return { valid: false, error: 'POS voucher token does not exist in ledger records' };
+      return { valid: false, error: 'POS voucher not found in ledger records' };
     }
 
     return {
@@ -933,8 +945,9 @@ export default async function handler(req, res) {
       case 'admin-delete-checklist': return json(res, 200, await adminDeleteChecklist(body.id));
       case 'admin-upload': return json(res, 200, await adminUploadFile(body));
 
+      
       // Dynamic Verification Actions
-      case 'verify': return json(res, 200, await verifyToken(req.query?.type || body?.type, req.query?.token || body?.token));
+      case 'verify': return json(res, 200, await verifyToken(req.query?.type || body?.type, req.query?.token || body?.token, req.query?.query || body?.query));
       case 'record-pos-invoice': return json(res, 200, await recordPosInvoice(body));
 
       // Admin Chat Extensions
