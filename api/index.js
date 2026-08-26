@@ -143,6 +143,7 @@ async function dashboard() {
 
   const tripNotice = text(setting(7, 'b'));
   const warningNotice = text(setting(8, 'b'));
+  const liveTripCode = text(setting(6, 'b')) || 'BHW0007';
   const startDate = setting(4, 'b') ? new Date(setting(4, 'b')).getTime() : null;
   const endDate = setting(5, 'b') ? new Date(setting(5, 'b')).getTime() : null;
   const eidStampImage = await resolveAsset(setting(12, 'b'));
@@ -309,6 +310,8 @@ async function dashboard() {
   const totalExpenses = Object.values(categorySpent).reduce((a, b) => a + b, 0);
   return {
     appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus, checklistVisibility, checklistRevokeVisibility, announcementMode, maintenanceMode,
+    liveTripCode, // <-- ADD THIS
+    tripCode: liveTripCode, // <-- ADD THIS
     popupConfig: { type: popupType, title: popupTitle, message: popupMessage, status: popupStatus, pushedAt: popupPushedAt },
     securityStatus: meta.security_status || 'normal',
     chiefCoordinatorSignature, eidStampImage, rawEidStamp, tripName, secondaryTitle,
