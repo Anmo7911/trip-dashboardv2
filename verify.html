@@ -205,8 +205,19 @@
   <!-- MAIN CARD CONTAINER -->
   <main class="w-full max-w-sm mx-auto my-auto py-2 flex flex-col items-center justify-center">
 
+    <!-- 0. IDLE / READY STATE -->
+    <div id="state-empty" class="w-full bg-white border border-slate-200/80 rounded-[32px] p-8 text-center shadow-[0_4px_25px_rgba(0,0,0,0.03)] space-y-3">
+      <div class="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center mx-auto text-indigo-600 shadow-inner">
+        <i data-lucide="scan-line" class="w-8 h-8"></i>
+      </div>
+      <div>
+        <h2 class="text-sm font-black uppercase tracking-wider text-slate-800">Ready to Verify</h2>
+        <p class="text-[9.5px] font-bold text-slate-400 uppercase tracking-widest mt-1">Enter a Member Name or Invoice Number above</p>
+      </div>
+    </div>
+
     <!-- 1. LOADING STATE -->
-    <div id="state-loading" class="w-full bg-white border border-slate-200 rounded-[32px] p-8 text-center shadow-[0_4px_25px_rgba(0,0,0,0.04)] relative overflow-hidden">
+    <div id="state-loading" class="hidden w-full bg-white border border-slate-200 rounded-[32px] p-8 text-center shadow-[0_4px_25px_rgba(0,0,0,0.04)] relative overflow-hidden">
       <div class="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent scan-beam"></div>
       
       <div class="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center mx-auto mb-4 text-indigo-600 shadow-inner">
@@ -373,7 +384,7 @@
             Computer-generated voucher. No physical signature required.
           </div>
 
-          <div class="powered-by" style="font-size: 7.5px; color: #555; margin-bottom: 2px;">Powered by Bharat Way</div>
+          <div class="powered-by">Powered by Bharat Way</div>
           <div class="bold" style="font-size: 8px; letter-spacing: 0.5px;">*** EXPENSE STATEMENT ***</div>
         </div>
 
@@ -436,7 +447,7 @@
 
     // DISPLAY STATE SWITCHER
     function switchState(targetId) {
-      ['state-loading', 'state-member', 'state-bill', 'state-fraud'].forEach(id => {
+      ['state-empty', 'state-loading', 'state-member', 'state-bill', 'state-fraud'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
       });
@@ -465,7 +476,7 @@
       searchInput.focus();
     }
 
-    // INVOICE INPUT FORMATTER (Only letters and numbers, auto-hyphen after trip code)
+    // INVOICE INPUT FORMATTER (Alphanumeric only + auto-hyphen)
     const searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('input', function(e) {
       if (activeSearchMode === 'invoice') {
@@ -516,18 +527,9 @@
       const token = params.get('token');
       const query = params.get('query');
 
+      // If opened directly without query parameters, display the ready/empty state
       if (!type && !token && !query) {
-        // Default preview demo
-        renderMember({
-          name: 'Anmol Kumar',
-          designation: 'Chief Coordinator',
-          memberRole: 'Expedition Lead & Financial Oversight',
-          mobile: '+91 98765 43210',
-          email: 'officialanmol1609@gmail.com',
-          tripName: 'VALLEY OF FLOWERS',
-          token: 'DEMO_MEM_TOKEN',
-          img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG'
-        }, true);
+        switchState('state-empty');
         return;
       }
 
@@ -676,7 +678,7 @@
       switchState('state-bill');
     }
 
-    // Initial run
+    // Initial load
     window.onload = processVerification;
   </script>
 </body>
