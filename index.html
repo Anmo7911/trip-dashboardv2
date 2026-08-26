@@ -1662,95 +1662,95 @@
 <body class="bg-slate-100/70 min-h-screen text-slate-800 lg:flex lg:flex-row lg:pb-0">
 
  <!-- =========================================
-       DESKTOP SIDEBAR NAVIGATION (Compact Layout)
+       DESKTOP SIDEBAR NAVIGATION (Balanced Spacing)
        ========================================= -->
-  <aside id="desktop-sidebar" class="hidden lg:flex w-72 h-screen fixed top-0 left-0 shrink-0 bg-white border-r border-slate-200/80 px-4 py-3 flex-col justify-between z-40 overflow-y-auto">
-    <div class="space-y-2.5">
+  <aside id="desktop-sidebar" class="hidden lg:flex w-72 h-screen fixed top-0 left-0 shrink-0 bg-white border-r border-slate-200/80 px-4 py-4 flex-col justify-between z-40 overflow-y-auto">
+    <div class="space-y-3">
 
       <!-- App Brand / Logo -->
-      <div class="flex items-center gap-2.5 px-2 py-0.5">
+      <div class="flex items-center gap-2.5 px-2 py-1">
         <img 
           src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG" 
           alt="Bharat Way Logo" 
-          class="w-8 h-8 rounded-xl object-cover border border-slate-100 shadow-sm shrink-0"
+          class="w-9 h-9 rounded-xl object-cover border border-slate-100 shadow-sm shrink-0"
         />
         <div>
           <h1 class="text-xs font-black text-slate-800 uppercase tracking-wider leading-none">BHARAT WAY</h1>
-          <p class="text-[8px] font-bold text-indigo-600 uppercase tracking-widest mt-0.5">Expedition Portal</p>
+          <p class="text-[8.5px] font-bold text-indigo-600 uppercase tracking-widest mt-1">Expedition Portal</p>
         </div>
       </div>
 
       <!-- Promoted Home / Spend Button -->
       <div>
-        <button onclick="showTab('spend', this)" class="desktop-nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-white bg-indigo-600 shadow-sm shadow-indigo-100" data-tab="spend">
-          <i data-lucide="home" class="w-3.5 h-3.5 shrink-0"></i>
+        <button onclick="showTab('spend', this)" class="desktop-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-white bg-indigo-600 shadow-sm shadow-indigo-100" data-tab="spend">
+          <i data-lucide="home" class="w-4 h-4 shrink-0"></i>
           <span>Home</span>
         </button>
       </div>
 
       <!-- Categorized Navigation -->
-      <nav class="space-y-2.5 pt-0.5">
+      <nav class="space-y-3.5 pt-1">
 
         <!-- CATEGORY 1: EXPEDITION LOGISTICS -->
-        <div class="space-y-0.5">
-          <span class="px-2 text-[9px] font-black uppercase tracking-[0.16em] text-slate-400">Expedition</span>
-          <div class="space-y-0.5 pt-0.5">
+        <div class="space-y-1">
+          <span class="px-2.5 text-[9.5px] font-black uppercase tracking-[0.16em] text-slate-400">Expedition</span>
+          <div class="space-y-1 pt-0.5">
             <!-- Route Tab -->
-            <button id="desktop-nav-route" onclick="showTab('places', this)" class="desktop-nav-btn w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="places">
-              <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0"></i>
+            <button id="desktop-nav-route" onclick="showTab('places', this)" class="desktop-nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="places">
+              <i data-lucide="map-pin" class="w-4 h-4 shrink-0"></i>
               <span>Places / Route</span>
             </button>
 
             <!-- Squad / Members Tab -->
-            <button onclick="showTab('squad', this)" class="desktop-nav-btn w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="squad">
-              <i data-lucide="users" class="w-3.5 h-3.5 shrink-0"></i>
+            <button onclick="showTab('squad', this)" class="desktop-nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="squad">
+              <i data-lucide="users" class="w-4 h-4 shrink-0"></i>
               <span>Squad Members</span>
             </button>
 
             <!-- Checklist Tab -->
             <div id="desktop-checklist-bookmark-container">
-              <button onclick="showTab('checklist', this)" class="desktop-nav-btn w-full flex items-center justify-between px-3 py-1.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="checklist">
-                <div class="flex items-center gap-2.5">
-                  <i data-lucide="check-square" class="w-3.5 h-3.5 shrink-0"></i>
+              <button onclick="showTab('checklist', this)" class="desktop-nav-btn w-full flex items-center justify-between px-3 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="checklist">
+                <div class="flex items-center gap-3">
+                  <i data-lucide="check-square" class="w-4 h-4 shrink-0"></i>
                   <span>Trip Checklist</span>
                 </div>
-                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-sm shrink-0"></span>
+                <span class="w-2 h-2 rounded-full bg-indigo-500 shadow-sm shrink-0"></span>
               </button>
             </div>
           </div>
         </div>
 
         <!-- CATEGORY 2: FINANCE & ACCOUNTS -->
-        <div class="space-y-0.5">
-          <span class="px-2 text-[9px] font-black uppercase tracking-[0.16em] text-slate-400">Financial Ledger</span>
-          <div class="space-y-0.5 pt-0.5">
+        <div class="space-y-1">
+          <span class="px-2.5 text-[9.5px] font-black uppercase tracking-[0.16em] text-slate-400">Financial Ledger</span>
+          <div class="space-y-1 pt-0.5">
             <!-- Transactions Tab -->
-            <button onclick="openTransactionsTab(this)" class="desktop-nav-btn w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="transactions">
-              <i data-lucide="receipt" class="w-3.5 h-3.5 shrink-0"></i>
+            <button onclick="openTransactionsTab(this)" class="desktop-nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="transactions">
+              <i data-lucide="receipt" class="w-4 h-4 shrink-0"></i>
               <span>Transactions</span>
             </button>
 
             <!-- POS Bill Print -->
-            <button onclick="showTab('pos', this)" class="desktop-nav-btn w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="pos">
-              <i data-lucide="printer" class="w-3.5 h-3.5 shrink-0"></i>
+            <button onclick="showTab('pos', this)" class="desktop-nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="pos">
+              <i data-lucide="printer" class="w-4 h-4 shrink-0"></i>
               <span>Print POS Bill</span>
             </button>
           </div>
         </div>
 
         <!-- CATEGORY 3: MEDIA & ARCHIVES -->
-        <div class="space-y-0.5">
-          <span class="px-2 text-[9px] font-black uppercase tracking-[0.16em] text-slate-400">Vault & Media</span>
-          <div class="space-y-0.5 pt-0.5">
+        <div class="space-y-1">
+          <span class="px-2.5 text-[9.5px] font-black uppercase tracking-[0.16em] text-slate-400">Vault & Media</span>
+          <div class="space-y-1 pt-0.5">
             <!-- Trip Gallery -->
-            <button onclick="showTab('gallery', this)" class="desktop-nav-btn w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="gallery">
-              <i data-lucide="camera" class="w-3.5 h-3.5 shrink-0"></i>
+            <button onclick="showTab('gallery', this)" class="desktop-nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="gallery">
+              <i data-lucide="camera" class="w-4 h-4 shrink-0"></i>
               <span>Trip Gallery</span>
             </button>
 
             <!-- Trip Archives -->
-            <button onclick="showTab('archives', this)" class="desktop-nav-btn w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="archives">
-              <i data-lucide="archive" class="w-3.5 h-3.5 shrink-0"></i>
+            <button onclick="showTab('archives', this)" class="desktop-nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="archives">
+              <i data-lucide="archive" class="w-4 h-4 shrink-0"></i>
               <span>Past Archives</span>
             </button>
           </div>
@@ -1760,31 +1760,31 @@
     </div>
 
     <!-- Bottom Section: Settings & Active Trip Summary Card -->
-    <div class="space-y-2 pt-2 border-t border-slate-100">
+    <div class="space-y-2.5 pt-2.5 border-t border-slate-100">
       <!-- Settings & Profile Tab Trigger -->
-      <button onclick="showTab('more', this)" class="desktop-nav-btn w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="more">
-        <i data-lucide="user-cog" class="w-3.5 h-3.5 shrink-0"></i>
+      <button onclick="showTab('more', this)" class="desktop-nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50" data-tab="more">
+        <i data-lucide="user-cog" class="w-4 h-4 shrink-0"></i>
         <span>Settings & Profile</span>
       </button>
 
       <!-- Live Trip Active Summary Card Widget -->
-      <div class="bg-gradient-to-b from-slate-50 to-indigo-50/40 rounded-2xl p-3 border border-slate-100 shadow-sm relative overflow-hidden">
-        <div class="flex items-center gap-1.5 mb-1.5">
+      <div class="bg-gradient-to-b from-slate-50 to-indigo-50/40 rounded-2xl p-3.5 border border-slate-100 shadow-sm relative overflow-hidden">
+        <div class="flex items-center gap-1.5 mb-2">
           <span class="relative flex h-2 w-2">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span class="text-[9px] font-black text-slate-700 uppercase tracking-widest">Trip Active</span>
+          <span class="text-[9.5px] font-black text-slate-700 uppercase tracking-widest">Trip Active</span>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <p class="text-[7.5px] font-bold text-slate-400 uppercase tracking-widest">Dates</p>
-            <p id="desktop-card-dates" class="text-[10px] font-black text-slate-700 mt-0.5 leading-tight">27–30 Jun 2026</p>
+            <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Dates</p>
+            <p id="desktop-card-dates" class="text-[10.5px] font-black text-slate-700 mt-0.5 leading-tight">27–30 Jun 2026</p>
           </div>
           <div>
-            <p class="text-[7.5px] font-bold text-slate-400 uppercase tracking-widest">Destination</p>
-            <p id="desktop-card-dest" class="text-[10px] font-black text-slate-700 mt-0.5 leading-tight truncate">Uttarakhand</p>
+            <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Destination</p>
+            <p id="desktop-card-dest" class="text-[10.5px] font-black text-slate-700 mt-0.5 leading-tight truncate">Uttarakhand</p>
           </div>
         </div>
       </div>
