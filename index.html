@@ -51,16 +51,6 @@
 
   <style>
 
-   @keyframes btnBlink {
-  0%, 100% { opacity: 1; filter: brightness(1); }
-  50% { opacity: 0.3; filter: brightness(0.6); }
-}
-
-.btn-print.is-printing {
-  animation: btnBlink 0.4s infinite ease-in-out !important;
-  pointer-events: none !important;
-}
-
 /* =========================================
    Crisp QR Image
    ========================================= */
@@ -7733,7 +7723,6 @@ function initPosListeners() {
       if (posIsPrinting || !posPreparedBill) return;
 
       posIsPrinting = true;
-      printBtn.classList.add('is-printing');
       printBtn.disabled = true;
       if (tearBtn) tearBtn.disabled = true;
       if (downloadBtn) downloadBtn.disabled = true;
@@ -7838,7 +7827,6 @@ function initPosListeners() {
 
           setTimeout(() => {
             if (statusText) statusText.textContent = 'READY';
-            printBtn.classList.remove('is-printing');
             printBtn.disabled = false;
             if (tearBtn) tearBtn.disabled = false;
             if (downloadBtn) downloadBtn.disabled = false;
