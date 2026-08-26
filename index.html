@@ -7238,15 +7238,17 @@ let posPastTripMetadata = null;
 let posLiveTripCode = null;
 
 // Fetch Live Trip Code from 'Upcoming' tab (cell A2)
-async function fetchLiveTripCode() {
-  if (posLiveTripCode) return;
-  try {
-    const res = await apiRequest('past-trip-ledger', { tripName: 'Upcoming' });
-    if (res && res.success && res.tripCode) {
-      posLiveTripCode = res.tripCode;
-      updatePosScreenPreview();
-    }
-  } catch (e) {
+// Fetch Live Trip Code directly from cached settings (Row 6, Col B)
+function fetchLiveTripCode() {
+  if (globalActiveDataPayloadBackup) {
+    posLiveTripCode = globalActiveDataPayloadBackup.liveTripCode || 
+      globalActiveDataPayloadBackup.tripCode || 
+      (globalActiveDataPayloadBackup.settingsRaw && 
+       globalActiveDataPayloadBackup.settingsRaw.find(r => Number(r.row_number) === 6)?.col_b) || 
+      '';
+    updatePosScreenPreview();
+  }
+} catch (e) {
     console.warn("Could not fetch live trip code from Upcoming tab:", e);
   }
 }
@@ -7487,12 +7489,17 @@ function updatePosScreenPreview() {
   if (posActiveTripMode === '__LIVE__') {
     title1 = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.tripName) ? globalActiveDataPayloadBackup.tripName : "BHARAT WAY";
     title2 = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.secondaryTitle) ? globalActiveDataPayloadBackup.secondaryTitle : "EXPEDITION";
-    basePrefix = posLiveTripCode || (globalActiveDataPayloadBackup && (globalActiveDataPayloadBackup.tripCode || globalActiveDataPayloadBackup.liveTripCode)) || "VOF0725";
+    // Fetches strictly from Row 6 Col B for Current Live Trip
+    basePrefix = (globalActiveDataPayloadBackup && (globalActiveDataPayloadBackup.liveTripCode || globalActiveDataPayloadBackup.tripCode)) || 
+      (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.settingsRaw && globalActiveDataPayloadBackup.settingsRaw.find(r => Number(r.row_number) === 6)?.col_b) || 
+      posLiveTripCode || 
+      "VOF0725";
   
   } else if (posPastTripMetadata) {
+    // Past trips retain their own archive trip codes
     title1 = posPastTripMetadata.tripName || "BHARAT WAY";
     title2 = posPastTripMetadata.secondaryTitle || "";
-    basePrefix = posPastTripMetadata.tripCode || "VOF0725";
+    basePrefix = posPastTripMetadata.tripCode || "EXP";
   }
   
   let storeTitle = title2 
