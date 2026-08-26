@@ -7719,7 +7719,7 @@ function initPosListeners() {
   }
 
   if (printBtn) {
-    printBtn.addEventListener('click', async () => {
+    printBtn.addEventListener('click', () => {
       if (posIsPrinting || !posPreparedBill) return;
 
       posIsPrinting = true;
@@ -7733,44 +7733,54 @@ function initPosListeners() {
       const statusLight = document.getElementById('statusLight');
       const statusText = document.getElementById('statusText');
 
-      if (statusText) statusText.textContent = 'SAVING...';
-      if (statusLight) statusLight.className = 'status-light printing';
-
       const now = new Date();
       const timeString = now.toTimeString().split(' ')[0];
 
-      // 1. Record POS invoice in Supabase and obtain verification token
+      // Instant fallback token to start printing immediately without network wait
       let invoiceToken = `BILL_${Date.now()}`;
-      try {
-        const recordRes = await apiRequest('record-pos-invoice', {
-          invoiceNo: posPreparedBill.invoiceNo,
-          tripCode: posPreparedBill.tripCode,
-          storeTitle: posPreparedBill.storeTitle,
-          filterTag: posPreparedBill.filterTag,
-          dateString: posPreparedBill.dateString,
-          timeString: timeString,
-          items: posPreparedBill.items,
-          netTotal: posPreparedBill.netTotal
-        });
+
+      // Asynchronously record the POS invoice in the background
+      apiRequest('record-pos-invoice', {
+        invoiceNo: posPreparedBill.invoiceNo,
+        tripCode: posPreparedBill.tripCode,
+        storeTitle: posPreparedBill.storeTitle,
+        filterTag: posPreparedBill.filterTag,
+        dateString: posPreparedBill.dateString,
+        timeString: timeString,
+        items: posPreparedBill.items,
+        netTotal: posPreparedBill.netTotal
+      }).then(recordRes => {
         if (recordRes && recordRes.token) {
-          invoiceToken = recordRes.token;
+          // Refresh the QR with the persistent server token once ready
+          const qrEl = document.getElementById(uniqueQrId);
+          if (qrEl) {
+            qrEl.innerHTML = '';
+            const billVerifyUrl = `${window.location.origin}/verify.html?type=bill&token=${encodeURIComponent(recordRes.token)}`;
+            new QRCode(qrEl, {
+              text: billVerifyUrl,
+              width: 60,
+              height: 60,
+              colorDark: "#000000",
+              colorLight: "#ffffff"
+            });
+          }
         }
-      } catch (err) {
-        console.warn('Could not record POS invoice to server, fallback token used:', err);
-      }
+      }).catch(err => {
+        console.warn('Background POS recording skipped:', err);
+      });
 
       if (receiptMask) receiptMask.classList.remove('tearing');
 
       const previousTotalHeight = receiptRoll ? receiptRoll.scrollHeight : 0;
       const uniqueQrId = `pos-qr-${Date.now()}`;
 
-      // 2. Render segment HTML with QR container
+      // 1. Instantly render segment HTML with QR container
       const segment = document.createElement('div');
       segment.className = 'receipt-segment';
       segment.innerHTML = createPosReceiptSegmentHTML(posPreparedBill, timeString, uniqueQrId);
       if (receiptRoll) receiptRoll.prepend(segment);
 
-      // 3. Generate dynamic verification QR code URL
+      // 2. Generate immediate QR code
       const qrEl = document.getElementById(uniqueQrId);
       if (qrEl) {
         const billVerifyUrl = `${window.location.origin}/verify.html?type=bill&token=${encodeURIComponent(invoiceToken)}`;
@@ -7790,7 +7800,9 @@ function initPosListeners() {
       if (receiptRoll) receiptRoll.style.transform = `translateY(-${segmentHeight}px)`;
       if (receiptMask) receiptMask.style.height = `${previousTotalHeight}px`;
 
+      // 3. Immediately start hardware vibrations, sound & screen status
       if (terminal) terminal.classList.add('vibrating');
+      if (statusLight) statusLight.className = 'status-light printing';
       if (statusText) statusText.textContent = 'PRINTING';
 
       posPrintAudio.currentTime = 0;
@@ -7839,7 +7851,7 @@ function initPosListeners() {
       requestAnimationFrame(animatePrint);
     });
   }
-
+  
   if (tearBtn) {
     tearBtn.addEventListener('click', () => {
       if (posPrintedCount === 0 || posIsPrinting) return;
