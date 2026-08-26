@@ -7240,16 +7240,17 @@ let posLiveTripCode = null;
 // Fetch Live Trip Code from 'Upcoming' tab (cell A2)
 // Fetch Live Trip Code directly from cached settings (Row 6, Col B)
 function fetchLiveTripCode() {
-  if (globalActiveDataPayloadBackup) {
-    posLiveTripCode = globalActiveDataPayloadBackup.liveTripCode || 
-      globalActiveDataPayloadBackup.tripCode || 
-      (globalActiveDataPayloadBackup.settingsRaw && 
-       globalActiveDataPayloadBackup.settingsRaw.find(r => Number(r.row_number) === 6)?.col_b) || 
-      '';
-    updatePosScreenPreview();
-  }
-} catch (e) {
-    console.warn("Could not fetch live trip code from Upcoming tab:", e);
+  try {
+    if (globalActiveDataPayloadBackup) {
+      posLiveTripCode = globalActiveDataPayloadBackup.liveTripCode || 
+        globalActiveDataPayloadBackup.tripCode || 
+        (globalActiveDataPayloadBackup.settingsRaw && 
+         globalActiveDataPayloadBackup.settingsRaw.find(r => Number(r.row_number) === 6)?.col_b) || 
+        '';
+      updatePosScreenPreview();
+    }
+  } catch (e) {
+    console.warn("Could not fetch live trip code from settings:", e);
   }
 }
 
