@@ -7504,6 +7504,40 @@ function initPosTerminalData() {
   updatePosScreenPreview();
 }
 
+function parseSheetDateToYMD(rawDate) {
+  if (!rawDate) return null;
+  const str = String(rawDate).trim();
+
+  // 1. Match DD/MM/YYYY or DD-MM-YYYY
+  const dmyMatch = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if (dmyMatch) {
+    const day = dmyMatch[1].padStart(2, '0');
+    const month = dmyMatch[2].padStart(2, '0');
+    const year = dmyMatch[3];
+    return `${year}-${month}-${day}`;
+  }
+
+  // 2. Match YYYY-MM-DD or YYYY/MM/DD
+  const ymdMatch = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+  if (ymdMatch) {
+    const year = ymdMatch[1];
+    const month = ymdMatch[2].padStart(2, '0');
+    const day = ymdMatch[3].padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // 3. Fallback to JavaScript Date (using Local / IST timezone to avoid UTC day-shift)
+  const d = new Date(str);
+  if (!isNaN(d.getTime())) {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  return null;
+}
+
 function updatePosScreenPreview() {
   const transactions = (posActiveTripMode === '__LIVE__') 
     ? (globalLedgerDataBackup || []) 
@@ -7514,14 +7548,9 @@ function updatePosScreenPreview() {
     const matchCat = Array.from(posSelectedCategories).some(c => c.toLowerCase() === tCat.toLowerCase());
     if (!matchCat) return false;
 
-    if (posSelectedDate && t.date) {
-      try {
-        const d = new Date(t.date);
-        if (!isNaN(d.getTime())) {
-          const txDatePart = d.toISOString().split('T')[0];
-          if (txDatePart !== posSelectedDate) return false;
-        }
-      } catch (_) {
+    if (posSelectedDate) {
+      const txDateYMD = parseSheetDateToYMD(t.date);
+      if (!txDateYMD || txDateYMD !== posSelectedDate) {
         return false;
       }
     }
@@ -7535,14 +7564,12 @@ function updatePosScreenPreview() {
   if (posActiveTripMode === '__LIVE__') {
     title1 = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.tripName) ? globalActiveDataPayloadBackup.tripName : "BHARAT WAY";
     title2 = (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.secondaryTitle) ? globalActiveDataPayloadBackup.secondaryTitle : "EXPEDITION";
-    // Fetches strictly from Row 6 Col B for Current Live Trip
     basePrefix = (globalActiveDataPayloadBackup && (globalActiveDataPayloadBackup.liveTripCode || globalActiveDataPayloadBackup.tripCode)) || 
       (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.settingsRaw && globalActiveDataPayloadBackup.settingsRaw.find(r => Number(r.row_number) === 6)?.col_b) || 
       posLiveTripCode || 
       "VOF0725";
   
   } else if (posPastTripMetadata) {
-    // Past trips retain their own archive trip codes
     title1 = posPastTripMetadata.tripName || "BHARAT WAY";
     title2 = posPastTripMetadata.secondaryTitle || "";
     basePrefix = posPastTripMetadata.tripCode || "EXP";
@@ -7559,7 +7586,6 @@ function updatePosScreenPreview() {
     filterTag = Array.from(posSelectedCategories).map(c => c.toUpperCase()).join('+');
   }
 
- // Deterministic Invoice: [TRIPCODE]-[DATE_OR_GLOBAL_PREFIX][COMBO_INDEX]
   const invoiceNo = getDeterministicInvoiceNumber(basePrefix, posSelectedCategories, posSelectedDate);
   const netTotal = filtered.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
 
