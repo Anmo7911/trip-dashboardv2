@@ -2633,19 +2633,7 @@
       <!-- Vertical Timeline Tracker -->
       <div id="ui-timeline-container" class="text-left w-full"></div>
 
-      <div id="ui-places-divider" class="hidden w-full h-[1px] bg-slate-200 my-8"></div>
-
-      <!-- Additional Locations List -->
-      <div class="space-y-3 mt-6">
-        <h2 id="head-active-places" class="text-xs font-bold text-slate-400 uppercase tracking-widest px-1 hidden">Additional Locations</h2>
-        <div id="activePlaceList" class="space-y-2.5"></div>
-      </div>
-
-      <!-- Visited Locations List -->
-      <div class="space-y-3 pb-10 mt-6">
-        <h4 id="head-visited-places" class="text-xs font-bold text-emerald-600 uppercase tracking-widest px-1 hidden">Additional Locations Visited ✅</h4>
-        <div id="visitedPlaceList" class="space-y-2.5"></div>
-      </div>
+      
     </div>
   </main>
 
@@ -4482,30 +4470,8 @@ if (urlParams.get('preview') === 'admin') {
      renderSpendTrendChart(data);
       triggerSequentialWaveEffects(data);
       
-      // --- ROUTE/PLACES RENDERING ENGINE ---
-      const activeContainer = document.getElementById('activePlaceList');
-      const visitedContainer = document.getElementById('visitedPlaceList');
-      let activeHtml = "", visitedHtml = "", activeCount = 0, visitedCount = 0;
 
-      data.places.forEach(p => {
-        if (!p.name || p.name.toString().trim() === "" || p.rowId === 1) return; 
-
-        if (p.status === 'Visited') {
-          visitedCount++; 
-          const formattedStamp = formatVisitedTime(p.timeString);
-          visitedHtml += `<div id="place-card-${p.rowId}" class="bg-white px-4 py-3.5 rounded-xl border border-slate-200/60 shadow-sm flex items-center justify-between opacity-65 transition-all duration-300"><div class="flex items-center gap-3 truncate pr-2 w-full justify-between"><div class="flex items-center gap-3 truncate pr-1"><button onclick="triggerPlaceCheck(${p.rowId}, 'Visited')" class="w-5 h-5 flex-shrink-0 bg-emerald-500 rounded-full flex items-center justify-center text-white border border-emerald-600 outline-none"><i data-lucide="check" class="w-3 h-3 stroke-[3]"></i></button><div class="truncate"><p class="font-bold text-slate-500 text-sm line-through decoration-slate-400 truncate">${p.name}</p>${p.note ? `<p class="text-[10px] text-slate-400 truncate mt-0.5">${p.note}</p>` : ''}</div></div><span class="text-[10px] font-semibold text-slate-400 flex-shrink-0 bg-slate-100 rounded-md px-1.5 py-0.5">${formattedStamp}</span></div></div>`;
-        } else {
-          activeCount++;
-          activeHtml += `<div id="place-card-${p.rowId}" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between transition-all duration-300"><div class="flex items-center gap-3 truncate pr-2"><button onclick="triggerPlaceCheck(${p.rowId}, 'Pending')" class="w-5 h-5 flex-shrink-0 rounded-full border border-slate-300 hover:border-indigo-500 flex items-center justify-center bg-slate-50 outline-none transition-colors"></button><div class="truncate"><p class="font-bold text-slate-800 text-sm truncate">${p.name}</p>${p.note ? `<p class="text-xs text-slate-400 truncate mt-0.5">${p.note}</p>` : ''}</div></div></div>`;
-        }
-      });
-
-      document.getElementById('ui-places-divider').className = activeCount > 0 ? "w-full h-[1px] bg-slate-200 my-8 block" : "hidden";
-      document.getElementById('head-active-places').className = activeCount > 0 ? "text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 block" : "hidden";
-      document.getElementById('head-visited-places').className = visitedCount > 0 ? "text-[10px] font-bold text-emerald-500 uppercase tracking-widest px-1 block mt-4" : "hidden";
-      activeContainer.innerHTML = activeHtml; 
-      visitedContainer.innerHTML = visitedHtml;
-
+    
       const groupedPlaces = {};
       let timelineCount = 0;
       let lastReachedRowId = null;
