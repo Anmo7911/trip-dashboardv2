@@ -521,12 +521,12 @@
   </div>
 
   <!-- TOP APP HEADER -->
-  <header class="w-full max-w-sm mx-auto flex items-center justify-between pb-3 border-b border-slate-200/80">
-    <div class="flex items-center gap-2.5">
+  <header class="w-full max-w-sm mx-auto flex items-center justify-between gap-2 pb-3 border-b border-slate-200/80">
+    <div class="flex items-center gap-2 min-w-0">
       <!-- Back to Main App Button -->
       <a 
         href="/" 
-        class="w-9 h-9 rounded-2xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 flex items-center justify-center shadow-sm active:scale-90 transition-all shrink-0" 
+        class="w-8 h-8 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 flex items-center justify-center shadow-xs active:scale-90 transition-all shrink-0" 
         title="Back to Main App">
         <i data-lucide="arrow-left" class="w-4 h-4 stroke-[2.5]"></i>
       </a>
@@ -534,23 +534,23 @@
       <img 
         src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG" 
         alt="Bharat Way Logo" 
-        class="w-9 h-9 rounded-2xl object-cover border border-slate-100 shadow-sm shrink-0"
+        class="w-8 h-8 rounded-xl object-cover border border-slate-100 shadow-xs shrink-0"
       />
-      <div>
-        <h1 class="text-xs font-black uppercase tracking-wider text-slate-800 leading-none">BHARAT WAY</h1>
-        <p class="text-[8.5px] font-bold text-indigo-600 uppercase tracking-widest mt-1">Expedition Verification Gateway</p>
+      <div class="min-w-0">
+        <h1 class="text-[11px] font-black uppercase tracking-wider text-slate-800 leading-none truncate">BHARAT WAY</h1>
+        <p class="text-[7.5px] font-bold text-indigo-600 uppercase tracking-wider mt-0.5 truncate">Verification</p>
       </div>
     </div>
 
-    <!-- Live Verified Server Clock -->
-    <div class="text-right">
-      <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-100 text-[8.5px] font-mono text-emerald-700 font-bold shadow-sm">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+    <!-- Live Verified Server Clock Badge -->
+    <div class="shrink-0">
+      <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-[8px] sm:text-[8.5px] font-mono text-emerald-700 font-bold shadow-xs whitespace-nowrap">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
         <span id="liveClock">--:--:-- IST</span>
       </span>
     </div>
   </header>
-
+  
   <!-- SEARCH & TOGGLE PANEL -->
   <section class="w-full max-w-sm mx-auto mt-4 mb-2">
     <div class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm space-y-2.5">
