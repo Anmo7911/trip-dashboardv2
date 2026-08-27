@@ -3131,7 +3131,7 @@
        Always fixed at the bottom
        ========================================= -->
   <nav
-    class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md px-4 py-2.5 flex justify-between items-center z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.03)]">
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md px-4 py-2.5 flex justify-between items-center z-[150] shadow-[0_-10px_30px_rgba(0,0,0,0.03)]">
     <!-- Gradient accent line along the top of nav -->
     <div
       class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 opacity-80">
@@ -4315,7 +4315,7 @@ if (urlParams.get('preview') === 'admin') {
           }
       }
       
-      // --- LIVE ROUTE LOCK ENGINE ---
+     // --- LIVE ROUTE LOCK ENGINE ---
       const routeVault = document.getElementById('route-lock-vault');
       const routeNavBtn = document.getElementById('nav-btn-route');
       const routeView = document.getElementById('view-places');
@@ -4324,12 +4324,13 @@ if (urlParams.get('preview') === 'admin') {
       if (data.routeStatus === "LOCKED") {
         routeVault.classList.remove('hidden');
         routeNavBtn.classList.remove('hidden');
-        routeView.style.height = 'calc(100vh - 180px)';
+        routeView.style.minHeight = 'calc(100vh - 180px)';
         routeView.style.overflow = 'hidden';
         if (secureContent) {
           secureContent.classList.add('blur-[8px]', 'opacity-40', 'pointer-events-none', 'select-none');
         }
       } else if (data.routeStatus === "STEALTH") {
+        routeVault.classList.add('hidden');
         routeNavBtn.classList.add('hidden');
         if (routeView.classList.contains('active-tab')) {
           showTab('spend', document.querySelector('.nav-btn'));
@@ -4337,7 +4338,7 @@ if (urlParams.get('preview') === 'admin') {
       } else { 
         routeVault.classList.add('hidden');
         routeNavBtn.classList.remove('hidden');
-        routeView.style.height = 'auto';
+        routeView.style.minHeight = '70vh';
         routeView.style.overflow = 'visible';
         if (secureContent) {
           secureContent.classList.remove('blur-[8px]', 'opacity-40', 'pointer-events-none', 'select-none');
