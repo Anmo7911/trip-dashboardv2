@@ -3602,12 +3602,11 @@ if (urlParams.get('preview') === 'admin') {
         // Check if Secret Preview Bypass is active
         const hasBypass = sessionStorage.getItem('maintenanceBypass') === 'true';
 
-        // ADD THIS: Redirect if Maintenance Mode is active
+        // Redirect if Maintenance Mode is active
         if (data && data.maintenanceMode === 'ENABLED') {
-          window.location.replace('/maintenance.html'); // Use /mig.html if you saved it with that name
+          window.location.replace('/maintenance.html');
           return;
         }
-        
 
         if (data && data.members) {
           cachedMembersList = data.members;
@@ -3616,7 +3615,9 @@ if (urlParams.get('preview') === 'admin') {
       } catch (err) {
         console.error("Could not fetch initial data for login:", err);
       } finally {
-        attemptCustomSplashHide();
+        isDataLoaded = true;
+        isSplashFinished = true;
+        hideCustomSplash();
       }
     }
 
@@ -3631,23 +3632,28 @@ if (urlParams.get('preview') === 'admin') {
 
     // Core data fetching for logged-in users
     async function fetchInitialData() {
-      const currentUser = localStorage.getItem('trekLoggedInUser');
-      
-      if (!currentUser) {
-        const loginOverlay = document.getElementById('login-overlay');
-        if (loginOverlay) loginOverlay.classList.remove('hidden');
-        fetchLoginMembers();
-        return;
-      }
+  const currentUser = localStorage.getItem('trekLoggedInUser');
+  
+  if (!currentUser) {
+    const loginOverlay = document.getElementById('login-overlay');
+    if (loginOverlay) loginOverlay.classList.remove('hidden');
+    fetchLoginMembers();
+    return;
+  }
 
-      try {
-        const data = await apiRequest('dashboard');
-        renderApp(data);
-      } catch (error) {
-        console.error(error);
-        showToast("Unable to sync latest data.");
-      }
-    }
+  try {
+    const data = await apiRequest('dashboard');
+    renderApp(data);
+    isDataLoaded = true;
+    checkAndDismissSplash();
+  } catch (error) {
+    console.error(error);
+    showToast("Unable to sync latest data.");
+    // Allow dismissing on error so user isn't permanently locked out
+    isDataLoaded = true;
+    checkAndDismissSplash();
+  }
+}
 
     
     // Simple helper to format numbers as Indian Rupees string
@@ -4639,8 +4645,6 @@ if (deskBookmark) deskBookmark.style.display = isChecklistVisible ? 'block' : 'n
 if (data.checklist) {
      renderChecklistTab(data.checklist);
    }
-   attemptCustomSplashHide();
-   hideCustomSplash();
 
    // --- ADD THIS BACKGROUND PREFETCH CODE HERE ---
    if (data.pastTrips && data.pastTrips.length > 0) {
@@ -6646,15 +6650,23 @@ function closeArchiveGalleryPage() {
     }
 
 
-    // ==========================================
+   // ==========================================
 // SPLASH ANIMATION & SYNCHRONIZATION ENGINE
 // ==========================================
 let isSplashFinished = false;
-let pendingSplashHide = false;
+let isDataLoaded = false;
+let splashDismissTimer = null;
+
+function checkAndDismissSplash() {
+  // Only reveal the UI if BOTH the data is rendered AND the loader animation finished
+  if (isSplashFinished && isDataLoaded) {
+    hideCustomSplash();
+  }
+}
 
 function showCustomSplash() {
   isSplashFinished = false;
-  pendingSplashHide = false;
+  isDataLoaded = false;
 
   const splash = document.getElementById('custom-splash-screen');
   const iframe = document.getElementById('loader-iframe');
@@ -6666,16 +6678,12 @@ function showCustomSplash() {
     splash.classList.remove('hidden', 'iris-reveal-exit');
     splash.style.opacity = '1';
     splash.style.pointerEvents = 'auto';
+    splash.style.display = 'flex';
   }
 
   if (iframe) {
     iframe.src = `/loader.html?name=${encodeURIComponent(firstName)}`;
   }
-
-  // Safety timer
-  setTimeout(() => {
-    hideCustomSplash();
-  }, 3000);
 }
 
 function hideCustomSplash() {
@@ -6690,6 +6698,20 @@ function hideCustomSplash() {
     }, 850);
   }
 }
+
+// When iframe signals animation completion
+window.addEventListener('message', (event) => {
+  if (event.data === 'ANIMATION_COMPLETE') {
+    isSplashFinished = true;
+    checkAndDismissSplash();
+  }
+});
+
+// Failsafe fallback in case iframe messaging fails or takes too long
+setTimeout(() => {
+  isSplashFinished = true;
+  checkAndDismissSplash();
+}, 4000);
 
 function attemptCustomSplashHide() {
   // If splash finished or loader is unavailable, hide immediately
