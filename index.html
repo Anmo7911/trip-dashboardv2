@@ -7669,8 +7669,8 @@ function createPosReceiptSegmentHTML(billData, timeString, qrId) {
 
     <div class="row total-row" style="display: flex; justify-content: space-between; align-items: center;">
       <span>NET TOTAL</span>
-      <span style="font-size: 8px; font-weight: 700; color: #475569; letter-spacing: 0.3px;">(0 ITEMS)</span>
-      <span>₹ 0.00</span>
+      <span style="font-size: 8px; font-weight: 700; color: #475569; letter-spacing: 0.3px;">(${billData.items.length} ITEMS)</span>
+      <span>₹ ${billData.netTotal.toFixed(2)}</span>
     </div>
 
     <hr class="dashed-line" />
