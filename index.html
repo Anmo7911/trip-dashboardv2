@@ -51,6 +51,28 @@
 
   <style>
 
+    /* POS TEST BUTTON */
+.cat-btn.btn-test {
+  background: #1e1b2e !important;
+  color: #c084fc !important;
+  border-color: #581c87 !important;
+}
+
+.cat-btn.btn-test:hover {
+  background: #2e1065 !important;
+  color: #e9d5ff !important;
+  border-color: #9333ea !important;
+  box-shadow: 0 0 6px rgba(192, 132, 252, 0.3) !important;
+}
+
+.pos-terminal.booting .cat-btn.btn-test {
+  background: #2e1065 !important;
+  color: #e9d5ff !important;
+  border-color: #c084fc !important;
+  box-shadow: 0 0 8px rgba(192, 132, 252, 0.4) !important;
+}
+    
+
     /* Continuous select / unselect flash during printing */
 @keyframes posBtnFlash {
   0%, 100% {
@@ -2917,6 +2939,7 @@
           <button type="button" class="cat-btn" data-cat="Water">WATER</button>
           <button type="button" class="cat-btn" data-cat="Entry Fee">ENTRY</button>
           <button type="button" class="cat-btn" data-cat="Other">OTHER</button>
+          <button type="button" class="cat-btn btn-test" id="posTestBtn" title="Run Printer Self-Test">TEST</button>
         </div>
 
         <!-- Date Filter Row -->
@@ -7673,6 +7696,149 @@ function createPosReceiptSegmentHTML(billData, timeString, qrId) {
   `;
 }
 
+// ==========================================
+// PASTE HERE (Above let posListenersInitialized)
+// ==========================================
+
+function createPosTestReceiptHTML(timeString) {
+  const activeLogo = posCachedLogo || POS_SVG_BACKUP;
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-GB');
+
+  return `
+    <div class="center">
+      <div class="receipt-logo-wrap">
+        <img src="${activeLogo}" alt="Logo" class="receipt-logo" />
+      </div>
+      <div class="title bold">POS TERMINAL SELF-TEST</div>
+      <div class="sub-info">
+        Hardware Diagnostics & Calibration<br />
+        Thermal Head Test OK
+      </div>
+    </div>
+
+    <hr class="dashed-line" />
+
+    <div class="row">
+      <span>DATE: ${dateStr}</span>
+      <span>TIME: ${timeString}</span>
+    </div>
+    <div class="row">
+      <span>MODE: DIAGNOSTIC</span>
+      <span>STATUS: <strong>PASSED (100%)</strong></span>
+    </div>
+
+    <hr class="dashed-line" />
+
+    <div style="font-size: 7.5px; line-height: 1.4; font-family: 'Space Mono', monospace;">
+      <div>[✓] THERMAL HEAD: 203 DPI OK</div>
+      <div>[✓] VOLTAGE REGULATOR: 7.4V OK</div>
+      <div>[✓] CHARACTER MATRIX: 9x24 FONT</div>
+      <div>[✓] CUTTER / TEAR BAR: READY</div>
+      <div style="margin-top: 4px; word-break: break-all; color: #555;">
+        0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ
+      </div>
+    </div>
+
+    <hr class="dashed-line" />
+
+    <div class="center">
+      <div class="bold" style="font-size: 9px; margin-top: 2px;">*** TEST COMPLETED ***</div>
+      <div style="font-size: 7.5px; color: #666; margin-top: 2px;">SYSTEM READY FOR BILLING</div>
+      <div class="powered-by" style="margin-top: 5px;">Powered by Bharat Way</div>
+    </div>
+  `;
+}
+
+async function runPosTestPrint() {
+  if (posIsPrinting || !posPowerState) return;
+
+  const testBtn = document.getElementById('posTestBtn');
+  const printBtn = document.getElementById('printBtn');
+  const tearBtn = document.getElementById('tearBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const receiptMask = document.getElementById('receiptMask');
+  const receiptRoll = document.getElementById('receiptRoll');
+  const terminal = document.getElementById('terminal');
+  const statusLight = document.getElementById('statusLight');
+  const statusText = document.getElementById('statusText');
+
+  posIsPrinting = true;
+  if (testBtn) testBtn.classList.add('is-printing-flash');
+  if (printBtn) printBtn.disabled = true;
+  if (tearBtn) tearBtn.disabled = true;
+  if (downloadBtn) downloadBtn.disabled = true;
+
+  if (statusText) statusText.textContent = 'TESTING...';
+  if (statusLight) statusLight.className = 'status-light printing';
+
+  const now = new Date();
+  const timeString = now.toTimeString().split(' ')[0];
+
+  if (receiptMask) receiptMask.classList.remove('tearing');
+
+  const previousTotalHeight = receiptRoll ? receiptRoll.scrollHeight : 0;
+  const segment = document.createElement('div');
+  segment.className = 'receipt-segment';
+  segment.innerHTML = createPosTestReceiptHTML(timeString);
+  if (receiptRoll) receiptRoll.prepend(segment);
+
+  void segment.offsetHeight;
+  const segmentHeight = Math.max(180, segment.getBoundingClientRect().height);
+  const newTotalHeight = previousTotalHeight + segmentHeight;
+
+  if (receiptRoll) receiptRoll.style.transform = `translateY(-${segmentHeight}px)`;
+  if (receiptMask) receiptMask.style.height = `${previousTotalHeight}px`;
+
+  if (terminal) terminal.classList.add('vibrating');
+  if (statusText) statusText.textContent = 'PRINTING';
+
+  posPrintAudio.currentTime = 0;
+  posPrintAudio.play().catch(() => {});
+
+  const duration = Math.max(1000, (segmentHeight / 110) * 1000);
+  const startTime = performance.now();
+
+  function animateTestPrint(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    const currentYOffset = -segmentHeight * (1 - progress);
+    const currentMaskHeight = previousTotalHeight + (segmentHeight * progress);
+
+    if (receiptRoll) receiptRoll.style.transform = `translateY(${currentYOffset}px)`;
+    if (receiptMask) receiptMask.style.height = `${currentMaskHeight}px`;
+
+    if (progress < 1) {
+      requestAnimationFrame(animateTestPrint);
+    } else {
+      posPrintAudio.pause();
+      posPrintAudio.currentTime = 0;
+
+      if (receiptRoll) receiptRoll.style.transform = `translateY(0px)`;
+      if (receiptMask) receiptMask.style.height = `${newTotalHeight}px`;
+
+      if (terminal) terminal.classList.remove('vibrating');
+      if (statusLight) statusLight.classList.remove('printing');
+      if (statusText) statusText.textContent = 'TEST OK';
+
+      posPrintedCount++;
+      if (testBtn) testBtn.classList.remove('is-printing-flash');
+
+      setTimeout(() => {
+        if (statusText) statusText.textContent = 'READY';
+        if (tearBtn) tearBtn.disabled = false;
+        if (downloadBtn) downloadBtn.disabled = false;
+        posIsPrinting = false;
+        updatePosScreenPreview();
+      }, 400);
+    }
+  }
+
+  requestAnimationFrame(animateTestPrint);
+}
+
+// Existing code in your file:
 let posListenersInitialized = false;
 
 function initPosListeners() {
@@ -7698,6 +7864,11 @@ function initPosListeners() {
   const printBtn = document.getElementById('printBtn');
   const tearBtn = document.getElementById('tearBtn');
   const downloadBtn = document.getElementById('downloadBtn');
+
+  const testBtn = document.getElementById('posTestBtn');
+  if (testBtn) {
+    testBtn.addEventListener('click', runPosTestPrint);
+  }
 
   if (catGrid) {
     catGrid.addEventListener('click', (e) => {
