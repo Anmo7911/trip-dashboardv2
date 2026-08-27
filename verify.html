@@ -762,8 +762,9 @@
 
         <!-- Net Total Row with Overlaid Primary Stamp -->
         <div class="relative py-1 my-0.5">
-          <div class="row total-row">
+          <div class="row total-row" style="display: flex; justify-content: space-between; align-items: center;">
             <span>NET TOTAL</span>
+            <span id="pos-bill-count" style="font-size: 8px; font-weight: 700; color: #475569; letter-spacing: 0.3px;">(0 ITEMS)</span>
             <span id="pos-bill-total">₹ 0.00</span>
           </div>
 
@@ -1195,6 +1196,13 @@
       document.getElementById('pos-bill-time').innerText = b.timeString || '--:--:--';
       document.getElementById('pos-bill-invoice').innerText = `#${b.invoiceNo || 'INV-0001'}`;
       document.getElementById('pos-bill-tag').innerText = b.filterTag || 'ALL EXPENSES';
+      
+      const itemCount = (b.items && Array.isArray(b.items)) ? b.items.length : 0;
+      const countEl = document.getElementById('pos-bill-count');
+      if (countEl) {
+        countEl.innerText = `(${itemCount} ITEMS)`;
+      }
+
       document.getElementById('pos-bill-total').innerText = `₹ ${(b.netTotal || 0).toFixed(2)}`;
       document.getElementById('pos-bill-code').innerText = `*** ${b.tripCode || 'EXP'} ***`;
 
