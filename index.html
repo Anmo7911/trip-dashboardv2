@@ -2596,9 +2596,7 @@
 
     <!-- FROSTED GLASS VAULT OVERLAY -->
     <div id="route-lock-vault"
-  class="hidden fixed inset-x-0 top-[190px] bottom-[80px] z-30 flex items-center justify-center px-6 text-center transition-all duration-700 pointer-events-none">
-  <div
-    class="bg-white/95 backdrop-blur-2xl p-8 rounded-[32px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] border border-slate-200/60 max-w-[320px] w-full relative overflow-hidden pointer-events-auto m-auto">
+      class="hidden absolute top-0 bottom-0 left-0 right-0 z-[100] flex flex-col items-center justify-center px-6 text-center transition-all duration-700">
       <div
         class="bg-white/95 backdrop-blur-2xl p-8 rounded-[32px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] border border-slate-200/60 max-w-[320px] w-full relative overflow-hidden m-auto">
         <div class="relative w-16 h-16 mx-auto mb-6">
@@ -4326,7 +4324,8 @@ if (urlParams.get('preview') === 'admin') {
       if (data.routeStatus === "LOCKED") {
         routeVault.classList.remove('hidden');
         routeNavBtn.classList.remove('hidden');
-        routeView.style.overflow = 'visible'; // Allows standard mobile scrolling
+        routeView.style.minHeight = 'calc(100vh - 180px)';
+        routeView.style.overflow = 'hidden';
         if (secureContent) {
           secureContent.classList.add('blur-[8px]', 'opacity-40', 'pointer-events-none', 'select-none');
         }
@@ -4339,6 +4338,7 @@ if (urlParams.get('preview') === 'admin') {
       } else { 
         routeVault.classList.add('hidden');
         routeNavBtn.classList.remove('hidden');
+        routeView.style.minHeight = '70vh';
         routeView.style.overflow = 'visible';
         if (secureContent) {
           secureContent.classList.remove('blur-[8px]', 'opacity-40', 'pointer-events-none', 'select-none');
