@@ -12,7 +12,6 @@ const supabase = createClient(supabaseUrl, serviceRoleKey, {
 const gasUrl = process.env.GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwWAOUP4c2_G8FgWFF1zCbI1sg9lLMOhPAUQF5XH9a5R0gyRp5rX42UKpjr3-B41XJk0w/exec';
 const noticeGasUrl = process.env.NOTICE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbyRwqWA9ELDnkBfnGW6kr6oEGwE_6cIq6htGEfDB8B6Fd18yyMJeNodc8hZLkXciPb-/exec';
 
-
 function text(v) { return v === null || v === undefined ? '' : String(v).trim(); }
 function number(v) { const n = parseFloat(v); return Number.isFinite(n) ? n : 0; }
 
@@ -167,7 +166,6 @@ async function dashboard() {
   const announcementMode = text(setting(29, 'b')).toUpperCase() || 'DISABLED';
   const maintenanceMode = text(setting(30, 'b')).toUpperCase() || 'DISABLED';
 
-  // 10-Second Dynamic Broadcast Popup Settings (Row 28)
   const popupType = text(setting(28, 'b')).toUpperCase() || 'NOTIFICATION';
   const popupTitle = text(setting(28, 'c'));
   const popupMessage = text(setting(28, 'd'));
@@ -312,8 +310,8 @@ async function dashboard() {
   const totalExpenses = Object.values(categorySpent).reduce((a, b) => a + b, 0);
   return {
     appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus, checklistVisibility, checklistRevokeVisibility, announcementMode, maintenanceMode,
-    liveTripCode, // <-- ADD THIS
-    tripCode: liveTripCode, // <-- ADD THIS
+    liveTripCode,
+    tripCode: liveTripCode,
     popupConfig: { type: popupType, title: popupTitle, message: popupMessage, status: popupStatus, pushedAt: popupPushedAt },
     securityStatus: meta.security_status || 'normal',
     chiefCoordinatorSignature, eidStampImage, rawEidStamp, tripName, secondaryTitle,
@@ -426,9 +424,6 @@ async function changeMemberPIN(name, oldPin, newPin) {
   return { success: true };
 }
 
-// -------------------------------------------------------------
-// CHECKLIST USER ACTIONS
-// -------------------------------------------------------------
 async function claimChecklistItem(id, userName) {
   if (!id || !userName) throw new Error('Item ID and user name required');
   const { error } = await supabase.from('itinerary_checklist').update({
@@ -461,9 +456,6 @@ async function revokeChecklistItem(id, userName) {
   return dashboard();
 }
 
-// -------------------------------------------------------------
-// ADMIN ACTIONS
-// -------------------------------------------------------------
 async function adminLogin(username, password) {
   const { data, error } = await supabase.from('admin_auth').select('*').eq('username', text(username)).maybeSingle();
   if (error || !data) return { success: false, error: 'Invalid admin credentials' };
@@ -738,9 +730,6 @@ async function updatePollVote(msgId, pollText) {
   return dashboard();
 }
 
-// -------------------------------------------------------------
-// GOOGLE APPS SCRIPT PROXY (PAST TRIPS)
-// -------------------------------------------------------------
 async function fetchPastTripFromGoogleSheet(tripName) {
   if (!gasUrl || gasUrl.startsWith('YOUR_')) {
     throw new Error('Google Apps Script URL not configured');
@@ -762,16 +751,11 @@ async function fetchPastTripFromGoogleSheet(tripName) {
   return await response.json();
 }
 
-
-// -------------------------------------------------------------
-// DYNAMIC QR VERIFICATION ENGINE
-// -------------------------------------------------------------
 async function recordPosInvoice(billData) {
   if (!billData || !billData.invoiceNo) throw new Error('Invoice data required');
 
   const invoiceNo = text(billData.invoiceNo);
   
-  // Check if invoice already exists in database
   const { data: existing } = await supabase
     .from('pos_invoices')
     .select('*')
@@ -801,10 +785,6 @@ async function recordPosInvoice(billData) {
   return { success: true, token: inserted.token, invoiceNo: inserted.invoice_no };
 }
 
-
-// -------------------------------------------------------------
-// GOOGLE APPS SCRIPT PROXY (NOTICES)
-// -------------------------------------------------------------
 async function fetchNoticeFromGoogleSheet(refNo) {
   if (!noticeGasUrl) {
     throw new Error('Notice Google Apps Script URL not configured');
@@ -826,7 +806,6 @@ async function fetchNoticeFromGoogleSheet(refNo) {
   return await response.json();
 }
 
-
 async function verifyToken(type, token, queryParam) {
   const queryType = text(type).toLowerCase();
   const searchVal = text(queryParam || token);
@@ -835,14 +814,13 @@ async function verifyToken(type, token, queryParam) {
     return { valid: false, error: 'Missing search value or verification token' };
   }
 
-  // 1. MEMBER PASS VERIFICATION (Supports Token or Name Lookup)
+  // 1. MEMBER PASS VERIFICATION
   if (queryType === 'member') {
     let query = supabase.from('members_sheet').select('*');
 
     if (token && !queryParam) {
       query = query.eq('verification_token', token);
     } else {
-      // Case-insensitive lookup by member name
       query = query.ilike('col_a', searchVal.trim());
     }
 
@@ -886,16 +864,13 @@ async function verifyToken(type, token, queryParam) {
     };
   }
 
-  
-
-  // 2. POS VOUCHER / BILL VERIFICATION (Supports Token or Invoice Number Lookup)
+  // 2. POS VOUCHER / BILL VERIFICATION
   if (queryType === 'bill' || queryType === 'invoice') {
     let query = supabase.from('pos_invoices').select('*');
 
     if (token && !queryParam) {
       query = query.eq('token', token);
     } else {
-      // Direct invoice number match
       query = query.ilike('invoice_no', searchVal.trim().replace(/^#/, ''));
     }
 
@@ -924,10 +899,7 @@ async function verifyToken(type, token, queryParam) {
     };
   }
 
-  return { valid: false, error: 'Invalid verification type parameter' };
-}
-
-// 3. OFFICIAL NOTICE / GUIDELINE VERIFICATION
+  // 3. OFFICIAL NOTICE / GUIDELINE VERIFICATION
   if (queryType === 'notice') {
     try {
       const noticeRes = await fetchNoticeFromGoogleSheet(searchVal);
@@ -945,10 +917,9 @@ async function verifyToken(type, token, queryParam) {
     }
   }
 
+  return { valid: false, error: 'Invalid verification type parameter' };
+}
 
-// -------------------------------------------------------------
-// MAIN API ROUTER
-// -------------------------------------------------------------
 export default async function handler(req, res) {
   if (req.method !== 'POST' && req.method !== 'GET') {
     return json(res, 405, { error: 'Method not allowed' });
@@ -959,8 +930,6 @@ export default async function handler(req, res) {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
 
     switch (action) {
-      
-      // Member Actions
       case 'dashboard': return json(res, 200, await dashboard());
       case 'login': return json(res, 200, await verifyMemberPIN(body.name, body.pin));
       case 'expense': return json(res, 200, await saveExpense(body));
@@ -973,7 +942,6 @@ export default async function handler(req, res) {
       case 'checklist-revoke': return json(res, 200, await revokeChecklistItem(body.id, body.userName));
       case 'past-trip-ledger': return json(res, 200, await fetchPastTripFromGoogleSheet(body.tripName));
 
-      // Admin Actions
       case 'admin-login': return json(res, 200, await adminLogin(body.username, body.password));
       case 'admin-update-setting': return json(res, 200, await adminUpdateSetting(body.rowNumber, body.col, body.value));
       case 'admin-push-broadcast': return json(res, 200, await adminPushBroadcast(body));
@@ -995,13 +963,10 @@ export default async function handler(req, res) {
       case 'admin-delete-checklist': return json(res, 200, await adminDeleteChecklist(body.id));
       case 'admin-upload': return json(res, 200, await adminUploadFile(body));
 
-      
-      // Dynamic Verification Actions
       case 'verify': return json(res, 200, await verifyToken(req.query?.type || body?.type, req.query?.token || body?.token, req.query?.query || body?.query));
       case 'record-pos-invoice': return json(res, 200, await recordPosInvoice(body));
       case 'verify-notice': return json(res, 200, await fetchNoticeFromGoogleSheet(body.refNo || req.query?.refNo));
 
-      // Admin Chat Extensions
       case 'admin-send-message': return json(res, 200, await saveSquadMessage(body.sender || 'Admin', body.text));
       case 'admin-edit-message': return json(res, 200, await adminEditMessage(body.id, body.text));
       case 'admin-delete-message': return json(res, 200, await adminDeleteMessage(body.id));
