@@ -20,6 +20,190 @@
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
   <style>
+
+    /* =========================================================
+       NOTICE / GUIDELINE DOCUMENT CONTAINER STYLES
+    ========================================================= */
+    :root {
+      --notice-paper: #e5eef2;
+      --notice-ink: #404040;
+      --notice-heading: #3e3e3e;
+      --notice-red: #df4734;
+    }
+
+    .notice-card-wrap {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--notice-paper);
+      box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.06);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      padding: 16px 18px 24px;
+      color: var(--notice-ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .notice-topbar {
+      position: relative;
+      min-height: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+
+    .notice-release {
+      font-size: 10px;
+      font-weight: 700;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .barcode-container {
+      display: inline-flex;
+      gap: 3px;
+      align-items: center;
+    }
+
+    .barcode-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 4px;
+    }
+
+    .barcode-col i {
+      display: block;
+      width: 3px;
+      height: 14px;
+      background: #444;
+    }
+
+    .barcode-col span {
+      font-family: 'Space Mono', 'Courier New', monospace;
+      font-size: 8px;
+      line-height: 1;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .barcode-col:nth-child(3),
+    .barcode-col:nth-child(5) {
+      margin-right: 4px;
+    }
+
+    .notice-rule {
+      height: 2.5px;
+      background: var(--notice-red);
+      width: 100%;
+      margin: 4px 0;
+    }
+
+    .notice-title-box {
+      text-align: center;
+      padding: 6px 0;
+    }
+
+    .notice-title-box h1 {
+      margin: 0;
+      color: #000;
+      font-size: 18px;
+      line-height: 1.1;
+      font-weight: 900;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .notice-title-box h2 {
+      margin: 3px 0 0;
+      color: #222;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .notice-ref-no {
+      margin: 6px 0 10px;
+      font-size: 10px;
+      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+      color: #444;
+    }
+
+    .notice-section {
+      margin-top: 12px;
+    }
+
+    .notice-section h3 {
+      margin: 0 0 4px;
+      color: var(--notice-heading);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      padding-bottom: 2px;
+    }
+
+    .notice-section ol {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .notice-section li {
+      margin-bottom: 4px;
+      font-size: 10px;
+      line-height: 1.35;
+      color: #333;
+    }
+
+    .notice-plain-text {
+      font-size: 10px;
+      line-height: 1.4;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .notice-signature-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 18px;
+      padding-top: 10px;
+      border-top: 1px dashed #bbb;
+      position: relative;
+    }
+
+    .notice-stamp-img {
+      position: absolute;
+      right: 90px;
+      bottom: -4px;
+      width: 68px;
+      height: 68px;
+      object-fit: contain;
+      mix-blend-multiply;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .notice-emblem-img {
+      position: absolute;
+      right: 12px;
+      bottom: -4px;
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      mix-blend-multiply;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    
     body {
       font-family: 'Inter', sans-serif;
       -webkit-tap-highlight-color: transparent;
@@ -555,21 +739,28 @@
   <section class="w-full max-w-sm mx-auto mt-4 mb-2">
     <div class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm space-y-2.5">
       
-      <!-- Type Toggle -->
-      <div class="grid grid-cols-2 p-1 bg-slate-100 rounded-xl gap-1">
-        <button 
-          type="button" 
-          id="toggle-member" 
-          onclick="setSearchMode('member')"
-          class="py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-white text-indigo-600 shadow-sm">
-          Member
-        </button>
+      <!-- Type Toggle (3-way: Member / Invoice / Notice) -->
+      <div class="grid grid-cols-3 p-1 bg-slate-100 rounded-xl gap-1">
         <button 
           type="button" 
           id="toggle-invoice" 
           onclick="setSearchMode('invoice')"
           class="py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-slate-500 hover:text-slate-800">
           Invoice
+        </button>
+        <button 
+          type="button" 
+          id="toggle-notice" 
+          onclick="setSearchMode('notice')"
+          class="py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-slate-500 hover:text-slate-800">
+          Notice
+        </button>
+        <button 
+          type="button" 
+          id="toggle-member" 
+          onclick="setSearchMode('member')"
+          class="py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-white text-indigo-600 shadow-sm">
+          Member
         </button>
       </div>
 
@@ -801,6 +992,65 @@
           <div class="bold" style="font-size: 8px; letter-spacing: 0.5px;">*** EXPENSE STATEMENT ***</div>
         </div>
 
+      </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- PASTE THE NEW NOTICE CARD STATE RIGHT HERE: -->
+    <!-- ========================================================= -->
+    <div id="state-notice" class="hidden w-full max-w-[480px] notice-card-wrap">
+      
+      <!-- Top Bar -->
+      <div class="notice-topbar">
+        <div class="notice-release" id="notice-release-text">02 AUG 2026, Press Release</div>
+        <div id="notice-barcode-top" class="barcode-container"></div>
+      </div>
+
+      <div class="notice-rule"></div>
+
+      <!-- Title Header -->
+      <div class="notice-title-box">
+        <h1 id="notice-main-title">VALLEY OF FLOWERS</h1>
+        <h2 id="notice-sub-title">GUIDELINES</h2>
+      </div>
+
+      <div class="notice-rule"></div>
+
+      <!-- Reference No -->
+      <div class="notice-ref-no" id="notice-ref-display">Ref. No. - VOF0725/01</div>
+
+      <!-- Dynamic Sections / Points Container (Mapped from Row 15+) -->
+      <div id="notice-body-content" class="space-y-3">
+        <!-- Injected Dynamically -->
+      </div>
+
+      <!-- Dynamic Stamp & Emblem Overlays -->
+      <div class="relative min-h-[75px] mt-4">
+        <img id="notice-stamp-img" src="" alt="Official Stamp" class="notice-stamp-img" />
+        <img id="notice-emblem-img" src="" alt="Official Emblem" class="notice-emblem-img" />
+      </div>
+
+      <!-- Signatures, Location & Bottom Barcode -->
+      <div class="notice-signature-row">
+        <div class="text-[9px] font-mono text-slate-600 leading-tight">
+          <div id="notice-bottom-date">06.08.2026</div>
+          <div id="notice-bottom-place" class="uppercase font-bold">NEW DELHI</div>
+        </div>
+
+        <div class="text-center">
+          <div id="notice-coord-name" class="text-[9px] font-black uppercase text-slate-900">Coordinator Name</div>
+          <div id="notice-coord-label" class="text-[8px] font-bold text-slate-500 uppercase">(Chief Coordinator)</div>
+        </div>
+
+        <!-- Verification QR Box -->
+        <div id="notice-qr" class="w-[52px] h-[52px] flex items-center justify-center shrink-0"></div>
+      </div>
+
+      <!-- Bottom Barcode Strip -->
+      <div class="mt-3 pt-2 flex justify-center border-t border-slate-300/60">
+        <div id="notice-barcode-bottom" class="barcode-container"></div>
       </div>
 
     </div>
