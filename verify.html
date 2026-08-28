@@ -1082,6 +1082,7 @@
   </main>
 
   <!-- CONTROLLER SCRIPT -->
+  <!-- CONTROLLER SCRIPT -->
   <script>
     lucide.createIcons();
 
@@ -1233,7 +1234,7 @@
 
     // DISPLAY STATE SWITCHER
     function switchState(targetId) {
-      ['state-empty', 'state-loading', 'state-member', 'state-bill', 'state-fraud'].forEach(id => {
+      ['state-empty', 'state-loading', 'state-member', 'state-bill', 'state-notice', 'state-fraud'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
       });
@@ -1247,16 +1248,25 @@
       activeSearchMode = mode;
       const memberBtn = document.getElementById('toggle-member');
       const invoiceBtn = document.getElementById('toggle-invoice');
+      const noticeBtn = document.getElementById('toggle-notice');
       const searchInput = document.getElementById('searchInput');
 
+      const inactiveClass = "py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-slate-500 hover:text-slate-800";
+      const activeClass = "py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-white text-indigo-600 shadow-sm";
+
+      if (memberBtn) memberBtn.className = inactiveClass;
+      if (invoiceBtn) invoiceBtn.className = inactiveClass;
+      if (noticeBtn) noticeBtn.className = inactiveClass;
+
       if (mode === 'member') {
-        memberBtn.className = "py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-white text-indigo-600 shadow-sm";
-        invoiceBtn.className = "py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-slate-500 hover:text-slate-800";
+        if (memberBtn) memberBtn.className = activeClass;
         searchInput.placeholder = "Enter Member Name...";
-      } else {
-        invoiceBtn.className = "py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-white text-indigo-600 shadow-sm";
-        memberBtn.className = "py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-slate-500 hover:text-slate-800";
+      } else if (mode === 'invoice') {
+        if (invoiceBtn) invoiceBtn.className = activeClass;
         searchInput.placeholder = "Enter Invoice No (e.g. VOF0725-0001)...";
+      } else if (mode === 'notice') {
+        if (noticeBtn) noticeBtn.className = activeClass;
+        searchInput.placeholder = "Enter Ref No. (e.g. VOF0725/01)...";
       }
       searchInput.value = '';
       searchInput.focus();
@@ -1298,6 +1308,8 @@
             renderMember(data.member, isVerified);
           } else if (data.type === 'bill' && data.bill) {
             renderBill(data.bill, isVerified);
+          } else if (data.type === 'notice' && data.notice) {
+            renderNotice(data.notice, isVerified);
           } else {
             showStatusBanner(false);
             switchState('state-fraud');
@@ -1331,7 +1343,9 @@
       }
 
       if (type) {
-        setSearchMode(type === 'bill' || type === 'invoice' ? 'invoice' : 'member');
+        if (type === 'bill' || type === 'invoice') setSearchMode('invoice');
+        else if (type === 'notice') setSearchMode('notice');
+        else setSearchMode('member');
       }
 
       try {
@@ -1351,6 +1365,8 @@
             renderMember(result.data.member, isVerified);
           } else if (result.data.type === 'bill' && result.data.bill) {
             renderBill(result.data.bill, isVerified);
+          } else if (result.data.type === 'notice' && result.data.notice) {
+            renderNotice(result.data.notice, isVerified);
           } else {
             showStatusBanner(false);
             switchState('state-fraud');
@@ -1458,8 +1474,8 @@
       const itemCount = (b.items && Array.isArray(b.items)) ? b.items.length : 0;
       const countEl = document.getElementById('pos-bill-count');
       if (countEl) {
-  countEl.innerText = `(${itemCount} EXPENSES)`;
-}
+        countEl.innerText = `(${itemCount} EXPENSES)`;
+      }
 
       document.getElementById('pos-bill-total').innerText = `₹ ${(b.netTotal || 0).toFixed(2)}`;
       document.getElementById('pos-bill-code').innerText = `*** ${b.tripCode || 'EXP'} ***`;
@@ -1488,6 +1504,86 @@
       }
 
       switchState('state-bill');
+    }
+
+    // HELPER: RENDER BARCODE GRAPHIC (Cell B4)
+    function renderBarcodeStrip(containerId, codeText) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      const cleanCode = (codeText || 'VOF0726').replace(/\s+/g, '').toUpperCase();
+      el.innerHTML = cleanCode.split('').map(char => `
+        <div class="barcode-col">
+          <i></i>
+          <span>${char}</span>
+        </div>
+      `).join('');
+    }
+
+    // RENDER OFFICIAL NOTICE / GUIDELINE CARD
+    function renderNotice(n, isVerified) {
+      document.getElementById('notice-release-text').innerText = n.releaseDate || 'Official Release';
+      document.getElementById('notice-main-title').innerText = n.mainTitle || 'VALLEY OF FLOWERS';
+      document.getElementById('notice-sub-title').innerText = n.subTitle || 'GUIDELINES';
+      document.getElementById('notice-ref-display').innerText = `Ref. No. - ${n.refNo || 'N/A'}`;
+      
+      // Top & Bottom tracking barcodes (Cell B4)
+      renderBarcodeStrip('notice-barcode-top', n.trackingCode);
+      renderBarcodeStrip('notice-barcode-bottom', n.trackingCode);
+
+      // Render Dynamic Sections (from Row 15 onwards)
+      const bodyContainer = document.getElementById('notice-body-content');
+      if (bodyContainer) {
+        bodyContainer.innerHTML = '';
+        if (n.sections && Array.isArray(n.sections)) {
+          n.sections.forEach(sec => {
+            const secEl = document.createElement('section');
+            secEl.className = 'notice-section';
+            
+            let secHtml = '';
+            if (sec.heading && sec.heading.trim() !== '') {
+              secHtml += `<h3>${sec.heading}</h3>`;
+            }
+
+            if (sec.items && sec.items.length > 0) {
+              secHtml += `<ol>${sec.items.map(item => `<li>${item}</li>`).join('')}</ol>`;
+            } else if (sec.plainText) {
+              secHtml += `<p class="notice-plain-text">${sec.plainText}</p>`;
+            }
+
+            secEl.innerHTML = secHtml;
+            bodyContainer.appendChild(secEl);
+          });
+        }
+      }
+
+      // Dynamic Stamps and Emblems
+      const stampEl = document.getElementById('notice-stamp-img');
+      const emblemEl = document.getElementById('notice-emblem-img');
+      if (stampEl) stampEl.src = n.stampUrl || STAMP_ASSETS.verifiedMain;
+      if (emblemEl) emblemEl.src = n.emblemUrl || (isVerified ? STAMP_ASSETS.verifiedMain : STAMP_ASSETS.unverified);
+
+      // Signatory and Location
+      document.getElementById('notice-bottom-date').innerText = n.bottomDate || '';
+      document.getElementById('notice-bottom-place').innerText = n.bottomPlace || '';
+      document.getElementById('notice-coord-name').innerText = n.coordName || 'TBD';
+      document.getElementById('notice-coord-label').innerText = `(${n.coordLabel || 'Chief Coordinator'})`;
+
+      // Verification QR
+      const qrEl = document.getElementById('notice-qr');
+      if (qrEl) {
+        qrEl.innerHTML = '';
+        const verifyNoticeUrl = `${window.location.origin}/verify.html?type=notice&query=${encodeURIComponent(n.refNo)}`;
+        new QRCode(qrEl, {
+          text: verifyNoticeUrl,
+          width: 52,
+          height: 52,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+
+      switchState('state-notice');
     }
 
     // Initial load
