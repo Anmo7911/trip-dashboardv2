@@ -10,6 +10,8 @@ const supabase = createClient(supabaseUrl, serviceRoleKey, {
 });
 
 const gasUrl = process.env.GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwWAOUP4c2_G8FgWFF1zCbI1sg9lLMOhPAUQF5XH9a5R0gyRp5rX42UKpjr3-B41XJk0w/exec';
+const noticeGasUrl = process.env.NOTICE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbyRwqWA9ELDnkBfnGW6kr6oEGwE_6cIq6htGEfDB8B6Fd18yyMJeNodc8hZLkXciPb-/exec';
+
 
 function text(v) { return v === null || v === undefined ? '' : String(v).trim(); }
 function number(v) { const n = parseFloat(v); return Number.isFinite(n) ? n : 0; }
@@ -799,6 +801,32 @@ async function recordPosInvoice(billData) {
   return { success: true, token: inserted.token, invoiceNo: inserted.invoice_no };
 }
 
+
+// -------------------------------------------------------------
+// GOOGLE APPS SCRIPT PROXY (NOTICES)
+// -------------------------------------------------------------
+async function fetchNoticeFromGoogleSheet(refNo) {
+  if (!noticeGasUrl) {
+    throw new Error('Notice Google Apps Script URL not configured');
+  }
+
+  const response = await fetch(noticeGasUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'get-notice',
+      refNo: text(refNo)
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Notice fetch failed with status: ${response.status}`);
+  }
+
+  return await response.json();
+}
+
+
 async function verifyToken(type, token, queryParam) {
   const queryType = text(type).toLowerCase();
   const searchVal = text(queryParam || token);
@@ -858,6 +886,8 @@ async function verifyToken(type, token, queryParam) {
     };
   }
 
+  
+
   // 2. POS VOUCHER / BILL VERIFICATION (Supports Token or Invoice Number Lookup)
   if (queryType === 'bill' || queryType === 'invoice') {
     let query = supabase.from('pos_invoices').select('*');
@@ -897,6 +927,23 @@ async function verifyToken(type, token, queryParam) {
   return { valid: false, error: 'Invalid verification type parameter' };
 }
 
+// 3. OFFICIAL NOTICE / GUIDELINE VERIFICATION
+  if (queryType === 'notice') {
+    try {
+      const noticeRes = await fetchNoticeFromGoogleSheet(searchVal);
+      if (!noticeRes || !noticeRes.valid || !noticeRes.notice) {
+        return { valid: false, error: 'Notice record not found in official ledger' };
+      }
+      return {
+        valid: true,
+        type: 'notice',
+        isVerified: noticeRes.isVerified !== false,
+        notice: noticeRes.notice
+      };
+    } catch (err) {
+      return { valid: false, error: 'Failed to verify notice record' };
+    }
+  }
 
 
 // -------------------------------------------------------------
@@ -952,6 +999,7 @@ export default async function handler(req, res) {
       // Dynamic Verification Actions
       case 'verify': return json(res, 200, await verifyToken(req.query?.type || body?.type, req.query?.token || body?.token, req.query?.query || body?.query));
       case 'record-pos-invoice': return json(res, 200, await recordPosInvoice(body));
+      case 'verify-notice': return json(res, 200, await fetchNoticeFromGoogleSheet(body.refNo || req.query?.refNo));
 
       // Admin Chat Extensions
       case 'admin-send-message': return json(res, 200, await saveSquadMessage(body.sender || 'Admin', body.text));
