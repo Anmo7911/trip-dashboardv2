@@ -903,14 +903,15 @@ async function verifyToken(type, token, queryParam) {
   if (queryType === 'notice') {
     try {
       const noticeRes = await fetchNoticeFromGoogleSheet(searchVal);
-      if (!noticeRes || !noticeRes.valid || !noticeRes.notice) {
+      if (!noticeRes || !noticeRes.valid) {
         return { valid: false, error: 'Notice record not found in official ledger' };
       }
       return {
         valid: true,
         type: 'notice',
         isVerified: noticeRes.isVerified !== false,
-        notice: noticeRes.notice
+        pages: noticeRes.pages || [noticeRes.notice],
+        notice: noticeRes.notice || noticeRes.pages?.[0]
       };
     } catch (err) {
       return { valid: false, error: 'Failed to verify notice record' };
