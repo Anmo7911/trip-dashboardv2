@@ -1040,7 +1040,8 @@
     </div>
 
     <!-- 3.5 NOTICE / GUIDELINE VERIFIED A4 PAGE (EXACT DESIGN.HTML REPLICA) -->
-    <div id="state-notice" class="hidden">
+    <!-- 3.5 NOTICE / GUIDELINES VERIFIED VERTICAL MULTI-PAGE CONTAINER -->
+    <div id="state-notice" class="hidden flex-col items-center gap-6 w-full"></div>
       <div id="notice-scaler-box" class="notice-a4-scaler">
         <main class="page">
           <div class="content">
@@ -1550,46 +1551,56 @@
       }).join('');
     }
 
+    // DYNAMIC MOBILE FIT CALCULATOR FOR ALL A4 PAGES
     function autoScaleA4Notice() {
-      const scaler = document.getElementById('notice-scaler-box');
-      if (!scaler) return;
+      const scalers = document.querySelectorAll('.notice-a4-scaler');
+      if (!scalers.length) return;
 
       const windowWidth = window.innerWidth;
-      const targetWidthPx = 210 * 3.7795275591; // 793.7px
-      const targetHeightPx = 297 * 3.7795275591; // 1122.5px
+      const targetWidthPx = 210 * 3.7795275591; // ~793.7px
+      const targetHeightPx = 297 * 3.7795275591; // ~1122.5px
 
       const maxAvailableWidth = Math.min(windowWidth - 28, 480);
       const scaleFactor = Math.min(1, maxAvailableWidth / targetWidthPx);
 
-      scaler.style.transform = `scale(${scaleFactor})`;
-      scaler.style.marginBottom = `-${(1 - scaleFactor) * targetHeightPx}px`;
+      scalers.forEach(scaler => {
+        scaler.style.transform = `scale(${scaleFactor})`;
+        scaler.style.marginBottom = `-${(1 - scaleFactor) * targetHeightPx}px`;
+      });
     }
     window.addEventListener('resize', autoScaleA4Notice);
 
-    function renderNotice(n, isVerified) {
-      document.getElementById('notice-release-text').innerText = n.releaseDate || '02 AUG 2026, Press Release';
-      document.getElementById('notice-main-title').innerText = n.mainTitle || 'VALLEY OF FLOWERS';
-      document.getElementById('notice-sub-title').innerText = n.subTitle || 'GUIDELINES';
-      document.getElementById('notice-ref-display').innerText = `Ref. No. - ${n.refNo || 'VOF0725/01'}`;
-      
-      renderBarcodeStrip('notice-barcode-top', n.trackingCode, false);
-      renderBarcodeStrip('notice-barcode-bottom', n.trackingCode, true);
+    // RENDER MULTI-PAGE VERTICAL NOTICE
+    function renderNotice(noticeData, isVerified) {
+      const noticeContainer = document.getElementById('state-notice');
+      if (!noticeContainer) return;
 
-      const bodyContainer = document.getElementById('notice-body-content');
-      if (bodyContainer) {
-        bodyContainer.innerHTML = '';
+      // Extract all pages (supports single notice or multiple tabs array)
+      const pages = noticeData.pages && Array.isArray(noticeData.pages) && noticeData.pages.length > 0
+        ? noticeData.pages
+        : [noticeData];
+
+      noticeContainer.innerHTML = '';
+
+      pages.forEach((n, pageIdx) => {
+        const pageWrapper = document.createElement('div');
+        pageWrapper.className = 'notice-a4-scaler';
+
+        const qrId = `notice-qr-${pageIdx}`;
+        const topBarcodeId = `notice-barcode-top-${pageIdx}`;
+        const bottomBarcodeId = `notice-barcode-bottom-${pageIdx}`;
+
+        // Build Dynamic Sections HTML
+        let sectionsHtml = '';
         if (n.sections && Array.isArray(n.sections)) {
           n.sections.forEach(sec => {
-            const secEl = document.createElement('section');
-            secEl.className = 'section';
-            
-            let secHtml = '';
+            let secContent = '';
             if (sec.heading && sec.heading.trim() !== '') {
-              secHtml += `<h3>${sec.heading}</h3>`;
+              secContent += `<h3>${sec.heading}</h3>`;
             }
 
             if (sec.items && sec.items.length > 0) {
-              secHtml += `<ol>${sec.items.map(item => {
+              secContent += `<ol>${sec.items.map(item => {
                 const urlRegex = /(https?:\/\/[^\s]+)/g;
                 if (urlRegex.test(item)) {
                   const cleaned = item.replace(urlRegex, '').trim();
@@ -1599,44 +1610,83 @@
                 return `<li>${item}</li>`;
               }).join('')}</ol>`;
             } else if (sec.plainText) {
-              secHtml += `<p class="notice-plain-p">${sec.plainText}</p>`;
+              secContent += `<p class="notice-plain-p">${sec.plainText}</p>`;
             }
 
-            secEl.innerHTML = secHtml;
-            bodyContainer.appendChild(secEl);
+            sectionsHtml += `<section class="section">${secContent}</section>`;
           });
         }
-      }
 
-      const stampEl = document.getElementById('notice-stamp-img');
-      const emblemEl = document.getElementById('notice-emblem-img');
-      if (stampEl) {
-        stampEl.src = n.stampUrl || STAMP_ASSETS.verifiedMain;
-        stampEl.style.display = n.stampUrl ? 'block' : 'none';
-      }
-      if (emblemEl) {
-        emblemEl.src = n.emblemUrl || (isVerified ? STAMP_ASSETS.verifiedMain : STAMP_ASSETS.unverified);
-        emblemEl.style.display = 'block';
-      }
+        const stampDisplay = n.stampUrl ? 'style="display:block;"' : 'style="display:none;"';
+        const stampSrc = n.stampUrl || STAMP_ASSETS.verifiedMain;
+        const emblemSrc = n.emblemUrl || (isVerified ? STAMP_ASSETS.verifiedMain : STAMP_ASSETS.unverified);
 
-      document.getElementById('notice-bottom-date').innerText = n.bottomDate || '06.08.2026';
-      document.getElementById('notice-bottom-place').innerText = n.bottomPlace || 'NEW DELHI';
-      document.getElementById('notice-coord-name').innerText = n.coordName || 'TBD';
-      document.getElementById('notice-coord-label').innerText = `(${n.coordLabel || 'Chief Coordinator'})`;
+        pageWrapper.innerHTML = `
+          <main class="page">
+            <div class="content">
+              <header class="topbar">
+                <div class="release">${n.releaseDate || '02 AUG 2026, Press Release'}</div>
+                <div class="code-top" aria-label="Tracking Barcode Top">
+                  <div class="barcode-container" id="${topBarcodeId}"></div>
+                </div>
+              </header>
 
-      const qrEl = document.getElementById('notice-qr');
-      if (qrEl) {
-        qrEl.innerHTML = '';
-        const verifyNoticeUrl = `${window.location.origin}/verify.html?type=notice&query=${encodeURIComponent(n.refNo)}`;
-        new QRCode(qrEl, {
-          text: verifyNoticeUrl,
-          width: 60,
-          height: 60,
-          colorDark: "#000000",
-          colorLight: "#e5eef2",
-          correctLevel: QRCode.CorrectLevel.M
-        });
-      }
+              <div class="rule"></div>
+
+              <div class="title">
+                <h1>${n.mainTitle || 'VALLEY OF FLOWERS'}</h1>
+                <h2>${n.subTitle || 'GUIDELINES'}</h2>
+              </div>
+
+              <div class="rule"></div>
+
+              <div class="ref-no">Ref. No. - ${n.refNo || 'VOF0725/01'}</div>
+
+              <div>${sectionsHtml}</div>
+            </div>
+
+            <img class="stamp" src="${stampSrc}" alt="Stamp" ${stampDisplay}>
+            <img class="emblem" src="${emblemSrc}" alt="Emblem">
+
+            <div class="signature">
+              <div class="date">
+                <span>${n.bottomDate || '06.08.2026'}</span><br>
+                <span>${n.bottomPlace || 'NEW DELHI'}</span>
+              </div>
+              <div class="coordinator">
+                <div class="name">${n.coordName || 'TBD'}</div>
+                <div>(${n.coordLabel || 'Chief Coordinator'})</div>
+              </div>
+            </div>
+
+            <div class="bottom-code" aria-label="Tracking Barcode Bottom">
+              <div class="barcode-container" id="${bottomBarcodeId}"></div>
+            </div>
+
+            <div class="notice-qr-mount" id="${qrId}"></div>
+          </main>
+        `;
+
+        noticeContainer.appendChild(pageWrapper);
+
+        // Render Barcodes
+        renderBarcodeStrip(topBarcodeId, n.trackingCode, false);
+        renderBarcodeStrip(bottomBarcodeId, n.trackingCode, true);
+
+        // Render Verification QR
+        const qrEl = document.getElementById(qrId);
+        if (qrEl) {
+          const verifyNoticeUrl = `${window.location.origin}/verify.html?type=notice&query=${encodeURIComponent(n.refNo)}`;
+          new QRCode(qrEl, {
+            text: verifyNoticeUrl,
+            width: 60,
+            height: 60,
+            colorDark: "#000000",
+            colorLight: "#e5eef2",
+            correctLevel: QRCode.CorrectLevel.M
+          });
+        }
+      });
 
       switchState('state-notice');
       setTimeout(autoScaleA4Notice, 40);
