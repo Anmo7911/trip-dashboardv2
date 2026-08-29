@@ -900,6 +900,7 @@ async function verifyToken(type, token, queryParam) {
   }
 
   // 3. OFFICIAL NOTICE / GUIDELINE VERIFICATION
+ 
   if (queryType === 'notice') {
     try {
       const noticeRes = await fetchNoticeFromGoogleSheet(searchVal);
