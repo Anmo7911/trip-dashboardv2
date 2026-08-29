@@ -1575,10 +1575,9 @@
       const noticeContainer = document.getElementById('state-notice');
       if (!noticeContainer) return;
 
-      // Extract all pages (supports single notice or multiple tabs array)
-      const pages = noticeData.pages && Array.isArray(noticeData.pages) && noticeData.pages.length > 0
+      const pages = (noticeData.pages && Array.isArray(noticeData.pages) && noticeData.pages.length > 0)
         ? noticeData.pages
-        : [noticeData];
+        : (Array.isArray(noticeData) ? noticeData : [noticeData.notice || noticeData]);
 
       noticeContainer.innerHTML = '';
 
@@ -1590,7 +1589,6 @@
         const topBarcodeId = `notice-barcode-top-${pageIdx}`;
         const bottomBarcodeId = `notice-barcode-bottom-${pageIdx}`;
 
-        // Build Dynamic Sections HTML
         let sectionsHtml = '';
         if (n.sections && Array.isArray(n.sections)) {
           n.sections.forEach(sec => {
@@ -1600,7 +1598,7 @@
             }
 
             if (sec.items && sec.items.length > 0) {
-              secContent += `<ol>${sec.items.map(item => {
+              secHtml = sec.items.map(item => {
                 const urlRegex = /(https?:\/\/[^\s]+)/g;
                 if (urlRegex.test(item)) {
                   const cleaned = item.replace(urlRegex, '').trim();
@@ -1608,7 +1606,8 @@
                   return `<li>${cleaned}<span class="url">${match}</span></li>`;
                 }
                 return `<li>${item}</li>`;
-              }).join('')}</ol>`;
+              }).join('');
+              secContent += `<ol>${secHtml}</ol>`;
             } else if (sec.plainText) {
               secContent += `<p class="notice-plain-p">${sec.plainText}</p>`;
             }
@@ -1617,9 +1616,14 @@
           });
         }
 
-        const stampDisplay = n.stampUrl ? 'style="display:block;"' : 'style="display:none;"';
-        const stampSrc = n.stampUrl || STAMP_ASSETS.verifiedMain;
+        const stampImgTag = n.stampUrl 
+          ? `<img class="stamp" src="${n.stampUrl}" alt="Stamp">` 
+          : '';
+
         const emblemSrc = n.emblemUrl || (isVerified ? STAMP_ASSETS.verifiedMain : STAMP_ASSETS.unverified);
+        const emblemImgTag = emblemSrc 
+          ? `<img class="emblem" src="${emblemSrc}" alt="Emblem">` 
+          : '';
 
         pageWrapper.innerHTML = `
           <main class="page">
@@ -1645,8 +1649,8 @@
               <div>${sectionsHtml}</div>
             </div>
 
-            <img class="stamp" src="${stampSrc}" alt="Stamp" ${stampDisplay}>
-            <img class="emblem" src="${emblemSrc}" alt="Emblem">
+            ${stampImgTag}
+            ${emblemImgTag}
 
             <div class="signature">
               <div class="date">
@@ -1669,18 +1673,16 @@
 
         noticeContainer.appendChild(pageWrapper);
 
-        // Render Barcodes
         renderBarcodeStrip(topBarcodeId, n.trackingCode, false);
         renderBarcodeStrip(bottomBarcodeId, n.trackingCode, true);
 
-        // Render Verification QR
         const qrEl = document.getElementById(qrId);
         if (qrEl) {
           const verifyNoticeUrl = `${window.location.origin}/verify.html?type=notice&query=${encodeURIComponent(n.refNo)}`;
           new QRCode(qrEl, {
             text: verifyNoticeUrl,
-            width: 60,
-            height: 60,
+            width: 58,
+            height: 58,
             colorDark: "#000000",
             colorLight: "#e5eef2",
             correctLevel: QRCode.CorrectLevel.M
@@ -1689,7 +1691,7 @@
       });
 
       switchState('state-notice');
-      setTimeout(autoScaleA4Notice, 40);
+      setTimeout(autoScaleA4Notice, 50);
     }
 
     window.onload = processVerification;
