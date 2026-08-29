@@ -1775,16 +1775,26 @@
             </button>
 
             <!-- POS Bill Print -->
-            <button onclick="showTab('pos', this)" class="desktop-nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="pos">
-              <i data-lucide="printer" class="w-4 h-4 shrink-0"></i>
-              <span>Print POS Bill</span>
-            </button>
+<button onclick="showTab('pos', this)" class="desktop-nav-btn w-full flex items-center justify-between px-3 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none" data-tab="pos">
+  <div class="flex items-center gap-3">
+    <i data-lucide="printer" class="w-4 h-4 shrink-0"></i>
+    <span class="flex items-center gap-1">
+      Print POS Bill
+      <sup class="text-[8px] font-black uppercase text-indigo-500 bg-indigo-50 border border-indigo-200/60 px-1 py-0.2 rounded-md leading-none">Beta</sup>
+    </span>
+  </div>
+</button>
 
-            <!-- Verification Gateway Link -->
-            <a href="/verify.html" target="_blank" class="desktop-nav-btn w-full flex items-center gap-3 px-3 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none">
-              <i data-lucide="shield-check" class="w-4 h-4 shrink-0 text-indigo-500"></i>
-              <span>Verify Records</span>
-            </a>
+<!-- Verification Gateway Link -->
+<a href="/verify.html" target="_blank" class="desktop-nav-btn w-full flex items-center justify-between px-3 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800 hover:bg-slate-50 outline-none">
+  <div class="flex items-center gap-3">
+    <i data-lucide="shield-check" class="w-4 h-4 shrink-0 text-indigo-500"></i>
+    <span class="flex items-center gap-1">
+      Verify Records
+      <sup class="text-[8px] font-black uppercase text-indigo-500 bg-indigo-50 border border-indigo-200/60 px-1 py-0.2 rounded-md leading-none">Beta</sup>
+    </span>
+  </div>
+</a>
           </div>
         </div>
 
@@ -3217,24 +3227,29 @@
     <i data-lucide="printer" class="w-4 h-4"></i>
   </div>
   <div class="flex-1 overflow-hidden">
-    <p class="text-[11px] font-black text-slate-700 uppercase tracking-widest truncate">Print Bill (POS)</p>
+    <p class="text-[11px] font-black text-slate-700 uppercase tracking-widest truncate flex items-center gap-1.5">
+      Print Bill (POS)
+      <sup class="text-[8px] font-black uppercase text-emerald-600 bg-emerald-50 border border-emerald-200/70 px-1 py-0.5 rounded-md leading-none">Beta</sup>
+    </p>
     <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 truncate">Thermal Receipt Printer</p>
   </div>
   <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
 </div>
 
-
-      <!-- Verify Gateway Link -->
-      <a href="/verify.html" target="_blank" onclick="toggleMoreMenu()" class="col-span-2 flex items-center p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
-        <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mr-2.5 shrink-0 border border-indigo-100">
-          <i data-lucide="shield-check" class="w-4 h-4"></i>
-        </div>
-        <div class="flex-1 overflow-hidden">
-          <p class="text-[11px] font-black text-slate-700 uppercase tracking-widest truncate">Verify Records</p>
-          <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 truncate">Search Member E-ID & Invoice Ledger</p>
-        </div>
-        <i data-lucide="external-link" class="w-4 h-4 text-slate-300"></i>
-      </a>
+<!-- Verify Gateway Link -->
+<a href="/verify.html" target="_blank" onclick="toggleMoreMenu()" class="col-span-2 flex items-center p-3 bg-white border border-slate-200 rounded-2xl cursor-pointer active:bg-slate-50 transition-colors">
+  <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mr-2.5 shrink-0 border border-indigo-100">
+    <i data-lucide="shield-check" class="w-4 h-4"></i>
+  </div>
+  <div class="flex-1 overflow-hidden">
+    <p class="text-[11px] font-black text-slate-700 uppercase tracking-widest truncate flex items-center gap-1.5">
+      Verify Records
+      <sup class="text-[8px] font-black uppercase text-indigo-600 bg-indigo-50 border border-indigo-200/70 px-1 py-0.5 rounded-md leading-none">Beta</sup>
+    </p>
+    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 truncate">Search Member E-ID & Invoice Ledger</p>
+  </div>
+  <i data-lucide="external-link" class="w-4 h-4 text-slate-300"></i>
+</a>
       
 
       <!-- 3. Split Row: About Us (20%) + Past Archives (80%) -->
