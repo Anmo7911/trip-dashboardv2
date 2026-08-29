@@ -457,9 +457,11 @@
     ========================================================= */
     #state-notice.active-notice-state {
       display: flex !important;
-      justify-content: center;
-      width: 100%;
-      margin: 0 auto;
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 24px !important;
+      width: 100% !important;
+      margin: 0 auto !important;
     }
 
     .notice-a4-scaler {
@@ -718,11 +720,11 @@
       animation: scanSweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     }
 
-    #eid-qr canvas, #notice-qr canvas {
+    #eid-qr canvas, .notice-qr-mount canvas {
       display: none !important;
     }
 
-    #eid-qr img, #notice-qr img {
+    #eid-qr img, .notice-qr-mount img {
       display: block !important;
       image-rendering: -webkit-optimize-contrast;
       image-rendering: crisp-edges;
@@ -1039,67 +1041,8 @@
       </div>
     </div>
 
-    <!-- 3.5 NOTICE / GUIDELINE VERIFIED A4 PAGE (EXACT DESIGN.HTML REPLICA) -->
-    <!-- 3.5 NOTICE / GUIDELINES VERIFIED VERTICAL MULTI-PAGE CONTAINER -->
-    <div id="state-notice" class="hidden flex-col items-center gap-6 w-full"></div>
-      <div id="notice-scaler-box" class="notice-a4-scaler">
-        <main class="page">
-          <div class="content">
-            <header class="topbar">
-              <div class="release" id="notice-release-text">02 AUG 2026, Press Release</div>
-              <div class="code-top" aria-label="Tracking Barcode Top">
-                <div class="barcode-container" id="notice-barcode-top"></div>
-              </div>
-            </header>
-
-            <div class="rule"></div>
-
-            <div class="title">
-              <h1 id="notice-main-title">VALLEY OF FLOWERS</h1>
-              <h2 id="notice-sub-title">GUIDELINES</h2>
-            </div>
-
-            <div class="rule"></div>
-
-            <div class="ref-no" id="notice-ref-display">Ref. No. - VOF0725/01</div>
-
-            <div id="notice-body-content"></div>
-          </div>
-
-          <img
-            id="notice-stamp-img"
-            class="stamp"
-            src=""
-            alt="Stamp"
-          >
-
-          <img
-            id="notice-emblem-img"
-            class="emblem"
-            src=""
-            alt="Emblem"
-          >
-
-          <div class="signature">
-            <div class="date">
-              <span id="notice-bottom-date">06.08.2026</span><br>
-              <span id="notice-bottom-place">NEW DELHI</span>
-            </div>
-            <div class="coordinator">
-              <div class="name" id="notice-coord-name">TBD</div>
-              <div id="notice-coord-label">(Chief Coordinator)</div>
-            </div>
-          </div>
-
-          <div class="bottom-code" aria-label="Tracking Barcode Bottom">
-            <div class="barcode-container" id="notice-barcode-bottom"></div>
-          </div>
-
-          <!-- Dynamic Verification QR -->
-          <div class="notice-qr-mount" id="notice-qr"></div>
-        </main>
-      </div>
-    </div>
+    <!-- 3.5 NOTICE / GUIDELINES VERIFIED A4 MULTI-PAGE CONTAINER -->
+    <div id="state-notice" class="hidden"></div>
 
     <!-- 4. FRAUD ALERT CARD -->
     <div id="state-fraud" class="hidden w-full max-w-[320px] bg-rose-50/80 border-2 border-rose-500 rounded-[28px] p-6 text-center shadow-lg space-y-4">
@@ -1345,8 +1288,8 @@
             renderMember(data.member, isVerified);
           } else if (data.type === 'bill' && data.bill) {
             renderBill(data.bill, isVerified);
-          } else if (data.type === 'notice' && data.notice) {
-            renderNotice(data.notice, isVerified);
+          } else if (data.type === 'notice') {
+            renderNotice(data, isVerified);
           } else {
             showStatusBanner(false);
             switchState('state-fraud');
@@ -1401,8 +1344,8 @@
             renderMember(result.data.member, isVerified);
           } else if (result.data.type === 'bill' && result.data.bill) {
             renderBill(result.data.bill, isVerified);
-          } else if (result.data.type === 'notice' && result.data.notice) {
-            renderNotice(result.data.notice, isVerified);
+          } else if (result.data.type === 'notice') {
+            renderNotice(result.data, isVerified);
           } else {
             showStatusBanner(false);
             switchState('state-fraud');
@@ -1551,7 +1494,6 @@
       }).join('');
     }
 
-    // DYNAMIC MOBILE FIT CALCULATOR FOR ALL A4 PAGES
     function autoScaleA4Notice() {
       const scalers = document.querySelectorAll('.notice-a4-scaler');
       if (!scalers.length) return;
@@ -1570,7 +1512,6 @@
     }
     window.addEventListener('resize', autoScaleA4Notice);
 
-    // RENDER MULTI-PAGE VERTICAL NOTICE
     function renderNotice(noticeData, isVerified) {
       const noticeContainer = document.getElementById('state-notice');
       if (!noticeContainer) return;
@@ -1598,7 +1539,7 @@
             }
 
             if (sec.items && sec.items.length > 0) {
-              secHtml = sec.items.map(item => {
+              const secListItems = sec.items.map(item => {
                 const urlRegex = /(https?:\/\/[^\s]+)/g;
                 if (urlRegex.test(item)) {
                   const cleaned = item.replace(urlRegex, '').trim();
@@ -1607,7 +1548,7 @@
                 }
                 return `<li>${item}</li>`;
               }).join('');
-              secContent += `<ol>${secHtml}</ol>`;
+              secContent += `<ol>${secListItems}</ol>`;
             } else if (sec.plainText) {
               secContent += `<p class="notice-plain-p">${sec.plainText}</p>`;
             }
