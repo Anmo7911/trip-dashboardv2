@@ -891,23 +891,29 @@
     
 
 
- /* Clean Modern Title Display */
+/* Clean Bold Header Typography matching Image 2 */
 .expedition-title-font {
-  font-family: 'Inter', -apple-system, sans-serif;
-  font-weight: 900;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  color: #090e17;
-  text-transform: uppercase;
+  font-family: 'Inter', -apple-system, sans-serif !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 0.95 !important;
+  color: #050814 !important;
+  text-transform: uppercase !important;
 }
 
 .title-accent-gradient {
   display: block;
-  font-size: 0.45em;
-  font-weight: 700;
-  color: #6366f1;
-  letter-spacing: 0.02em;
-  margin-top: 4px;
+  font-family: 'Inter', -apple-system, sans-serif !important;
+  font-size: 0.42em !important;
+  font-weight: 600 !important;
+  color: #6366f1 !important;
+  letter-spacing: 0.01em !important;
+  text-transform: none !important;
+  margin-top: 6px !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #6366f1 !important;
+  filter: none !important;
 }
 
     
@@ -2235,80 +2241,79 @@
 </div>
 
  <!-- =========================================
-       SCENIC EXPEDITION APP HEADER (Sticky Mode with Dissolve Fade)
+       SCENIC EXPEDITION APP HEADER (Clean Minimalist Image 2 Style)
        ========================================= -->
-  <header id="app-header" class="relative lg:sticky top-0 z-30 w-full overflow-hidden shadow-sm select-none">
+  <header id="app-header" class="relative lg:sticky top-0 z-30 w-full overflow-hidden select-none pt-4 pb-2 bg-slate-100/40">
     
-    <!-- Dissolve Layer 1 -->
+    <!-- Dissolve Layers for background support -->
     <div id="header-bg-layer-1" class="absolute inset-0 bg-cover bg-center transition-opacity duration-[900ms] ease-in-out z-0 opacity-100"></div>
-
-    <!-- Dissolve Layer 2 -->
     <div id="header-bg-layer-2" class="absolute inset-0 bg-cover bg-center transition-opacity duration-[900ms] ease-in-out z-0 opacity-0"></div>
 
-    <!-- Soft Sunlight & Sky Gradient Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-b from-sky-400/25 via-sky-100/10 to-transparent backdrop-blur-[0.5px] z-[1]"></div>
-    
-
-    <!-- Bottom Dissolve / Fade Overlay -->
-    <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-100 via-slate-100/60 to-transparent pointer-events-none z-10"></div>
-
-    <!-- Outer header container height locked so cards below never shift -->
-    <!-- Outer header container with increased height for desktop -->
-<div class="relative z-20 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-2.5 pb-8 flex flex-col justify-start h-[190px] sm:h-[210px] lg:h-[235px]">
+    <div class="relative z-20 w-full max-w-md lg:max-w-5xl mx-auto px-4 flex flex-col justify-start">
       
-      <!-- Top Action Bar: Floating Chat Button (Mobile Only) -->
-      <div class="flex items-center justify-end w-full h-9 sm:h-10">
-        <button type="button" onclick="openChatModal()" class="lg:hidden relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/80 hover:bg-white/95 backdrop-blur-md border border-white/80 shadow-md flex items-center justify-center text-slate-800 active:scale-95 transition-all outline-none" title="Trip Messenger">
-          <i data-lucide="message-circle" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-800 stroke-[2.2]"></i>
-          <span id="chat-unread-dot" class="absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full hidden shadow-sm"></span>
-        </button>
-      </div>
+      <!-- Top Title and Action Row -->
+      <div class="flex items-start justify-between w-full">
+        
+        <!-- Left: Destination & Subtitle (Flip-carousel enabled) -->
+        <div id="ui-header-title-container" class="flex-1 min-w-0">
+          <div id="ui-title-alignment-box" class="headline-scene h-auto w-full flex items-center justify-start">
+            <div id="ui-headline-flipper" class="headline-flipper w-full">
+              
+              <!-- Front Face -->
+              <div class="headline-front flex flex-col items-start justify-center w-full text-left">
+                <h1 id="ui-title-1" class="expedition-title-font text-[32px] sm:text-4xl text-[#050814]">
+                  COIMBATORE
+                  <span class="title-accent-gradient">கோயம்புத்தூர்</span>
+                </h1>
+              </div>
 
-      
-    <!-- Dynamic Trip Title -->
-<div id="ui-header-title-container" class="flex flex-col items-center justify-center -mt-2.5 sm:mt-2 relative">
-        <div id="ui-title-alignment-box" class="headline-scene h-14 w-full flex items-center justify-center px-2">
-          <div id="ui-headline-flipper" class="headline-flipper w-full h-full">
-            <div class="headline-front flex items-center justify-center w-full h-full">
-              <h1 id="ui-title-1" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
-                VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
-              </h1>
-            </div>
-            <div class="headline-back flex items-center justify-center w-full h-full">
-              <h1 id="ui-title-2" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
-                VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
-              </h1>
+              <!-- Back Face -->
+              <div class="headline-back flex flex-col items-start justify-center w-full text-left">
+                <h1 id="ui-title-2" class="expedition-title-font text-[32px] sm:text-4xl text-[#050814]">
+                  COIMBATORE
+                  <span class="title-accent-gradient">கோயம்புத்தூர்</span>
+                </h1>
+              </div>
+
             </div>
           </div>
         </div>
-      </div>
-      
-   
-<!-- Live Notice Container (Expanded Size for Desktop) -->
-<div id="notice-container"
-  class="hidden overflow-hidden w-screen relative left-1/2 -translate-x-1/2 mt-[40px] lg:mt-[45px] pb-1 lg:pb-3 z-20 pointer-events-none">
-  <div id="notice-slider" class="carousel-track pointer-events-auto">
-    <!-- Standard Notice Slot -->
-    <div class="carousel-item px-4 pb-1">
-      <div
-        class="bg-indigo-50/90 backdrop-blur-md border border-indigo-100/80 shadow-sm rounded-full px-3 py-1 lg:px-5 lg:py-2 flex items-center gap-2 lg:gap-2.5 justify-center max-w-md lg:max-w-xl mx-auto">
-        <span class="relative flex h-2 w-2 lg:h-2.5 lg:w-2.5 flex-shrink-0"></span>
-        <p id="ui-trip-notice" class="text-[11px] lg:text-xs font-bold text-indigo-700 truncate text-center"></p>
-      </div>
-    </div>
-    <!-- Warning Notice Slot -->
-    <div class="carousel-item px-4 pb-1">
-      <div
-        class="bg-rose-50/90 backdrop-blur-md border border-rose-100/80 shadow-sm rounded-full px-3 py-1 lg:px-5 lg:py-2 flex items-center gap-2 lg:gap-2.5 justify-center max-w-md lg:max-w-xl mx-auto warning-pulse">
-        <span class="relative flex h-2 w-2 lg:h-2.5 lg:w-2.5 flex-shrink-0"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 lg:h-2.5 lg:w-2.5 bg-rose-500"></span></span>
-        <p id="ui-warning-notice" class="text-[11px] lg:text-xs font-bold text-rose-700 truncate text-center"></p>
-      </div>
-    </div>
-  </div>
-</div>
-      
-  </header>
 
+        <!-- Right: Rounded Square Chat Button -->
+        <div class="shrink-0 pt-0.5">
+          <button type="button" onclick="openChatModal()" class="lg:hidden relative w-11 h-11 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-[#8b55fe] hover:bg-slate-50 active:scale-95 transition-all outline-none" title="Trip Messenger">
+            <i data-lucide="message-circle" class="w-5 h-5 stroke-[2.2]"></i>
+            <span id="chat-unread-dot" class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full hidden"></span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Live Notice Container (Full-width rounded pill card below title) -->
+      <div id="notice-container" class="hidden overflow-hidden w-full mt-3.5 pb-1 z-20 pointer-events-none">
+        <div id="notice-slider" class="carousel-track pointer-events-auto w-full">
+          
+          <!-- Standard Notice -->
+          <div class="carousel-item w-full">
+            <div class="bg-white border border-slate-100 shadow-sm rounded-2xl px-4 py-2.5 flex items-center gap-2.5 w-full">
+              <i data-lucide="calendar" class="w-4 h-4 text-[#8b55fe] shrink-0"></i>
+              <p id="ui-trip-notice" class="text-xs font-bold text-slate-700 truncate"></p>
+            </div>
+          </div>
+
+          <!-- Warning Notice -->
+          <div class="carousel-item w-full">
+            <div class="bg-rose-50 border border-rose-100 shadow-sm rounded-2xl px-4 py-2.5 flex items-center gap-2.5 w-full warning-pulse">
+              <i data-lucide="alert-circle" class="w-4 h-4 text-rose-500 shrink-0"></i>
+              <p id="ui-warning-notice" class="text-xs font-bold text-rose-700 truncate"></p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </header>
     
  <!-- =========================================
      TAB 1: SPEND VIEW (Side-by-Side on Desktop)
@@ -6745,27 +6750,19 @@ function getEtaAtaStatusHtml(etaStr, ataStr) {
 
 
     function formatTitleWithGradient(text) {
-      if (!text) return "";
-      const trimmed = text.trim();
-      
-      // If text contains a manual newline
-      if (trimmed.includes('\n')) {
-        const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
-        if (lines.length > 1) {
-          const firstPart = lines.slice(0, -1).join(' ');
-          const lastPart = lines[lines.length - 1];
-          return `${firstPart}<br><span class="title-accent-gradient">${lastPart}</span>`;
-        }
-      }
-
-      // Default split by words
-      const words = trimmed.split(/\s+/);
-      if (words.length === 1) {
-        return `<span class="title-accent-gradient">${words[0]}</span>`;
-      }
-      const lastWord = words.pop();
-      return `${words.join(' ')}<br><span class="title-accent-gradient">${lastWord}</span>`;
+  if (!text) return "";
+  const trimmed = text.trim();
+  
+  // If text contains newline, format main title and subtitle line
+  if (trimmed.includes('\n')) {
+    const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.length > 1) {
+      return `${lines[0]}<span class="title-accent-gradient">${lines.slice(1).join(' ')}</span>`;
     }
+  }
+
+  return `${trimmed}`;
+}
 
 
    // ==========================================
