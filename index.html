@@ -891,30 +891,23 @@
     
 
 
-/* Clean Bold Header Typography matching Image 2 */
-.expedition-title-font {
-  font-family: 'Inter', -apple-system, sans-serif !important;
-  font-weight: 900 !important;
-  letter-spacing: -0.04em !important;
-  line-height: 0.95 !important;
-  color: #050814 !important;
-  text-transform: uppercase !important;
-}
+ /* Ultra-Bold Title Display Engine */
+    .expedition-title-font {
+      font-family: 'Anton', 'Bebas Neue', 'Teko', sans-serif;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      line-height: 0.92;
+      color: #0f172a; /* Deep Charcoal/Black */
+      text-transform: uppercase;
+    }
 
-.title-accent-gradient {
-  display: block;
-  font-family: 'Inter', -apple-system, sans-serif !important;
-  font-size: 0.42em !important;
-  font-weight: 600 !important;
-  color: #6366f1 !important;
-  letter-spacing: 0.01em !important;
-  text-transform: none !important;
-  margin-top: 6px !important;
-  background: none !important;
-  -webkit-background-clip: unset !important;
-  -webkit-text-fill-color: #6366f1 !important;
-  filter: none !important;
-}
+    .title-accent-gradient {
+      display: inline-block;
+      background: linear-gradient(180deg, #818cf8 0%, #6366f1 50%, #4f46e5 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.25));
+    }
 
     
 
@@ -2241,231 +2234,252 @@
 </div>
 
  <!-- =========================================
-       SCENIC EXPEDITION APP HEADER (Clean Minimalist Image 2 Style)
+       SCENIC EXPEDITION APP HEADER (Sticky Mode with Dissolve Fade)
        ========================================= -->
-  <header id="app-header" class="relative lg:sticky top-0 z-30 w-full overflow-hidden select-none pt-4 pb-2 bg-slate-100/40">
+  <header id="app-header" class="relative lg:sticky top-0 z-30 w-full overflow-hidden shadow-sm select-none">
     
-    <!-- Dissolve Layers for background support -->
+    <!-- Dissolve Layer 1 -->
     <div id="header-bg-layer-1" class="absolute inset-0 bg-cover bg-center transition-opacity duration-[900ms] ease-in-out z-0 opacity-100"></div>
+
+    <!-- Dissolve Layer 2 -->
     <div id="header-bg-layer-2" class="absolute inset-0 bg-cover bg-center transition-opacity duration-[900ms] ease-in-out z-0 opacity-0"></div>
 
-    <div class="relative z-20 w-full max-w-md lg:max-w-5xl mx-auto px-4 flex flex-col justify-start">
+    <!-- Soft Sunlight & Sky Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-b from-sky-400/25 via-sky-100/10 to-transparent backdrop-blur-[0.5px] z-[1]"></div>
+    
+
+    <!-- Bottom Dissolve / Fade Overlay -->
+    <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-100 via-slate-100/60 to-transparent pointer-events-none z-10"></div>
+
+    <!-- Outer header container height locked so cards below never shift -->
+    <!-- Outer header container with increased height for desktop -->
+<div class="relative z-20 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-2.5 pb-8 flex flex-col justify-start h-[190px] sm:h-[210px] lg:h-[235px]">
       
-      <!-- Top Title and Action Row -->
-      <div class="flex items-start justify-between w-full">
-        
-        <!-- Left: Destination & Subtitle (Flip-carousel enabled) -->
-        <div id="ui-header-title-container" class="flex-1 min-w-0">
-          <div id="ui-title-alignment-box" class="headline-scene h-auto w-full flex items-center justify-start">
-            <div id="ui-headline-flipper" class="headline-flipper w-full">
-              
-              <!-- Front Face -->
-              <div class="headline-front flex flex-col items-start justify-center w-full text-left">
-                <h1 id="ui-title-1" class="expedition-title-font text-[32px] sm:text-4xl text-[#050814]">
-                  COIMBATORE
-                  <span class="title-accent-gradient">கோயம்புத்தூர்</span>
-                </h1>
-              </div>
-
-              <!-- Back Face -->
-              <div class="headline-back flex flex-col items-start justify-center w-full text-left">
-                <h1 id="ui-title-2" class="expedition-title-font text-[32px] sm:text-4xl text-[#050814]">
-                  COIMBATORE
-                  <span class="title-accent-gradient">கோயம்புத்தூர்</span>
-                </h1>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-        <!-- Right: Rounded Square Chat Button -->
-        <div class="shrink-0 pt-0.5">
-          <button type="button" onclick="openChatModal()" class="lg:hidden relative w-11 h-11 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center text-[#8b55fe] hover:bg-slate-50 active:scale-95 transition-all outline-none" title="Trip Messenger">
-            <i data-lucide="message-circle" class="w-5 h-5 stroke-[2.2]"></i>
-            <span id="chat-unread-dot" class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full hidden"></span>
-          </button>
-        </div>
-
+      <!-- Top Action Bar: Floating Chat Button (Mobile Only) -->
+      <div class="flex items-center justify-end w-full h-9 sm:h-10">
+        <button type="button" onclick="openChatModal()" class="lg:hidden relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/80 hover:bg-white/95 backdrop-blur-md border border-white/80 shadow-md flex items-center justify-center text-slate-800 active:scale-95 transition-all outline-none" title="Trip Messenger">
+          <i data-lucide="message-circle" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-800 stroke-[2.2]"></i>
+          <span id="chat-unread-dot" class="absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full hidden shadow-sm"></span>
+        </button>
       </div>
 
-      <!-- Live Notice Container (Full-width rounded pill card below title) -->
-      <div id="notice-container" class="hidden overflow-hidden w-full mt-3.5 pb-1 z-20 pointer-events-none">
-        <div id="notice-slider" class="carousel-track pointer-events-auto w-full">
-          
-          <!-- Standard Notice -->
-          <div class="carousel-item w-full">
-            <div class="bg-white border border-slate-100 shadow-sm rounded-2xl px-4 py-2.5 flex items-center gap-2.5 w-full">
-              <i data-lucide="calendar" class="w-4 h-4 text-[#8b55fe] shrink-0"></i>
-              <p id="ui-trip-notice" class="text-xs font-bold text-slate-700 truncate"></p>
+      
+    <!-- Dynamic Trip Title -->
+<div id="ui-header-title-container" class="flex flex-col items-center justify-center -mt-2.5 sm:mt-2 relative">
+        <div id="ui-title-alignment-box" class="headline-scene h-14 w-full flex items-center justify-center px-2">
+          <div id="ui-headline-flipper" class="headline-flipper w-full h-full">
+            <div class="headline-front flex items-center justify-center w-full h-full">
+              <h1 id="ui-title-1" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
+                VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
+              </h1>
+            </div>
+            <div class="headline-back flex items-center justify-center w-full h-full">
+              <h1 id="ui-title-2" class="expedition-title-font text-[42px] sm:text-5xl lg:text-6xl text-slate-900 uppercase text-center leading-none">
+                VALLEY OF <br><span class="title-accent-gradient">FLOWERS</span>
+              </h1>
             </div>
           </div>
-
-          <!-- Warning Notice -->
-          <div class="carousel-item w-full">
-            <div class="bg-rose-50 border border-rose-100 shadow-sm rounded-2xl px-4 py-2.5 flex items-center gap-2.5 w-full warning-pulse">
-              <i data-lucide="alert-circle" class="w-4 h-4 text-rose-500 shrink-0"></i>
-              <p id="ui-warning-notice" class="text-xs font-bold text-rose-700 truncate"></p>
-            </div>
-          </div>
-
         </div>
       </div>
-
+      
+   
+<!-- Live Notice Container (Expanded Size for Desktop) -->
+<div id="notice-container"
+  class="hidden overflow-hidden w-screen relative left-1/2 -translate-x-1/2 mt-[40px] lg:mt-[45px] pb-1 lg:pb-3 z-20 pointer-events-none">
+  <div id="notice-slider" class="carousel-track pointer-events-auto">
+    <!-- Standard Notice Slot -->
+    <div class="carousel-item px-4 pb-1">
+      <div
+        class="bg-indigo-50/90 backdrop-blur-md border border-indigo-100/80 shadow-sm rounded-full px-3 py-1 lg:px-5 lg:py-2 flex items-center gap-2 lg:gap-2.5 justify-center max-w-md lg:max-w-xl mx-auto">
+        <span class="relative flex h-2 w-2 lg:h-2.5 lg:w-2.5 flex-shrink-0"></span>
+        <p id="ui-trip-notice" class="text-[11px] lg:text-xs font-bold text-indigo-700 truncate text-center"></p>
+      </div>
     </div>
+    <!-- Warning Notice Slot -->
+    <div class="carousel-item px-4 pb-1">
+      <div
+        class="bg-rose-50/90 backdrop-blur-md border border-rose-100/80 shadow-sm rounded-full px-3 py-1 lg:px-5 lg:py-2 flex items-center gap-2 lg:gap-2.5 justify-center max-w-md lg:max-w-xl mx-auto warning-pulse">
+        <span class="relative flex h-2 w-2 lg:h-2.5 lg:w-2.5 flex-shrink-0"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 lg:h-2.5 lg:w-2.5 bg-rose-500"></span></span>
+        <p id="ui-warning-notice" class="text-[11px] lg:text-xs font-bold text-rose-700 truncate text-center"></p>
+      </div>
+    </div>
+  </div>
+</div>
+      
   </header>
+
     
  <!-- =========================================
      TAB 1: SPEND VIEW (Side-by-Side on Desktop)
      ========================================= -->
-  <main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-6xl mx-auto -mt-8 lg:mt-0 pt-2 lg:pt-6 px-4 lg:px-8 relative z-40 lg:z-20">
+  <main id="view-spend" class="tab-content active-tab w-full max-w-md lg:max-w-6xl mx-auto -mt-10 lg:mt-0 pt-4 lg:pt-6 px-4 lg:px-8 relative z-40 lg:z-20">
 
+    <!-- DESKTOP 2-COLUMN GRID WRAPPER (Mobile Stacks Identically) -->
     <div class="flex flex-col lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start space-y-4 lg:space-y-0">
 
-      <!-- LEFT COLUMN: SUMMARY BENTO CARDS -->
-      <div id="ui-top-cards-wrapper" class="w-full lg:col-span-5 transition-all duration-500 overflow-hidden opacity-100 origin-top space-y-3">
+      <!-- LEFT COLUMN: SUMMARY BENTO CARDS (5 cols on Desktop) -->
+      <div id="ui-top-cards-wrapper" class="w-full lg:col-span-5 transition-all duration-500 overflow-hidden opacity-100 origin-top">
         
-        <!-- 1. Full-Width Purple Remaining Hero Card -->
-        <div id="balance-col" class="w-full">
-          <div class="card-scene w-full h-[125px]">
-            <div id="card-flipper-engine" onclick="flipBalanceCard()" class="card-flipper cursor-pointer select-none h-full">
+        <div class="flex flex-row lg:flex-col gap-2.5 lg:gap-4 h-[150px] lg:h-auto w-full relative">
 
-              <!-- Front -->
-              <div id="balance-card" class="face-front w-full h-full p-5 rounded-[28px] bg-gradient-to-r from-[#8b55fe] to-[#9d68ff] shadow-lg shadow-indigo-500/20 text-white flex items-center justify-between relative active:scale-[0.99] transition-all">
-                <div class="flex flex-col justify-center">
-                  <div class="flex items-center gap-1.5 mb-0.5">
-                    <span id="dot-ping" class="hidden"></span>
-                    <span id="dot-main" class="hidden"></span>
-                    <p id="balance-label" class="text-[10px] font-black tracking-widest text-indigo-100/90 uppercase">
-                      REMAINING
+          <!-- Flippable Balance Card -->
+          <div id="balance-col" class="transition-all duration-[600ms] ease-[cubic-bezier(0.25,1,0.5,1)] h-full lg:h-[160px] z-20 w-[calc(50%-5px)] lg:w-full">
+            <div class="card-scene h-full w-full">
+              <div id="card-flipper-engine" onclick="flipBalanceCard()" class="card-flipper cursor-pointer select-none">
+
+                <!-- Front -->
+                <div id="balance-card" class="face-front w-full h-full p-4 rounded-[26px] border border-white/80 bg-gradient-to-b from-emerald-50/90 to-emerald-100/70 shadow-sm transition-all duration-300 flex flex-col justify-between items-center text-center relative active:scale-[0.98]">
+                  <div class="hidden lg:flex absolute right-2 top-1/2 -translate-y-1/2 items-center justify-center pointer-events-none opacity-[0.12] z-0">
+                    <i data-lucide="wallet" class="w-20 h-20 text-emerald-900 stroke-[1.2]"></i>
+                  </div>
+
+                  <div class="w-full flex-1 flex flex-col items-center justify-center relative z-10">
+                    <div class="flex items-center justify-center gap-1.5 mb-1">
+                      <span class="relative flex h-2 w-2 shrink-0">
+                        <span id="dot-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-emerald-400"></span>
+                        <span id="dot-main" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                      </span>
+                      <p id="balance-label" class="text-[9.5px] font-black text-emerald-600 uppercase tracking-widest leading-none">
+                        Remaining
+                      </p>
+                    </div>
+
+                    <p id="stat-balance" class="text-3xl font-black text-emerald-700 tracking-tight text-center leading-none">
+                      ₹0
                     </p>
                   </div>
-                  <p id="stat-balance" class="text-3xl sm:text-4xl font-black tracking-tight text-white leading-none mt-1">
-                    ₹0
+
+                  <div id="balance-hint-footer" class="text-[9px] font-bold uppercase tracking-wider text-emerald-700/80 flex items-center justify-center gap-1.5 transition-colors duration-500 w-full relative z-10">
+                    <span>Allocations</span>
+                    <i data-lucide="layers" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+                  </div>
+                </div>
+
+                <!-- Back -->
+                <div class="face-back w-full h-full p-4 rounded-[26px] border border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 shadow-xl text-slate-100 flex flex-col justify-between">
+                  <div class="flex justify-between items-center w-full border-b border-slate-700/80 pb-1.5 px-1">
+                    <p class="text-[10px] lg:text-xs font-black uppercase tracking-widest text-indigo-400">
+                      Budget Allocations
+                    </p>
+                    <i data-lucide="x" class="w-4 h-4 text-slate-400 hover:text-white transition-colors"></i>
+                  </div>
+                  <div id="back-bars-grid" class="grid grid-cols-2 gap-x-4 gap-y-1.5 w-full text-[10px] lg:text-xs font-bold px-1 overflow-y-auto max-h-[90px] lg:max-h-[105px]"></div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Budget & Spent (Stacked on Mobile, Row or Dual Cards on Desktop) -->
+          <div id="stats-col" class="transition-all duration-[500ms] ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col sm:flex-col lg:grid lg:grid-cols-2 justify-between h-full lg:h-auto w-[calc(50%-5px)] lg:w-full gap-2.5 lg:gap-3">
+
+            <!-- Total Budget -->
+            <div id="ui-budget-wrapper" class="w-full h-[calc(50%-6px)] lg:h-[76px] rounded-[22px] overflow-hidden">
+              <div class="budget-scene-mount h-full w-full">
+                <div id="ui-budget-flip-engine" class="budget-card-inner-engine w-full h-full">
+
+                  <div class="budget-front bg-white border border-slate-200/80 shadow-sm px-3.5 py-2 lg:px-4 rounded-[22px] w-full h-full flex items-center justify-between">
+                    <div class="flex flex-col justify-center text-left">
+                      <p class="text-[8px] lg:text-[9.5px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
+                        Total Budget
+                      </p>
+                      <p id="stat-budget" class="text-sm lg:text-lg font-black text-slate-800">
+                        ₹0
+                      </p>
+                    </div>
+                    <div class="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
+                      <i data-lucide="wallet-cards" class="w-4 h-4"></i>
+                    </div>
+                  </div>
+
+                  <div class="budget-back bg-gradient-to-b from-emerald-50 to-emerald-100 border border-emerald-100 p-2 text-center rounded-[22px] w-full h-full flex flex-col justify-center items-center">
+                    <p id="ui-peek-title-row" class="text-[10px] font-black tracking-wide text-emerald-600 uppercase"></p>
+                    <p id="ui-peek-notes-row" class="text-[9px] font-semibold text-emerald-600/90 truncate w-full mt-0.5"></p>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Spent Card -->
+            <div id="ui-spent-hero-card" onclick="toggleLedger()" class="w-full h-[calc(50%-6px)] lg:h-[76px] bg-rose-50/70 border border-rose-100/80 shadow-sm px-3.5 py-2 lg:px-4 rounded-[22px] flex items-center justify-between cursor-pointer transition-all duration-300 hover:bg-rose-50 active:scale-[0.98]">
+              <div class="flex flex-col justify-center text-left">
+                <div class="flex items-center gap-1 mb-0.5">
+                  <p id="ui-spent-label" class="text-[8px] lg:text-[9.5px] font-black text-rose-500 uppercase tracking-wider">
+                    Spent
                   </p>
-                  <div id="balance-hint-footer" class="hidden"></div>
+                  <i data-lucide="receipt" class="w-2.5 h-2.5 text-rose-500"></i>
                 </div>
-
-                <!-- Right Circular Gauge Indicator -->
-                <div class="relative w-16 h-16 rounded-full border-[5px] border-white/20 border-t-white flex flex-col items-center justify-center shrink-0">
-                  <span id="stat-used-pct" class="text-sm font-black leading-none text-white">22%</span>
-                  <span class="text-[7.5px] font-extrabold uppercase tracking-wider text-white/80 mt-0.5">USED</span>
-                </div>
+                <p id="stat-spent" class="text-sm lg:text-lg font-black text-rose-600">
+                  ₹0
+                </p>
               </div>
-
-              <!-- Back -->
-              <div class="face-back w-full h-full p-4 rounded-[28px] border border-slate-700 bg-slate-900 shadow-xl text-slate-100 flex flex-col justify-between">
-                <div class="flex justify-between items-center w-full border-b border-slate-700/80 pb-1.5 px-1">
-                  <p class="text-[10px] lg:text-xs font-black uppercase tracking-widest text-indigo-400">Budget Allocations</p>
-                  <i data-lucide="x" class="w-4 h-4 text-slate-400 hover:text-white"></i>
-                </div>
-                <div id="back-bars-grid" class="grid grid-cols-2 gap-x-4 gap-y-1.5 w-full text-[10px] lg:text-xs font-bold px-1 overflow-y-auto max-h-[80px]"></div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. Split Dual Cards: Total Budget & Spent -->
-        <div id="stats-col" class="grid grid-cols-2 gap-3 w-full">
-
-          <!-- Total Budget Card -->
-          <div id="ui-budget-wrapper" class="w-full h-[84px] rounded-[24px] overflow-hidden">
-            <div class="budget-scene-mount h-full w-full">
-              <div id="ui-budget-flip-engine" class="budget-card-inner-engine w-full h-full">
-
-                <div class="budget-front bg-white border border-slate-100 shadow-sm p-3.5 rounded-[24px] w-full h-full flex items-center justify-between">
-                  <div class="flex flex-col justify-center min-w-0 pr-1">
-                    <p class="text-[8.5px] font-black text-slate-400 uppercase tracking-widest mb-1">TOTAL BUDGET</p>
-                    <p id="stat-budget" class="text-lg font-black text-slate-900 leading-none truncate">₹0</p>
-                  </div>
-                  <div class="w-9 h-9 rounded-2xl bg-indigo-50/80 text-indigo-500 flex items-center justify-center shrink-0">
-                    <i data-lucide="mail" class="w-4 h-4 stroke-[2.2]"></i>
-                  </div>
-                </div>
-
-                <div class="budget-back bg-indigo-50 border border-indigo-100 p-2 text-center rounded-[24px] w-full h-full flex flex-col justify-center items-center">
-                  <p id="ui-peek-title-row" class="text-[10px] font-black tracking-wide text-indigo-600 uppercase"></p>
-                  <p id="ui-peek-notes-row" class="text-[9px] font-semibold text-indigo-700/90 truncate w-full mt-0.5"></p>
-                </div>
-
+              <div class="w-8 h-8 rounded-xl bg-rose-100/60 flex items-center justify-center text-rose-500 shrink-0">
+                <i data-lucide="trending-up" class="w-4 h-4"></i>
               </div>
             </div>
-          </div>
 
-          <!-- Spent Card -->
-          <div id="ui-spent-hero-card" onclick="toggleLedger()" class="w-full h-[84px] bg-[#f5f3ff] border border-indigo-100/60 shadow-sm p-3.5 rounded-[24px] flex items-center justify-between cursor-pointer transition-all duration-200 hover:bg-indigo-100/50 active:scale-[0.98]">
-            <div class="flex flex-col justify-center min-w-0 pr-1">
-              <p id="ui-spent-label" class="text-[8.5px] font-black text-[#8b55fe] uppercase tracking-widest mb-1">SPENT</p>
-              <p id="stat-spent" class="text-lg font-black text-[#6d28d9] leading-none truncate">₹0</p>
-            </div>
-            <div class="w-9 h-9 rounded-2xl bg-[#ede9fe] text-[#8b55fe] flex items-center justify-center shrink-0">
-              <i data-lucide="trending-up" class="w-4 h-4 stroke-[2.5]"></i>
-            </div>
           </div>
 
         </div>
       </div>
 
-      <!-- RIGHT COLUMN: EXPENSE ENTRY FORM -->
+      <!-- RIGHT COLUMN: EXPENSE ENTRY FORM (7 cols on Desktop) -->
       <div id="ui-form-wrapper" class="w-full lg:col-span-7 transition-all duration-500 overflow-hidden opacity-100 origin-top">
-        <div class="bg-white rounded-[32px] p-5 sm:p-6 border border-slate-100 shadow-[0_4px_30px_rgba(0,0,0,0.03)] relative overflow-hidden">
+        <div class="bg-white rounded-[32px] p-5 lg:p-6 border border-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.03)] relative overflow-hidden">
 
           <!-- Frosted Glass Lock Overlay -->
-          <div id="expense-lock-overlay" class="hidden absolute inset-0 z-[60] flex flex-col items-center justify-center rounded-[32px] border border-slate-200 bg-white/80 backdrop-blur-sm">
+          <div id="expense-lock-overlay" class="hidden absolute inset-0 z-[60] flex flex-col items-center justify-center rounded-[32px] border border-slate-200 bg-white/80 backdrop-blur-sm transition-all duration-300">
             <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-2 text-slate-600">
               <i data-lucide="lock" class="w-6 h-6"></i>
             </div>
             <p class="text-xs font-black text-slate-600 uppercase tracking-widest lock-text-pulse">Adding Expenses Paused</p>
           </div>
 
-          <form id="expenseForm" class="space-y-4 relative z-10">
+          <form id="expenseForm" class="space-y-3.5 relative z-10">
 
             <!-- Header & Date Picker -->
             <div class="flex items-center justify-between">
-              <h3 class="text-[9.5px] font-black text-slate-400 uppercase tracking-widest">ENTER NEW EXPENSE</h3>
-              <div class="flex items-center gap-1.5 bg-[#f5f3ff] border border-indigo-100/80 px-3 py-1.5 rounded-xl cursor-pointer">
-                <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#8b55fe]"></i>
-                <input type="date" id="todayDate" name="date" required class="bg-transparent text-[10px] font-black text-[#8b55fe] uppercase tracking-wider outline-none cursor-pointer">
+              <h3 class="text-[9.5px] font-black text-slate-400 uppercase tracking-widest">Enter New Expense</h3>
+              <div class="flex items-center gap-1 bg-indigo-50/40 hover:bg-indigo-50 border border-indigo-100/70 px-2.5 py-1 rounded-lg cursor-pointer transition-colors">
+                <i data-lucide="calendar" class="w-3 h-3 text-indigo-600"></i>
+                <input type="date" id="todayDate" name="date" required class="bg-transparent text-[10px] font-black text-indigo-600 uppercase tracking-wider outline-none cursor-pointer">
               </div>
             </div>
 
-            <!-- Amount Input -->
-            <div class="flex items-center gap-2 border-b border-slate-100 pb-3 pt-1">
-              <span class="text-3xl font-black text-slate-400">₹</span>
-              <input type="number" name="amount" placeholder="0" required class="w-full bg-transparent outline-none font-black text-4xl text-slate-900 placeholder-slate-200 tracking-tight">
+            <!-- Minimal Large Amount Input -->
+            <div class="flex items-center gap-2 border-b border-slate-100/90 pb-2 pt-0.5">
+              <span class="text-2xl lg:text-3xl font-black text-slate-300">₹</span>
+              <input type="number" name="amount" placeholder="0" required class="w-full bg-transparent outline-none font-black text-3xl lg:text-4xl text-slate-800 placeholder-slate-200 tracking-tight">
             </div>
 
-            <!-- Payment Mode & Category Selection -->
-            <div class="grid grid-cols-2 gap-3">
-              <!-- UPI Button / Selector -->
-              <div class="bg-[#8b55fe] rounded-2xl px-4 py-3 flex items-center gap-2.5 text-white shadow-md shadow-indigo-500/15">
-                <i data-lucide="credit-card" class="w-4 h-4 shrink-0 stroke-[2.2]"></i>
-                <select name="paidVia" class="w-full bg-transparent text-xs font-black uppercase tracking-wider text-white outline-none appearance-none cursor-pointer">
-                  <option value="UPI" class="text-slate-900" selected>UPI</option>
-                  <option value="Cash" class="text-slate-900">Cash</option>
-                  <option value="Card" class="text-slate-900">Card</option>
-                  <option value="Cheque" class="text-slate-900">Cheque</option>
+            <!-- Payment Mode & Category -->
+            <div class="grid grid-cols-2 gap-2.5">
+              <div class="bg-slate-50/80 hover:bg-slate-100/80 transition-colors rounded-2xl border border-slate-100/80 px-3.5 py-2.5 flex items-center gap-2">
+                <i data-lucide="credit-card" class="w-4 h-4 text-indigo-500 shrink-0"></i>
+                <select name="paidVia" class="w-full bg-transparent text-xs font-black uppercase tracking-wider text-slate-700 outline-none appearance-none cursor-pointer">
+                  <option value="UPI" selected>UPI</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Card">Card</option>
+                  <option value="Cheque">Cheque</option>
                 </select>
               </div>
 
-              <!-- Category Button / Selector -->
-              <div class="bg-[#f5f3ff] border border-indigo-100 rounded-2xl px-4 py-3 flex items-center gap-2.5 text-[#8b55fe]">
-                <i data-lucide="layout-grid" class="w-4 h-4 shrink-0 stroke-[2.2]"></i>
-                <select name="category" class="w-full bg-transparent text-xs font-black uppercase tracking-wider text-[#8b55fe] outline-none appearance-none cursor-pointer">
-                  <option class="text-slate-900" selected>Category</option>
-                  <option class="text-slate-900">Food</option>
-                  <option class="text-slate-900">Entry Fee</option>
-                  <option class="text-slate-900">Fare</option>
-                  <option class="text-slate-900">Stay</option>
-                  <option class="text-slate-900">Water</option>
-                  <option class="text-slate-900">Other</option>
+              <div class="bg-slate-50/80 hover:bg-slate-100/80 transition-colors rounded-2xl border border-slate-100/80 px-3.5 py-2.5 flex items-center gap-2">
+                <i data-lucide="layout-grid" class="w-4 h-4 text-emerald-500 shrink-0"></i>
+                <select name="category" class="w-full bg-transparent text-xs font-black uppercase tracking-wider text-slate-700 outline-none appearance-none cursor-pointer">
+                  <option>Food</option>
+                  <option>Entry Fee</option>
+                  <option>Fare</option>
+                  <option>Stay</option>
+                  <option>Water</option>
+                  <option>Other</option>
                 </select>
               </div>
             </div>
 
             <!-- Notes Text Input -->
-            <div class="bg-slate-50/90 rounded-2xl border border-slate-100 px-4 py-3 flex items-center gap-2.5">
+            <div class="bg-slate-50/80 rounded-2xl border border-slate-100/80 px-3.5 py-2.5 flex items-center gap-2">
               <i data-lucide="message-square" class="w-4 h-4 text-slate-400 shrink-0"></i>
               <input type="text" name="notes" placeholder="What was this for?" class="w-full bg-transparent text-xs font-bold text-slate-700 outline-none placeholder-slate-400">
             </div>
@@ -2474,13 +2488,13 @@
             <input type="hidden" name="lastActionNotes" id="lastActionNotes">
             <button type="submit" id="hidden-submit-btn" class="hidden"></button>
 
-            <!-- Swipe To Save Bar with Bright Cyan Thumb -->
-            <div id="swipe-track" class="w-full bg-[#050814] rounded-2xl h-[52px] relative flex items-center select-none overflow-hidden touch-none shadow-md mt-2">
-              <span id="swipe-text" class="absolute w-full text-center text-slate-400 font-black text-[10.5px] uppercase tracking-[0.22em] pointer-events-none transition-all duration-300">
-                SWIPE TO SAVE
+            <!-- Swipe To Save Bar -->
+            <div id="swipe-track" class="w-full bg-slate-950 rounded-2xl h-[50px] relative flex items-center select-none overflow-hidden touch-none shadow-md mt-1">
+              <span id="swipe-text" class="absolute w-full text-center text-slate-400 font-black text-[11px] uppercase tracking-[0.2em] pointer-events-none transition-all duration-300">
+                Swipe to Save
               </span>
-              <div id="swipe-thumb" class="absolute left-1.5 w-[44px] h-[44px] bg-[#38e1ff] rounded-xl shadow flex items-center justify-center cursor-grab active:cursor-grabbing text-slate-950 z-10">
-                <i data-lucide="chevrons-right" class="w-5 h-5 stroke-[3]"></i>
+              <div id="swipe-thumb" class="absolute left-1 w-[42px] h-[42px] bg-white rounded-xl shadow flex items-center justify-center cursor-grab active:cursor-grabbing text-slate-900 z-10">
+                <i data-lucide="chevrons-right" class="w-4 h-4 stroke-[3]"></i>
               </div>
             </div>
           </form>
@@ -4410,13 +4424,6 @@ if (urlParams.get('preview') === 'admin') {
       const dotMain = document.getElementById('dot-main'); 
       const pLeft = data.stats.percentLeft;
       const currentBalance = data.stats.balance;
-
-     // Calculate and update the 22% USED circle badge
-const usedPct = data.stats.budget > 0 
-  ? Math.min(100, Math.round((data.stats.expenses / data.stats.budget) * 100)) 
-  : 0;
-const usedPctEl = document.getElementById('stat-used-pct');
-if (usedPctEl) usedPctEl.innerText = `${usedPct}%`;
 
       balanceCard.className = "face-front w-full h-full p-4 rounded-[24px] border border-white/60 transition-all duration-300 text-center flex flex-col justify-between items-center active:scale-[0.96] cursor-pointer";
       if(dotPing) dotPing.className = "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"; 
@@ -6750,19 +6757,27 @@ function getEtaAtaStatusHtml(etaStr, ataStr) {
 
 
     function formatTitleWithGradient(text) {
-  if (!text) return "";
-  const trimmed = text.trim();
-  
-  // If text contains newline, format main title and subtitle line
-  if (trimmed.includes('\n')) {
-    const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
-    if (lines.length > 1) {
-      return `${lines[0]}<span class="title-accent-gradient">${lines.slice(1).join(' ')}</span>`;
-    }
-  }
+      if (!text) return "";
+      const trimmed = text.trim();
+      
+      // If text contains a manual newline
+      if (trimmed.includes('\n')) {
+        const lines = trimmed.split('\n').map(l => l.trim()).filter(Boolean);
+        if (lines.length > 1) {
+          const firstPart = lines.slice(0, -1).join(' ');
+          const lastPart = lines[lines.length - 1];
+          return `${firstPart}<br><span class="title-accent-gradient">${lastPart}</span>`;
+        }
+      }
 
-  return `${trimmed}`;
-}
+      // Default split by words
+      const words = trimmed.split(/\s+/);
+      if (words.length === 1) {
+        return `<span class="title-accent-gradient">${words[0]}</span>`;
+      }
+      const lastWord = words.pop();
+      return `${words.join(' ')}<br><span class="title-accent-gradient">${lastWord}</span>`;
+    }
 
 
    // ==========================================
