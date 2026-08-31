@@ -3084,39 +3084,39 @@
       </div>
     </div>
 
-    <!-- VIEW 2: TERMS & CONDITIONS DOCUMENT VIEWER -->
-<div id="subview-terms" class="hidden space-y-3 sm:space-y-4 transition-opacity duration-300">
+    <!-- VIEW 2: TERMS & CONDITIONS DOCUMENT VIEWER (FRAMELESS EDGE-TO-EDGE) -->
+<div id="subview-terms" class="hidden space-y-2 transition-opacity duration-300">
   
-  <!-- Sub-Header Bar -->
-  <div class="flex items-center justify-between px-1">
-    <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-slate-400">Official Policy Document</span>
-    <span id="terms-doc-type-badge" class="px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-[8px] sm:text-[8.5px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100">
-      PREVIEW
+  <!-- Minimal Header Badge Row -->
+  <div class="flex items-center justify-between px-0 pb-1">
+    <span class="text-[9.5px] font-bold uppercase tracking-widest text-slate-400">Official Document</span>
+    <span id="terms-doc-type-badge" class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100">
+      DOCUMENT
     </span>
   </div>
 
-  <!-- Responsive Document Viewport Frame -->
-  <div class="w-full h-[58vh] sm:h-[62vh] lg:h-[65vh] bg-slate-50 border border-slate-200/80 rounded-2xl overflow-hidden flex items-center justify-center relative shadow-inner">
+  <!-- Frameless Edge-to-Edge Container (Negative horizontal margins cancel modal padding on mobile) -->
+  <div class="-mx-6 lg:-mx-10 w-[calc(100%+3rem)] lg:w-[calc(100%+5rem)] border-t border-slate-100 bg-white">
     
-    <!-- Image Viewport (Full natural width & smooth touch-scrolling on mobile) -->
-    <div id="terms-img-container" class="hidden w-full h-full overflow-y-auto overflow-x-hidden p-2 sm:p-3 flex justify-center items-start overscroll-contain">
-      <img id="terms-image-display" src="" alt="Terms & Conditions" class="w-full max-w-full h-auto object-contain rounded-xl shadow-sm select-none" />
+    <!-- Frameless Image (100% Full Width) -->
+    <div id="terms-img-container" class="hidden w-full">
+      <img id="terms-image-display" src="" alt="Terms & Conditions" class="w-full h-auto block select-none" />
     </div>
 
-    <!-- PDF Viewport (Toolbar and Sidebars hidden, Zoom-Only) -->
+    <!-- Frameless PDF Frame -->
     <iframe 
       id="terms-pdf-frame" 
       src="" 
-      class="hidden w-full h-full border-0 rounded-2xl"
+      class="hidden w-full h-[75vh] border-0" 
       allow="autoplay">
     </iframe>
 
     <!-- Empty State -->
-    <div id="terms-empty-msg" class="hidden p-6 sm:p-8 text-center space-y-2">
-      <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto border border-slate-200/60">
-        <i data-lucide="file-x" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+    <div id="terms-empty-msg" class="hidden py-12 px-6 text-center space-y-2">
+      <div class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto border border-slate-200/60">
+        <i data-lucide="file-x" class="w-5 h-5"></i>
       </div>
-      <p class="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-400">No Document Attached</p>
+      <p class="text-[11px] font-black uppercase tracking-wider text-slate-400">No Document Attached</p>
     </div>
 
   </div>
