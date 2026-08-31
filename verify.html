@@ -11,9 +11,6 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- html2pdf.js for exact A4 PDF Generation -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
   <!-- QRCode.js Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -23,24 +20,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
   <style>
-
-    /* Notice Download Action Bar */
-    .notice-actions-bar {
-      width: 100%;
-      max-width: 480px;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    /* Print & html2pdf A4 rules */
-    @media print {
-      body * { visibility: hidden; }
-      #state-notice, #state-notice * { visibility: visible; }
-      #state-notice { position: absolute; left: 0; top: 0; width: 100%; }
-      .notice-actions-bar { display: none !important; }
-    }
 
     .notice-doc-heading {
       text-align: center;
@@ -1556,30 +1535,6 @@
 
       noticeContainer.innerHTML = '';
 
-      const primaryRef = pages[0]?.refNo || 'NOTICE';
-
-      // 1. TOP DOWNLOAD / PRINT BUTTON BAR
-      const actionsBar = document.createElement('div');
-      actionsBar.className = 'notice-actions-bar';
-      actionsBar.innerHTML = `
-        <button 
-          id="btn-download-notice"
-          type="button" 
-          onclick="downloadNoticePDF('${encodeURIComponent(primaryRef)}')"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md cursor-pointer">
-          <i data-lucide="download" class="w-4 h-4 stroke-[2.5]"></i>
-          <span>Download PDF</span>
-        </button>
-      `;
-      noticeContainer.appendChild(actionsBar);
-
-      // 2. PAGES CONTAINER (FOR EXPORT)
-      const pagesContainer = document.createElement('div');
-      pagesContainer.id = 'notice-export-pages';
-      pagesContainer.className = 'flex flex-col items-center gap-6 w-full';
-      noticeContainer.appendChild(pagesContainer);
-
-      // 3. RENDER EACH PAGE
       pages.forEach((n, pageIdx) => {
         const pageWrapper = document.createElement('div');
         pageWrapper.className = 'notice-a4-scaler';
@@ -1588,16 +1543,16 @@
         const topBarcodeId = `notice-barcode-top-${pageIdx}`;
         const bottomBarcodeId = `notice-barcode-bottom-${pageIdx}`;
 
-        // IF B10 CONTAINS DIRECT IMAGE URL -> DISPLAY FULL-PAGE IMAGE WITH DYNAMIC QR
+        // IF B10 CONTAINS DIRECT IMAGE URL -> DISPLAY IMAGE ONLY WITH DYNAMIC QR
         if (n.isImageOnly || (n.imageUrl && /^https?:\/\/.+/i.test(n.imageUrl))) {
           pageWrapper.innerHTML = `
             <main class="page !p-0 !bg-transparent flex flex-col justify-center items-center relative overflow-hidden rounded-md shadow-2xl">
-              <img src="${n.imageUrl}" alt="Notice Document" crossorigin="anonymous" class="w-full h-full object-contain rounded-md" />
+              <img src="${n.imageUrl}" alt="Notice Document" class="w-full h-full object-contain rounded-md" />
               <div class="notice-qr-mount !left-4 !bottom-4 bg-white/90 p-1 rounded shadow-md" id="${qrId}"></div>
             </main>
           `;
 
-          pagesContainer.appendChild(pageWrapper);
+          noticeContainer.appendChild(pageWrapper);
 
           const qrEl = document.getElementById(qrId);
           if (qrEl) {
@@ -1643,12 +1598,12 @@
         }
 
         const stampImgTag = n.stampUrl 
-          ? `<img class="stamp" src="${n.stampUrl}" crossorigin="anonymous" alt="Stamp">` 
+          ? `<img class="stamp" src="${n.stampUrl}" alt="Stamp">` 
           : '';
 
         const emblemSrc = n.emblemUrl || (isVerified ? STAMP_ASSETS.verifiedMain : STAMP_ASSETS.unverified);
         const emblemImgTag = emblemSrc 
-          ? `<img class="emblem" src="${emblemSrc}" crossorigin="anonymous" alt="Emblem">` 
+          ? `<img class="emblem" src="${emblemSrc}" alt="Emblem">` 
           : '';
 
         pageWrapper.innerHTML = `
@@ -1699,7 +1654,7 @@
           </main>
         `;
 
-        pagesContainer.appendChild(pageWrapper);
+        noticeContainer.appendChild(pageWrapper);
 
         renderBarcodeStrip(topBarcodeId, n.trackingCode, false);
         renderBarcodeStrip(bottomBarcodeId, n.trackingCode, true);
@@ -1718,61 +1673,10 @@
         }
       });
 
-      lucide.createIcons();
       switchState('state-notice');
       setTimeout(autoScaleA4Notice, 50);
     }
 
-    async function downloadNoticePDF(encodedRefNo) {
-      const refNo = decodeURIComponent(encodedRefNo || 'NOTICE').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const exportContainer = document.getElementById('notice-export-pages');
-      const btn = document.getElementById('btn-download-notice');
-
-      if (!exportContainer) return;
-
-      const originalBtnText = btn ? btn.innerHTML : '';
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = `
-          <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-          </svg>
-          <span>Generating PDF...</span>
-        `;
-      }
-
-      // Clone pages element without scaling transforms for 100% full-resolution capture
-      const clone = exportContainer.cloneNode(true);
-      clone.style.width = '210mm';
-      clone.style.margin = '0 auto';
-      clone.querySelectorAll('.notice-a4-scaler').forEach(sc => {
-        sc.style.transform = 'none';
-        sc.style.marginBottom = '0px';
-      });
-
-      const opt = {
-        margin: 0,
-        filename: `${refNo}_Official_Notice.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'] }
-      };
-
-      try {
-        await html2pdf().set(opt).from(clone).save();
-      } catch (err) {
-        console.error('PDF export failed:', err);
-        alert('Failed to generate PDF download. Please try again.');
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = originalBtnText;
-          lucide.createIcons();
-        }
-      }
-    }
     window.onload = processVerification;
   </script>
 </body>
