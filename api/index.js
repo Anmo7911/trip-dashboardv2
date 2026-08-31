@@ -788,17 +788,21 @@ async function recordPosInvoice(billData) {
   return { success: true, token: inserted.token, invoiceNo: inserted.invoice_no };
 }
 
-async function fetchNoticeFromGoogleSheet(refNo) {
+async function fetchNoticeFromGoogleSheet(searchVal) {
   if (!noticeGasUrl) {
     throw new Error('Notice Google Apps Script URL not configured');
   }
+
+  const cleanVal = text(searchVal);
 
   const response = await fetch(noticeGasUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       action: 'get-notice',
-      refNo: text(refNo)
+      refNo: cleanVal,
+      query: cleanVal,
+      tripCode: cleanVal
     })
   });
 
@@ -904,18 +908,35 @@ async function verifyToken(type, token, queryParam) {
 
   // 3. OFFICIAL NOTICE / GUIDELINE VERIFICATION
  
+  // 3. OFFICIAL NOTICE / GUIDELINE VERIFICATION
   if (queryType === 'notice') {
     try {
       const noticeRes = await fetchNoticeFromGoogleSheet(searchVal);
-      if (!noticeRes || !noticeRes.valid) {
+      
+      // Support array responses or object responses with valid/pages/notices
+      const isOk = noticeRes && (noticeRes.valid !== false || Array.isArray(noticeRes) || noticeRes.pages || noticeRes.notices);
+      
+      if (!isOk) {
         return { valid: false, error: 'Notice record not found in official ledger' };
       }
+
+      let pagesList = [];
+      if (Array.isArray(noticeRes)) {
+        pagesList = noticeRes;
+      } else if (Array.isArray(noticeRes.pages)) {
+        pagesList = noticeRes.pages;
+      } else if (Array.isArray(noticeRes.notices)) {
+        pagesList = noticeRes.notices;
+      } else if (noticeRes.notice) {
+        pagesList = [noticeRes.notice];
+      }
+
       return {
         valid: true,
         type: 'notice',
         isVerified: noticeRes.isVerified !== false,
-        pages: noticeRes.pages || [noticeRes.notice],
-        notice: noticeRes.notice || noticeRes.pages?.[0]
+        pages: pagesList,
+        notice: pagesList[0] || noticeRes
       };
     } catch (err) {
       return { valid: false, error: 'Failed to verify notice record' };
