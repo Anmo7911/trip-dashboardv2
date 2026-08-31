@@ -3476,6 +3476,9 @@ if (urlParams.get('preview') === 'admin') {
     el.classList.add('nav-active');
   }
   
+  // Reset scroll lock for all standard tabs
+  document.body.classList.remove('overflow-hidden', 'touch-none');
+
   // Contextual Logic: Reset UI states specific to the SPEND tab
   if (tabId === 'spend') {
     const flipper = document.getElementById('card-flipper-engine');
@@ -3487,6 +3490,10 @@ if (urlParams.get('preview') === 'admin') {
     const flipper = document.getElementById('card-flipper-engine');
     if (flipper) flipper.classList.remove('flipper-rotated');
     if (!isLedgerActive) toggleLedger();
+  } else if (tabId === 'places' && globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.routeStatus === "LOCKED") {
+    // If opening the route tab while locked, freeze scrolling and scroll to top
+    document.body.classList.add('overflow-hidden', 'touch-none');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   
   // Contextual Logic: Trigger stagger animations in SQUAD tab
@@ -4304,34 +4311,51 @@ if (urlParams.get('preview') === 'admin') {
       }
       
      // --- LIVE ROUTE LOCK ENGINE ---
-      const routeVault = document.getElementById('route-lock-vault');
-      const routeNavBtn = document.getElementById('nav-btn-route');
-      const routeView = document.getElementById('view-places');
-      const secureContent = document.getElementById('route-secure-content');
+const routeVault = document.getElementById('route-lock-vault');
+const routeNavBtn = document.getElementById('nav-btn-route');
+const routeView = document.getElementById('view-places');
+const secureContent = document.getElementById('route-secure-content');
 
-      if (data.routeStatus === "LOCKED") {
-        routeVault.classList.remove('hidden');
-        routeNavBtn.classList.remove('hidden');
-        routeView.style.minHeight = 'calc(100vh - 180px)';
-        routeView.style.overflow = 'hidden';
-        if (secureContent) {
-          secureContent.classList.add('blur-[8px]', 'opacity-40', 'pointer-events-none', 'select-none');
-        }
-      } else if (data.routeStatus === "STEALTH") {
-        routeVault.classList.add('hidden');
-        routeNavBtn.classList.add('hidden');
-        if (routeView.classList.contains('active-tab')) {
-          showTab('spend', document.querySelector('.nav-btn'));
-        }
-      } else { 
-        routeVault.classList.add('hidden');
-        routeNavBtn.classList.remove('hidden');
-        routeView.style.minHeight = '70vh';
-        routeView.style.overflow = 'visible';
-        if (secureContent) {
-          secureContent.classList.remove('blur-[8px]', 'opacity-40', 'pointer-events-none', 'select-none');
-        }
-      }
+if (data.routeStatus === "LOCKED") {
+  routeVault.classList.remove('hidden');
+  routeNavBtn.classList.remove('hidden');
+  
+  // Lock container scrolling & height
+  routeView.classList.add('h-[calc(100vh-180px)]', 'overflow-hidden', 'touch-none');
+  routeView.style.minHeight = 'calc(100vh - 180px)';
+  routeView.style.overflow = 'hidden';
+  
+  // Lock body scroll if the user is currently looking at the Route tab
+  if (routeView.classList.contains('active-tab')) {
+    document.body.classList.add('overflow-hidden', 'touch-none');
+  }
+
+  if (secureContent) {
+    secureContent.classList.add('blur-[8px]', 'opacity-40', 'pointer-events-none', 'select-none');
+  }
+} else if (data.routeStatus === "STEALTH") {
+  routeVault.classList.add('hidden');
+  routeNavBtn.classList.add('hidden');
+  routeView.classList.remove('h-[calc(100vh-180px)]', 'overflow-hidden', 'touch-none');
+  document.body.classList.remove('overflow-hidden', 'touch-none');
+  
+  if (routeView.classList.contains('active-tab')) {
+    showTab('spend', document.querySelector('.nav-btn'));
+  }
+} else { 
+  routeVault.classList.add('hidden');
+  routeNavBtn.classList.remove('hidden');
+  
+  // Restore scrolling
+  routeView.classList.remove('h-[calc(100vh-180px)]', 'overflow-hidden', 'touch-none');
+  routeView.style.minHeight = '70vh';
+  routeView.style.overflow = 'visible';
+  document.body.classList.remove('overflow-hidden', 'touch-none');
+  
+  if (secureContent) {
+    secureContent.classList.remove('blur-[8px]', 'opacity-40', 'pointer-events-none', 'select-none');
+  }
+}
 
       // SYNC THE TRIP REPORT LINK IN THE MORE MENU
       const moreTripReportBtn = document.getElementById('ui-more-tripreport');
