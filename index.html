@@ -3085,34 +3085,38 @@
     </div>
 
     <!-- VIEW 2: TERMS & CONDITIONS DOCUMENT VIEWER -->
-<div id="subview-terms" class="hidden space-y-4 transition-opacity duration-300">
-  <div class="flex items-center justify-between">
-    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Official Document Preview</span>
-    <span id="terms-doc-type-badge" class="px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100">
+<div id="subview-terms" class="hidden space-y-3 sm:space-y-4 transition-opacity duration-300">
+  
+  <!-- Sub-Header Bar -->
+  <div class="flex items-center justify-between px-1">
+    <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-slate-400">Official Policy Document</span>
+    <span id="terms-doc-type-badge" class="px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-[8px] sm:text-[8.5px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100">
       PREVIEW
     </span>
   </div>
 
-  <!-- Unified Document Preview Frame -->
-  <div class="w-full h-[65vh] bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden flex items-center justify-center relative shadow-inner">
+  <!-- Responsive Document Viewport Frame -->
+  <div class="w-full h-[58vh] sm:h-[62vh] lg:h-[65vh] bg-slate-50 border border-slate-200/80 rounded-2xl overflow-hidden flex items-center justify-center relative shadow-inner">
     
-    <!-- Image Renderer -->
-    <div id="terms-img-container" class="hidden w-full h-full overflow-y-auto p-2 flex justify-center items-start">
-      <img id="terms-image-display" src="" alt="Terms & Conditions" class="w-full h-auto object-contain rounded-xl shadow-sm" />
+    <!-- Image Viewport (Full natural width & smooth touch-scrolling on mobile) -->
+    <div id="terms-img-container" class="hidden w-full h-full overflow-y-auto overflow-x-hidden p-2 sm:p-3 flex justify-center items-start overscroll-contain">
+      <img id="terms-image-display" src="" alt="Terms & Conditions" class="w-full max-w-full h-auto object-contain rounded-xl shadow-sm select-none" />
     </div>
 
-    <!-- PDF Renderer (Embedded directly in same page) -->
+    <!-- PDF Viewport (Toolbar and Sidebars hidden, Zoom-Only) -->
     <iframe 
       id="terms-pdf-frame" 
       src="" 
-      class="hidden w-full h-full border-0 rounded-2xl" 
+      class="hidden w-full h-full border-0 rounded-2xl"
       allow="autoplay">
     </iframe>
 
-    <!-- Fallback / Empty State -->
-    <div id="terms-empty-msg" class="hidden p-8 text-center">
-      <i data-lucide="file-x" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
-      <p class="text-xs font-black uppercase tracking-wider text-slate-400">No Document Attached</p>
+    <!-- Empty State -->
+    <div id="terms-empty-msg" class="hidden p-6 sm:p-8 text-center space-y-2">
+      <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto border border-slate-200/60">
+        <i data-lucide="file-x" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+      </div>
+      <p class="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-400">No Document Attached</p>
     </div>
 
   </div>
@@ -8409,36 +8413,36 @@ function switchAboutSubTab(tab) {
   const typeBadge = document.getElementById('terms-doc-type-badge');
 
   if (tab === 'about') {
-    btnAbout.className = "flex-1 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all bg-white text-indigo-600 shadow-sm";
-    btnTerms.className = "flex-1 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800";
+    btnAbout.className = "flex-1 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all bg-white text-indigo-600 shadow-sm";
+    btnTerms.className = "flex-1 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800";
     subviewAbout.classList.remove('hidden');
     subviewTerms.classList.add('hidden');
   } else {
-    btnTerms.className = "flex-1 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all bg-white text-indigo-600 shadow-sm";
-    btnAbout.className = "flex-1 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800";
+    btnTerms.className = "flex-1 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all bg-white text-indigo-600 shadow-sm";
+    btnAbout.className = "flex-1 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-black uppercase tracking-wider transition-all text-slate-500 hover:text-slate-800";
     subviewAbout.classList.add('hidden');
     subviewTerms.classList.remove('hidden');
 
-    const url = globalActiveDataPayloadBackup?.termsUrl;
+    const rawUrl = globalActiveDataPayloadBackup?.termsUrl;
 
-    // Reset view slots
+    // Reset visibility states
     termsImgContainer.classList.add('hidden');
     termsPdfFrame.classList.add('hidden');
     termsEmpty.classList.add('hidden');
 
-    if (url && url.trim() !== '') {
-      const isPdf = url.toLowerCase().includes('.pdf') || url.toLowerCase().includes('application/pdf');
+    if (rawUrl && rawUrl.trim() !== '') {
+      const isPdf = rawUrl.toLowerCase().includes('.pdf') || rawUrl.toLowerCase().includes('application/pdf');
 
       if (isPdf) {
-        // PDF Inline Preview
-        termsPdfFrame.src = url;
+        // Strip edit tools/nav panes and lock viewer to clean width fit with zoom enabled
+        const cleanPdfUrl = rawUrl.includes('#') ? rawUrl : `${rawUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`;
+        termsPdfFrame.src = cleanPdfUrl;
         termsPdfFrame.classList.remove('hidden');
-        if (typeBadge) typeBadge.innerText = 'PDF DOCUMENT';
+        if (typeBadge) typeBadge.innerText = 'PDF PREVIEW';
       } else {
-        // Image Inline Preview
-        termsImg.src = url;
+        termsImg.src = rawUrl;
         termsImgContainer.classList.remove('hidden');
-        if (typeBadge) typeBadge.innerText = 'IMAGE DOCUMENT';
+        if (typeBadge) typeBadge.innerText = 'IMAGE PREVIEW';
       }
     } else {
       termsEmpty.classList.remove('hidden');
