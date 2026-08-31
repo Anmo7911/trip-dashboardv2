@@ -8823,10 +8823,6 @@ async function loadNoticesData() {
   const container = document.getElementById('notices-feed-container');
   if (!container) return;
 
-  // Derive target Ref. No. from setting (Row 6 / Live code) or default fallback
-  const tripCode = (globalActiveDataPayloadBackup && (globalActiveDataPayloadBackup.liveTripCode || globalActiveDataPayloadBackup.tripCode)) || 'VOF0725';
-  const targetRef = `${tripCode}/01`;
-
   if (cachedNoticesPayload) {
     renderNoticesFeed(cachedNoticesPayload);
     return;
@@ -8840,8 +8836,11 @@ async function loadNoticesData() {
   `;
 
   try {
-    const res = await apiRequest('verify', { type: 'notice', query: targetRef });
-    if (res && res.valid) {
+    // Send the tripCode or empty string to fetch all available notices
+    const tripCode = (globalActiveDataPayloadBackup && (globalActiveDataPayloadBackup.liveTripCode || globalActiveDataPayloadBackup.tripCode)) || '';
+    const res = await apiRequest('verify', { type: 'notice', query: tripCode });
+
+    if (res && res.valid && ((res.pages && res.pages.length > 0) || res.notice)) {
       cachedNoticesPayload = res;
       renderNoticesFeed(res);
     } else {
