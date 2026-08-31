@@ -165,6 +165,8 @@ async function dashboard() {
   const checklistRevokeVisibility = text(setting(24, 'c')).toUpperCase() || 'VISIBLE';
   const announcementMode = text(setting(29, 'b')).toUpperCase() || 'DISABLED';
   const maintenanceMode = text(setting(30, 'b')).toUpperCase() || 'DISABLED';
+  const termsUrl = await resolveAsset(setting(31, 'b'));
+  const rawTerms = setting(31, 'b') || '';
 
   const popupType = text(setting(28, 'b')).toUpperCase() || 'NOTIFICATION';
   const popupTitle = text(setting(28, 'c'));
@@ -310,6 +312,7 @@ async function dashboard() {
   const totalExpenses = Object.values(categorySpent).reduce((a, b) => a + b, 0);
   return {
     appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus, checklistVisibility, checklistRevokeVisibility, announcementMode, maintenanceMode,
+    termsUrl, rawTerms,
     liveTripCode,
     tripCode: liveTripCode,
     popupConfig: { type: popupType, title: popupTitle, message: popupMessage, status: popupStatus, pushedAt: popupPushedAt },
