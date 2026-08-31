@@ -165,8 +165,6 @@ async function dashboard() {
   const checklistRevokeVisibility = text(setting(24, 'c')).toUpperCase() || 'VISIBLE';
   const announcementMode = text(setting(29, 'b')).toUpperCase() || 'DISABLED';
   const maintenanceMode = text(setting(30, 'b')).toUpperCase() || 'DISABLED';
-  const termsUrl = await resolveAsset(setting(31, 'b'));
-  const rawTerms = setting(31, 'b') || '';
 
   const popupType = text(setting(28, 'b')).toUpperCase() || 'NOTIFICATION';
   const popupTitle = text(setting(28, 'c'));
@@ -312,7 +310,6 @@ async function dashboard() {
   const totalExpenses = Object.values(categorySpent).reduce((a, b) => a + b, 0);
   return {
     appStatus, routeStatus, expenseStatus, contributionToggle, signOffStatus, checklistVisibility, checklistRevokeVisibility, announcementMode, maintenanceMode,
-    termsUrl, rawTerms,
     liveTripCode,
     tripCode: liveTripCode,
     popupConfig: { type: popupType, title: popupTitle, message: popupMessage, status: popupStatus, pushedAt: popupPushedAt },
@@ -811,137 +808,118 @@ async function fetchNoticeFromGoogleSheet(refNo) {
 
 async function verifyToken(type, token, queryParam) {
   const queryType = text(type).toLowerCase();
-  const searchVal = text(queryParam || token).trim();
-  const rawToken = text(token || queryParam).trim();
+  const searchVal = text(queryParam || token);
 
-  if (!searchVal && !rawToken) {
+  if (!searchVal) {
     return { valid: false, error: 'Missing search value or verification token' };
   }
 
   // 1. MEMBER PASS VERIFICATION
-  if (!queryType || queryType === 'member' || queryType === 'all') {
-    const { data: memberRows } = await supabase
-      .from('members_sheet')
-      .select('*');
+  if (queryType === 'member') {
+    let query = supabase.from('members_sheet').select('*');
 
-    const matchedMember = (memberRows || []).find(m => {
-      const name = text(m.col_a).toLowerCase();
-      const masked = applySecurityMask(text(m.col_a)).toLowerCase();
-      const vToken = text(m.verification_token).toLowerCase();
-      const s = searchVal.toLowerCase();
-      const t = rawToken.toLowerCase();
-
-      return (
-        (vToken && (vToken === s || vToken === t)) ||
-        (name && (name === s || name === t)) ||
-        (masked && (masked === s || masked === t)) ||
-        (s.length >= 3 && name.includes(s))
-      );
-    });
-
-    if (matchedMember) {
-      const [settingsResult, memberMetaResult] = await Promise.all([
-        supabase.from('settings_sheet').select('*').in('row_number', [2, 10]),
-        supabase.from('member_sheet_meta').select('chief_coordinator_signature').limit(1).maybeSingle()
-      ]);
-
-      const settings = settingsResult.data || [];
-      const getSetting = (row, col) => settings.find(r => r.row_number === row)?.[`col_${col}`] || '';
-      
-      const tripName = text(getSetting(10, 'c')) || text(getSetting(2, 'b')) || 'BHARAT WAY';
-      const eidSubheading = text(getSetting(10, 'b'));
-      const chiefSignature = await resolveAsset(memberMetaResult?.data?.chief_coordinator_signature);
-      const photoUrl = await resolveAsset(matchedMember.col_c);
-      const isVerified = text(matchedMember.col_i).toLowerCase() !== 'unverified';
-
-      return {
-        valid: true,
-        type: 'member',
-        isVerified,
-        member: {
-          name: text(matchedMember.col_a),
-          designation: text(matchedMember.col_b) || 'Member',
-          memberRole: text(matchedMember.col_h) || '-',
-          mobile: text(matchedMember.col_o) || '-',
-          email: text(matchedMember.col_p) || '-',
-          img: photoUrl,
-          chiefCoordinatorSignature: chiefSignature,
-          tripName,
-          eidSubheading,
-          token: matchedMember.verification_token || ''
-        }
-      };
+    if (token && !queryParam) {
+      query = query.eq('verification_token', token);
+    } else {
+      query = query.ilike('col_a', searchVal.trim());
     }
-    if (queryType === 'member') {
+
+    const { data: memberRows, error } = await query.limit(1);
+    const member = memberRows?.[0];
+
+    if (error || !member) {
       return { valid: false, error: 'Member record not found in ledger' };
     }
+
+    const [settingsResult, memberMetaResult] = await Promise.all([
+      supabase.from('settings_sheet').select('*').in('row_number', [2, 10]),
+      supabase.from('member_sheet_meta').select('chief_coordinator_signature').limit(1).maybeSingle()
+    ]);
+
+    const settings = settingsResult.data || [];
+    const getSetting = (row, col) => settings.find(r => r.row_number === row)?.[`col_${col}`] || '';
+    
+    const tripName = text(getSetting(10, 'c')) || text(getSetting(2, 'b')) || 'BHARAT WAY';
+    const eidSubheading = text(getSetting(10, 'b'));
+    const chiefSignature = await resolveAsset(memberMetaResult?.data?.chief_coordinator_signature);
+    const photoUrl = await resolveAsset(member.col_c);
+    const isVerified = text(member.col_i).toLowerCase() !== 'unverified';
+
+    return {
+      valid: true,
+      type: 'member',
+      isVerified,
+      member: {
+        name: text(member.col_a),
+        designation: text(member.col_b) || 'Member',
+        memberRole: text(member.col_h) || '-',
+        mobile: text(member.col_o) || '-',
+        email: text(member.col_p) || '-',
+        img: photoUrl,
+        chiefCoordinatorSignature: chiefSignature,
+        tripName,
+        eidSubheading,
+        token: member.verification_token || ''
+      }
+    };
   }
 
   // 2. POS VOUCHER / BILL VERIFICATION
-  if (!queryType || queryType === 'bill' || queryType === 'invoice' || queryType === 'all') {
-    const cleanInv = searchVal.replace(/^#/, '');
-    const cleanToken = rawToken.replace(/^#/, '');
+  if (queryType === 'bill' || queryType === 'invoice') {
+    let query = supabase.from('pos_invoices').select('*');
 
-    const { data: invoiceRows } = await supabase
-      .from('pos_invoices')
-      .select('*');
-
-    const matchedInvoice = (invoiceRows || []).find(inv => {
-      const dbToken = text(inv.token).toLowerCase();
-      const dbNo = text(inv.invoice_no).toLowerCase();
-      const s = cleanInv.toLowerCase();
-      const t = cleanToken.toLowerCase();
-
-      return (
-        (dbToken && (dbToken === s || dbToken === t)) ||
-        (dbNo && (dbNo === s || dbNo === t)) ||
-        (dbNo && dbNo.replace(/[^a-z0-9]/g, '') === s.replace(/[^a-z0-9]/g, ''))
-      );
-    });
-
-    if (matchedInvoice) {
-      return {
-        valid: true,
-        type: 'bill',
-        isVerified: Boolean(matchedInvoice.is_verified),
-        bill: {
-          storeTitle: matchedInvoice.store_title,
-          dateString: matchedInvoice.date_string,
-          timeString: matchedInvoice.time_string,
-          invoiceNo: matchedInvoice.invoice_no,
-          filterTag: matchedInvoice.filter_tag,
-          tripCode: matchedInvoice.trip_code,
-          netTotal: number(matchedInvoice.net_total),
-          items: matchedInvoice.items || [],
-          token: matchedInvoice.token
-        }
-      };
+    if (token && !queryParam) {
+      query = query.eq('token', token);
+    } else {
+      query = query.ilike('invoice_no', searchVal.trim().replace(/^#/, ''));
     }
-    if (queryType === 'bill' || queryType === 'invoice') {
+
+    const { data: invoiceRows, error } = await query.limit(1);
+    const invoice = invoiceRows?.[0];
+
+    if (error || !invoice) {
       return { valid: false, error: 'POS voucher not found in ledger records' };
     }
+
+    return {
+      valid: true,
+      type: 'bill',
+      isVerified: Boolean(invoice.is_verified),
+      bill: {
+        storeTitle: invoice.store_title,
+        dateString: invoice.date_string,
+        timeString: invoice.time_string,
+        invoiceNo: invoice.invoice_no,
+        filterTag: invoice.filter_tag,
+        tripCode: invoice.trip_code,
+        netTotal: number(invoice.net_total),
+        items: invoice.items || [],
+        token: invoice.token
+      }
+    };
   }
 
   // 3. OFFICIAL NOTICE / GUIDELINE VERIFICATION
-  if (!queryType || queryType === 'notice' || queryType === 'all') {
+ 
+  if (queryType === 'notice') {
     try {
-      const noticeRes = await fetchNoticeFromGoogleSheet(searchVal || rawToken);
-      if (noticeRes && noticeRes.valid) {
-        return {
-          valid: true,
-          type: 'notice',
-          isVerified: noticeRes.isVerified !== false,
-          pages: noticeRes.pages || [noticeRes.notice],
-          notice: noticeRes.notice || noticeRes.pages?.[0]
-        };
+      const noticeRes = await fetchNoticeFromGoogleSheet(searchVal);
+      if (!noticeRes || !noticeRes.valid) {
+        return { valid: false, error: 'Notice record not found in official ledger' };
       }
-    } catch (err) {}
-    if (queryType === 'notice') {
-      return { valid: false, error: 'Notice record not found in official ledger' };
+      return {
+        valid: true,
+        type: 'notice',
+        isVerified: noticeRes.isVerified !== false,
+        pages: noticeRes.pages || [noticeRes.notice],
+        notice: noticeRes.notice || noticeRes.pages?.[0]
+      };
+    } catch (err) {
+      return { valid: false, error: 'Failed to verify notice record' };
     }
   }
 
-  return { valid: false, error: 'Record not found in expedition ledger' };
+  return { valid: false, error: 'Invalid verification type parameter' };
 }
 
 export default async function handler(req, res) {
