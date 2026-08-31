@@ -2605,27 +2605,27 @@
     
 
     <!-- FROSTED GLASS VAULT OVERLAY -->
-    <div id="route-lock-vault"
-      class="hidden absolute top-0 bottom-0 left-0 right-0 z-[100] flex flex-col items-center justify-center px-6 text-center transition-all duration-700">
+<div id="route-lock-vault"
+  class="hidden absolute top-0 bottom-0 left-0 right-0 z-[100] flex flex-col items-center justify-start pt-8 sm:pt-14 lg:pt-20 px-6 text-center transition-all duration-700">
+  <div
+    class="bg-white/95 backdrop-blur-2xl p-8 rounded-[32px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] border border-slate-200/60 max-w-[320px] w-full relative overflow-hidden">
+    <div class="relative w-16 h-16 mx-auto mb-6">
+      <div class="absolute inset-0 bg-indigo-400 rounded-full animate-ping opacity-30"></div>
       <div
-        class="bg-white/95 backdrop-blur-2xl p-8 rounded-[32px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] border border-slate-200/60 max-w-[320px] w-full relative overflow-hidden m-auto">
-        <div class="relative w-16 h-16 mx-auto mb-6">
-          <div class="absolute inset-0 bg-indigo-400 rounded-full animate-ping opacity-30"></div>
-          <div
-            class="absolute inset-0 bg-indigo-50 border border-indigo-100 rounded-full flex items-center justify-center z-10 shadow-sm">
-            <i data-lucide="lock" class="w-7 h-7 text-indigo-600 stroke-[2.5]"></i>
-          </div>
-        </div>
-        <h2 class="text-lg font-black text-slate-800 uppercase tracking-widest mb-2">Navigation Standby</h2>
-        <p class="text-[10px] font-bold text-slate-400 uppercase leading-relaxed tracking-wider mb-8">
-          Route contains live transit coordinates and ETA details. Tracking functionality will be enabled closer to scheduled departure.
-        </p>
-        <div
-          class="flex items-center justify-center text-indigo-500 bg-indigo-50 py-3 px-4 rounded-xl border border-indigo-100">
-          <span class="text-[9px] font-black uppercase tracking-widest animate-pulse">Awaiting Clearance</span>
-        </div>
+        class="absolute inset-0 bg-indigo-50 border border-indigo-100 rounded-full flex items-center justify-center z-10 shadow-sm">
+        <i data-lucide="lock" class="w-7 h-7 text-indigo-600 stroke-[2.5]"></i>
       </div>
     </div>
+    <h2 class="text-lg font-black text-slate-800 uppercase tracking-widest mb-2">Navigation Standby</h2>
+    <p class="text-[10px] font-bold text-slate-400 uppercase leading-relaxed tracking-wider mb-8">
+      Route contains live transit coordinates and ETA details. Tracking functionality will be enabled closer to scheduled departure.
+    </p>
+    <div
+      class="flex items-center justify-center text-indigo-500 bg-indigo-50 py-3 px-4 rounded-xl border border-indigo-100">
+      <span class="text-[9px] font-black uppercase tracking-widest animate-pulse">Awaiting Clearance</span>
+    </div>
+  </div>
+</div>
 
     <!-- SECURE CONTENT WRAPPER -->
     <div id="route-secure-content" class="w-full transition-all duration-700 ease-in-out pt-2">
