@@ -1543,6 +1543,33 @@
         const topBarcodeId = `notice-barcode-top-${pageIdx}`;
         const bottomBarcodeId = `notice-barcode-bottom-${pageIdx}`;
 
+        // IF B10 CONTAINS DIRECT IMAGE URL -> DISPLAY IMAGE ONLY WITH DYNAMIC QR
+        if (n.isImageOnly || (n.imageUrl && /^https?:\/\/.+/i.test(n.imageUrl))) {
+          pageWrapper.innerHTML = `
+            <main class="page !p-0 !bg-transparent flex flex-col justify-center items-center relative overflow-hidden rounded-md shadow-2xl">
+              <img src="${n.imageUrl}" alt="Notice Document" class="w-full h-full object-contain rounded-md" />
+              <div class="notice-qr-mount !left-4 !bottom-4 bg-white/90 p-1 rounded shadow-md" id="${qrId}"></div>
+            </main>
+          `;
+
+          noticeContainer.appendChild(pageWrapper);
+
+          const qrEl = document.getElementById(qrId);
+          if (qrEl) {
+            const verifyNoticeUrl = `${window.location.origin}/verify.html?type=notice&query=${encodeURIComponent(n.refNo)}`;
+            new QRCode(qrEl, {
+              text: verifyNoticeUrl,
+              width: 58,
+              height: 58,
+              colorDark: "#000000",
+              colorLight: "#ffffff",
+              correctLevel: QRCode.CorrectLevel.M
+            });
+          }
+          return;
+        }
+
+        // REGULAR NOTICE STRUCTURE
         let sectionsHtml = '';
         if (n.sections && Array.isArray(n.sections)) {
           n.sections.forEach(sec => {
