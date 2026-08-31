@@ -1543,19 +1543,12 @@
         const topBarcodeId = `notice-barcode-top-${pageIdx}`;
         const bottomBarcodeId = `notice-barcode-bottom-${pageIdx}`;
 
-        // 1. IMAGE-ONLY MODE (Cell B10 contains direct URL)
+        // IF B10 CONTAINS DIRECT IMAGE URL -> DISPLAY IMAGE ONLY WITH DYNAMIC QR
         if (n.isImageOnly || (n.imageUrl && /^https?:\/\/.+/i.test(n.imageUrl))) {
           pageWrapper.innerHTML = `
-            <main class="page !p-0 !bg-white flex flex-col justify-center items-center relative overflow-hidden rounded-[4px] shadow-[0_15px_40px_rgba(0,0,0,0.15)]">
-              <img 
-                src="${n.imageUrl}" 
-                alt="Official Notice Document" 
-                loading="eager"
-                decoding="sync"
-                style="image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;"
-                class="w-full h-full object-contain block select-none pointer-events-none" 
-              />
-              <div class="notice-qr-mount !left-[4mm] !bottom-[4mm] bg-white/95 p-1 rounded shadow-sm border border-slate-200" id="${qrId}"></div>
+            <main class="page !p-0 !bg-transparent flex flex-col justify-center items-center relative overflow-hidden rounded-md shadow-2xl">
+              <img src="${n.imageUrl}" alt="Notice Document" class="w-full h-full object-contain rounded-md" />
+              <div class="notice-qr-mount !left-4 !bottom-4 bg-white/90 p-1 rounded shadow-md" id="${qrId}"></div>
             </main>
           `;
 
@@ -1576,7 +1569,7 @@
           return;
         }
 
-        // 2. STANDARD HTML A4 DOCUMENT MODE
+        // REGULAR NOTICE STRUCTURE
         let sectionsHtml = '';
         if (n.sections && Array.isArray(n.sections)) {
           n.sections.forEach(sec => {
