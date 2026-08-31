@@ -3084,27 +3084,39 @@
       </div>
     </div>
 
-    <!-- VIEW 2: TERMS & CONDITIONS IMAGE VIEWER -->
-    <div id="subview-terms" class="hidden space-y-4 transition-opacity duration-300">
-      <div class="flex items-center justify-between">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Official Terms & Policy Document</span>
-        <a id="terms-ext-link" href="#" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1 active:scale-95 transition-all">
-          <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Open Full
-        </a>
-      </div>
+    <!-- VIEW 2: TERMS & CONDITIONS DOCUMENT VIEWER -->
+<div id="subview-terms" class="hidden space-y-4 transition-opacity duration-300">
+  <div class="flex items-center justify-between">
+    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Official Document Preview</span>
+    <span id="terms-doc-type-badge" class="px-2.5 py-0.5 rounded-full text-[8.5px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-100">
+      PREVIEW
+    </span>
+  </div>
 
-      <!-- Scrollable Document Frame -->
-      <div class="w-full max-h-[65vh] overflow-y-auto bg-slate-50 border border-slate-200 rounded-2xl p-2 flex justify-center items-start shadow-inner">
-        <img id="terms-image-display" src="" alt="Terms & Conditions" class="w-full h-auto object-contain rounded-xl shadow-sm" />
-      </div>
+  <!-- Unified Document Preview Frame -->
+  <div class="w-full h-[65vh] bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden flex items-center justify-center relative shadow-inner">
+    
+    <!-- Image Renderer -->
+    <div id="terms-img-container" class="hidden w-full h-full overflow-y-auto p-2 flex justify-center items-start">
+      <img id="terms-image-display" src="" alt="Terms & Conditions" class="w-full h-auto object-contain rounded-xl shadow-sm" />
+    </div>
 
-      <div id="terms-empty-msg" class="hidden bg-slate-50 border border-slate-200 rounded-2xl p-8 text-center">
-        <i data-lucide="file-x" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
-        <p class="text-xs font-black uppercase tracking-wider text-slate-400">No Terms & Conditions document uploaded</p>
-      </div>
+    <!-- PDF Renderer (Embedded directly in same page) -->
+    <iframe 
+      id="terms-pdf-frame" 
+      src="" 
+      class="hidden w-full h-full border-0 rounded-2xl" 
+      allow="autoplay">
+    </iframe>
+
+    <!-- Fallback / Empty State -->
+    <div id="terms-empty-msg" class="hidden p-8 text-center">
+      <i data-lucide="file-x" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+      <p class="text-xs font-black uppercase tracking-wider text-slate-400">No Document Attached</p>
     </div>
 
   </div>
+</div>
 </main>
 
     
@@ -8390,9 +8402,11 @@ function switchAboutSubTab(tab) {
   const subviewAbout = document.getElementById('subview-about');
   const subviewTerms = document.getElementById('subview-terms');
 
+  const termsImgContainer = document.getElementById('terms-img-container');
   const termsImg = document.getElementById('terms-image-display');
+  const termsPdfFrame = document.getElementById('terms-pdf-frame');
   const termsEmpty = document.getElementById('terms-empty-msg');
-  const termsExtLink = document.getElementById('terms-ext-link');
+  const typeBadge = document.getElementById('terms-doc-type-badge');
 
   if (tab === 'about') {
     btnAbout.className = "flex-1 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all bg-white text-indigo-600 shadow-sm";
@@ -8405,22 +8419,30 @@ function switchAboutSubTab(tab) {
     subviewAbout.classList.add('hidden');
     subviewTerms.classList.remove('hidden');
 
-    // Populate the Image from Row 31 payload
     const url = globalActiveDataPayloadBackup?.termsUrl;
+
+    // Reset view slots
+    termsImgContainer.classList.add('hidden');
+    termsPdfFrame.classList.add('hidden');
+    termsEmpty.classList.add('hidden');
+
     if (url && url.trim() !== '') {
-      if (termsImg) {
+      const isPdf = url.toLowerCase().includes('.pdf') || url.toLowerCase().includes('application/pdf');
+
+      if (isPdf) {
+        // PDF Inline Preview
+        termsPdfFrame.src = url;
+        termsPdfFrame.classList.remove('hidden');
+        if (typeBadge) typeBadge.innerText = 'PDF DOCUMENT';
+      } else {
+        // Image Inline Preview
         termsImg.src = url;
-        termsImg.classList.remove('hidden');
-      }
-      if (termsEmpty) termsEmpty.classList.add('hidden');
-      if (termsExtLink) {
-        termsExtLink.href = url;
-        termsExtLink.classList.remove('hidden');
+        termsImgContainer.classList.remove('hidden');
+        if (typeBadge) typeBadge.innerText = 'IMAGE DOCUMENT';
       }
     } else {
-      if (termsImg) termsImg.classList.add('hidden');
-      if (termsEmpty) termsEmpty.classList.remove('hidden');
-      if (termsExtLink) termsExtLink.classList.add('hidden');
+      termsEmpty.classList.remove('hidden');
+      if (typeBadge) typeBadge.innerText = 'NO ATTACHMENT';
     }
   }
 
