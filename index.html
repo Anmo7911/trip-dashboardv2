@@ -81,10 +81,20 @@
   letter-spacing: 0.2mm;
 }
 
+.notice-scaler-frame {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+  overflow: visible;
+}
+
 .notice-a4-scaler {
   width: 210mm;
   height: 297mm;
   transform-origin: top center;
+  flex-shrink: 0;
   margin: 0 auto;
 }
 
@@ -8963,6 +8973,9 @@ function openNoticeA4Preview(pageIndex) {
 
   mount.innerHTML = '';
 
+  const frameWrapper = document.createElement('div');
+  frameWrapper.className = 'notice-scaler-frame';
+
   const pageWrapper = document.createElement('div');
   pageWrapper.className = 'notice-a4-scaler';
   const qrId = `index-notice-qr-${pageIndex}`;
@@ -8976,7 +8989,8 @@ function openNoticeA4Preview(pageIndex) {
         <div class="notice-qr-mount !left-4 !bottom-4 bg-white/90 p-1 rounded shadow-md" id="${qrId}"></div>
       </main>
     `;
-    mount.appendChild(pageWrapper);
+    frameWrapper.appendChild(pageWrapper);
+    mount.appendChild(frameWrapper);
 
     const qrEl = document.getElementById(qrId);
     if (qrEl) {
@@ -9052,7 +9066,8 @@ function openNoticeA4Preview(pageIndex) {
         <div class="notice-qr-mount" id="${qrId}"></div>
       </main>
     `;
-    mount.appendChild(pageWrapper);
+    frameWrapper.appendChild(pageWrapper);
+    mount.appendChild(frameWrapper);
 
     renderNoticeBarcodes(topBarcodeId, n.trackingCode, false);
     renderNoticeBarcodes(bottomBarcodeId, n.trackingCode, true);
@@ -9073,7 +9088,9 @@ function openNoticeA4Preview(pageIndex) {
   listView.classList.add('hidden');
   previewView.classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+
   autoScaleNoticeA4();
+  setTimeout(autoScaleNoticeA4, 60);
   lucide.createIcons();
 }
 
@@ -9095,18 +9112,25 @@ function renderNoticeBarcodes(containerId, codeText, isBottom = false) {
 }
 
 function autoScaleNoticeA4() {
+  const mount = document.getElementById('notices-a4-mount');
   const scalers = document.querySelectorAll('.notice-a4-scaler');
   if (!scalers.length) return;
 
-  const windowWidth = window.innerWidth;
-  const targetWidthPx = 210 * 3.7795275591;
-  const targetHeightPx = 297 * 3.7795275591;
-  const maxAvailableWidth = Math.min(windowWidth - 28, 480);
-  const scaleFactor = Math.min(1, maxAvailableWidth / targetWidthPx);
+  const targetWidthPx = 210 * 3.7795275591; // ~793.7px
+  const targetHeightPx = 297 * 3.7795275591; // ~1122.5px
+
+  // Get available container width without padding clipping
+  const availableWidth = mount ? Math.min(mount.clientWidth, window.innerWidth - 32) : (window.innerWidth - 32);
+  const scaleFactor = Math.min(1, availableWidth / targetWidthPx);
+  const scaledHeight = targetHeightPx * scaleFactor;
 
   scalers.forEach(scaler => {
     scaler.style.transform = `scale(${scaleFactor})`;
-    scaler.style.marginBottom = `-${(1 - scaleFactor) * targetHeightPx}px`;
+    
+    // Set frame height to prevent extra bottom white space or overlap
+    if (scaler.parentElement && scaler.parentElement.classList.contains('notice-scaler-frame')) {
+      scaler.parentElement.style.height = `${scaledHeight + 10}px`;
+    }
   });
 }
 window.addEventListener('resize', autoScaleNoticeA4);
