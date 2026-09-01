@@ -8836,8 +8836,8 @@ async function loadNoticesData() {
   `;
 
   try {
-    // Send empty query so GAS fetches all available sheets automatically
     const res = await apiRequest('verify', { type: 'notice', query: '' });
+    console.log('Notice API Response:', res);
 
     if (res && res.valid && res.pages && res.pages.length > 0) {
       cachedNoticesPayload = res;
@@ -8846,7 +8846,7 @@ async function loadNoticesData() {
       container.innerHTML = `
         <div class="bg-white rounded-2xl p-8 text-center border border-slate-200 shadow-sm space-y-2">
           <i data-lucide="file-x" class="w-8 h-8 text-slate-300 mx-auto"></i>
-          <p class="text-xs font-black text-slate-500 uppercase tracking-wider">No Active Notices Found</p>
+          <p class="text-xs font-black text-slate-500 uppercase tracking-wider">${res?.error || 'No Active Notices Found'}</p>
         </div>
       `;
       lucide.createIcons();
@@ -8856,7 +8856,7 @@ async function loadNoticesData() {
     container.innerHTML = `
       <div class="bg-white rounded-2xl p-8 text-center border border-slate-200 shadow-sm space-y-2">
         <i data-lucide="alert-circle" class="w-8 h-8 text-rose-400 mx-auto"></i>
-        <p class="text-xs font-black text-rose-600 uppercase tracking-wider">Failed to load circulars</p>
+        <p class="text-xs font-black text-rose-600 uppercase tracking-wider">${err.message || 'Failed to load circulars'}</p>
       </div>
     `;
     lucide.createIcons();
