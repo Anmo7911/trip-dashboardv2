@@ -817,7 +817,7 @@ async function verifyToken(type, token, queryParam) {
   const queryType = text(type).toLowerCase();
   const searchVal = text(queryParam || token);
 
-  if (!searchVal) {
+  if (!searchVal && queryType !== 'notice') {
     return { valid: false, error: 'Missing search value or verification token' };
   }
 
@@ -907,42 +907,30 @@ async function verifyToken(type, token, queryParam) {
   }
 
   // 3. OFFICIAL NOTICE / GUIDELINE VERIFICATION
- 
-  // 3. OFFICIAL NOTICE / GUIDELINE VERIFICATION
   if (queryType === 'notice') {
     try {
       const noticeRes = await fetchNoticeFromGoogleSheet(searchVal);
       
-      // Support array responses or object responses with valid/pages/notices
-      const isOk = noticeRes && (noticeRes.valid !== false || Array.isArray(noticeRes) || noticeRes.pages || noticeRes.notices);
-      
-      if (!isOk) {
-        return { valid: false, error: 'Notice record not found in official ledger' };
+      if (!noticeRes || noticeRes.valid === false) {
+        return { valid: false, error: noticeRes?.error || 'Notice record not found' };
       }
 
-      let pagesList = [];
-      if (Array.isArray(noticeRes)) {
-        pagesList = noticeRes;
-      } else if (Array.isArray(noticeRes.pages)) {
-        pagesList = noticeRes.pages;
-      } else if (Array.isArray(noticeRes.notices)) {
-        pagesList = noticeRes.notices;
-      } else if (noticeRes.notice) {
-        pagesList = [noticeRes.notice];
-      }
+      const pagesList = Array.isArray(noticeRes.pages) 
+        ? noticeRes.pages 
+        : (Array.isArray(noticeRes) ? noticeRes : [noticeRes.notice || noticeRes]);
 
       return {
         valid: true,
         type: 'notice',
         isVerified: noticeRes.isVerified !== false,
         pages: pagesList,
-        notice: pagesList[0] || noticeRes
+        notice: pagesList[0] || {}
       };
     } catch (err) {
-      return { valid: false, error: 'Failed to verify notice record' };
+      return { valid: false, error: 'Failed to verify notice record: ' + err.message };
     }
   }
-
+  
   return { valid: false, error: 'Invalid verification type parameter' };
 }
 
