@@ -939,7 +939,7 @@
         <div class="flex-1 flex flex-col relative pt-1 min-w-0">
           <div class="h-14 flex flex-col justify-center items-center px-3 text-center overflow-hidden">
             <h1 id="eid-title" class="text-[16px] font-black tracking-tight uppercase text-indigo-700 leading-tight w-full truncate">
-              VALLEY OF FLOWERS
+              TRIP TITLE
             </h1>
             <p id="eid-subtitle" class="text-[7.5px] font-bold tracking-[0.18em] text-slate-400 uppercase mt-0.5 truncate w-full hidden"></p>
           </div>
@@ -992,7 +992,7 @@
           <div class="flex justify-center items-center mb-1.5 w-full min-h-[44px]">
             <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG" alt="Logo" class="w-[70px] max-h-[55px] object-contain grayscale contrast-150" />
           </div>
-          <div class="title bold" id="pos-bill-title">VALLEY OF FLOWERS<br><span style="font-weight: 400; font-size: 0.95em;">EXPEDITION</span></div>
+          <div class="title bold" id="pos-bill-title">TRIP TITLE<br><span style="font-weight: 400; font-size: 0.95em;">EXPEDITION</span></div>
           <div class="sub-info">
             Expense Reimbursement & Settlement<br />
             Audit Verified | Digital Pass Record
@@ -1380,7 +1380,7 @@
     }
 
     function renderMember(m, isVerified) {
-      document.getElementById('eid-title').innerText = m.tripName || 'VALLEY OF FLOWERS';
+      document.getElementById('eid-title').innerText = m.tripName || 'TRIP TITLE';
       document.getElementById('eid-name').innerText = m.name || 'Member Name';
       document.getElementById('eid-designation').innerText = m.designation || 'Member';
       document.getElementById('eid-role').innerText = m.memberRole || '-';
@@ -1456,7 +1456,7 @@
     }
 
     function renderBill(b, isVerified) {
-      document.getElementById('pos-bill-title').innerHTML = b.storeTitle || 'VALLEY OF FLOWERS<br><span style="font-weight: 400; font-size: 0.95em;">EXPEDITION</span>';
+      document.getElementById('pos-bill-title').innerHTML = b.storeTitle || 'TRIP TITLE<br><span style="font-weight: 400; font-size: 0.95em;">EXPEDITION</span>';
       document.getElementById('pos-bill-date').innerText = b.dateString || 'ALL DATES';
       document.getElementById('pos-bill-time').innerText = b.timeString || '--:--:--';
       document.getElementById('pos-bill-invoice').innerText = `#${b.invoiceNo || 'INV-0001'}`;
@@ -1621,13 +1621,13 @@
               <div class="rule"></div>
 
               <div class="title">
-                <h1>${n.mainTitle || 'VALLEY OF FLOWERS'}</h1>
-                <h2>${n.subTitle || 'GUIDELINES'}</h2>
+                <h1>${n.mainTitle || 'TRIP TITLE'}</h1>
+                <h2>${n.subTitle || '#TRIPOF AND DATE'}</h2>
               </div>
 
               <div class="rule"></div>
 
-              <div class="ref-no">Ref. No. - ${n.refNo || 'VOF0725/01'}</div>
+              <div class="ref-no">Ref. No. - ${n.refNo || 'BRTWY00/00'}</div>
 
               ${n.noticeHeading && n.noticeHeading.trim() !== '' ? `<div class="notice-doc-heading">${n.noticeHeading}</div>` : ''}
 
