@@ -5727,7 +5727,7 @@ const places = payload.places.filter(p => p.tripDay || p.location);
       if (!member) return;
 
       // Text Injections
-      document.getElementById('eid-title').innerText = globalActiveDataPayloadBackup.eidHeading || globalActiveDataPayloadBackup.tripName || 'VALLEY OF FLOWERS';
+      document.getElementById('eid-title').innerText = globalActiveDataPayloadBackup.eidHeading || globalActiveDataPayloadBackup.tripName || 'TRIP TITLE';
       
       const subtitleEl = document.getElementById('eid-subtitle');
       if (globalActiveDataPayloadBackup.eidSubheading && globalActiveDataPayloadBackup.eidSubheading.trim() !== "") {
@@ -9034,16 +9034,16 @@ function openNoticeA4Preview(pageIndex) {
       <main class="notice-page">
         <div class="content">
           <header class="topbar">
-            <div class="release">${n.releaseDate || '02 AUG 2026, Press Release'}</div>
+            <div class="release">${n.releaseDate || 'Press Release'}</div>
             <div class="code-top"><div class="barcode-container" id="${topBarcodeId}"></div></div>
           </header>
           <div class="rule"></div>
           <div class="title">
-            <h1>${n.mainTitle || 'VALLEY OF FLOWERS'}</h1>
-            <h2>${n.subTitle || 'GUIDELINES'}</h2>
+            <h1>${n.mainTitle || 'TRIP TITLE'}</h1>
+            <h2>${n.subTitle || 'NOTIFICATION'}</h2>
           </div>
           <div class="rule"></div>
-          <div class="ref-no">Ref. No. - ${n.refNo || 'VOF0725/01'}</div>
+          <div class="ref-no">Ref. No. - ${n.refNo || 'BRTWY00/00'}</div>
           ${n.noticeHeading ? `<div class="notice-doc-heading">${n.noticeHeading}</div>` : ''}
           <div>${sectionsHtml}</div>
         </div>
