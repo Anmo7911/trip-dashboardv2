@@ -2561,17 +2561,11 @@
     <!-- Outer header container with increased height for desktop -->
 <div class="relative z-20 w-full max-w-md lg:max-w-5xl mx-auto px-4 pt-2.5 pb-8 flex flex-col justify-start h-[190px] sm:h-[210px] lg:h-[235px]">
       
-     <!-- Top Action Bar: Notifications & Floating Chat Button (Mobile) -->
-<div class="flex items-center justify-end w-full h-9 sm:h-10 gap-2">
-  <!-- Notifications Bell Button -->
+    <!-- Top Action Bar: Bell Notification Button (Chat removed & replaced by Bell) -->
+<div class="flex items-center justify-end w-full h-9 sm:h-10">
   <button type="button" onclick="showTab('notices', this)" class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/80 hover:bg-white/95 backdrop-blur-md border border-white/80 shadow-md flex items-center justify-center text-slate-800 active:scale-95 transition-all outline-none" title="Official Notices">
     <i data-lucide="bell" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-800 stroke-[2.2]"></i>
     <span id="notices-unread-dot" class="absolute top-0 right-0 w-2.5 h-2.5 bg-indigo-600 border-2 border-white rounded-full hidden shadow-sm"></span>
-  </button>
-
-  <button type="button" onclick="openChatModal()" class="lg:hidden relative w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/80 hover:bg-white/95 backdrop-blur-md border border-white/80 shadow-md flex items-center justify-center text-slate-800 active:scale-95 transition-all outline-none" title="Trip Messenger">
-    <i data-lucide="message-circle" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-800 stroke-[2.2]"></i>
-    <span id="chat-unread-dot" class="absolute top-0 right-0 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full hidden shadow-sm"></span>
   </button>
 </div>
 
@@ -3563,6 +3557,22 @@
           <span>My E-ID Pass</span>
         </button>
         <div id="more-sign-off-container" class="shrink-0"></div>
+      </div>
+
+      <!-- Promoted Trip Messenger / Chat Button -->
+      <div>
+        <button type="button" onclick="toggleMoreMenu(); openChatModal();" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-200/50 active:scale-[0.98] transition-all">
+          <div class="flex items-center gap-3">
+            <div class="w-7 h-7 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+              <i data-lucide="messages-square" class="w-4 h-4 text-white"></i>
+            </div>
+            <div class="text-left leading-none">
+              <p class="text-xs font-black uppercase tracking-wider">Trip Messenger</p>
+              <p class="text-[8px] font-bold text-indigo-200 uppercase tracking-widest mt-0.5">Live Team Chat & Polls</p>
+            </div>
+          </div>
+          <span id="mobile-drawer-chat-unread-dot" class="w-2.5 h-2.5 rounded-full bg-rose-400 border-2 border-white hidden shadow-sm animate-pulse"></span>
+        </button>
       </div>
 
       <!-- Categorized Navigation Buttons -->
@@ -6506,10 +6516,10 @@ function closeArchiveGalleryPage() {
     function openChatModal() {
       isChatOpen = true;
       const modal = document.getElementById('squad-chat-modal');
-      const unreadDot = document.getElementById('chat-unread-dot');
       const deskUnreadDot = document.getElementById('desktop-chat-unread-dot');
-      if (unreadDot) unreadDot.classList.add('hidden');
+      const drawerUnreadDot = document.getElementById('mobile-drawer-chat-unread-dot');
       if (deskUnreadDot) deskUnreadDot.classList.add('hidden');
+      if (drawerUnreadDot) drawerUnreadDot.classList.add('hidden');
       
       modal.classList.remove('hidden');
       
@@ -6661,10 +6671,10 @@ function closeArchiveGalleryPage() {
       const currentUser = localStorage.getItem('trekLoggedInUser') || "Unknown";
 
       if (messages.length > lastMessageCount && !isChatOpen && lastMessageCount !== 0) {
-        const unreadDot = document.getElementById('chat-unread-dot');
         const deskUnreadDot = document.getElementById('desktop-chat-unread-dot');
-        if (unreadDot) unreadDot.classList.remove('hidden');
+        const drawerUnreadDot = document.getElementById('mobile-drawer-chat-unread-dot');
         if (deskUnreadDot) deskUnreadDot.classList.remove('hidden');
+        if (drawerUnreadDot) drawerUnreadDot.classList.remove('hidden');
       }
 
       if (messages.length === 0) {
