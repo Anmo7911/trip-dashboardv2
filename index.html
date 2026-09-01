@@ -8874,7 +8874,12 @@ function renderNoticesFeed(noticeData) {
   container.innerHTML = pages.map((n, idx) => {
     const refNo = n.refNo || 'VOF0725/01';
     const mainTitle = n.mainTitle || (globalActiveDataPayloadBackup && globalActiveDataPayloadBackup.tripName) || 'BHARAT WAY';
-    const subHeading = n.noticeHeading || n.subTitle || 'GUIDELINES & TRAVEL ADVISORY';
+    
+    // Always use B11 (noticeHeading) if filled, otherwise fallback to subTitle or default
+    const heading = (n.noticeHeading && n.noticeHeading.trim() !== '') 
+      ? n.noticeHeading 
+      : (n.subTitle || 'GUIDELINES & TRAVEL ADVISORY');
+      
     const releaseDate = n.releaseDate || n.bottomDate || 'Official Circular';
 
     return `
@@ -8890,7 +8895,7 @@ function renderNoticesFeed(noticeData) {
               </span>
             </div>
             <h3 class="text-sm sm:text-base font-black text-slate-800 uppercase tracking-tight mt-2 leading-snug group-hover:text-indigo-600 transition-colors">
-              ${subHeading}
+              ${heading}
             </h3>
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
               ${mainTitle}
