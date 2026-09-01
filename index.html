@@ -8836,11 +8836,10 @@ async function loadNoticesData() {
   `;
 
   try {
-    // Send the tripCode or empty string to fetch all available notices
-    const tripCode = (globalActiveDataPayloadBackup && (globalActiveDataPayloadBackup.liveTripCode || globalActiveDataPayloadBackup.tripCode)) || '';
-    const res = await apiRequest('verify', { type: 'notice', query: tripCode });
+    // Send empty query so GAS fetches all available sheets automatically
+    const res = await apiRequest('verify', { type: 'notice', query: '' });
 
-    if (res && res.valid && ((res.pages && res.pages.length > 0) || res.notice)) {
+    if (res && res.valid && res.pages && res.pages.length > 0) {
       cachedNoticesPayload = res;
       renderNoticesFeed(res);
     } else {
