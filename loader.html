@@ -1,460 +1,511 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GTA V Loader - Bharat Way</title>
 
-  <!-- MapLibre GL JS -->
-  <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
-  <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#25262B">
+  <title>Bharat Way</title>
+
+  <!-- =====================================================
+       FONTS
+  ====================================================== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Noto+Sans+Bengali:wght@300;400;500&family=Noto+Sans+Devanagari:wght@300;400;500&family=Noto+Sans+Gujarati:wght@300;400;500&family=Noto+Sans+Gurmukhi:wght@300;400;500&family=Noto+Sans+Kannada:wght@300;400;500&family=Noto+Sans+Malayalam:wght@300;400;500&family=Noto+Sans+Oriya:wght@300;400;500&family=Noto+Sans+Tamil:wght@300;400;500&family=Noto+Sans+Telugu:wght@300;400;500&family=Noto+Naskh+Arabic:wght@300;400;500&display=swap"
+    rel="stylesheet"
+  >
 
   <style>
+    /* =====================================================
+       RESET
+    ====================================================== */
     * {
-      box-sizing: border-box;
-      user-select: none;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
-    body, html {
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      background: #111a14;
-      font-family: 'Arial Black', Impact, -apple-system, sans-serif;
-    }
-
-    #camera-rig {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      will-change: transform;
-    }
-
-    #map {
+    html,
+    body {
       width: 100%;
       height: 100%;
-      background: #111a14;
-      filter: contrast(120%) saturate(130%) brightness(105%);
-      transition: filter 0.05s ease;
+      overflow: hidden;
     }
 
-    /* High-Altitude Cloud Overlay */
-    #cloud-curtain {
+    body {
+      background: #25262B;
+      font-family: "Inter", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* =====================================================
+       SPLASH
+    ====================================================== */
+    #splash {
       position: fixed;
       inset: 0;
-      pointer-events: none;
-      z-index: 15;
-      background: radial-gradient(circle at center, rgba(230, 240, 255, 0.95) 0%, rgba(180, 205, 230, 0.8) 50%, rgba(100, 130, 160, 0.95) 100%);
-      opacity: 0;
-      transition: opacity 0.35s ease;
-      mix-blend-mode: soft-light;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #25262B;
+      overflow: hidden;
+      z-index: 99999;
     }
 
-    #cloud-curtain.active {
+    /* =====================================================
+       SUBTLE BACKGROUND
+    ====================================================== */
+    #splash::before {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      pointer-events: none;
+      background:
+        radial-gradient(
+          circle at 62% 48%,
+          rgba(100, 45, 50, 0.14),
+          transparent 24%
+        ),
+        radial-gradient(
+          circle at 82% 47%,
+          rgba(160, 130, 55, 0.08),
+          transparent 25%
+        );
+      filter: blur(40px);
+      opacity: 0.75;
+    }
+
+    /* =====================================================
+       GREETING WRAPPER
+    ====================================================== */
+    .greeting-wrap {
+      position: absolute;
+      left: 50%;
+      top: 45%;
+      transform: translate(-50%, -50%);
+      width: max-content;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    /* =====================================================
+       EDITORIAL LUXURY: SHIMMER / GRADIENT MASK TYPOGRAPHY
+    ====================================================== */
+    .shimmer-text {
+      background: linear-gradient(
+        110deg,
+        #D2D3D8 0%,
+        #FFFFFF 28%,
+        #D4AF37 46%,
+        #FFFFFF 64%,
+        #CBCDD4 100%
+      );
+      background-size: 240% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: textShimmer 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    @keyframes textShimmer {
+      0% {
+        background-position: 120% 0;
+      }
+      100% {
+        background-position: -120% 0;
+      }
+    }
+
+    /* =====================================================
+       ANIMATED GREETING WORD ONLY
+    ====================================================== */
+    #greeting-word {
+      font-family: "Inter", "Noto Sans Devanagari", sans-serif;
+      font-size: clamp(28px, 5vw, 39px);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.7px;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translate3d(0, 9px, 0);
+      will-change: transform, opacity;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* =====================================================
+       STATIC USER NAME (No Motion)
+    ====================================================== */
+    #user-name-display {
+      font-family: "Inter", sans-serif;
+      font-size: clamp(28px, 5vw, 39px);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.7px;
+      white-space: nowrap;
+      user-select: none;
+      -webkit-user-select: none;
       opacity: 1;
     }
 
-    /* Camera Tremor Keyframes */
-    @keyframes gta-jolt {
-      0% { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); filter: brightness(100%); }
-      15% { transform: translate3d(-14px, 10px, 0) scale(1.05) rotate(-0.8deg); filter: brightness(140%) contrast(150%); }
-      35% { transform: translate3d(12px, -12px, 0) scale(1.04) rotate(0.6deg); filter: brightness(125%) contrast(130%); }
-      55% { transform: translate3d(-8px, -6px, 0) scale(1.02) rotate(-0.3deg); }
-      75% { transform: translate3d(6px, 4px, 0) scale(1.01) rotate(0.2deg); }
-      90% { transform: translate3d(-2px, 2px, 0) scale(1.005) rotate(0deg); }
-      100% { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); filter: brightness(100%); }
+    /* =====================================================
+       ENTER / EXIT (Applies strictly to greeting word)
+    ====================================================== */
+    #greeting-word.enter {
+      animation: greetingEnter 95ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
 
-    .jolting {
-      animation: gta-jolt 0.22s cubic-bezier(0.15, 0.9, 0.25, 1) both;
+    @keyframes greetingEnter {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 9px, 0);
+      }
+      35% {
+        opacity: 0.65;
+        transform: translate3d(0, 5px, 0);
+      }
+      70% {
+        opacity: 0.92;
+        transform: translate3d(0, 2px, 0);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
     }
 
-    .jolt-blur {
-      filter: contrast(140%) brightness(135%) blur(3px) !important;
+    #greeting-word.exit {
+      animation: greetingExit 95ms cubic-bezier(0.55, 0, 0.85, 0.45) forwards;
     }
 
-    /* Screen Flash & Vignette */
-    #fx-flash {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 25;
+    @keyframes greetingExit {
+      0% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+      35% {
+        opacity: 0.95;
+        transform: translate3d(0, -3px, 0);
+      }
+      70% {
+        opacity: 0.55;
+        transform: translate3d(0, -6px, 0);
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(0, -9px, 0);
+      }
+    }
+
+    /* =====================================================
+       FINAL BRAND
+    ====================================================== */
+    #brand {
+      position: absolute;
+      left: 50%;
+      top: 45%;
+      transform: translate(-50%, calc(-50% + 8px));
+      text-align: center;
       opacity: 0;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(255, 210, 120, 0.4) 100%);
-      mix-blend-mode: screen;
-      transition: opacity 0.05s ease-out;
-    }
-
-    #fx-vignette {
-      position: fixed;
-      inset: 0;
+      z-index: 3;
       pointer-events: none;
-      z-index: 10;
-      box-shadow: inset 0 0 130px rgba(0, 0, 0, 0.9);
+      user-select: none;
     }
 
-    .flash-boom {
-      opacity: 1 !important;
-    }
-
-    /* Bottom-Right HUD Card */
-    #gta-location-hud {
-      position: fixed;
-      bottom: 40px;
-      right: 40px;
-      z-index: 30;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-      letter-spacing: 2px;
-    }
-
-    #hud-user {
-      color: #38bdf8;
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 2px;
-    }
-
-    #hud-city {
-      color: #fff;
-      font-size: 28px;
-      text-transform: uppercase;
+    .brand-name {
+      font-family: "Inter", sans-serif;
+      font-size: clamp(29px, 5vw, 40px);
+      font-weight: 400;
       line-height: 1;
-    }
-
-    #hud-state {
-      color: #00ff88;
-      font-size: 13px;
-      margin-top: 4px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-    }
-
-    /* Map Marker Pin & Labels */
-    .map-marker-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-    }
-
-    .map-blip {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 2px solid #fff;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.95);
-    }
-    .blip-delhi { background: #0088ff; }
-    .blip-munnar { background: #00ff88; }
-
-    .marker-label {
-      margin-top: 6px;
-      background: rgba(0, 0, 0, 0.85);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      padding: 3px 8px;
-      border-radius: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      text-transform: uppercase;
+      letter-spacing: -0.8px;
       white-space: nowrap;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+      position: relative;
+    }
+
+    /* Subtle soft bloom glow behind the brand */
+    .brand-name::before {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      color: rgba(255, 235, 190, 0.45);
+      filter: blur(12px);
+      opacity: 0;
+      transition: opacity 350ms ease;
+    }
+
+    /* Dynamic divider line that draws outward */
+    .brand-line {
+      width: 0;
+      height: 1px;
+      margin: 12px auto 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(238, 238, 239, 0.8) 50%,
+        transparent 100%
+      );
+      opacity: 0;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+    }
+
+    /* =====================================================
+       BRAND REVEAL & POLISH
+    ====================================================== */
+    #brand.show {
+      animation: brandReveal 220ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    #brand.show .brand-name::before {
+      opacity: 1;
+    }
+
+    #brand.show .brand-line {
+      animation: lineDraw 380ms cubic-bezier(0.25, 1, 0.5, 1) 90ms forwards;
+    }
+
+    @keyframes brandReveal {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, calc(-50% + 8px));
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    @keyframes lineDraw {
+      0% {
+        width: 0;
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.9;
+      }
+      100% {
+        width: 48px;
+        opacity: 0.7;
+      }
+    }
+
+    /* =====================================================
+       MOBILE
+    ====================================================== */
+    @media (max-width: 480px) {
+      #greeting-word,
+      #user-name-display {
+        font-size: 29px;
+        letter-spacing: -0.6px;
+      }
+
+      .brand-name {
+        font-size: 29px;
+      }
+    }
+
+    /* =====================================================
+       LARGE SCREEN
+    ====================================================== */
+    @media (min-width: 900px) {
+      #greeting-word,
+      #user-name-display {
+        font-size: 39px;
+      }
+
+      .brand-name {
+        font-size: 40px;
+      }
+    }
+
+    /* =====================================================
+       REDUCED MOTION
+    ====================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      #greeting-word,
+      #brand,
+      .shimmer-text,
+      .brand-line {
+        animation: none !important;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <div id="camera-rig">
-    <div id="cloud-curtain"></div>
-    <div id="fx-flash"></div>
-    <div id="fx-vignette"></div>
-    <div id="map"></div>
-  </div>
+  <!-- =====================================================
+       SPLASH SCREEN
+  ====================================================== -->
+  <div id="splash">
 
-  <div id="gta-location-hud">
-    <div id="hud-user"></div>
-    <div id="hud-city">NEW DELHI</div>
-    <div id="hud-state">CAPITAL REGION</div>
+    <!-- GREETING -->
+    <div id="greeting-wrap" class="greeting-wrap">
+      <div id="greeting-word" class="shimmer-text"></div>
+      <div id="user-name-display" class="shimmer-text"></div>
+    </div>
+
+    <!-- FINAL BRAND -->
+    <div id="brand">
+      <div class="brand-name shimmer-text" data-text="Bharat Way">
+        Bharat Way
+      </div>
+      <div class="brand-line"></div>
+    </div>
+
   </div>
 
   <script>
-    // --- QUERY PARAMETER EXTRACTION (From your old loader) ---
+    /* =====================================================
+       INDIAN GREETINGS
+    ====================================================== */
+    const greetings = [
+      { text: "नमस्ते", lang: "hi" },
+      { text: "Hello", lang: "en" },
+      { text: "வணக்கம்", lang: "ta" },
+      { text: "নমস্কার", lang: "bn" },
+      { text: "ನಮಸ್ಕಾರ", lang: "kn" },
+      { text: "നമസ്കാരം", lang: "ml" },
+      { text: "ਨਮਸਕਾਰ", lang: "pa" },
+      { text: "سلام", lang: "ur" },
+      { text: "નમસ્તે", lang: "gu" },
+      { text: "नमस्कार", lang: "mr" },
+    ];
+
+    /* =====================================================
+       SPEED SETTINGS (Uniform Fastest Speed)
+    ====================================================== */
+    const FIRST_HOLD = 80;
+    const NORMAL_HOLD = 80;
+    const FINAL_HOLD = 80;
+    const ENTER_TIME = 75;
+    const EXIT_TIME = 75;
+    const GAP_TIME = 10;
+    const BRAND_HOLD = 450;
+    const FINAL_FADE = 160;
+
+    /* =====================================================
+       ELEMENTS & PARAMS
+    ====================================================== */
+    const greetingWord = document.getElementById("greeting-word");
+    const userNameDisplay = document.getElementById("user-name-display");
+    const greetingWrap = document.getElementById("greeting-wrap");
+    const brand = document.getElementById("brand");
+    const splash = document.getElementById("splash");
+
+    // Extract user name from query param
     const urlParams = new URLSearchParams(window.location.search);
     const rawName = urlParams.get('name') || '';
     const cleanName = rawName.trim();
-    const hudUser = document.getElementById('hud-user');
 
+    // Render static name suffix once
     if (cleanName) {
-      hudUser.innerText = `AGENT: ${cleanName.toUpperCase()}`;
+      userNameDisplay.textContent = `, ${cleanName}`;
     }
 
-    // --- AUDIO ENGINE ---
-    let audioCtx = null;
+    /* =====================================================
+       WAIT
+    ====================================================== */
+    function wait(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
-    function getAudioContext() {
-      if (!audioCtx) {
-        const AudioClass = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioClass();
+    /* =====================================================
+       SET GREETING
+    ====================================================== */
+    function setGreeting(item) {
+      greetingWord.textContent = item.text;
+      greetingWord.setAttribute("lang", item.lang);
+    }
+
+    /* =====================================================
+       ENTER
+    ====================================================== */
+    async function enterGreeting(item) {
+      setGreeting(item);
+      greetingWord.classList.remove("exit", "enter");
+      greetingWord.style.opacity = "0";
+      greetingWord.style.transform = "translate3d(0, 9px, 0)";
+      void greetingWord.offsetWidth;
+      greetingWord.classList.add("enter");
+      await wait(ENTER_TIME);
+    }
+
+    /* =====================================================
+       CHANGE GREETING
+    ====================================================== */
+    async function changeGreeting(next) {
+      greetingWord.classList.remove("enter");
+      greetingWord.classList.add("exit");
+      await wait(EXIT_TIME);
+
+      greetingWord.classList.remove("exit");
+      greetingWord.style.opacity = "0";
+      greetingWord.style.transform = "translate3d(0, 9px, 0)";
+
+      setGreeting(next);
+      void greetingWord.offsetWidth;
+      await wait(GAP_TIME);
+
+      greetingWord.classList.add("enter");
+      await wait(ENTER_TIME);
+    }
+
+    /* =====================================================
+       MAIN SPLASH
+    ====================================================== */
+    async function startSplash() {
+      // FIRST GREETING
+      await enterGreeting(greetings[0]);
+      await wait(NORMAL_HOLD);
+
+      // GREETING LOOP
+      for (let i = 1; i < greetings.length; i++) {
+        await changeGreeting(greetings[i]);
+        await wait(NORMAL_HOLD);
       }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
+
+      // FINAL GREETING EXIT
+      greetingWord.classList.remove("enter");
+      greetingWord.classList.add("exit");
+      await wait(EXIT_TIME);
+
+      // Hide greeting & static user name before brand appears
+      if (greetingWrap) {
+        greetingWrap.style.visibility = "hidden";
       }
-      return audioCtx;
-    }
 
-    window.addEventListener('click', () => getAudioContext(), { once: true });
-    window.addEventListener('keydown', () => getAudioContext(), { once: true });
-    window.addEventListener('touchstart', () => getAudioContext(), { once: true });
+      // BHARAT WAY
+      brand.classList.add("show");
+      await wait(BRAND_HOLD);
 
-    function playHeavyJolt(direction = 'up', stepLevel = 1) {
-      try {
-        const ctx = getAudioContext();
-        if (ctx.state !== 'running') return;
-        const now = ctx.currentTime;
-
-        const duration = 0.38;
-        const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * duration), ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < buffer.length; i++) data[i] = Math.random() * 2 - 1;
-
-        const noise = ctx.createBufferSource();
-        noise.buffer = buffer;
-
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.Q.setValueAtTime(3.8, now);
-
-        if (direction === 'up') {
-          filter.frequency.setValueAtTime(150 * stepLevel, now);
-          filter.frequency.exponentialRampToValueAtTime(750 * stepLevel, now + duration);
-        } else {
-          filter.frequency.setValueAtTime(800 * stepLevel, now);
-          filter.frequency.exponentialRampToValueAtTime(160 * stepLevel, now + duration);
-        }
-
-        const noiseGain = ctx.createGain();
-        noiseGain.gain.setValueAtTime(0.01, now);
-        noiseGain.gain.linearRampToValueAtTime(0.9, now + 0.04);
-        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-
-        noise.connect(filter);
-        filter.connect(noiseGain);
-        noiseGain.connect(ctx.destination);
-        noise.start(now);
-
-        const osc = ctx.createOscillator();
-        const oscGain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(140, now);
-        osc.frequency.exponentialRampToValueAtTime(32, now + 0.22);
-
-        oscGain.gain.setValueAtTime(0.85, now);
-        oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-
-        osc.connect(oscGain);
-        oscGain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.24);
-      } catch (e) {}
-    }
-
-    // --- LOCATIONS CONFIG ---
-    const locations = {
-      delhi: { 
-        name: 'NEW DELHI', 
-        state: 'CAPITAL REGION',
-        coords: [77.2295, 28.6129], 
-        blip: 'blip-delhi' 
-      },
-      munnar: { 
-        name: 'MUNNAR', 
-        state: 'KERALA',
-        coords: [77.0595, 10.0889], 
-        blip: 'blip-munnar' 
+      // SIGNAL PARENT APP
+      if (window.parent) {
+        window.parent.postMessage('ANIMATION_COMPLETE', '*');
       }
-    };
 
-    const satelliteStyle = {
-      version: 8,
-      sources: {
-        'satellite-tiles': {
-          type: 'raster',
-          tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-          tileSize: 256,
-          maxzoom: 19
-        }
-      },
-      layers: [
-        { id: 'background', type: 'background', paint: { 'background-color': '#111a14' } },
-        { id: 'satellite-layer', type: 'raster', source: 'satellite-tiles', minzoom: 0, maxzoom: 22, paint: { 'raster-fade-duration': 0 } }
-      ]
-    };
+      await wait(700);
 
-    const map = new maplibregl.Map({
-      container: 'map',
-      style: satelliteStyle,
-      center: locations.delhi.coords,
-      zoom: 16.5,
-      pitch: 0,
-      bearing: 0,
-      dragRotate: false,
-      pitchWithRotate: false,
-      fadeDuration: 0
-    });
-
-    const cameraRig = document.getElementById('camera-rig');
-    const mapEl = document.getElementById('map');
-    const flash = document.getElementById('fx-flash');
-    const hudCity = document.getElementById('hud-city');
-    const hudState = document.getElementById('hud-state');
-    const cloudCurtain = document.getElementById('cloud-curtain');
-
-    map.on('load', () => {
-      map.resize();
-
-      Object.keys(locations).forEach(k => {
-        const loc = locations[k];
-        const markerWrap = document.createElement('div');
-        markerWrap.className = 'map-marker-wrap';
-
-        const dot = document.createElement('div');
-        dot.className = `map-blip ${loc.blip}`;
-
-        const label = document.createElement('div');
-        label.className = 'marker-label';
-        label.innerText = loc.name;
-
-        markerWrap.appendChild(dot);
-        markerWrap.appendChild(label);
-
-        new maplibregl.Marker({ element: markerWrap })
-          .setLngLat(loc.coords)
-          .addTo(map);
-      });
-
-      // Start the sequence 1.2s after tiles load
-      setTimeout(runTransition, 1200);
-    });
-
-    function triggerJolt(duration = 220) {
-      flash.classList.add('flash-boom');
-      setTimeout(() => flash.classList.remove('flash-boom'), 60);
-
-      cameraRig.classList.remove('jolting');
-      mapEl.classList.remove('jolt-blur');
-      void cameraRig.offsetWidth;
-
-      cameraRig.classList.add('jolting');
-      mapEl.classList.add('jolt-blur');
-
-      setTimeout(() => {
-        cameraRig.classList.remove('jolting');
-        mapEl.classList.remove('jolt-blur');
-      }, duration);
+      // CLEANUP
+      if (splash) {
+        splash.remove();
+      }
     }
 
-    function snap(options) {
-      return new Promise(resolve => {
-        map.easeTo({
-          ...options,
-          pitch: 0,
-          bearing: 0,
-          easing: (t) => 1 - Math.pow(1 - t, 5),
-          essential: true
-        });
-        map.once('moveend', resolve);
-      });
-    }
-
-    function driftPause(duration, direction) {
-      return new Promise(resolve => {
-        const currentZoom = map.getZoom();
-        let zoomTarget = currentZoom;
-        if (direction === 'up') zoomTarget = currentZoom - 0.25;
-        if (direction === 'down') zoomTarget = currentZoom + 0.25;
-
-        map.easeTo({
-          zoom: zoomTarget,
-          bearing: (Math.random() - 0.5) * 1.5,
-          duration: duration,
-          pitch: 0,
-          easing: (t) => t,
-          essential: true
-        });
-        setTimeout(resolve, duration);
-      });
-    }
-
-    async function runTransition() {
-      const origin = locations.delhi;
-      const target = locations.munnar;
-
-      // STEP 1: Zoom Out 1
-      playHeavyJolt('up', 1.0);
-      triggerJolt();
-      await snap({ center: origin.coords, zoom: 11.5, duration: 380 });
-      await driftPause(300, 'up');
-
-      // STEP 2: Zoom Out 2
-      playHeavyJolt('up', 1.5);
-      triggerJolt();
-      await snap({ center: origin.coords, zoom: 7.5, duration: 400 });
-      await driftPause(300, 'up');
-
-      // STEP 3: Subcontinent View with Clouds
-      cloudCurtain.classList.add('active');
-      playHeavyJolt('up', 2.0);
-      triggerJolt();
-      await snap({ center: origin.coords, zoom: 5.0, duration: 450 });
-      await driftPause(350, 'up');
-
-      hudCity.innerText = 'LOCATING MUNNAR...';
-      hudState.innerText = 'EN ROUTE';
-
-      // STEP 4: High Altitude Pan across India
-      playHeavyJolt('up', 1.8);
-      await snap({ center: target.coords, zoom: 5.0, duration: 750 });
-      await driftPause(400, 'hold');
-
-      hudCity.innerText = target.name;
-      hudState.innerText = target.state;
-
-      // STEP 5: Zoom In 1
-      cloudCurtain.classList.remove('active');
-      playHeavyJolt('down', 2.0);
-      triggerJolt();
-      await snap({ center: target.coords, zoom: 7.5, duration: 400 });
-      await driftPause(300, 'down');
-
-      // STEP 6: Zoom In 2
-      playHeavyJolt('down', 1.5);
-      triggerJolt();
-      await snap({ center: target.coords, zoom: 11.5, duration: 380 });
-      await driftPause(300, 'down');
-
-      // STEP 7: Ground Landing
-      playHeavyJolt('down', 1.0);
-      triggerJolt(300);
-      await snap({ center: target.coords, zoom: 16.2, duration: 440, pitch: 0 });
-
-      // =======================================================
-      // CONNECT CODE TO INDEX.HTML (From your old loader)
-      // =======================================================
-      setTimeout(() => {
-        if (window.parent) {
-          window.parent.postMessage('ANIMATION_COMPLETE', '*');
-        }
-      }, 500);
+    /* =====================================================
+       START
+    ====================================================== */
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", startSplash);
+    } else {
+      startSplash();
     }
   </script>
 </body>
