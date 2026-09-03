@@ -1621,13 +1621,24 @@
         });
       }
 
+      // Stamp Dynamic Coordinates (C8: Right, D8: Bottom, E8: Size) with CSS baseline fallbacks
+      const stampRight = (n.stampRight && !isNaN(n.stampRight)) ? n.stampRight : 58;
+      const stampBottom = (n.stampBottom && !isNaN(n.stampBottom)) ? n.stampBottom : 26;
+      const stampSize = (n.stampSize && !isNaN(n.stampSize)) ? n.stampSize : 27;
+      const stampStyle = `style="right: ${stampRight}mm; bottom: ${stampBottom}mm; width: ${stampSize}mm; height: ${stampSize}mm;"`;
       const stampImgTag = n.stampUrl 
-        ? `<img class="stamp" src="${n.stampUrl}" alt="Stamp">` 
+        ? `<img class="stamp" ${stampStyle} src="${n.stampUrl}" alt="Stamp">` 
         : '';
+
+      // Emblem Dynamic Coordinates (C9: Right, D9: Bottom, E9: Size) with CSS baseline fallbacks
+      const emblemRight = (n.emblemRight && !isNaN(n.emblemRight)) ? n.emblemRight : 12;
+      const emblemBottom = (n.emblemBottom && !isNaN(n.emblemBottom)) ? n.emblemBottom : 23;
+      const emblemSize = (n.emblemSize && !isNaN(n.emblemSize)) ? n.emblemSize : 29;
+      const emblemStyle = `style="right: ${emblemRight}mm; bottom: ${emblemBottom}mm; width: ${emblemSize}mm; height: ${emblemSize}mm;"`;
 
       const emblemSrc = n.emblemUrl || (isVerified ? STAMP_ASSETS.verifiedMain : STAMP_ASSETS.unverified);
       const emblemImgTag = emblemSrc 
-        ? `<img class="emblem" src="${emblemSrc}" alt="Emblem">` 
+        ? `<img class="emblem" ${emblemStyle} src="${emblemSrc}" alt="Emblem">` 
         : '';
 
       pageWrapper.innerHTML = `
