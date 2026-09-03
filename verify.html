@@ -845,42 +845,42 @@
   <section class="w-full max-w-sm mx-auto mt-4 mb-2">
     <div class="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm space-y-2.5">
       
-      <!-- Type Toggle: Member / Invoice / Notice -->
-      <div class="grid grid-cols-3 p-1 bg-slate-100 rounded-xl gap-1">
-        <button 
-          type="button" 
-          id="toggle-member" 
-          onclick="setSearchMode('member')"
-          class="py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-white text-indigo-600 shadow-sm">
-          Member
-        </button>
-        <button 
-          type="button" 
-          id="toggle-invoice" 
-          onclick="setSearchMode('invoice')"
-          class="py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-slate-500 hover:text-slate-800">
-          Invoice
-        </button>
-        <button 
-          type="button" 
-          id="toggle-notice" 
-          onclick="setSearchMode('notice')"
-          class="py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-slate-500 hover:text-slate-800">
-          Notice
-        </button>
-      </div>
+      <!-- Type Toggle: Notice / Invoice / Member -->
+<div class="grid grid-cols-3 p-1 bg-slate-100 rounded-xl gap-1">
+  <button 
+    type="button" 
+    id="toggle-notice" 
+    onclick="setSearchMode('notice')"
+    class="py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-white text-indigo-600 shadow-sm">
+    Notice
+  </button>
+  <button 
+    type="button" 
+    id="toggle-invoice" 
+    onclick="setSearchMode('invoice')"
+    class="py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-slate-500 hover:text-slate-800">
+    Invoice
+  </button>
+  <button 
+    type="button" 
+    id="toggle-member" 
+    onclick="setSearchMode('member')"
+    class="py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-slate-500 hover:text-slate-800">
+    Member
+  </button>
+</div>
 
       <!-- Search Input Form -->
       <form onsubmit="handleManualSearch(event)" class="relative flex items-center gap-1.5">
         <div class="relative flex-1">
           <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
           <input 
-            type="text" 
-            id="searchInput" 
-            placeholder="Enter Member Name..."
-            autocomplete="off"
-            class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 rounded-xl pl-9 pr-3 py-2 text-xs font-bold text-slate-800 outline-none transition-all placeholder-slate-400 uppercase tracking-wide"
-          />
+  type="text" 
+  id="searchInput" 
+  placeholder="Enter Ref No. (e.g. VOF0725/01)..."
+  autocomplete="off"
+  class="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 rounded-xl pl-9 pr-3 py-2 text-xs font-bold text-slate-800 outline-none transition-all placeholder-slate-400 uppercase tracking-wide"
+/>
         </div>
         <button 
           type="submit" 
@@ -1221,7 +1221,7 @@
     unverified: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhuccuqfGVUJJ1McBPCDg3JG2g86rOTtEyKQZSPGfRGYW4jEGfy3-6aqBJ8du76CvqfJpNUNvDJn-yqw0SC-066uf8vsW2LOwC7YNrf8lt8oxzxHASURIK5orsxmiIuNueTXsCRedCMU5cqTOtlV4minno5KCuHNDMCgliAeAUsLoVk5HtITsrAUniDaton/s1571/d9b285183cdd6ab8de1b39d89277dffc.png'
   };
 
-  let activeSearchMode = 'member';
+  let activeSearchMode = 'notice';
   const TRIP_CODE_LENGTH = 7;
 
   function getRandom(min, max) {
