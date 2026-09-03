@@ -9027,9 +9027,21 @@ function openNoticeA4Preview(pageIndex) {
       });
     }
 
-    const stampImgTag = n.stampUrl ? `<img class="stamp" src="${n.stampUrl}" alt="Stamp">` : '';
+    // Stamp Dynamic Coordinates (C8: Right, D8: Bottom, E8: Size) with CSS baseline fallbacks
+    const stampRight = (n.stampRight && !isNaN(n.stampRight)) ? n.stampRight : 54;
+    const stampBottom = (n.stampBottom && !isNaN(n.stampBottom)) ? n.stampBottom : 23.4;
+    const stampSize = (n.stampSize && !isNaN(n.stampSize)) ? n.stampSize : 27;
+    const stampStyle = `style="right: ${stampRight}mm; bottom: ${stampBottom}mm; width: ${stampSize}mm; height: ${stampSize}mm;"`;
+    const stampImgTag = n.stampUrl ? `<img class="stamp" ${stampStyle} src="${n.stampUrl}" alt="Stamp">` : '';
+
+    // Emblem Dynamic Coordinates (C9: Right, D9: Bottom, E9: Size) with CSS baseline fallbacks
+    const emblemRight = (n.emblemRight && !isNaN(n.emblemRight)) ? n.emblemRight : 12;
+    const emblemBottom = (n.emblemBottom && !isNaN(n.emblemBottom)) ? n.emblemBottom : 24;
+    const emblemSize = (n.emblemSize && !isNaN(n.emblemSize)) ? n.emblemSize : 29;
+    const emblemStyle = `style="right: ${emblemRight}mm; bottom: ${emblemBottom}mm; width: ${emblemSize}mm; height: ${emblemSize}mm;"`;
+
     const emblemSrc = n.emblemUrl || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhedtpRSWAz8ucbv0eQ0gfuqYWkzpXQP668Fup4p4q4IeGYtnD67z0fxkfa-ZHYh9nduNhu2rHXmd5EQUmnfRBjLA8_9WjFbqgOwN6Lty4BqcOWR6w32EfsJcn4mKKnRys1CZSZbzn93TRnz6FMOS1qT4KUG6SJTAMG4cQp2j-K9KQT-yxSs3XTuI097x6W/s1181/bbhhhhhhhhhh_inspyrenet.png';
-    const emblemImgTag = `<img class="emblem" src="${emblemSrc}" alt="Emblem">`;
+    const emblemImgTag = `<img class="emblem" ${emblemStyle} src="${emblemSrc}" alt="Emblem">`;
 
     pageWrapper.innerHTML = `
       <main class="notice-page">
