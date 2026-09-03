@@ -21,6 +21,22 @@
 
   <style>
 
+    .notice-digital-verify-footer {
+  position: absolute;
+  bottom: 3.5mm;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: 'Space Mono', monospace;
+  font-size: 5.5pt;
+  line-height: 1;
+  color: #64748b;
+  letter-spacing: 0.15mm;
+  text-transform: uppercase;
+  z-index: 10;
+  pointer-events: none;
+}
+
     
 
     .notice-doc-heading {
@@ -1086,580 +1102,484 @@
   </main>
 
   <script>
+  lucide.createIcons();
+
+  let statusCycleTimer = null;
+
+  function buildLoaderQr() {
+    const qrEl = document.getElementById("loader-qr-pattern");
+    if (!qrEl) return;
+    qrEl.innerHTML = '';
+    const size = 21;
+    let seed = 849204;
+
+    function random() {
+      seed = (seed * 9301 + 49297) % 233280;
+      return seed / 233280;
+    }
+
+    for (let row = 0; row < size; row++) {
+      for (let col = 0; col < size; col++) {
+        const inFinder = 
+          (row < 7 && col < 7) ||
+          (row < 7 && col >= 14) ||
+          (row >= 14 && col < 7);
+
+        if (inFinder) continue;
+
+        if (random() > 0.54) {
+          const module = document.createElement("div");
+          module.className = "module-sim";
+          module.style.gridRow = row + 1;
+          module.style.gridColumn = col + 1;
+          qrEl.appendChild(module);
+        }
+      }
+    }
+
+    function createFinder(className) {
+      const finder = document.createElement("div");
+      finder.className = "finder-sim " + className;
+      qrEl.appendChild(finder);
+    }
+
+    createFinder("top-left");
+    createFinder("top-right");
+    createFinder("bottom-left");
+  }
+
+  function startStatusCycling() {
+    const statusEl = document.getElementById("loader-status-text");
+    if (!statusEl) return;
+    const messages = [
+      "INITIALIZING GATEWAY",
+      "SCANNING SECURE QR",
+      "DECRYPTING IDENTITY TOKEN",
+      "AUTHENTICATING WITH BHARAT WAY",
+      "FINALIZING HANDSHAKE"
+    ];
+    let currentIndex = 0;
+    statusEl.textContent = messages[0];
+    statusCycleTimer = setInterval(() => {
+      currentIndex = (currentIndex + 1) % messages.length;
+      statusEl.textContent = messages[currentIndex];
+    }, 700);
+  }
+
+  function dismissInitialLoader() {
+    if (statusCycleTimer) {
+      clearInterval(statusCycleTimer);
+      statusCycleTimer = null;
+    }
+    const overlay = document.getElementById('initial-loader-overlay');
+    if (overlay) {
+      overlay.classList.add('loader-hidden');
+      setTimeout(() => overlay.remove(), 550);
+    }
+  }
+
+  buildLoaderQr();
+  startStatusCycling();
+
+  function showStatusBanner(isVerified) {
+    const banner = document.getElementById('verification-status-banner');
+    const card = document.getElementById('status-banner-card');
+    const iconBox = document.getElementById('status-banner-icon-box');
+    const icon = document.getElementById('status-banner-icon');
+    const badge = document.getElementById('status-banner-badge');
+    const subtext = document.getElementById('status-banner-subtext');
+
+    if (!banner || !card || !iconBox || !icon || !badge || !subtext) return;
+
+    if (isVerified) {
+      card.className = "rounded-2xl p-3 flex items-center gap-3 border shadow-sm bg-emerald-50/90 border-emerald-200 text-emerald-950";
+      iconBox.className = "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-inner bg-emerald-100 border border-emerald-300 text-emerald-600";
+      icon.setAttribute('data-lucide', 'shield-check');
+      badge.className = "px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-emerald-600 text-white shadow-xs";
+      badge.innerText = "VERIFIED";
+      subtext.className = "text-[11px] font-bold mt-0.5 truncate tracking-tight text-emerald-800";
+      subtext.innerText = "Data matched";
+    } else {
+      card.className = "rounded-2xl p-3 flex items-center gap-3 border shadow-sm bg-rose-50/90 border-rose-200 text-rose-950";
+      iconBox.className = "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-inner bg-rose-100 border border-rose-300 text-rose-600";
+      icon.setAttribute('data-lucide', 'shield-alert');
+      badge.className = "px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-xs";
+      badge.innerText = "UNVERIFIED";
+      subtext.className = "text-[11px] font-bold mt-0.5 truncate tracking-tight text-rose-800";
+      subtext.innerText = "Data not matched";
+    }
+
+    banner.classList.remove('hidden');
     lucide.createIcons();
+  }
 
-    let statusCycleTimer = null;
+  function hideStatusBanner() {
+    const banner = document.getElementById('verification-status-banner');
+    if (banner) banner.classList.add('hidden');
+  }
 
-    function buildLoaderQr() {
-      const qrEl = document.getElementById("loader-qr-pattern");
-      if (!qrEl) return;
-      qrEl.innerHTML = '';
-      const size = 21;
-      let seed = 849204;
+  const STAMP_ASSETS = {
+    verifiedMain: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhedtpRSWAz8ucbv0eQ0gfuqYWkzpXQP668Fup4p4q4IeGYtnD67z0fxkfa-ZHYh9nduNhu2rHXmd5EQUmnfRBjLA8_9WjFbqgOwN6Lty4BqcOWR6w32EfsJcn4mKKnRys1CZSZbzn93TRnz6FMOS1qT4KUG6SJTAMG4cQp2j-K9KQT-yxSs3XTuI097x6W/s1181/bbhhhhhhhhhh_inspyrenet.png',
+    unverified: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhuccuqfGVUJJ1McBPCDg3JG2g86rOTtEyKQZSPGfRGYW4jEGfy3-6aqBJ8du76CvqfJpNUNvDJn-yqw0SC-066uf8vsW2LOwC7YNrf8lt8oxzxHASURIK5orsxmiIuNueTXsCRedCMU5cqTOtlV4minno5KCuHNDMCgliAeAUsLoVk5HtITsrAUniDaton/s1571/d9b285183cdd6ab8de1b39d89277dffc.png'
+  };
 
-      function random() {
-        seed = (seed * 9301 + 49297) % 233280;
-        return seed / 233280;
-      }
+  let activeSearchMode = 'member';
+  const TRIP_CODE_LENGTH = 7;
 
-      for (let row = 0; row < size; row++) {
-        for (let col = 0; col < size; col++) {
-          const inFinder = 
-            (row < 7 && col < 7) ||
-            (row < 7 && col >= 14) ||
-            (row >= 14 && col < 7);
+  function getRandom(min, max) {
+    return Math.random() * (max - min) + min;
+  }
 
-          if (inFinder) continue;
+  function updateClock() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-IN', { hour12: false, timeZone: 'Asia/Kolkata' });
+    const clock = document.getElementById('liveClock');
+    if (clock) clock.innerText = `${timeStr} IST`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
 
-          if (random() > 0.54) {
-            const module = document.createElement("div");
-            module.className = "module-sim";
-            module.style.gridRow = row + 1;
-            module.style.gridColumn = col + 1;
-            qrEl.appendChild(module);
-          }
-        }
-      }
-
-      function createFinder(className) {
-        const finder = document.createElement("div");
-        finder.className = "finder-sim " + className;
-        qrEl.appendChild(finder);
-      }
-
-      createFinder("top-left");
-      createFinder("top-right");
-      createFinder("bottom-left");
-    }
-
-    function startStatusCycling() {
-      const statusEl = document.getElementById("loader-status-text");
-      if (!statusEl) return;
-      const messages = [
-        "INITIALIZING GATEWAY",
-        "SCANNING SECURE QR",
-        "DECRYPTING IDENTITY TOKEN",
-        "AUTHENTICATING WITH BHARAT WAY",
-        "FINALIZING HANDSHAKE"
-      ];
-      let currentIndex = 0;
-      statusEl.textContent = messages[0];
-      statusCycleTimer = setInterval(() => {
-        currentIndex = (currentIndex + 1) % messages.length;
-        statusEl.textContent = messages[currentIndex];
-      }, 700);
-    }
-
-    function dismissInitialLoader() {
-      if (statusCycleTimer) {
-        clearInterval(statusCycleTimer);
-        statusCycleTimer = null;
-      }
-      const overlay = document.getElementById('initial-loader-overlay');
-      if (overlay) {
-        overlay.classList.add('loader-hidden');
-        setTimeout(() => overlay.remove(), 550);
-      }
-    }
-
-    buildLoaderQr();
-    startStatusCycling();
-
-    function showStatusBanner(isVerified) {
-      const banner = document.getElementById('verification-status-banner');
-      const card = document.getElementById('status-banner-card');
-      const iconBox = document.getElementById('status-banner-icon-box');
-      const icon = document.getElementById('status-banner-icon');
-      const badge = document.getElementById('status-banner-badge');
-      const subtext = document.getElementById('status-banner-subtext');
-
-      if (!banner || !card || !iconBox || !icon || !badge || !subtext) return;
-
-      if (isVerified) {
-        card.className = "rounded-2xl p-3 flex items-center gap-3 border shadow-sm bg-emerald-50/90 border-emerald-200 text-emerald-950";
-        iconBox.className = "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-inner bg-emerald-100 border border-emerald-300 text-emerald-600";
-        icon.setAttribute('data-lucide', 'shield-check');
-        badge.className = "px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-emerald-600 text-white shadow-xs";
-        badge.innerText = "VERIFIED";
-        subtext.className = "text-[11px] font-bold mt-0.5 truncate tracking-tight text-emerald-800";
-        subtext.innerText = "Data matched";
-      } else {
-        card.className = "rounded-2xl p-3 flex items-center gap-3 border shadow-sm bg-rose-50/90 border-rose-200 text-rose-950";
-        iconBox.className = "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-inner bg-rose-100 border border-rose-300 text-rose-600";
-        icon.setAttribute('data-lucide', 'shield-alert');
-        badge.className = "px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-xs";
-        badge.innerText = "UNVERIFIED";
-        subtext.className = "text-[11px] font-bold mt-0.5 truncate tracking-tight text-rose-800";
-        subtext.innerText = "Data not matched";
-      }
-
-      banner.classList.remove('hidden');
-      lucide.createIcons();
-    }
-
-    function hideStatusBanner() {
-      const banner = document.getElementById('verification-status-banner');
-      if (banner) banner.classList.add('hidden');
-    }
-
-    const STAMP_ASSETS = {
-      verifiedMain: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhedtpRSWAz8ucbv0eQ0gfuqYWkzpXQP668Fup4p4q4IeGYtnD67z0fxkfa-ZHYh9nduNhu2rHXmd5EQUmnfRBjLA8_9WjFbqgOwN6Lty4BqcOWR6w32EfsJcn4mKKnRys1CZSZbzn93TRnz6FMOS1qT4KUG6SJTAMG4cQp2j-K9KQT-yxSs3XTuI097x6W/s1181/bbhhhhhhhhhh_inspyrenet.png',
-      unverified: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhuccuqfGVUJJ1McBPCDg3JG2g86rOTtEyKQZSPGfRGYW4jEGfy3-6aqBJ8du76CvqfJpNUNvDJn-yqw0SC-066uf8vsW2LOwC7YNrf8lt8oxzxHASURIK5orsxmiIuNueTXsCRedCMU5cqTOtlV4minno5KCuHNDMCgliAeAUsLoVk5HtITsrAUniDaton/s1571/d9b285183cdd6ab8de1b39d89277dffc.png'
-    };
-
-    let activeSearchMode = 'member';
-    const TRIP_CODE_LENGTH = 7;
-
-    function getRandom(min, max) {
-      return Math.random() * (max - min) + min;
-    }
-
-    function updateClock() {
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString('en-IN', { hour12: false, timeZone: 'Asia/Kolkata' });
-      const clock = document.getElementById('liveClock');
-      if (clock) clock.innerText = `${timeStr} IST`;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    function switchState(targetId) {
-      ['state-empty', 'state-loading', 'state-member', 'state-bill', 'state-notice', 'state-fraud'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.classList.add('hidden');
-          el.classList.remove('active-notice-state');
-        }
-      });
-      const active = document.getElementById(targetId);
-      if (active) {
-        active.classList.remove('hidden');
-        if (targetId === 'state-notice') {
-          active.classList.add('active-notice-state');
-        }
-      }
-      lucide.createIcons();
-    }
-
-    function setSearchMode(mode) {
-      activeSearchMode = mode;
-      const memberBtn = document.getElementById('toggle-member');
-      const invoiceBtn = document.getElementById('toggle-invoice');
-      const noticeBtn = document.getElementById('toggle-notice');
-      const searchInput = document.getElementById('searchInput');
-
-      const inactiveClass = "py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-slate-500 hover:text-slate-800";
-      const activeClass = "py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-white text-indigo-600 shadow-sm";
-
-      if (memberBtn) memberBtn.className = inactiveClass;
-      if (invoiceBtn) invoiceBtn.className = inactiveClass;
-      if (noticeBtn) noticeBtn.className = inactiveClass;
-
-      if (mode === 'member') {
-        if (memberBtn) memberBtn.className = activeClass;
-        searchInput.placeholder = "Enter Member Name...";
-      } else if (mode === 'invoice') {
-        if (invoiceBtn) invoiceBtn.className = activeClass;
-        searchInput.placeholder = "Enter Invoice No (e.g. VOF0725-0001)...";
-      } else if (mode === 'notice') {
-        if (noticeBtn) noticeBtn.className = activeClass;
-        searchInput.placeholder = "Enter Ref No. (e.g. VOF0725/01)...";
-      }
-      searchInput.value = '';
-      searchInput.focus();
-    }
-
-    const searchInput = document.getElementById('searchInput');
-    searchInput.addEventListener('input', function(e) {
-      if (activeSearchMode === 'invoice') {
-        let val = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-        if (val.length > TRIP_CODE_LENGTH) {
-          val = val.slice(0, TRIP_CODE_LENGTH) + '-' + val.slice(TRIP_CODE_LENGTH);
-        }
-        this.value = val;
+  function switchState(targetId) {
+    ['state-empty', 'state-loading', 'state-member', 'state-bill', 'state-notice', 'state-fraud'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('hidden');
+        el.classList.remove('active-notice-state');
       }
     });
+    const active = document.getElementById(targetId);
+    if (active) {
+      active.classList.remove('hidden');
+      if (targetId === 'state-notice') {
+        active.classList.add('active-notice-state');
+      }
+    }
+    lucide.createIcons();
+  }
 
-    async function handleManualSearch(e) {
-      if (e) e.preventDefault();
-      const val = searchInput.value.trim();
-      if (!val) return;
+  function setSearchMode(mode) {
+    activeSearchMode = mode;
+    const memberBtn = document.getElementById('toggle-member');
+    const invoiceBtn = document.getElementById('toggle-invoice');
+    const noticeBtn = document.getElementById('toggle-notice');
+    const searchInput = document.getElementById('searchInput');
 
-      hideStatusBanner();
-      switchState('state-loading');
+    const inactiveClass = "py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all text-slate-500 hover:text-slate-800";
+    const activeClass = "py-1.5 text-center text-[10px] font-black uppercase tracking-wider rounded-lg transition-all bg-white text-indigo-600 shadow-sm";
 
-      try {
-        const res = await fetch(`/api/index?action=verify&type=${encodeURIComponent(activeSearchMode)}&query=${encodeURIComponent(val)}`, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' }
-        });
-        const data = await res.json();
+    if (memberBtn) memberBtn.className = inactiveClass;
+    if (invoiceBtn) invoiceBtn.className = inactiveClass;
+    if (noticeBtn) noticeBtn.className = inactiveClass;
 
-        if (res.ok && data.valid) {
-          const isVerified = data.isVerified !== false;
-          showStatusBanner(isVerified);
+    if (mode === 'member') {
+      if (memberBtn) memberBtn.className = activeClass;
+      searchInput.placeholder = "Enter Member Name...";
+    } else if (mode === 'invoice') {
+      if (invoiceBtn) invoiceBtn.className = activeClass;
+      searchInput.placeholder = "Enter Invoice No (e.g. VOF0725-0001)...";
+    } else if (mode === 'notice') {
+      if (noticeBtn) noticeBtn.className = activeClass;
+      searchInput.placeholder = "Enter Ref No. (e.g. VOF0725/01)...";
+    }
+    searchInput.value = '';
+    searchInput.focus();
+  }
 
-          if (data.type === 'member' && data.member) {
-            renderMember(data.member, isVerified);
-          } else if (data.type === 'bill' && data.bill) {
-            renderBill(data.bill, isVerified);
-          } else if (data.type === 'notice') {
-            renderNotice(data, isVerified);
-          } else {
-            showStatusBanner(false);
-            switchState('state-fraud');
-          }
+  const searchInput = document.getElementById('searchInput');
+  searchInput.addEventListener('input', function(e) {
+    if (activeSearchMode === 'invoice') {
+      let val = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (val.length > TRIP_CODE_LENGTH) {
+        val = val.slice(0, TRIP_CODE_LENGTH) + '-' + val.slice(TRIP_CODE_LENGTH);
+      }
+      this.value = val;
+    }
+  });
+
+  async function handleManualSearch(e) {
+    if (e) e.preventDefault();
+    const val = searchInput.value.trim();
+    if (!val) return;
+
+    hideStatusBanner();
+    switchState('state-loading');
+
+    try {
+      const res = await fetch(`/api/index?action=verify&type=${encodeURIComponent(activeSearchMode)}&query=${encodeURIComponent(val)}`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      });
+      const data = await res.json();
+
+      if (res.ok && data.valid) {
+        const isVerified = data.isVerified !== false;
+        showStatusBanner(isVerified);
+
+        if (data.type === 'member' && data.member) {
+          renderMember(data.member, isVerified);
+        } else if (data.type === 'bill' && data.bill) {
+          renderBill(data.bill, isVerified);
+        } else if (data.type === 'notice') {
+          renderNotice(data, isVerified);
         } else {
           showStatusBanner(false);
           switchState('state-fraud');
         }
-      } catch (err) {
-        console.error('Search verification failed:', err);
-        showStatusBanner(false);
-        switchState('state-fraud');
-      }
-    }
-
-    async function processVerification() {
-      const params = new URLSearchParams(window.location.search);
-      const type = params.get('type');
-      const token = params.get('token');
-      const query = params.get('query');
-
-      const minLoaderDelay = new Promise(resolve => setTimeout(resolve, 800));
-
-      if (!type && !token && !query) {
-        await minLoaderDelay;
-        hideStatusBanner();
-        switchState('state-empty');
-        dismissInitialLoader();
-        return;
-      }
-
-      if (type) {
-        if (type === 'bill' || type === 'invoice') setSearchMode('invoice');
-        else if (type === 'notice') setSearchMode('notice');
-        else setSearchMode('member');
-      }
-
-      try {
-        const url = `/api/index?action=verify&type=${encodeURIComponent(type || '')}&token=${encodeURIComponent(token || '')}&query=${encodeURIComponent(query || '')}`;
-        const fetchPromise = fetch(url, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' }
-        }).then(res => res.json().then(data => ({ ok: res.ok, data })));
-
-        const [_, result] = await Promise.all([minLoaderDelay, fetchPromise]);
-
-        if (result.ok && result.data.valid) {
-          const isVerified = result.data.isVerified !== false;
-          showStatusBanner(isVerified);
-
-          if (result.data.type === 'member' && result.data.member) {
-            renderMember(result.data.member, isVerified);
-          } else if (result.data.type === 'bill' && result.data.bill) {
-            renderBill(result.data.bill, isVerified);
-          } else if (result.data.type === 'notice') {
-            renderNotice(result.data, isVerified);
-          } else {
-            showStatusBanner(false);
-            switchState('state-fraud');
-          }
-        } else {
-          showStatusBanner(false);
-          switchState('state-fraud');
-        }
-      } catch (err) {
-        console.error('Verification query failed:', err);
-        await minLoaderDelay;
-        showStatusBanner(false);
-        switchState('state-fraud');
-      } finally {
-        dismissInitialLoader();
-      }
-    }
-
-    function renderMember(m, isVerified) {
-      document.getElementById('eid-title').innerText = m.tripName || 'TRIP TITLE';
-      document.getElementById('eid-name').innerText = m.name || 'Member Name';
-      document.getElementById('eid-designation').innerText = m.designation || 'Member';
-      document.getElementById('eid-role').innerText = m.memberRole || '-';
-      document.getElementById('eid-mobile').innerText = m.mobile || '-';
-      document.getElementById('eid-email').innerText = m.email || '-';
-      
-      const photoEl = document.getElementById('eid-photo');
-      if (photoEl) {
-        photoEl.src = m.img || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG';
-      }
-
-      const subtitleEl = document.getElementById('eid-subtitle');
-      if (subtitleEl) {
-        if (m.eidSubheading && m.eidSubheading.trim() !== "") {
-          subtitleEl.innerText = m.eidSubheading;
-          subtitleEl.classList.remove('hidden');
-        } else {
-          subtitleEl.classList.add('hidden');
-        }
-      }
-
-      const signImg = document.getElementById('eid-chief-sign');
-      if (signImg && m.chiefCoordinatorSignature) {
-        signImg.src = m.chiefCoordinatorSignature;
-      }
-
-      const leftBar = document.getElementById('eid-left-bar');
-      const photoBorder = document.getElementById('eid-photo-container');
-      const titleText = document.getElementById('eid-title');
-      const signText = document.getElementById('eid-sign-text');
-      const verticalStatusText = document.getElementById('eid-vertical-status');
-      const stampImg = document.getElementById('eid-stamp-img');
-
-      const randomRot = getRandom(-25, -15);
-      const randomShiftX = getRandom(-4, 4);
-      const randomShiftY = getRandom(-4, 4);
-
-      if (stampImg) {
-        stampImg.src = isVerified ? STAMP_ASSETS.verifiedMain : STAMP_ASSETS.unverified;
-        stampImg.style.transform = `translate(${randomShiftX}px, calc(50% + ${randomShiftY}px)) rotate(${randomRot}deg)`;
-        stampImg.style.opacity = getRandom(0.88, 0.96);
-      }
-
-      if (isVerified) {
-        if (verticalStatusText) verticalStatusText.innerText = "VERIFIED";
-        leftBar.className = "w-[52px] bg-indigo-600 flex flex-col justify-between items-center py-4 text-white shrink-0 select-none overflow-hidden transition-colors duration-500";
-        photoBorder.className = "h-[185px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 z-10";
-        titleText.className = "text-[16px] font-black tracking-tight uppercase text-indigo-700 leading-tight w-full truncate";
-        signText.className = "text-[7px] font-black uppercase tracking-widest text-indigo-700 border-t border-slate-300 pt-0.5 w-[85%]";
       } else {
-        if (verticalStatusText) verticalStatusText.innerText = "UNVERIFIED";
-        leftBar.className = "w-[52px] bg-rose-600 flex flex-col justify-between items-center py-4 text-white shrink-0 select-none overflow-hidden transition-colors duration-500";
-        photoBorder.className = "h-[185px] w-full border-y-[3px] border-rose-600 relative bg-slate-100 z-10";
-        titleText.className = "text-[16px] font-black tracking-tight uppercase text-rose-700 leading-tight w-full truncate";
-        signText.className = "text-[7px] font-black uppercase tracking-widest text-rose-700 border-t border-slate-300 pt-0.5 w-[85%]";
+        showStatusBanner(false);
+        switchState('state-fraud');
       }
+    } catch (err) {
+      console.error('Search verification failed:', err);
+      showStatusBanner(false);
+      switchState('state-fraud');
+    }
+  }
 
-      const qrContainer = document.getElementById('eid-qr');
-      if (qrContainer) {
-        qrContainer.innerHTML = '';
-        const verifyUrl = `${window.location.origin}/verify.html?type=member&query=${encodeURIComponent(m.name)}`;
-        new QRCode(qrContainer, {
-          text: verifyUrl,
-          width: 180,
-          height: 180,
-          colorDark: "#000000",
-          colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.M
-        });
-      }
+  async function processVerification() {
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get('type');
+    const token = params.get('token');
+    const query = params.get('query');
 
-      switchState('state-member');
+    const minLoaderDelay = new Promise(resolve => setTimeout(resolve, 800));
+
+    if (!type && !token && !query) {
+      await minLoaderDelay;
+      hideStatusBanner();
+      switchState('state-empty');
+      dismissInitialLoader();
+      return;
     }
 
-    function renderBill(b, isVerified) {
-      document.getElementById('pos-bill-title').innerHTML = b.storeTitle || 'TRIP TITLE<br><span style="font-weight: 400; font-size: 0.95em;">EXPEDITION</span>';
-      document.getElementById('pos-bill-date').innerText = b.dateString || 'ALL DATES';
-      document.getElementById('pos-bill-time').innerText = b.timeString || '--:--:--';
-      document.getElementById('pos-bill-invoice').innerText = `#${b.invoiceNo || 'INV-0001'}`;
-      document.getElementById('pos-bill-tag').innerText = b.filterTag || 'ALL EXPENSES';
-      
-      const itemCount = (b.items && Array.isArray(b.items)) ? b.items.length : 0;
-      const countEl = document.getElementById('pos-bill-count');
-      if (countEl) {
-        countEl.innerText = `(${itemCount} EXPENSES)`;
-      }
-
-      document.getElementById('pos-bill-total').innerText = `₹ ${(b.netTotal || 0).toFixed(2)}`;
-      document.getElementById('pos-bill-code').innerText = `*** ${b.tripCode || 'EXP'} ***`;
-
-      const tableBody = document.getElementById('pos-bill-items');
-      if (tableBody) {
-        tableBody.innerHTML = (b.items || []).map(item => `
-          <tr>
-            <td>${item.notes || item.category || 'Expense'}</td>
-            <td class="col-center utr-text">${item.utr || 'N/A'}</td>
-            <td class="col-right">${parseFloat(item.amount || 0).toFixed(2)}</td>
-          </tr>
-        `).join('');
-      }
-
-      const mainStampEl = document.getElementById('pos-stamp-main');
-      if (mainStampEl) {
-        const randomRot = getRandom(-15, 12);
-        const randomOffsetX = getRandom(-4, 4);
-        const randomOffsetY = getRandom(-4, 4);
-        const randomOpacity = getRandom(0.86, 0.96);
-
-        mainStampEl.src = isVerified ? STAMP_ASSETS.verifiedMain : STAMP_ASSETS.unverified;
-        mainStampEl.style.transform = `translate(${randomOffsetX}px, calc(-50% + ${randomOffsetY}px)) rotate(${randomRot}deg)`;
-        mainStampEl.style.opacity = randomOpacity;
-      }
-
-      switchState('state-bill');
+    if (type) {
+      if (type === 'bill' || type === 'invoice') setSearchMode('invoice');
+      else if (type === 'notice') setSearchMode('notice');
+      else setSearchMode('member');
     }
 
-    function renderBarcodeStrip(containerId, codeText, isBottom = false) {
-      const el = document.getElementById(containerId);
-      if (!el) return;
-      const cleanCode = (codeText || 'VOF0726').replace(/\s+/g, '').toUpperCase();
-      el.innerHTML = cleanCode.split('').map(char => {
-        if (isBottom) {
-          return `<div class="barcode-col"><span>${char}</span><i></i></div>`;
+    try {
+      const url = `/api/index?action=verify&type=${encodeURIComponent(type || '')}&token=${encodeURIComponent(token || '')}&query=${encodeURIComponent(query || '')}`;
+      const fetchPromise = fetch(url, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      }).then(res => res.json().then(data => ({ ok: res.ok, data })));
+
+      const [_, result] = await Promise.all([minLoaderDelay, fetchPromise]);
+
+      if (result.ok && result.data.valid) {
+        const isVerified = result.data.isVerified !== false;
+        showStatusBanner(isVerified);
+
+        if (result.data.type === 'member' && result.data.member) {
+          renderMember(result.data.member, isVerified);
+        } else if (result.data.type === 'bill' && result.data.bill) {
+          renderBill(result.data.bill, isVerified);
+        } else if (result.data.type === 'notice') {
+          renderNotice(result.data, isVerified);
+        } else {
+          showStatusBanner(false);
+          switchState('state-fraud');
         }
-        return `<div class="barcode-col"><i></i><span>${char}</span></div>`;
-      }).join('');
+      } else {
+        showStatusBanner(false);
+        switchState('state-fraud');
+      }
+    } catch (err) {
+      console.error('Verification query failed:', err);
+      await minLoaderDelay;
+      showStatusBanner(false);
+      switchState('state-fraud');
+    } finally {
+      dismissInitialLoader();
+    }
+  }
+
+  function renderMember(m, isVerified) {
+    document.getElementById('eid-title').innerText = m.tripName || 'TRIP TITLE';
+    document.getElementById('eid-name').innerText = m.name || 'Member Name';
+    document.getElementById('eid-designation').innerText = m.designation || 'Member';
+    document.getElementById('eid-role').innerText = m.memberRole || '-';
+    document.getElementById('eid-mobile').innerText = m.mobile || '-';
+    document.getElementById('eid-email').innerText = m.email || '-';
+    
+    const photoEl = document.getElementById('eid-photo');
+    if (photoEl) {
+      photoEl.src = m.img || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGHp7RSIwlvRAyQhCAZEg7NgMyK8DyzUyfbgd1I6Jn50K5ervtpkkzrUclO9pzMW5uE_nuR31zQnh3_baZVUK9k66bTnIDd792yTSMD-vcYMIe49rWshii3AYoKfEt1o_FYRSTLt-ChjRNjKknHOlgX7v2XdBaR78UEppEOVnfLP9CuPK8l1jCte7bwSG-/s1254/IMG_6004.PNG';
     }
 
-    function autoScaleA4Notice() {
-      const scalers = document.querySelectorAll('.notice-a4-scaler');
-      if (!scalers.length) return;
+    const subtitleEl = document.getElementById('eid-subtitle');
+    if (subtitleEl) {
+      if (m.eidSubheading && m.eidSubheading.trim() !== "") {
+        subtitleEl.innerText = m.eidSubheading;
+        subtitleEl.classList.remove('hidden');
+      } else {
+        subtitleEl.classList.add('hidden');
+      }
+    }
 
-      const windowWidth = window.innerWidth;
-      const targetWidthPx = 210 * 3.7795275591; // ~793.7px
-      const targetHeightPx = 297 * 3.7795275591; // ~1122.5px
+    const signImg = document.getElementById('eid-chief-sign');
+    if (signImg && m.chiefCoordinatorSignature) {
+      signImg.src = m.chiefCoordinatorSignature;
+    }
 
-      const maxAvailableWidth = Math.min(windowWidth - 28, 480);
-      const scaleFactor = Math.min(1, maxAvailableWidth / targetWidthPx);
+    const leftBar = document.getElementById('eid-left-bar');
+    const photoBorder = document.getElementById('eid-photo-container');
+    const titleText = document.getElementById('eid-title');
+    const signText = document.getElementById('eid-sign-text');
+    const verticalStatusText = document.getElementById('eid-vertical-status');
+    const stampImg = document.getElementById('eid-stamp-img');
 
-      scalers.forEach(scaler => {
-        scaler.style.transform = `scale(${scaleFactor})`;
-        scaler.style.marginBottom = `-${(1 - scaleFactor) * targetHeightPx}px`;
+    const randomRot = getRandom(-25, -15);
+    const randomShiftX = getRandom(-4, 4);
+    const randomShiftY = getRandom(-4, 4);
+
+    if (stampImg) {
+      stampImg.src = isVerified ? STAMP_ASSETS.verifiedMain : STAMP_ASSETS.unverified;
+      stampImg.style.transform = `translate(${randomShiftX}px, calc(50% + ${randomShiftY}px)) rotate(${randomRot}deg)`;
+      stampImg.style.opacity = getRandom(0.88, 0.96);
+    }
+
+    if (isVerified) {
+      if (verticalStatusText) verticalStatusText.innerText = "VERIFIED";
+      leftBar.className = "w-[52px] bg-indigo-600 flex flex-col justify-between items-center py-4 text-white shrink-0 select-none overflow-hidden transition-colors duration-500";
+      photoBorder.className = "h-[185px] w-full border-y-[3px] border-indigo-600 relative bg-slate-100 z-10";
+      titleText.className = "text-[16px] font-black tracking-tight uppercase text-indigo-700 leading-tight w-full truncate";
+      signText.className = "text-[7px] font-black uppercase tracking-widest text-indigo-700 border-t border-slate-300 pt-0.5 w-[85%]";
+    } else {
+      if (verticalStatusText) verticalStatusText.innerText = "UNVERIFIED";
+      leftBar.className = "w-[52px] bg-rose-600 flex flex-col justify-between items-center py-4 text-white shrink-0 select-none overflow-hidden transition-colors duration-500";
+      photoBorder.className = "h-[185px] w-full border-y-[3px] border-rose-600 relative bg-slate-100 z-10";
+      titleText.className = "text-[16px] font-black tracking-tight uppercase text-rose-700 leading-tight w-full truncate";
+      signText.className = "text-[7px] font-black uppercase tracking-widest text-rose-700 border-t border-slate-300 pt-0.5 w-[85%]";
+    }
+
+    const qrContainer = document.getElementById('eid-qr');
+    if (qrContainer) {
+      qrContainer.innerHTML = '';
+      const verifyUrl = `${window.location.origin}/verify.html?type=member&query=${encodeURIComponent(m.name)}`;
+      new QRCode(qrContainer, {
+        text: verifyUrl,
+        width: 180,
+        height: 180,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
       });
     }
-    window.addEventListener('resize', autoScaleA4Notice);
 
-    function renderNotice(noticeData, isVerified) {
-      const noticeContainer = document.getElementById('state-notice');
-      if (!noticeContainer) return;
+    switchState('state-member');
+  }
 
-      const pages = (noticeData.pages && Array.isArray(noticeData.pages) && noticeData.pages.length > 0)
-        ? noticeData.pages
-        : (Array.isArray(noticeData) ? noticeData : [noticeData.notice || noticeData]);
+  function renderBill(b, isVerified) {
+    document.getElementById('pos-bill-title').innerHTML = b.storeTitle || 'TRIP TITLE<br><span style="font-weight: 400; font-size: 0.95em;">EXPEDITION</span>';
+    document.getElementById('pos-bill-date').innerText = b.dateString || 'ALL DATES';
+    document.getElementById('pos-bill-time').innerText = b.timeString || '--:--:--';
+    document.getElementById('pos-bill-invoice').innerText = `#${b.invoiceNo || 'INV-0001'}`;
+    document.getElementById('pos-bill-tag').innerText = b.filterTag || 'ALL EXPENSES';
+    
+    const itemCount = (b.items && Array.isArray(b.items)) ? b.items.length : 0;
+    const countEl = document.getElementById('pos-bill-count');
+    if (countEl) {
+      countEl.innerText = `(${itemCount} EXPENSES)`;
+    }
 
-      noticeContainer.innerHTML = '';
+    document.getElementById('pos-bill-total').innerText = `₹ ${(b.netTotal || 0).toFixed(2)}`;
+    document.getElementById('pos-bill-code').innerText = `*** ${b.tripCode || 'EXP'} ***`;
 
-      pages.forEach((n, pageIdx) => {
-        const pageWrapper = document.createElement('div');
-        pageWrapper.className = 'notice-a4-scaler';
+    const tableBody = document.getElementById('pos-bill-items');
+    if (tableBody) {
+      tableBody.innerHTML = (b.items || []).map(item => `
+        <tr>
+          <td>${item.notes || item.category || 'Expense'}</td>
+          <td class="col-center utr-text">${item.utr || 'N/A'}</td>
+          <td class="col-right">${parseFloat(item.amount || 0).toFixed(2)}</td>
+        </tr>
+      `).join('');
+    }
 
-        const qrId = `notice-qr-${pageIdx}`;
-        const topBarcodeId = `notice-barcode-top-${pageIdx}`;
-        const bottomBarcodeId = `notice-barcode-bottom-${pageIdx}`;
+    const mainStampEl = document.getElementById('pos-stamp-main');
+    if (mainStampEl) {
+      const randomRot = getRandom(-15, 12);
+      const randomOffsetX = getRandom(-4, 4);
+      const randomOffsetY = getRandom(-4, 4);
+      const randomOpacity = getRandom(0.86, 0.96);
 
-        // IF B10 CONTAINS DIRECT IMAGE URL -> DISPLAY IMAGE ONLY WITH DYNAMIC QR
-        if (n.isImageOnly || (n.imageUrl && /^https?:\/\/.+/i.test(n.imageUrl))) {
-          pageWrapper.innerHTML = `
-            <main class="page !p-0 !bg-transparent flex flex-col justify-center items-center relative overflow-hidden rounded-md shadow-2xl">
-              <img src="${n.imageUrl}" alt="Notice Document" class="w-full h-full object-contain rounded-md" />
-              <div class="notice-qr-mount !left-4 !bottom-4 bg-white/90 p-1 rounded shadow-md" id="${qrId}"></div>
-            </main>
-          `;
+      mainStampEl.src = isVerified ? STAMP_ASSETS.verifiedMain : STAMP_ASSETS.unverified;
+      mainStampEl.style.transform = `translate(${randomOffsetX}px, calc(-50% + ${randomOffsetY}px)) rotate(${randomRot}deg)`;
+      mainStampEl.style.opacity = randomOpacity;
+    }
 
-          noticeContainer.appendChild(pageWrapper);
+    switchState('state-bill');
+  }
 
-          const qrEl = document.getElementById(qrId);
-          if (qrEl) {
-            const verifyNoticeUrl = `${window.location.origin}/verify.html?type=notice&query=${encodeURIComponent(n.refNo)}`;
-            new QRCode(qrEl, {
-              text: verifyNoticeUrl,
-              width: 58,
-              height: 58,
-              colorDark: "#000000",
-              colorLight: "#ffffff",
-              correctLevel: QRCode.CorrectLevel.M
-            });
-          }
-          return;
-        }
+  function renderBarcodeStrip(containerId, codeText, isBottom = false) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const cleanCode = (codeText || 'VOF0726').replace(/\s+/g, '').toUpperCase();
+    el.innerHTML = cleanCode.split('').map(char => {
+      if (isBottom) {
+        return `<div class="barcode-col"><span>${char}</span><i></i></div>`;
+      }
+      return `<div class="barcode-col"><i></i><span>${char}</span></div>`;
+    }).join('');
+  }
 
-        // REGULAR NOTICE STRUCTURE
-        let sectionsHtml = '';
-        if (n.sections && Array.isArray(n.sections)) {
-          n.sections.forEach(sec => {
-            let secContent = '';
-            if (sec.heading && sec.heading.trim() !== '') {
-              secContent += `<h3>${sec.heading}</h3>`;
-            }
+  function autoScaleA4Notice() {
+    const scalers = document.querySelectorAll('.notice-a4-scaler');
+    if (!scalers.length) return;
 
-            if (sec.items && sec.items.length > 0) {
-              const secListItems = sec.items.map(item => {
-                const urlRegex = /(https?:\/\/[^\s]+)/g;
-                if (urlRegex.test(item)) {
-                  const cleaned = item.replace(urlRegex, '').trim();
-                  const match = item.match(urlRegex)[0];
-                  return `<li>${cleaned}<span class="url">${match}</span></li>`;
-                }
-                return `<li>${item}</li>`;
-              }).join('');
-              secContent += `<ol>${secListItems}</ol>`;
-            } else if (sec.plainText) {
-              secContent += `<p class="notice-plain-p">${sec.plainText}</p>`;
-            }
+    const windowWidth = window.innerWidth;
+    const targetWidthPx = 210 * 3.7795275591; // ~793.7px
+    const targetHeightPx = 297 * 3.7795275591; // ~1122.5px
 
-            sectionsHtml += `<section class="section">${secContent}</section>`;
-          });
-        }
+    const maxAvailableWidth = Math.min(windowWidth - 28, 480);
+    const scaleFactor = Math.min(1, maxAvailableWidth / targetWidthPx);
 
-        const stampImgTag = n.stampUrl 
-          ? `<img class="stamp" src="${n.stampUrl}" alt="Stamp">` 
-          : '';
+    scalers.forEach(scaler => {
+      scaler.style.transform = `scale(${scaleFactor})`;
+      scaler.style.marginBottom = `-${(1 - scaleFactor) * targetHeightPx}px`;
+    });
+  }
+  window.addEventListener('resize', autoScaleA4Notice);
 
-        const emblemSrc = n.emblemUrl || (isVerified ? STAMP_ASSETS.verifiedMain : STAMP_ASSETS.unverified);
-        const emblemImgTag = emblemSrc 
-          ? `<img class="emblem" src="${emblemSrc}" alt="Emblem">` 
-          : '';
+  function renderNotice(noticeData, isVerified) {
+    const noticeContainer = document.getElementById('state-notice');
+    if (!noticeContainer) return;
 
+    const pages = (noticeData.pages && Array.isArray(noticeData.pages) && noticeData.pages.length > 0)
+      ? noticeData.pages
+      : (Array.isArray(noticeData) ? noticeData : [noticeData.notice || noticeData]);
+
+    noticeContainer.innerHTML = '';
+
+    // Generate live verification date and time in IST
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const formattedTime = now.toLocaleTimeString('en-IN', { hour12: false, timeZone: 'Asia/Kolkata' });
+    const currentVerificationTimestamp = `${formattedDate} ${formattedTime} IST`;
+
+    pages.forEach((n, pageIdx) => {
+      const pageWrapper = document.createElement('div');
+      pageWrapper.className = 'notice-a4-scaler';
+
+      const qrId = `notice-qr-${pageIdx}`;
+      const topBarcodeId = `notice-barcode-top-${pageIdx}`;
+      const bottomBarcodeId = `notice-barcode-bottom-${pageIdx}`;
+
+      // 1. IMAGE-ONLY FALLBACK MODE
+      if (n.isImageOnly || (n.imageUrl && /^https?:\/\/.+/i.test(n.imageUrl))) {
         pageWrapper.innerHTML = `
-          <main class="page">
-            <div class="content">
-              <header class="topbar">
-                <div class="release">${n.releaseDate || '02 AUG 2026, Press Release'}</div>
-                <div class="code-top" aria-label="Tracking Barcode Top">
-                  <div class="barcode-container" id="${topBarcodeId}"></div>
-                </div>
-              </header>
-
-              <div class="rule"></div>
-
-              <div class="title">
-                <h1>${n.mainTitle || 'TRIP TITLE'}</h1>
-                <h2>${n.subTitle || '#TRIPOF AND DATE'}</h2>
-              </div>
-
-              <div class="rule"></div>
-
-              <div class="ref-no">Ref. No. - ${n.refNo || 'BRTWY00/00'}</div>
-
-              ${n.noticeHeading && n.noticeHeading.trim() !== '' ? `<div class="notice-doc-heading">${n.noticeHeading}</div>` : ''}
-
-              <div>${sectionsHtml}</div>
+          <main class="page !p-0 !bg-transparent flex flex-col justify-center items-center relative overflow-hidden rounded-md shadow-2xl">
+            <img src="${n.imageUrl}" alt="Notice Document" class="w-full h-full object-contain rounded-md" />
+            <div class="notice-qr-mount !left-4 !bottom-4 bg-white/90 p-1 rounded shadow-md" id="${qrId}"></div>
+            <div class="notice-digital-verify-footer !bottom-2 !text-slate-600 bg-white/70 py-0.5 backdrop-blur-xs">
+              Digitally Verified on Bharat Way Verification Portal, at ${currentVerificationTimestamp}
             </div>
-
-            ${stampImgTag}
-            ${emblemImgTag}
-
-            <div class="signature">
-              <div class="date">
-                <span>${n.bottomDate || '06.08.2026'}</span><br>
-                <span>${n.bottomPlace || 'NEW DELHI'}</span>
-              </div>
-              <div class="coordinator">
-                <div class="name">${n.coordName || 'TBD'}</div>
-                <div>(${n.coordLabel || 'Chief Coordinator'})</div>
-              </div>
-            </div>
-
-            <div class="bottom-code" aria-label="Tracking Barcode Bottom">
-              <div class="barcode-container" id="${bottomBarcodeId}"></div>
-            </div>
-
-            <div class="notice-qr-mount" id="${qrId}"></div>
           </main>
         `;
 
         noticeContainer.appendChild(pageWrapper);
-
-        renderBarcodeStrip(topBarcodeId, n.trackingCode, false);
-        renderBarcodeStrip(bottomBarcodeId, n.trackingCode, true);
 
         const qrEl = document.getElementById(qrId);
         if (qrEl) {
@@ -1669,17 +1589,127 @@
             width: 58,
             height: 58,
             colorDark: "#000000",
-            colorLight: "#e5eef2",
+            colorLight: "#ffffff",
             correctLevel: QRCode.CorrectLevel.M
           });
         }
-      });
+        return;
+      }
 
-      switchState('state-notice');
-      setTimeout(autoScaleA4Notice, 50);
-    }
+      // 2. STANDARD A4 STRUCTURED NOTICE MODE
+      let sectionsHtml = '';
+      if (n.sections && Array.isArray(n.sections)) {
+        n.sections.forEach(sec => {
+          let secContent = '';
+          if (sec.heading && sec.heading.trim() !== '') {
+            secContent += `<h3>${sec.heading}</h3>`;
+          }
 
-    window.onload = processVerification;
-  </script>
+          if (sec.items && sec.items.length > 0) {
+            const secListItems = sec.items.map(item => {
+              const urlRegex = /(https?:\/\/[^\s]+)/g;
+              if (urlRegex.test(item)) {
+                const cleaned = item.replace(urlRegex, '').trim();
+                const match = item.match(urlRegex)[0];
+                return `<li>${cleaned}<span class="url">${match}</span></li>`;
+              }
+              return `<li>${item}</li>`;
+            }).join('');
+            secContent += `<ol>${secListItems}</ol>`;
+          } else if (sec.plainText) {
+            secContent += `<p class="notice-plain-p">${sec.plainText}</p>`;
+          }
+
+          sectionsHtml += `<section class="section">${secContent}</section>`;
+        });
+      }
+
+      const stampImgTag = n.stampUrl 
+        ? `<img class="stamp" src="${n.stampUrl}" alt="Stamp">` 
+        : '';
+
+      const emblemSrc = n.emblemUrl || (isVerified ? STAMP_ASSETS.verifiedMain : STAMP_ASSETS.unverified);
+      const emblemImgTag = emblemSrc 
+        ? `<img class="emblem" src="${emblemSrc}" alt="Emblem">` 
+        : '';
+
+      pageWrapper.innerHTML = `
+        <main class="page">
+          <div class="content">
+            <header class="topbar">
+              <div class="release">${n.releaseDate || '02 AUG 2026, Press Release'}</div>
+              <div class="code-top" aria-label="Tracking Barcode Top">
+                <div class="barcode-container" id="${topBarcodeId}"></div>
+              </div>
+            </header>
+
+            <div class="rule"></div>
+
+            <div class="title">
+              <h1>${n.mainTitle || 'TRIP TITLE'}</h1>
+              <h2>${n.subTitle || '#TRIPOF AND DATE'}</h2>
+            </div>
+
+            <div class="rule"></div>
+
+            <div class="ref-no">Ref. No. - ${n.refNo || 'BRTWY00/00'}</div>
+
+            ${n.noticeHeading && n.noticeHeading.trim() !== '' ? `<div class="notice-doc-heading">${n.noticeHeading}</div>` : ''}
+
+            <div>${sectionsHtml}</div>
+          </div>
+
+          ${stampImgTag}
+          ${emblemImgTag}
+
+          <div class="signature">
+            <div class="date">
+              <span>${n.bottomDate || '06.08.2026'}</span><br>
+              <span>${n.bottomPlace || 'NEW DELHI'}</span>
+            </div>
+            <div class="coordinator">
+              <div class="name">${n.coordName || 'TBD'}</div>
+              <div>(${n.coordLabel || 'Chief Coordinator'})</div>
+            </div>
+          </div>
+
+          <div class="bottom-code" aria-label="Tracking Barcode Bottom">
+            <div class="barcode-container" id="${bottomBarcodeId}"></div>
+          </div>
+
+          <div class="notice-qr-mount" id="${qrId}"></div>
+
+          <!-- Bottom Center Dynamic Verification Watermark -->
+          <div class="notice-digital-verify-footer">
+            Digitally Verified on Bharat Way Verification Portal, at ${currentVerificationTimestamp}
+          </div>
+        </main>
+      `;
+
+      noticeContainer.appendChild(pageWrapper);
+
+      renderBarcodeStrip(topBarcodeId, n.trackingCode, false);
+      renderBarcodeStrip(bottomBarcodeId, n.trackingCode, true);
+
+      const qrEl = document.getElementById(qrId);
+      if (qrEl) {
+        const verifyNoticeUrl = `${window.location.origin}/verify.html?type=notice&query=${encodeURIComponent(n.refNo)}`;
+        new QRCode(qrEl, {
+          text: verifyNoticeUrl,
+          width: 58,
+          height: 58,
+          colorDark: "#000000",
+          colorLight: "#e5eef2",
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+    });
+
+    switchState('state-notice');
+    setTimeout(autoScaleA4Notice, 50);
+  }
+
+  window.onload = processVerification;
+</script>
 </body>
 </html>
